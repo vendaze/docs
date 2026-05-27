@@ -13,8 +13,8 @@ Vendaze is a **multi-workspace platform**. A single account can belong to multip
 When a user authorizes your app via OAuth, they choose **one specific workspace** to connect. All operations made with that token belong exclusively to that workspace.
 
 <Note>
-  You never send the `workspace_id` in requests. It is embedded in the `access_token` at
-  authorization time and resolved automatically by the API on every call.
+  You never send any workspace identifier in requests. The workspace context is embedded in the
+  `access_token` at authorization time and resolved automatically by the API on every call.
 </Note>
 
 To access a different workspace, the user must go through the OAuth flow again.

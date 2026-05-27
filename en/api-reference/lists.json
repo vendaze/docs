@@ -1,0 +1,259 @@
+{
+  "openapi": "3.1.0",
+  "info": {
+    "title": "Lists",
+    "description": "Manage contact lists in the workspace.",
+    "version": "1.0.0",
+    "contact": { "name": "Vendaze Support", "email": "suporte@vendaze.com" }
+  },
+  "servers": [{ "url": "https://api.vendaze.com", "description": "Production" }],
+  "security": [{ "bearerAuth": [] }],
+  "tags": [{ "name": "Lists" }],
+  "paths": {
+    "/v1/lists": {
+      "get": {
+        "operationId": "listLists",
+        "summary": "List contact lists",
+        "description": "Returns all contact lists in the workspace.",
+        "tags": ["Lists"],
+        "parameters": [
+          { "$ref": "#/components/parameters/page" },
+          { "$ref": "#/components/parameters/per_page" },
+          { "$ref": "#/components/parameters/order_by" },
+          { "$ref": "#/components/parameters/order" }
+        ],
+        "responses": {
+          "200": {
+            "description": "Contact lists returned successfully.",
+            "content": { "application/json": { "schema": { "$ref": "#/components/schemas/ListsListResponse" } } }
+          },
+          "401": { "$ref": "#/components/responses/Unauthorized" },
+          "403": { "$ref": "#/components/responses/InsufficientScope" },
+          "422": { "$ref": "#/components/responses/ValidationError" },
+          "429": { "$ref": "#/components/responses/RateLimitExceeded" }
+        }
+      },
+      "post": {
+        "operationId": "createList",
+        "summary": "Create a list",
+        "description": "Creates a new contact list in the workspace.",
+        "tags": ["Lists"],
+        "requestBody": {
+          "required": true,
+          "content": { "application/json": { "schema": { "$ref": "#/components/schemas/CreateListRequest" } } }
+        },
+        "responses": {
+          "201": {
+            "description": "List created successfully.",
+            "content": { "application/json": { "schema": { "$ref": "#/components/schemas/ContactListResponse" } } }
+          },
+          "401": { "$ref": "#/components/responses/Unauthorized" },
+          "403": { "$ref": "#/components/responses/InsufficientScope" },
+          "422": { "$ref": "#/components/responses/ValidationError" },
+          "429": { "$ref": "#/components/responses/RateLimitExceeded" }
+        }
+      }
+    },
+    "/v1/lists/{id}": {
+      "get": {
+        "operationId": "getList",
+        "summary": "Get a list",
+        "description": "Returns a contact list by ID.",
+        "tags": ["Lists"],
+        "parameters": [{ "$ref": "#/components/parameters/id" }],
+        "responses": {
+          "200": {
+            "description": "List returned successfully.",
+            "content": { "application/json": { "schema": { "$ref": "#/components/schemas/ContactListResponse" } } }
+          },
+          "401": { "$ref": "#/components/responses/Unauthorized" },
+          "403": { "$ref": "#/components/responses/InsufficientScope" },
+          "404": { "$ref": "#/components/responses/NotFound" }
+        }
+      },
+      "patch": {
+        "operationId": "updateList",
+        "summary": "Update a list",
+        "description": "Updates a contact list. Only fields included in the body are modified.",
+        "tags": ["Lists"],
+        "parameters": [{ "$ref": "#/components/parameters/id" }],
+        "requestBody": {
+          "required": true,
+          "content": { "application/json": { "schema": { "$ref": "#/components/schemas/UpdateListRequest" } } }
+        },
+        "responses": {
+          "200": {
+            "description": "List updated successfully.",
+            "content": { "application/json": { "schema": { "$ref": "#/components/schemas/ContactListResponse" } } }
+          },
+          "401": { "$ref": "#/components/responses/Unauthorized" },
+          "403": { "$ref": "#/components/responses/InsufficientScope" },
+          "404": { "$ref": "#/components/responses/NotFound" },
+          "422": { "$ref": "#/components/responses/ValidationError" }
+        }
+      },
+      "delete": {
+        "operationId": "deleteList",
+        "summary": "Delete a list",
+        "description": "Soft-delete: the record is no longer accessible via the API.",
+        "tags": ["Lists"],
+        "parameters": [{ "$ref": "#/components/parameters/id" }],
+        "responses": {
+          "204": { "description": "List deleted successfully." },
+          "401": { "$ref": "#/components/responses/Unauthorized" },
+          "403": { "$ref": "#/components/responses/InsufficientScope" },
+          "404": { "$ref": "#/components/responses/NotFound" }
+        }
+      }
+    }
+  },
+  "components": {
+    "securitySchemes": {
+      "bearerAuth": { "type": "http", "scheme": "bearer", "description": "OAuth 2.1 access token." }
+    },
+    "parameters": {
+      "id": {
+        "name": "id",
+        "in": "path",
+        "required": true,
+        "schema": { "type": "string", "format": "uuid" },
+        "description": "UUID of the resource."
+      },
+      "page": { "name": "page", "in": "query", "schema": { "type": "integer", "default": 1, "minimum": 1 } },
+      "per_page": {
+        "name": "per_page",
+        "in": "query",
+        "schema": { "type": "integer", "default": 50, "minimum": 1, "maximum": 100 },
+        "description": "Max 100."
+      },
+      "order_by": { "name": "order_by", "in": "query", "schema": { "type": "string", "default": "created_at" } },
+      "order": { "name": "order", "in": "query", "schema": { "type": "string", "enum": ["asc", "desc"], "default": "desc" } },
+      "created_after": { "name": "created_after", "in": "query", "schema": { "type": "string", "format": "date-time" } },
+      "created_before": { "name": "created_before", "in": "query", "schema": { "type": "string", "format": "date-time" } },
+      "updated_after": { "name": "updated_after", "in": "query", "schema": { "type": "string", "format": "date-time" } },
+      "updated_before": { "name": "updated_before", "in": "query", "schema": { "type": "string", "format": "date-time" } }
+    },
+    "responses": {
+      "Unauthorized": {
+        "description": "Missing or invalid token.",
+        "content": { "application/json": { "schema": { "$ref": "#/components/schemas/ErrorResponse" } } }
+      },
+      "InsufficientScope": {
+        "description": "Token lacks the required scope.",
+        "content": { "application/json": { "schema": { "$ref": "#/components/schemas/ErrorResponse" } } }
+      },
+      "NotFound": {
+        "description": "Resource not found.",
+        "content": { "application/json": { "schema": { "$ref": "#/components/schemas/ErrorResponse" } } }
+      },
+      "ValidationError": {
+        "description": "Input validation failed.",
+        "content": { "application/json": { "schema": { "$ref": "#/components/schemas/ValidationErrorResponse" } } }
+      },
+      "RateLimitExceeded": {
+        "description": "Rate limit exceeded.",
+        "content": { "application/json": { "schema": { "$ref": "#/components/schemas/ErrorResponse" } } }
+      }
+    },
+    "schemas": {
+      "ErrorResponse": {
+        "type": "object",
+        "properties": {
+          "error": {
+            "type": "object",
+            "properties": {
+              "code": { "type": "string", "example": "not_found" },
+              "message": { "type": "string", "example": "Resource not found." },
+              "request_id": { "type": "string", "format": "uuid" }
+            }
+          }
+        }
+      },
+      "ValidationErrorResponse": {
+        "type": "object",
+        "properties": {
+          "error": {
+            "type": "object",
+            "properties": {
+              "code": { "type": "string", "example": "validation_error" },
+              "message": { "type": "string", "example": "Validation failed." },
+              "fields": { "type": "object", "additionalProperties": { "type": "string" } },
+              "request_id": { "type": "string", "format": "uuid" }
+            }
+          }
+        }
+      },
+      "PaginationMeta": {
+        "type": "object",
+        "properties": {
+          "total": { "type": "integer", "example": 150 },
+          "page": { "type": "integer", "example": 1 },
+          "per_page": { "type": "integer", "example": 50 },
+          "has_more": { "type": "boolean", "example": true }
+        }
+      },
+      "ContactEmail": {
+        "type": "object",
+        "required": ["email"],
+        "properties": {
+          "email": { "type": "string", "format": "email", "example": "nome@empresa.com" },
+          "reminder": {
+            "type": "string",
+            "enum": ["personal", "work", "other"],
+            "description": "Type of email. Accepted values: personal, work, other.",
+            "example": "work"
+          }
+        },
+        "example": { "email": "nome@empresa.com", "reminder": "work" }
+      },
+      "ContactPhone": {
+        "type": "object",
+        "required": ["phone"],
+        "properties": {
+          "phone": { "type": "string", "example": "+5511999990001" },
+          "reminder": {
+            "type": "string",
+            "enum": ["mobile", "work", "residential", "other"],
+            "description": "Type of phone. Accepted values: mobile, work, residential, other.",
+            "example": "mobile"
+          }
+        },
+        "example": { "phone": "+5511999990001", "reminder": "mobile" }
+      },
+      "ContactList": {
+        "type": "object",
+        "properties": {
+          "id": { "type": "string", "format": "uuid" },
+          "name": { "type": "string", "maxLength": 50, "example": "Q3 Inbound Leads" },
+          "created_at": { "type": "string", "format": "date-time" }
+        }
+      },
+      "CreateListRequest": {
+        "type": "object",
+        "required": ["name"],
+        "properties": {
+          "name": { "type": "string", "maxLength": 50, "example": "Q3 Inbound Leads" }
+        }
+      },
+      "UpdateListRequest": {
+        "type": "object",
+        "properties": {
+          "name": { "type": "string", "maxLength": 50 }
+        }
+      },
+      "ListsListResponse": {
+        "type": "object",
+        "properties": {
+          "data": { "type": "array", "items": { "$ref": "#/components/schemas/ContactList" } },
+          "meta": { "$ref": "#/components/schemas/PaginationMeta" }
+        }
+      },
+      "ContactListResponse": {
+        "type": "object",
+        "properties": {
+          "data": { "$ref": "#/components/schemas/ContactList" }
+        }
+      }
+    }
+  }
+}

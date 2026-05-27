@@ -1,6 +1,6 @@
 ---
 title: 'Primeira Solicitação'
-description: 'Guia completo do registro até a sua primeira chamada real à API do Vendaze.'
+description: 'Guia completo do registro até a sua primeira chamada real à API da Vendaze.'
 icon: 'terminal'
 ---
 
@@ -8,7 +8,7 @@ Este guia percorre o fluxo completo de ponta a ponta: registrar o aplicativo, au
 
 ## Pré-requisitos
 
-- Conta no Vendaze com pelo menos um workspace ativo
+- Conta na Vendaze com pelo menos um workspace ativo — [crie gratuitamente](https://app.vendaze.com/register) se ainda não tiver (14 dias de teste incluídos)
 - `curl` disponível no terminal
 
 ## 1. Registrar o aplicativo
@@ -53,7 +53,7 @@ https://api.vendaze.com/oauth/authorize
 
 ## 3. Autorizar e obter o code
 
-Você será redirecionado para o Vendaze, onde vai:
+Você será redirecionado para a Vendaze, onde vai:
 
 1. Fazer login com sua conta Vendaze
 2. Selecionar um workspace para conectar
@@ -90,7 +90,8 @@ Resposta:
   "access_token": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9...",
   "refresh_token": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9...",
   "token_type": "Bearer",
-  "expires_in": 3600
+  "expires_in": 3600,
+  "workspace_slug": "acme-corp"
 }
 ```
 
@@ -109,8 +110,8 @@ Resposta:
     {
       "id": "550e8400-e29b-41d4-a716-446655440000",
       "full_name": "Ana Costa",
-      "emails": [{ "value": "ana@empresa.com", "label": "work" }],
-      "phones": [{ "value": "+5511999990001", "label": "mobile" }],
+      "emails": [{ "email": "ana@empresa.com", "reminder": "work" }],
+      "phones": [{ "phone": "+5511999990001", "reminder": "mobile" }],
       "company_id": "7c9e6679-7425-40de-944b-e07fc1f90ae7",
       "position": "Head of Sales",
       "ranking": 4.5,

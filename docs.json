@@ -6,19 +6,22 @@
     "light": "#00c767",
     "dark": "#00c767"
   },
+  "favicon": "/favicon.svg",
+  "logo": {
+    "light": "/logo/light.svg",
+    "dark": "/logo/dark.svg"
+  },
+  "appearance": {
+    "default": "system"
+  },
+  "fonts": {
+    "family": "Public Sans"
+  },
   "background": {
     "color": {
       "light": "#ffffff",
       "dark": "#0b0c0d"
     }
-  },
-  "fonts": {
-    "family": "Public Sans"
-  },
-  "favicon": "/favicon.svg",
-  "logo": {
-    "light": "/logo/light.svg",
-    "dark": "/logo/dark.svg"
   },
   "navigation": {
     "global": {
@@ -84,7 +87,7 @@
           },
           {
             "tab": "API Reference",
-            "openapi": "api-reference/openapi.json"
+            "openapi": "pt/api-reference/openapi.json"
           },
           {
             "tab": "Changelog",
@@ -166,7 +169,7 @@
           },
           {
             "tab": "API Reference",
-            "openapi": "api-reference/openapi.json"
+            "openapi": "en/api-reference/openapi.json"
           },
           {
             "tab": "Changelog",

@@ -1,0 +1,380 @@
+{
+  "openapi": "3.1.0",
+  "info": {
+    "title": "Contatos - Pessoas",
+    "description": "Gerencie contatos individuais (pessoas) no workspace.",
+    "version": "1.0.0",
+    "contact": { "name": "Vendaze Support", "email": "suporte@vendaze.com" }
+  },
+  "servers": [{ "url": "https://api.vendaze.com", "description": "Production" }],
+  "security": [{ "bearerAuth": [] }],
+  "tags": [{ "name": "Pessoas" }],
+  "paths": {
+    "/v1/people": {
+      "get": {
+        "operationId": "listPeople",
+        "summary": "Listar pessoas",
+        "description": "Retorna uma lista paginada de pessoas no workspace autorizado.",
+        "tags": ["Pessoas"],
+        "parameters": [
+          { "$ref": "#/components/parameters/page" },
+          { "$ref": "#/components/parameters/per_page" },
+          { "$ref": "#/components/parameters/order_by" },
+          { "$ref": "#/components/parameters/order" },
+          {
+            "name": "full_name",
+            "in": "query",
+            "schema": { "type": "string" },
+            "description": "Correspondencia parcial pelo nome completo."
+          },
+          { "name": "email", "in": "query", "schema": { "type": "string" }, "description": "Filtrar por endereco de e-mail." },
+          { "name": "phone", "in": "query", "schema": { "type": "string" }, "description": "Filtrar por numero de telefone." },
+          {
+            "name": "company_id",
+            "in": "query",
+            "schema": { "type": "string", "format": "uuid" },
+            "description": "Filtrar por empresa vinculada."
+          },
+          {
+            "name": "owner_user_id",
+            "in": "query",
+            "schema": { "type": "string", "format": "uuid" },
+            "description": "Filtrar por responsavel."
+          },
+          { "name": "position", "in": "query", "schema": { "type": "string" }, "description": "Correspondencia parcial pelo cargo." },
+          {
+            "name": "tag",
+            "in": "query",
+            "schema": { "type": "array", "items": { "type": "string" } },
+            "style": "form",
+            "explode": true,
+            "description": "Filtrar por tags. Logica AND."
+          },
+          { "$ref": "#/components/parameters/created_after" },
+          { "$ref": "#/components/parameters/created_before" },
+          { "$ref": "#/components/parameters/updated_after" },
+          { "$ref": "#/components/parameters/updated_before" }
+        ],
+        "responses": {
+          "200": {
+            "description": "Lista de pessoas retornada com sucesso.",
+            "content": { "application/json": { "schema": { "$ref": "#/components/schemas/PeopleListResponse" } } }
+          },
+          "401": { "$ref": "#/components/responses/Unauthorized" },
+          "403": { "$ref": "#/components/responses/InsufficientScope" },
+          "422": { "$ref": "#/components/responses/ValidationError" },
+          "429": { "$ref": "#/components/responses/RateLimitExceeded" }
+        }
+      },
+      "post": {
+        "operationId": "createPerson",
+        "summary": "Criar pessoa",
+        "description": "Cria uma nova pessoa no workspace.",
+        "tags": ["Pessoas"],
+        "requestBody": {
+          "required": true,
+          "content": { "application/json": { "schema": { "$ref": "#/components/schemas/CreatePersonRequest" } } }
+        },
+        "responses": {
+          "201": {
+            "description": "Pessoa criada com sucesso.",
+            "content": { "application/json": { "schema": { "$ref": "#/components/schemas/PersonResponse" } } }
+          },
+          "401": { "$ref": "#/components/responses/Unauthorized" },
+          "403": { "$ref": "#/components/responses/InsufficientScope" },
+          "422": { "$ref": "#/components/responses/ValidationError" },
+          "429": { "$ref": "#/components/responses/RateLimitExceeded" }
+        }
+      }
+    },
+    "/v1/people/{id}": {
+      "get": {
+        "operationId": "getPerson",
+        "summary": "Buscar pessoa",
+        "description": "Retorna uma pessoa por ID com empresa, tags, listas e campos adicionais embutidos.",
+        "tags": ["Pessoas"],
+        "parameters": [{ "$ref": "#/components/parameters/id" }],
+        "responses": {
+          "200": {
+            "description": "Pessoa retornada com sucesso.",
+            "content": { "application/json": { "schema": { "$ref": "#/components/schemas/PersonWithEmbeddedResponse" } } }
+          },
+          "401": { "$ref": "#/components/responses/Unauthorized" },
+          "403": { "$ref": "#/components/responses/InsufficientScope" },
+          "404": { "$ref": "#/components/responses/NotFound" }
+        }
+      },
+      "patch": {
+        "operationId": "updatePerson",
+        "summary": "Atualizar pessoa",
+        "description": "Atualiza uma pessoa. Apenas campos enviados sao modificados.",
+        "tags": ["Pessoas"],
+        "parameters": [{ "$ref": "#/components/parameters/id" }],
+        "requestBody": {
+          "required": true,
+          "content": { "application/json": { "schema": { "$ref": "#/components/schemas/UpdatePersonRequest" } } }
+        },
+        "responses": {
+          "200": {
+            "description": "Pessoa atualizada com sucesso.",
+            "content": { "application/json": { "schema": { "$ref": "#/components/schemas/PersonResponse" } } }
+          },
+          "401": { "$ref": "#/components/responses/Unauthorized" },
+          "403": { "$ref": "#/components/responses/InsufficientScope" },
+          "404": { "$ref": "#/components/responses/NotFound" },
+          "422": { "$ref": "#/components/responses/ValidationError" }
+        }
+      },
+      "delete": {
+        "operationId": "deletePerson",
+        "summary": "Deletar pessoa",
+        "description": "Soft-delete: o registro nao e mais acessivel pela API.",
+        "tags": ["Pessoas"],
+        "parameters": [{ "$ref": "#/components/parameters/id" }],
+        "responses": {
+          "204": { "description": "Pessoa deletada com sucesso." },
+          "401": { "$ref": "#/components/responses/Unauthorized" },
+          "403": { "$ref": "#/components/responses/InsufficientScope" },
+          "404": { "$ref": "#/components/responses/NotFound" }
+        }
+      }
+    }
+  },
+  "components": {
+    "securitySchemes": {
+      "bearerAuth": { "type": "http", "scheme": "bearer", "description": "OAuth 2.1 access token." }
+    },
+    "parameters": {
+      "id": {
+        "name": "id",
+        "in": "path",
+        "required": true,
+        "schema": { "type": "string", "format": "uuid" },
+        "description": "UUID of the resource."
+      },
+      "page": { "name": "page", "in": "query", "schema": { "type": "integer", "default": 1, "minimum": 1 } },
+      "per_page": {
+        "name": "per_page",
+        "in": "query",
+        "schema": { "type": "integer", "default": 50, "minimum": 1, "maximum": 100 },
+        "description": "Max 100."
+      },
+      "order_by": { "name": "order_by", "in": "query", "schema": { "type": "string", "default": "created_at" } },
+      "order": { "name": "order", "in": "query", "schema": { "type": "string", "enum": ["asc", "desc"], "default": "desc" } },
+      "created_after": { "name": "created_after", "in": "query", "schema": { "type": "string", "format": "date-time" } },
+      "created_before": { "name": "created_before", "in": "query", "schema": { "type": "string", "format": "date-time" } },
+      "updated_after": { "name": "updated_after", "in": "query", "schema": { "type": "string", "format": "date-time" } },
+      "updated_before": { "name": "updated_before", "in": "query", "schema": { "type": "string", "format": "date-time" } }
+    },
+    "responses": {
+      "Unauthorized": {
+        "description": "Missing or invalid token.",
+        "content": { "application/json": { "schema": { "$ref": "#/components/schemas/ErrorResponse" } } }
+      },
+      "InsufficientScope": {
+        "description": "Token lacks the required scope.",
+        "content": { "application/json": { "schema": { "$ref": "#/components/schemas/ErrorResponse" } } }
+      },
+      "NotFound": {
+        "description": "Resource not found.",
+        "content": { "application/json": { "schema": { "$ref": "#/components/schemas/ErrorResponse" } } }
+      },
+      "ValidationError": {
+        "description": "Input validation failed.",
+        "content": { "application/json": { "schema": { "$ref": "#/components/schemas/ValidationErrorResponse" } } }
+      },
+      "RateLimitExceeded": {
+        "description": "Rate limit exceeded.",
+        "content": { "application/json": { "schema": { "$ref": "#/components/schemas/ErrorResponse" } } }
+      }
+    },
+    "schemas": {
+      "ErrorResponse": {
+        "type": "object",
+        "properties": {
+          "error": {
+            "type": "object",
+            "properties": {
+              "code": { "type": "string", "example": "not_found" },
+              "message": { "type": "string", "example": "Resource not found." },
+              "request_id": { "type": "string", "format": "uuid" }
+            }
+          }
+        }
+      },
+      "ValidationErrorResponse": {
+        "type": "object",
+        "properties": {
+          "error": {
+            "type": "object",
+            "properties": {
+              "code": { "type": "string", "example": "validation_error" },
+              "message": { "type": "string", "example": "Validation failed." },
+              "fields": { "type": "object", "additionalProperties": { "type": "string" } },
+              "request_id": { "type": "string", "format": "uuid" }
+            }
+          }
+        }
+      },
+      "PaginationMeta": {
+        "type": "object",
+        "properties": {
+          "total": { "type": "integer", "example": 150 },
+          "page": { "type": "integer", "example": 1 },
+          "per_page": { "type": "integer", "example": 50 },
+          "has_more": { "type": "boolean", "example": true }
+        }
+      },
+      "ContactEmail": {
+        "type": "object",
+        "required": ["email"],
+        "properties": {
+          "email": { "type": "string", "format": "email", "example": "nome@empresa.com" },
+          "reminder": {
+            "type": "string",
+            "enum": ["personal", "work", "other"],
+            "description": "Type of email. Accepted values: personal, work, other.",
+            "example": "work"
+          }
+        },
+        "example": { "email": "nome@empresa.com", "reminder": "work" }
+      },
+      "ContactPhone": {
+        "type": "object",
+        "required": ["phone"],
+        "properties": {
+          "phone": { "type": "string", "example": "+5511999990001" },
+          "reminder": {
+            "type": "string",
+            "enum": ["mobile", "work", "residential", "other"],
+            "description": "Type of phone. Accepted values: mobile, work, residential, other.",
+            "example": "mobile"
+          }
+        },
+        "example": { "phone": "+5511999990001", "reminder": "mobile" }
+      },
+      "Tag": {
+        "type": "object",
+        "properties": {
+          "id": { "type": "string", "format": "uuid" },
+          "name": { "type": "string" },
+          "color_text": { "type": "string", "nullable": true, "example": "#ffffff" },
+          "color_background": { "type": "string", "nullable": true, "example": "#0085c0" },
+          "created_at": { "type": "string", "format": "date-time" }
+        }
+      },
+      "ContactList": {
+        "type": "object",
+        "properties": {
+          "id": { "type": "string", "format": "uuid" },
+          "name": { "type": "string" },
+          "created_at": { "type": "string", "format": "date-time" }
+        }
+      },
+      "CustomFieldValue": {
+        "type": "object",
+        "properties": {
+          "id": { "type": "string", "format": "uuid" },
+          "value": { "type": "string", "nullable": true },
+          "field": {
+            "type": "object",
+            "properties": {
+              "id": { "type": "string", "format": "uuid" },
+              "label": { "type": "string" },
+              "key": { "type": "string" },
+              "type": { "type": "string" }
+            }
+          }
+        }
+      },
+      "Person": {
+        "type": "object",
+        "properties": {
+          "id": { "type": "string", "format": "uuid" },
+          "full_name": { "type": "string", "maxLength": 70, "example": "Maria Silva" },
+          "emails": {
+            "type": "array",
+            "items": { "$ref": "#/components/schemas/ContactEmail" },
+            "example": [{ "email": "maria@empresa.com", "reminder": "work" }]
+          },
+          "phones": {
+            "type": "array",
+            "items": { "$ref": "#/components/schemas/ContactPhone" },
+            "example": [{ "phone": "+5511999990001", "reminder": "mobile" }]
+          },
+          "company_id": { "type": "string", "format": "uuid", "nullable": true },
+          "owner_user_id": { "type": "string", "format": "uuid", "nullable": true },
+          "position": { "type": "string", "nullable": true, "example": "Diretora Comercial" },
+          "ranking": { "type": "number", "minimum": 0, "maximum": 5, "example": 4 },
+          "created_at": { "type": "string", "format": "date-time" },
+          "updated_at": { "type": "string", "format": "date-time" }
+        }
+      },
+      "PersonWithEmbedded": {
+        "allOf": [
+          { "$ref": "#/components/schemas/Person" },
+          {
+            "type": "object",
+            "properties": {
+              "company": {
+                "type": "object",
+                "nullable": true,
+                "properties": {
+                  "id": { "type": "string", "format": "uuid" },
+                  "full_name": { "type": "string" }
+                }
+              },
+              "tags": { "type": "array", "items": { "$ref": "#/components/schemas/Tag" } },
+              "lists": { "type": "array", "items": { "$ref": "#/components/schemas/ContactList" } },
+              "custom_fields": { "type": "array", "items": { "$ref": "#/components/schemas/CustomFieldValue" } }
+            }
+          }
+        ]
+      },
+      "CreatePersonRequest": {
+        "type": "object",
+        "required": ["full_name"],
+        "properties": {
+          "full_name": { "type": "string", "maxLength": 70, "example": "Maria Silva" },
+          "emails": { "type": "array", "items": { "$ref": "#/components/schemas/ContactEmail" } },
+          "phones": { "type": "array", "items": { "$ref": "#/components/schemas/ContactPhone" } },
+          "company_id": { "type": "string", "format": "uuid" },
+          "position": { "type": "string", "maxLength": 100 },
+          "owner_user_id": { "type": "string", "format": "uuid" },
+          "ranking": { "type": "number", "minimum": 0, "maximum": 5 }
+        }
+      },
+      "UpdatePersonRequest": {
+        "type": "object",
+        "properties": {
+          "full_name": { "type": "string", "maxLength": 70 },
+          "emails": { "type": "array", "items": { "$ref": "#/components/schemas/ContactEmail" } },
+          "phones": { "type": "array", "items": { "$ref": "#/components/schemas/ContactPhone" } },
+          "company_id": { "type": "string", "format": "uuid", "nullable": true },
+          "position": { "type": "string", "maxLength": 100, "nullable": true },
+          "owner_user_id": { "type": "string", "format": "uuid", "nullable": true },
+          "ranking": { "type": "number", "minimum": 0, "maximum": 5 }
+        }
+      },
+      "PeopleListResponse": {
+        "type": "object",
+        "properties": {
+          "data": { "type": "array", "items": { "$ref": "#/components/schemas/Person" } },
+          "meta": { "$ref": "#/components/schemas/PaginationMeta" }
+        }
+      },
+      "PersonResponse": {
+        "type": "object",
+        "properties": {
+          "data": { "$ref": "#/components/schemas/Person" }
+        }
+      },
+      "PersonWithEmbeddedResponse": {
+        "type": "object",
+        "properties": {
+          "data": { "$ref": "#/components/schemas/PersonWithEmbedded" }
+        }
+      }
+    }
+  }
+}

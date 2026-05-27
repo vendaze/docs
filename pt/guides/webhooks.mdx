@@ -4,18 +4,18 @@ description: 'Receba notificações em tempo real quando eventos ocorrem nos dad
 icon: 'webhook'
 ---
 
-Webhooks permitem que o Vendaze notifique seu aplicativo quando eventos ocorrem no workspace. Em vez de fazer polling continuamente, seu servidor recebe uma notificação HTTP assim que algo muda.
+Webhooks permitem que a Vendaze notifique seu aplicativo quando eventos ocorrem no workspace. Em vez de fazer polling continuamente, seu servidor recebe uma notificação HTTP assim que algo muda.
 
 <Note>
-  Webhooks são configurados pelo cliente do Vendaze no painel da plataforma, não via API pública.
+  Webhooks são configurados pelo cliente da Vendaze no painel da plataforma, não via API pública.
   Este guia explica como receber e validar as notificações.
 </Note>
 
 ## Como funciona
 
-1. O cliente do Vendaze configura um webhook no painel: define a URL de destino e os eventos desejados
+1. O cliente da Vendaze configura um webhook no painel: define a URL de destino e os eventos desejados
 2. O Vendaze gera um `webhook_secret` único para aquele endpoint
-3. Quando um evento ocorre, o Vendaze faz um `POST` para a URL configurada com o payload assinado
+3. Quando um evento ocorre, a Vendaze faz um `POST` para a URL configurada com o payload assinado
 4. Seu servidor valida a assinatura e processa o evento
 
 ## Eventos disponíveis
@@ -45,7 +45,7 @@ Webhooks permitem que o Vendaze notifique seu aplicativo quando eventos ocorrem 
   "data": {
     "id": "550e8400-e29b-41d4-a716-446655440000",
     "full_name": "Ana Costa",
-    "emails": [{ "value": "ana@empresa.com", "label": "work" }],
+    "emails": [{ "email": "ana@empresa.com", "reminder": "work" }],
     "created_at": "2026-05-26T14:00:00Z"
   }
 }
@@ -85,7 +85,7 @@ function isValidSignature(body, timestamp, receivedSignature, secret) {
 
 ## Política de reenvio
 
-Se seu servidor não retornar status `2xx` em 10 segundos, o Vendaze tenta novamente:
+Se seu servidor não retornar status `2xx` em 10 segundos, a Vendaze tenta novamente:
 
 | Tentativa | Espera     |
 | --------- | ---------- |

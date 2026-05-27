@@ -48,9 +48,9 @@ O header `Idempotency-Key` passou a ser suportado em todos os endpoints de cria�
 </Update>
 
 <Update label="v1.1.1" date="2026-05-12">
-  ## Correção: filtro tag[] com valores especiais
+  ## Correção: filtro `tag` com valores especiais
 
-Corrigido bug onde tags contendo caracteres especiais (como `&` e `+`) não eram filtradas corretamente quando passadas via `tag[]=valor`. O encoding agora é tratado corretamente antes da comparação.
+Corrigido bug onde tags contendo caracteres especiais (como `&` e `+`) não eram filtradas corretamente quando passadas via `tag=valor`. O encoding agora é tratado corretamente antes da comparação.
 
 ## Correção: order_by=full_name em companies
 

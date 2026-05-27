@@ -1,0 +1,309 @@
+{
+  "openapi": "3.1.0",
+  "info": {
+    "title": "Tasks",
+    "description": "Manage tasks assigned to sales representatives.",
+    "version": "1.0.0",
+    "contact": { "name": "Vendaze Support", "email": "suporte@vendaze.com" }
+  },
+  "servers": [{ "url": "https://api.vendaze.com", "description": "Production" }],
+  "security": [{ "bearerAuth": [] }],
+  "tags": [{ "name": "Tasks" }],
+  "paths": {
+    "/v1/tasks": {
+      "get": {
+        "operationId": "listTasks",
+        "summary": "List tasks",
+        "description": "Returns a paginated list of tasks in the authorized workspace.",
+        "tags": ["Tasks"],
+        "parameters": [
+          { "$ref": "#/components/parameters/page" },
+          { "$ref": "#/components/parameters/per_page" },
+          { "$ref": "#/components/parameters/order_by" },
+          { "$ref": "#/components/parameters/order" },
+          {
+            "name": "person_id",
+            "in": "query",
+            "schema": { "type": "string", "format": "uuid" },
+            "description": "Filter by linked person."
+          },
+          {
+            "name": "company_id",
+            "in": "query",
+            "schema": { "type": "string", "format": "uuid" },
+            "description": "Filter by linked company."
+          },
+          { "name": "deal_id", "in": "query", "schema": { "type": "string", "format": "uuid" }, "description": "Filter by linked deal." },
+          { "name": "type_id", "in": "query", "schema": { "type": "string", "format": "uuid" }, "description": "Filter by task type." },
+          {
+            "name": "priority",
+            "in": "query",
+            "schema": { "type": "string", "enum": ["high", "medium", "low"] },
+            "description": "Filter by priority."
+          },
+          { "name": "completed", "in": "query", "schema": { "type": "boolean" }, "description": "Filter by completion status." },
+          { "$ref": "#/components/parameters/created_after" },
+          { "$ref": "#/components/parameters/created_before" }
+        ],
+        "responses": {
+          "200": {
+            "description": "List of tasks returned successfully.",
+            "content": { "application/json": { "schema": { "$ref": "#/components/schemas/TasksListResponse" } } }
+          },
+          "401": { "$ref": "#/components/responses/Unauthorized" },
+          "403": { "$ref": "#/components/responses/InsufficientScope" },
+          "422": { "$ref": "#/components/responses/ValidationError" },
+          "429": { "$ref": "#/components/responses/RateLimitExceeded" }
+        }
+      },
+      "post": {
+        "operationId": "createTask",
+        "summary": "Create a task",
+        "description": "Creates a new task in the workspace.",
+        "tags": ["Tasks"],
+        "requestBody": {
+          "required": true,
+          "content": { "application/json": { "schema": { "$ref": "#/components/schemas/CreateTaskRequest" } } }
+        },
+        "responses": {
+          "201": {
+            "description": "Task created successfully.",
+            "content": { "application/json": { "schema": { "$ref": "#/components/schemas/TaskResponse" } } }
+          },
+          "401": { "$ref": "#/components/responses/Unauthorized" },
+          "403": { "$ref": "#/components/responses/InsufficientScope" },
+          "422": { "$ref": "#/components/responses/ValidationError" },
+          "429": { "$ref": "#/components/responses/RateLimitExceeded" }
+        }
+      }
+    },
+    "/v1/tasks/{id}": {
+      "get": {
+        "operationId": "getTask",
+        "summary": "Get a task",
+        "description": "Returns a task by ID.",
+        "tags": ["Tasks"],
+        "parameters": [{ "$ref": "#/components/parameters/id" }],
+        "responses": {
+          "200": {
+            "description": "Task returned successfully.",
+            "content": { "application/json": { "schema": { "$ref": "#/components/schemas/TaskResponse" } } }
+          },
+          "401": { "$ref": "#/components/responses/Unauthorized" },
+          "403": { "$ref": "#/components/responses/InsufficientScope" },
+          "404": { "$ref": "#/components/responses/NotFound" }
+        }
+      },
+      "patch": {
+        "operationId": "updateTask",
+        "summary": "Update a task",
+        "description": "Updates a task. Only fields included in the body are modified.",
+        "tags": ["Tasks"],
+        "parameters": [{ "$ref": "#/components/parameters/id" }],
+        "requestBody": {
+          "required": true,
+          "content": { "application/json": { "schema": { "$ref": "#/components/schemas/UpdateTaskRequest" } } }
+        },
+        "responses": {
+          "200": {
+            "description": "Task updated successfully.",
+            "content": { "application/json": { "schema": { "$ref": "#/components/schemas/TaskResponse" } } }
+          },
+          "401": { "$ref": "#/components/responses/Unauthorized" },
+          "403": { "$ref": "#/components/responses/InsufficientScope" },
+          "404": { "$ref": "#/components/responses/NotFound" },
+          "422": { "$ref": "#/components/responses/ValidationError" }
+        }
+      },
+      "delete": {
+        "operationId": "deleteTask",
+        "summary": "Delete a task",
+        "description": "Permanently removes the task from the workspace.",
+        "tags": ["Tasks"],
+        "parameters": [{ "$ref": "#/components/parameters/id" }],
+        "responses": {
+          "204": { "description": "Task deleted successfully." },
+          "401": { "$ref": "#/components/responses/Unauthorized" },
+          "403": { "$ref": "#/components/responses/InsufficientScope" },
+          "404": { "$ref": "#/components/responses/NotFound" }
+        }
+      }
+    }
+  },
+  "components": {
+    "securitySchemes": {
+      "bearerAuth": { "type": "http", "scheme": "bearer", "description": "OAuth 2.1 access token." }
+    },
+    "parameters": {
+      "id": {
+        "name": "id",
+        "in": "path",
+        "required": true,
+        "schema": { "type": "string", "format": "uuid" },
+        "description": "UUID of the resource."
+      },
+      "page": { "name": "page", "in": "query", "schema": { "type": "integer", "default": 1, "minimum": 1 } },
+      "per_page": {
+        "name": "per_page",
+        "in": "query",
+        "schema": { "type": "integer", "default": 50, "minimum": 1, "maximum": 100 },
+        "description": "Max 100."
+      },
+      "order_by": { "name": "order_by", "in": "query", "schema": { "type": "string", "default": "created_at" } },
+      "order": { "name": "order", "in": "query", "schema": { "type": "string", "enum": ["asc", "desc"], "default": "desc" } },
+      "created_after": { "name": "created_after", "in": "query", "schema": { "type": "string", "format": "date-time" } },
+      "created_before": { "name": "created_before", "in": "query", "schema": { "type": "string", "format": "date-time" } },
+      "updated_after": { "name": "updated_after", "in": "query", "schema": { "type": "string", "format": "date-time" } },
+      "updated_before": { "name": "updated_before", "in": "query", "schema": { "type": "string", "format": "date-time" } }
+    },
+    "responses": {
+      "Unauthorized": {
+        "description": "Missing or invalid token.",
+        "content": { "application/json": { "schema": { "$ref": "#/components/schemas/ErrorResponse" } } }
+      },
+      "InsufficientScope": {
+        "description": "Token lacks the required scope.",
+        "content": { "application/json": { "schema": { "$ref": "#/components/schemas/ErrorResponse" } } }
+      },
+      "NotFound": {
+        "description": "Resource not found.",
+        "content": { "application/json": { "schema": { "$ref": "#/components/schemas/ErrorResponse" } } }
+      },
+      "ValidationError": {
+        "description": "Input validation failed.",
+        "content": { "application/json": { "schema": { "$ref": "#/components/schemas/ValidationErrorResponse" } } }
+      },
+      "RateLimitExceeded": {
+        "description": "Rate limit exceeded.",
+        "content": { "application/json": { "schema": { "$ref": "#/components/schemas/ErrorResponse" } } }
+      }
+    },
+    "schemas": {
+      "ErrorResponse": {
+        "type": "object",
+        "properties": {
+          "error": {
+            "type": "object",
+            "properties": {
+              "code": { "type": "string", "example": "not_found" },
+              "message": { "type": "string", "example": "Resource not found." },
+              "request_id": { "type": "string", "format": "uuid" }
+            }
+          }
+        }
+      },
+      "ValidationErrorResponse": {
+        "type": "object",
+        "properties": {
+          "error": {
+            "type": "object",
+            "properties": {
+              "code": { "type": "string", "example": "validation_error" },
+              "message": { "type": "string", "example": "Validation failed." },
+              "fields": { "type": "object", "additionalProperties": { "type": "string" } },
+              "request_id": { "type": "string", "format": "uuid" }
+            }
+          }
+        }
+      },
+      "PaginationMeta": {
+        "type": "object",
+        "properties": {
+          "total": { "type": "integer", "example": 150 },
+          "page": { "type": "integer", "example": 1 },
+          "per_page": { "type": "integer", "example": 50 },
+          "has_more": { "type": "boolean", "example": true }
+        }
+      },
+      "ContactEmail": {
+        "type": "object",
+        "required": ["email"],
+        "properties": {
+          "email": { "type": "string", "format": "email", "example": "nome@empresa.com" },
+          "reminder": {
+            "type": "string",
+            "enum": ["personal", "work", "other"],
+            "description": "Type of email. Accepted values: personal, work, other.",
+            "example": "work"
+          }
+        },
+        "example": { "email": "nome@empresa.com", "reminder": "work" }
+      },
+      "ContactPhone": {
+        "type": "object",
+        "required": ["phone"],
+        "properties": {
+          "phone": { "type": "string", "example": "+5511999990001" },
+          "reminder": {
+            "type": "string",
+            "enum": ["mobile", "work", "residential", "other"],
+            "description": "Type of phone. Accepted values: mobile, work, residential, other.",
+            "example": "mobile"
+          }
+        },
+        "example": { "phone": "+5511999990001", "reminder": "mobile" }
+      },
+      "Task": {
+        "type": "object",
+        "properties": {
+          "id": { "type": "string", "format": "uuid" },
+          "title": { "type": "string", "maxLength": 200, "example": "Call the client" },
+          "notes": { "type": "string", "nullable": true, "example": "Confirm Monday meeting." },
+          "type_id": { "type": "string", "format": "uuid", "nullable": true },
+          "due_date": { "type": "string", "format": "date-time", "example": "2026-07-15T14:00:00Z" },
+          "person_id": { "type": "string", "format": "uuid", "nullable": true },
+          "company_id": { "type": "string", "format": "uuid", "nullable": true },
+          "deal_id": { "type": "string", "format": "uuid", "nullable": true },
+          "owner_user_id": { "type": "string", "format": "uuid", "nullable": true },
+          "priority": { "type": "string", "enum": ["high", "medium", "low"], "nullable": true, "example": "high" },
+          "completed": { "type": "boolean", "default": false, "example": false },
+          "created_at": { "type": "string", "format": "date-time" },
+          "updated_at": { "type": "string", "format": "date-time" }
+        }
+      },
+      "CreateTaskRequest": {
+        "type": "object",
+        "required": ["title", "due_date"],
+        "properties": {
+          "title": { "type": "string", "maxLength": 200, "example": "Call the client" },
+          "due_date": { "type": "string", "format": "date-time", "example": "2026-07-15T14:00:00Z" },
+          "notes": { "type": "string" },
+          "type_id": { "type": "string", "format": "uuid" },
+          "person_id": { "type": "string", "format": "uuid" },
+          "company_id": { "type": "string", "format": "uuid" },
+          "deal_id": { "type": "string", "format": "uuid" },
+          "owner_user_id": { "type": "string", "format": "uuid" },
+          "priority": { "type": "string", "enum": ["high", "medium", "low"] }
+        }
+      },
+      "UpdateTaskRequest": {
+        "type": "object",
+        "properties": {
+          "title": { "type": "string", "maxLength": 200 },
+          "due_date": { "type": "string", "format": "date-time" },
+          "notes": { "type": "string", "nullable": true },
+          "type_id": { "type": "string", "format": "uuid", "nullable": true },
+          "person_id": { "type": "string", "format": "uuid", "nullable": true },
+          "company_id": { "type": "string", "format": "uuid", "nullable": true },
+          "deal_id": { "type": "string", "format": "uuid", "nullable": true },
+          "owner_user_id": { "type": "string", "format": "uuid", "nullable": true },
+          "priority": { "type": "string", "enum": ["high", "medium", "low"], "nullable": true },
+          "completed": { "type": "boolean" }
+        }
+      },
+      "TasksListResponse": {
+        "type": "object",
+        "properties": {
+          "data": { "type": "array", "items": { "$ref": "#/components/schemas/Task" } },
+          "meta": { "$ref": "#/components/schemas/PaginationMeta" }
+        }
+      },
+      "TaskResponse": {
+        "type": "object",
+        "properties": {
+          "data": { "$ref": "#/components/schemas/Task" }
+        }
+      }
+    }
+  }
+}

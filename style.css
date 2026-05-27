@@ -1,3 +1,7 @@
+.prose {
+	font-size: 15px;
+}
+
 h1 {
 	font-weight: 600 !important;
 }
@@ -8,4 +12,25 @@ h2 {
 
 h3 {
 	font-weight: 500 !important;
+}
+
+.text-xs {
+	font-size: 12px;
+}
+
+.text-sm {
+	font-size: 14px;
+}
+
+.text-md,
+.text-base {
+	font-size: 15px;
+}
+
+.text-lg {
+	font-size: 17px;
+}
+
+.text-2xl {
+	font-size: 27px !important;
 }

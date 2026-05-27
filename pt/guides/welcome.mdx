@@ -1,12 +1,12 @@
 ---
 title: 'Boas-vindas'
-description: 'Introdução à API pública do Vendaze para desenvolvedores e integradores.'
+description: 'Introdução à API pública da Vendaze para desenvolvedores e integradores.'
 icon: 'hand-wave'
 ---
 
 ## O que é a Vendaze API
 
-A Vendaze API é uma interface REST pública que permite que aplicativos externos leiam e escrevam dados no Vendaze, o CRM B2B para times de vendas.
+A Vendaze API é uma interface REST pública que permite que aplicativos externos leiam e escrevam dados na Vendaze, o CRM B2B para times de vendas.
 
 Com ela, você pode criar integrações nativas, automações, painéis customizados e agentes de IA que operam diretamente sobre os dados do seu time comercial.
 
@@ -14,13 +14,13 @@ Com ela, você pode criar integrações nativas, automações, painéis customiz
 
 <CardGroup cols={2}>
   <Card title="Desenvolvedores SaaS" icon="code">
-    Você tem um produto e quer oferecer integração nativa com o Vendaze para seus clientes.
+    Você tem um produto e quer oferecer integração nativa com a Vendaze para seus clientes.
   </Card>
   <Card title="Times de engenharia" icon="building">
     Você quer conectar ferramentas internas ao Vendaze, como ETL, data warehouse ou automações.
   </Card>
   <Card title="Agências e consultores" icon="briefcase">
-    Você constrói soluções personalizadas para clientes que usam o Vendaze.
+    Você constrói soluções personalizadas para clientes que usam a Vendaze.
   </Card>
   <Card title="Entusiastas de IA" icon="robot">
     Você quer conectar agentes de IA como Claude ou Cursor ao CRM via MCP.
@@ -31,11 +31,11 @@ Com ela, você pode criar integrações nativas, automações, painéis customiz
 
 O Vendaze é uma plataforma **multi-workspace**. Cada usuário pode pertencer a vários workspaces — como um consultor que atende vários clientes. Cada workspace é um ambiente completamente isolado com seus próprios dados: contatos, negócios, tarefas e configurações.
 
-Quando um usuário autoriza seu aplicativo via OAuth, ele escolhe qual workspace conectar. Todas as chamadas de API feitas com aquele token operam exclusivamente naquele workspace. Você nunca precisa enviar ou rastrear o `workspace_id`. Ele é embutido no token de acesso e resolvido automaticamente pela API.
+Quando um usuário autoriza seu aplicativo via OAuth, ele escolhe qual workspace conectar. Todas as chamadas de API feitas com aquele token operam exclusivamente naquele workspace. Você nunca precisa enviar ou gerenciar nenhum identificador de workspace — o token carrega esse contexto automaticamente.
 
 ## O que você precisa antes de começar
 
-1. Uma conta no Vendaze com pelo menos um workspace ativo
+1. Uma conta na Vendaze com pelo menos um workspace ativo
 2. Um servidor com suporte a HTTPS para receber o callback OAuth
 3. Familiaridade básica com APIs REST e o fluxo OAuth 2.1
 

@@ -1,0 +1,264 @@
+{
+  "openapi": "3.1.0",
+  "info": {
+    "title": "Activities",
+    "description": "Log activities such as calls, emails, and meetings on contacts and deals.",
+    "version": "1.0.0",
+    "contact": { "name": "Vendaze Support", "email": "suporte@vendaze.com" }
+  },
+  "servers": [{ "url": "https://api.vendaze.com", "description": "Production" }],
+  "security": [{ "bearerAuth": [] }],
+  "tags": [{ "name": "Activities" }],
+  "paths": {
+    "/v1/activities": {
+      "get": {
+        "operationId": "listActivities",
+        "summary": "List activities",
+        "description": "Returns activities. At least one entity filter (person_id, company_id, or deal_id) is required.",
+        "tags": ["Activities"],
+        "parameters": [
+          { "$ref": "#/components/parameters/page" },
+          { "$ref": "#/components/parameters/per_page" },
+          { "$ref": "#/components/parameters/order_by" },
+          { "$ref": "#/components/parameters/order" },
+          {
+            "name": "person_id",
+            "in": "query",
+            "schema": { "type": "string", "format": "uuid" },
+            "description": "Filter by linked person."
+          },
+          {
+            "name": "company_id",
+            "in": "query",
+            "schema": { "type": "string", "format": "uuid" },
+            "description": "Filter by linked company."
+          },
+          { "name": "deal_id", "in": "query", "schema": { "type": "string", "format": "uuid" }, "description": "Filter by linked deal." },
+          {
+            "name": "type",
+            "in": "query",
+            "schema": { "type": "string", "enum": ["notes", "email", "call", "meeting"] },
+            "description": "Filter by activity type."
+          },
+          { "$ref": "#/components/parameters/created_after" },
+          { "$ref": "#/components/parameters/created_before" }
+        ],
+        "responses": {
+          "200": {
+            "description": "List of activities returned successfully.",
+            "content": { "application/json": { "schema": { "$ref": "#/components/schemas/ActivitiesListResponse" } } }
+          },
+          "401": { "$ref": "#/components/responses/Unauthorized" },
+          "403": { "$ref": "#/components/responses/InsufficientScope" },
+          "422": { "$ref": "#/components/responses/ValidationError" },
+          "429": { "$ref": "#/components/responses/RateLimitExceeded" }
+        }
+      },
+      "post": {
+        "operationId": "createActivity",
+        "summary": "Create an activity",
+        "description": "Creates an activity. At least one entity (person_id, company_id, or deal_id) must be provided.",
+        "tags": ["Activities"],
+        "requestBody": {
+          "required": true,
+          "content": { "application/json": { "schema": { "$ref": "#/components/schemas/CreateActivityRequest" } } }
+        },
+        "responses": {
+          "201": {
+            "description": "Activity created successfully.",
+            "content": { "application/json": { "schema": { "$ref": "#/components/schemas/ActivityResponse" } } }
+          },
+          "401": { "$ref": "#/components/responses/Unauthorized" },
+          "403": { "$ref": "#/components/responses/InsufficientScope" },
+          "422": { "$ref": "#/components/responses/ValidationError" },
+          "429": { "$ref": "#/components/responses/RateLimitExceeded" }
+        }
+      }
+    },
+    "/v1/activities/{id}": {
+      "get": {
+        "operationId": "getActivity",
+        "summary": "Get an activity",
+        "description": "Returns an activity by ID.",
+        "tags": ["Activities"],
+        "parameters": [{ "$ref": "#/components/parameters/id" }],
+        "responses": {
+          "200": {
+            "description": "Activity returned successfully.",
+            "content": { "application/json": { "schema": { "$ref": "#/components/schemas/ActivityResponse" } } }
+          },
+          "401": { "$ref": "#/components/responses/Unauthorized" },
+          "403": { "$ref": "#/components/responses/InsufficientScope" },
+          "404": { "$ref": "#/components/responses/NotFound" }
+        }
+      },
+      "delete": {
+        "operationId": "deleteActivity",
+        "summary": "Delete an activity",
+        "description": "Permanently removes the activity from the workspace.",
+        "tags": ["Activities"],
+        "parameters": [{ "$ref": "#/components/parameters/id" }],
+        "responses": {
+          "204": { "description": "Activity deleted successfully." },
+          "401": { "$ref": "#/components/responses/Unauthorized" },
+          "403": { "$ref": "#/components/responses/InsufficientScope" },
+          "404": { "$ref": "#/components/responses/NotFound" }
+        }
+      }
+    }
+  },
+  "components": {
+    "securitySchemes": {
+      "bearerAuth": { "type": "http", "scheme": "bearer", "description": "OAuth 2.1 access token." }
+    },
+    "parameters": {
+      "id": {
+        "name": "id",
+        "in": "path",
+        "required": true,
+        "schema": { "type": "string", "format": "uuid" },
+        "description": "UUID of the resource."
+      },
+      "page": { "name": "page", "in": "query", "schema": { "type": "integer", "default": 1, "minimum": 1 } },
+      "per_page": {
+        "name": "per_page",
+        "in": "query",
+        "schema": { "type": "integer", "default": 50, "minimum": 1, "maximum": 100 },
+        "description": "Max 100."
+      },
+      "order_by": { "name": "order_by", "in": "query", "schema": { "type": "string", "default": "created_at" } },
+      "order": { "name": "order", "in": "query", "schema": { "type": "string", "enum": ["asc", "desc"], "default": "desc" } },
+      "created_after": { "name": "created_after", "in": "query", "schema": { "type": "string", "format": "date-time" } },
+      "created_before": { "name": "created_before", "in": "query", "schema": { "type": "string", "format": "date-time" } },
+      "updated_after": { "name": "updated_after", "in": "query", "schema": { "type": "string", "format": "date-time" } },
+      "updated_before": { "name": "updated_before", "in": "query", "schema": { "type": "string", "format": "date-time" } }
+    },
+    "responses": {
+      "Unauthorized": {
+        "description": "Missing or invalid token.",
+        "content": { "application/json": { "schema": { "$ref": "#/components/schemas/ErrorResponse" } } }
+      },
+      "InsufficientScope": {
+        "description": "Token lacks the required scope.",
+        "content": { "application/json": { "schema": { "$ref": "#/components/schemas/ErrorResponse" } } }
+      },
+      "NotFound": {
+        "description": "Resource not found.",
+        "content": { "application/json": { "schema": { "$ref": "#/components/schemas/ErrorResponse" } } }
+      },
+      "ValidationError": {
+        "description": "Input validation failed.",
+        "content": { "application/json": { "schema": { "$ref": "#/components/schemas/ValidationErrorResponse" } } }
+      },
+      "RateLimitExceeded": {
+        "description": "Rate limit exceeded.",
+        "content": { "application/json": { "schema": { "$ref": "#/components/schemas/ErrorResponse" } } }
+      }
+    },
+    "schemas": {
+      "ErrorResponse": {
+        "type": "object",
+        "properties": {
+          "error": {
+            "type": "object",
+            "properties": {
+              "code": { "type": "string", "example": "not_found" },
+              "message": { "type": "string", "example": "Resource not found." },
+              "request_id": { "type": "string", "format": "uuid" }
+            }
+          }
+        }
+      },
+      "ValidationErrorResponse": {
+        "type": "object",
+        "properties": {
+          "error": {
+            "type": "object",
+            "properties": {
+              "code": { "type": "string", "example": "validation_error" },
+              "message": { "type": "string", "example": "Validation failed." },
+              "fields": { "type": "object", "additionalProperties": { "type": "string" } },
+              "request_id": { "type": "string", "format": "uuid" }
+            }
+          }
+        }
+      },
+      "PaginationMeta": {
+        "type": "object",
+        "properties": {
+          "total": { "type": "integer", "example": 150 },
+          "page": { "type": "integer", "example": 1 },
+          "per_page": { "type": "integer", "example": 50 },
+          "has_more": { "type": "boolean", "example": true }
+        }
+      },
+      "ContactEmail": {
+        "type": "object",
+        "required": ["email"],
+        "properties": {
+          "email": { "type": "string", "format": "email", "example": "nome@empresa.com" },
+          "reminder": {
+            "type": "string",
+            "enum": ["personal", "work", "other"],
+            "description": "Type of email. Accepted values: personal, work, other.",
+            "example": "work"
+          }
+        },
+        "example": { "email": "nome@empresa.com", "reminder": "work" }
+      },
+      "ContactPhone": {
+        "type": "object",
+        "required": ["phone"],
+        "properties": {
+          "phone": { "type": "string", "example": "+5511999990001" },
+          "reminder": {
+            "type": "string",
+            "enum": ["mobile", "work", "residential", "other"],
+            "description": "Type of phone. Accepted values: mobile, work, residential, other.",
+            "example": "mobile"
+          }
+        },
+        "example": { "phone": "+5511999990001", "reminder": "mobile" }
+      },
+      "Activity": {
+        "type": "object",
+        "properties": {
+          "id": { "type": "string", "format": "uuid" },
+          "type": { "type": "string", "enum": ["notes", "email", "call", "meeting"], "example": "call" },
+          "content_html": { "type": "string", "nullable": true, "example": "<p>Discussed commercial proposal.</p>" },
+          "person_id": { "type": "string", "format": "uuid", "nullable": true },
+          "company_id": { "type": "string", "format": "uuid", "nullable": true },
+          "deal_id": { "type": "string", "format": "uuid", "nullable": true },
+          "owner_user_id": { "type": "string", "format": "uuid", "nullable": true },
+          "created_at": { "type": "string", "format": "date-time" },
+          "updated_at": { "type": "string", "format": "date-time", "nullable": true }
+        }
+      },
+      "CreateActivityRequest": {
+        "type": "object",
+        "required": ["type"],
+        "properties": {
+          "type": { "type": "string", "enum": ["notes", "email", "call", "meeting"], "example": "call" },
+          "content_html": { "type": "string" },
+          "person_id": { "type": "string", "format": "uuid" },
+          "company_id": { "type": "string", "format": "uuid" },
+          "deal_id": { "type": "string", "format": "uuid" },
+          "owner_user_id": { "type": "string", "format": "uuid" }
+        }
+      },
+      "ActivitiesListResponse": {
+        "type": "object",
+        "properties": {
+          "data": { "type": "array", "items": { "$ref": "#/components/schemas/Activity" } },
+          "meta": { "$ref": "#/components/schemas/PaginationMeta" }
+        }
+      },
+      "ActivityResponse": {
+        "type": "object",
+        "properties": {
+          "data": { "$ref": "#/components/schemas/Activity" }
+        }
+      }
+    }
+  }
+}

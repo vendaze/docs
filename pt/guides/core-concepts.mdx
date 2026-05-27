@@ -1,6 +1,6 @@
 ---
 title: 'Conceitos Básicos'
-description: 'Entenda os fundamentos da API do Vendaze antes de começar a integrar.'
+description: 'Entenda os fundamentos da API da Vendaze antes de começar a integrar.'
 icon: 'book'
 ---
 
@@ -13,8 +13,9 @@ O Vendaze é uma plataforma **multi-workspace**. Uma única conta pode pertencer
 Quando um usuário autoriza seu aplicativo via OAuth, ele escolhe **um workspace específico** para conectar. Todas as operações feitas com aquele token pertencem exclusivamente a esse workspace.
 
 <Note>
-  Você nunca envia o `workspace_id` nas requisições. Ele é embutido no `access_token` no momento da
-  autorização e resolvido automaticamente pela API em cada chamada.
+  Você nunca envia nenhum identificador de workspace nas requisições. O contexto do workspace é
+  embutido no `access_token` no momento da autorização e resolvido automaticamente pela API em cada
+  chamada.
 </Note>
 
 Para acessar um workspace diferente, o usuário precisa passar pelo fluxo OAuth novamente.
@@ -23,7 +24,7 @@ Para acessar um workspace diferente, o usuário precisa passar pelo fluxo OAuth 
 
 A Vendaze API usa **OAuth 2.1 com PKCE** (Proof Key for Code Exchange). Seu aplicativo:
 
-1. Registra-se no Vendaze para receber `client_id` e `client_secret`
+1. Registra-se na Vendaze para receber `client_id` e `client_secret`
 2. Redireciona usuários para autorizar acesso ao workspace deles
 3. Recebe um `access_token` (válido por 1 hora) e um `refresh_token` (válido por 60 dias)
 4. Inclui o `access_token` como Bearer token em toda requisição

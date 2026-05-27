@@ -8,7 +8,7 @@ This guide covers the complete end-to-end flow: registering the app, authorizing
 
 ## Prerequisites
 
-- A Vendaze account with at least one active workspace
+- A Vendaze account with at least one active workspace — [create one free](https://app.vendaze.com/register) if you don't have one (14-day trial included)
 - `curl` available in your terminal
 
 ## 1. Register the app
@@ -90,7 +90,8 @@ Response:
   "access_token": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9...",
   "refresh_token": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9...",
   "token_type": "Bearer",
-  "expires_in": 3600
+  "expires_in": 3600,
+  "workspace_slug": "acme-corp"
 }
 ```
 
@@ -109,8 +110,8 @@ Response:
     {
       "id": "550e8400-e29b-41d4-a716-446655440000",
       "full_name": "Ana Costa",
-      "emails": [{ "value": "ana@company.com", "label": "work" }],
-      "phones": [{ "value": "+5511999990001", "label": "mobile" }],
+      "emails": [{ "email": "ana@company.com", "reminder": "work" }],
+      "phones": [{ "phone": "+5511999990001", "reminder": "mobile" }],
       "company_id": "7c9e6679-7425-40de-944b-e07fc1f90ae7",
       "position": "Head of Sales",
       "ranking": 4.5,

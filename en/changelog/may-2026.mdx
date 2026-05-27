@@ -48,9 +48,9 @@ The `Idempotency-Key` header is now supported on all creation endpoints (`POST /
 </Update>
 
 <Update label="v1.1.1" date="2026-05-12">
-  ## Fix: tag[] filter with special characters
+  ## Fix: `tag` filter with special characters
 
-Fixed a bug where tags containing special characters (such as `&` and `+`) were not filtered correctly when passed via `tag[]=value`. Encoding is now handled correctly before comparison.
+Fixed a bug where tags containing special characters (such as `&` and `+`) were not filtered correctly when passed via `tag=value`. Encoding is now handled correctly before comparison.
 
 ## Fix: order_by=full_name on companies
 

@@ -1,0 +1,368 @@
+{
+  "openapi": "3.1.0",
+  "info": {
+    "title": "OAuth 2.1",
+    "description": "Endpoints para registrar aplicativos e gerenciar tokens OAuth 2.1.",
+    "version": "1.0.0",
+    "contact": { "name": "Vendaze Support", "email": "suporte@vendaze.com" }
+  },
+  "servers": [{ "url": "https://api.vendaze.com", "description": "Production" }],
+  "security": [{ "bearerAuth": [] }],
+  "tags": [{ "name": "OAuth" }],
+  "paths": {
+    "/v1/auth/register-app": {
+      "post": {
+        "operationId": "registerApp",
+        "summary": "Registrar aplicativo",
+        "description": "Registra um novo aplicativo OAuth. Credenciais enviadas por e-mail. Nao requer autenticacao.",
+        "security": [],
+        "tags": ["OAuth"],
+        "requestBody": {
+          "required": true,
+          "content": { "application/json": { "schema": { "$ref": "#/components/schemas/RegisterAppRequest" } } }
+        },
+        "responses": {
+          "201": {
+            "description": "Aplicativo registrado com sucesso.",
+            "content": { "application/json": { "schema": { "$ref": "#/components/schemas/RegisterAppResponse" } } }
+          },
+          "422": { "$ref": "#/components/responses/ValidationError" },
+          "429": { "$ref": "#/components/responses/RateLimitExceeded" }
+        }
+      }
+    },
+    "/oauth/authorize": {
+      "get": {
+        "operationId": "authorize",
+        "summary": "Iniciar autorizacao",
+        "description": "Redireciona o usuario para a pagina de autorizacao da Vendaze.",
+        "security": [],
+        "tags": ["OAuth"],
+        "parameters": [
+          {
+            "name": "client_id",
+            "in": "query",
+            "required": true,
+            "schema": { "type": "string", "format": "uuid" },
+            "description": "UUID do aplicativo OAuth."
+          },
+          {
+            "name": "redirect_uri",
+            "in": "query",
+            "required": true,
+            "schema": { "type": "string", "format": "uri" },
+            "description": "URI de redirecionamento registrado no aplicativo."
+          },
+          {
+            "name": "response_type",
+            "in": "query",
+            "required": true,
+            "schema": { "type": "string", "enum": ["code"] },
+            "description": "Deve ser \"code\"."
+          },
+          {
+            "name": "scope",
+            "in": "query",
+            "required": true,
+            "schema": { "type": "string" },
+            "description": "Escopos separados por espaco. Ex: \"people:read deals:write\"."
+          },
+          {
+            "name": "state",
+            "in": "query",
+            "required": true,
+            "schema": { "type": "string" },
+            "description": "String opaca gerada pelo integrador para prevencao de CSRF."
+          },
+          {
+            "name": "code_challenge",
+            "in": "query",
+            "required": true,
+            "schema": { "type": "string" },
+            "description": "BASE64URL(SHA256(code_verifier))."
+          },
+          {
+            "name": "code_challenge_method",
+            "in": "query",
+            "required": true,
+            "schema": { "type": "string", "enum": ["S256"] },
+            "description": "Deve ser \"S256\"."
+          }
+        ],
+        "responses": {
+          "302": { "description": "Redirecionamento para a pagina de autorizacao." },
+          "400": {
+            "description": "Parametro invalido.",
+            "content": { "application/json": { "schema": { "$ref": "#/components/schemas/ErrorResponse" } } }
+          },
+          "429": { "$ref": "#/components/responses/RateLimitExceeded" }
+        }
+      }
+    },
+    "/oauth/token": {
+      "post": {
+        "operationId": "issueToken",
+        "summary": "Emitir ou renovar token",
+        "description": "Troca um codigo de autorizacao por tokens, ou renova o access token usando o refresh token.",
+        "security": [],
+        "tags": ["OAuth"],
+        "requestBody": {
+          "required": true,
+          "content": { "application/json": { "schema": { "$ref": "#/components/schemas/TokenRequest" } } }
+        },
+        "responses": {
+          "200": {
+            "description": "Tokens emitidos com sucesso.",
+            "content": { "application/json": { "schema": { "$ref": "#/components/schemas/TokenResponse" } } }
+          },
+          "400": {
+            "description": "Requisicao invalida.",
+            "content": { "application/json": { "schema": { "$ref": "#/components/schemas/ErrorResponse" } } }
+          },
+          "401": {
+            "description": "Credenciais invalidas.",
+            "content": { "application/json": { "schema": { "$ref": "#/components/schemas/ErrorResponse" } } }
+          },
+          "429": { "$ref": "#/components/responses/RateLimitExceeded" }
+        }
+      }
+    },
+    "/oauth/revoke": {
+      "post": {
+        "operationId": "revokeToken",
+        "summary": "Revogar token",
+        "description": "Revoga um access token ou refresh token. Retorna 200 mesmo que o token ja esteja revogado.",
+        "security": [],
+        "tags": ["OAuth"],
+        "requestBody": {
+          "required": true,
+          "content": { "application/json": { "schema": { "$ref": "#/components/schemas/RevokeTokenRequest" } } }
+        },
+        "responses": {
+          "200": { "description": "Token revogado." },
+          "401": {
+            "description": "Credenciais invalidas.",
+            "content": { "application/json": { "schema": { "$ref": "#/components/schemas/ErrorResponse" } } }
+          },
+          "429": { "$ref": "#/components/responses/RateLimitExceeded" }
+        }
+      }
+    }
+  },
+  "components": {
+    "securitySchemes": {
+      "bearerAuth": { "type": "http", "scheme": "bearer", "description": "OAuth 2.1 access token." }
+    },
+    "parameters": {
+      "id": {
+        "name": "id",
+        "in": "path",
+        "required": true,
+        "schema": { "type": "string", "format": "uuid" },
+        "description": "UUID of the resource."
+      },
+      "page": { "name": "page", "in": "query", "schema": { "type": "integer", "default": 1, "minimum": 1 } },
+      "per_page": {
+        "name": "per_page",
+        "in": "query",
+        "schema": { "type": "integer", "default": 50, "minimum": 1, "maximum": 100 },
+        "description": "Max 100."
+      },
+      "order_by": { "name": "order_by", "in": "query", "schema": { "type": "string", "default": "created_at" } },
+      "order": { "name": "order", "in": "query", "schema": { "type": "string", "enum": ["asc", "desc"], "default": "desc" } },
+      "created_after": { "name": "created_after", "in": "query", "schema": { "type": "string", "format": "date-time" } },
+      "created_before": { "name": "created_before", "in": "query", "schema": { "type": "string", "format": "date-time" } },
+      "updated_after": { "name": "updated_after", "in": "query", "schema": { "type": "string", "format": "date-time" } },
+      "updated_before": { "name": "updated_before", "in": "query", "schema": { "type": "string", "format": "date-time" } }
+    },
+    "responses": {
+      "Unauthorized": {
+        "description": "Missing or invalid token.",
+        "content": { "application/json": { "schema": { "$ref": "#/components/schemas/ErrorResponse" } } }
+      },
+      "InsufficientScope": {
+        "description": "Token lacks the required scope.",
+        "content": { "application/json": { "schema": { "$ref": "#/components/schemas/ErrorResponse" } } }
+      },
+      "NotFound": {
+        "description": "Resource not found.",
+        "content": { "application/json": { "schema": { "$ref": "#/components/schemas/ErrorResponse" } } }
+      },
+      "ValidationError": {
+        "description": "Input validation failed.",
+        "content": { "application/json": { "schema": { "$ref": "#/components/schemas/ValidationErrorResponse" } } }
+      },
+      "RateLimitExceeded": {
+        "description": "Rate limit exceeded.",
+        "content": { "application/json": { "schema": { "$ref": "#/components/schemas/ErrorResponse" } } }
+      }
+    },
+    "schemas": {
+      "ErrorResponse": {
+        "type": "object",
+        "properties": {
+          "error": {
+            "type": "object",
+            "properties": {
+              "code": { "type": "string", "example": "not_found" },
+              "message": { "type": "string", "example": "Resource not found." },
+              "request_id": { "type": "string", "format": "uuid" }
+            }
+          }
+        }
+      },
+      "ValidationErrorResponse": {
+        "type": "object",
+        "properties": {
+          "error": {
+            "type": "object",
+            "properties": {
+              "code": { "type": "string", "example": "validation_error" },
+              "message": { "type": "string", "example": "Validation failed." },
+              "fields": { "type": "object", "additionalProperties": { "type": "string" } },
+              "request_id": { "type": "string", "format": "uuid" }
+            }
+          }
+        }
+      },
+      "PaginationMeta": {
+        "type": "object",
+        "properties": {
+          "total": { "type": "integer", "example": 150 },
+          "page": { "type": "integer", "example": 1 },
+          "per_page": { "type": "integer", "example": 50 },
+          "has_more": { "type": "boolean", "example": true }
+        }
+      },
+      "ContactEmail": {
+        "type": "object",
+        "required": ["email"],
+        "properties": {
+          "email": { "type": "string", "format": "email", "example": "nome@empresa.com" },
+          "reminder": {
+            "type": "string",
+            "enum": ["personal", "work", "other"],
+            "description": "Type of email. Accepted values: personal, work, other.",
+            "example": "work"
+          }
+        },
+        "example": { "email": "nome@empresa.com", "reminder": "work" }
+      },
+      "ContactPhone": {
+        "type": "object",
+        "required": ["phone"],
+        "properties": {
+          "phone": { "type": "string", "example": "+5511999990001" },
+          "reminder": {
+            "type": "string",
+            "enum": ["mobile", "work", "residential", "other"],
+            "description": "Type of phone. Accepted values: mobile, work, residential, other.",
+            "example": "mobile"
+          }
+        },
+        "example": { "phone": "+5511999990001", "reminder": "mobile" }
+      },
+      "Tag": {
+        "type": "object",
+        "properties": {
+          "id": { "type": "string", "format": "uuid" },
+          "name": { "type": "string" },
+          "color_text": { "type": "string", "nullable": true },
+          "color_background": { "type": "string", "nullable": true },
+          "created_at": { "type": "string", "format": "date-time" }
+        }
+      },
+      "ContactList": {
+        "type": "object",
+        "properties": {
+          "id": { "type": "string", "format": "uuid" },
+          "name": { "type": "string" },
+          "created_at": { "type": "string", "format": "date-time" }
+        }
+      },
+      "CustomFieldValue": {
+        "type": "object",
+        "properties": {
+          "id": { "type": "string", "format": "uuid" },
+          "value": { "type": "string", "nullable": true },
+          "field": {
+            "type": "object",
+            "properties": {
+              "id": { "type": "string", "format": "uuid" },
+              "label": { "type": "string" },
+              "key": { "type": "string" },
+              "type": { "type": "string" }
+            }
+          }
+        }
+      },
+      "RegisterAppRequest": {
+        "type": "object",
+        "required": ["app_name", "email", "redirect_uris", "scopes"],
+        "properties": {
+          "app_name": { "type": "string", "maxLength": 100, "example": "Meu SaaS" },
+          "email": { "type": "string", "format": "email", "example": "dev@meusaas.com" },
+          "description": { "type": "string", "maxLength": 500, "example": "Integracao com a Vendaze para sincronizar contatos." },
+          "redirect_uris": {
+            "type": "array",
+            "items": { "type": "string", "format": "uri" },
+            "example": ["https://meusaas.com/callback/vendaze"]
+          },
+          "scopes": { "type": "array", "items": { "type": "string" }, "example": ["people:read", "deals:write"] }
+        }
+      },
+      "RegisterAppResponse": {
+        "type": "object",
+        "properties": {
+          "data": {
+            "type": "object",
+            "properties": {
+              "app_name": { "type": "string", "example": "Meu SaaS" },
+              "client_id": { "type": "string", "format": "uuid", "example": "9a8b7c6d-5e4f-3a2b-1c0d-9e8f7a6b5c4d" },
+              "message": { "type": "string", "example": "Credenciais enviadas para dev@meusaas.com" }
+            }
+          }
+        }
+      },
+      "TokenRequest": {
+        "type": "object",
+        "required": ["grant_type", "client_id", "client_secret"],
+        "properties": {
+          "grant_type": { "type": "string", "enum": ["authorization_code", "refresh_token"] },
+          "code": { "type": "string", "description": "Obrigatorio para grant_type=authorization_code." },
+          "redirect_uri": { "type": "string", "format": "uri", "description": "Obrigatorio para grant_type=authorization_code." },
+          "client_id": { "type": "string", "format": "uuid" },
+          "client_secret": { "type": "string" },
+          "code_verifier": {
+            "type": "string",
+            "description": "String original antes do hash. Obrigatorio para grant_type=authorization_code."
+          },
+          "refresh_token": { "type": "string", "description": "Obrigatorio para grant_type=refresh_token." }
+        }
+      },
+      "TokenResponse": {
+        "type": "object",
+        "properties": {
+          "access_token": { "type": "string", "example": "eyJ..." },
+          "refresh_token": { "type": "string", "example": "eyJ..." },
+          "token_type": { "type": "string", "example": "Bearer" },
+          "expires_in": { "type": "integer", "example": 3600 },
+          "workspace_slug": {
+            "type": "string",
+            "description": "Slug do workspace autorizado pelo usuário. Use para identificar qual conta está conectada no seu aplicativo.",
+            "example": "acme-corp"
+          }
+        }
+      },
+      "RevokeTokenRequest": {
+        "type": "object",
+        "required": ["token", "client_id", "client_secret"],
+        "properties": {
+          "token": { "type": "string", "description": "Access token ou refresh token a ser revogado." },
+          "client_id": { "type": "string", "format": "uuid" },
+          "client_secret": { "type": "string" }
+        }
+      }
+    }
+  }
+}

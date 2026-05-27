@@ -1,0 +1,376 @@
+{
+  "openapi": "3.1.0",
+  "info": {
+    "title": "Negocios",
+    "description": "Gerencie negocios no pipeline de vendas.",
+    "version": "1.0.0",
+    "contact": { "name": "Vendaze Support", "email": "suporte@vendaze.com" }
+  },
+  "servers": [{ "url": "https://api.vendaze.com", "description": "Production" }],
+  "security": [{ "bearerAuth": [] }],
+  "tags": [{ "name": "Negocios" }],
+  "paths": {
+    "/v1/deals": {
+      "get": {
+        "operationId": "listDeals",
+        "summary": "Listar negocios",
+        "description": "Retorna uma lista paginada de negocios no workspace autorizado.",
+        "tags": ["Negocios"],
+        "parameters": [
+          { "$ref": "#/components/parameters/page" },
+          { "$ref": "#/components/parameters/per_page" },
+          { "$ref": "#/components/parameters/order_by" },
+          { "$ref": "#/components/parameters/order" },
+          { "name": "name", "in": "query", "schema": { "type": "string" }, "description": "Correspondencia parcial pelo nome do negocio." },
+          {
+            "name": "pipeline_id",
+            "in": "query",
+            "schema": { "type": "string", "format": "uuid" },
+            "description": "Filtrar por pipeline."
+          },
+          { "name": "stage_id", "in": "query", "schema": { "type": "string", "format": "uuid" }, "description": "Filtrar por estagio." },
+          {
+            "name": "owner_user_id",
+            "in": "query",
+            "schema": { "type": "string", "format": "uuid" },
+            "description": "Filtrar por responsavel."
+          },
+          { "name": "source", "in": "query", "schema": { "type": "string" }, "description": "Filtrar por origem do negocio." },
+          { "name": "price_min_cts", "in": "query", "schema": { "type": "integer" }, "description": "Valor minimo em centavos." },
+          { "name": "price_max_cts", "in": "query", "schema": { "type": "integer" }, "description": "Valor maximo em centavos." },
+          { "name": "currency", "in": "query", "schema": { "type": "string" }, "description": "Codigo ISO 4217. Ex: BRL." },
+          {
+            "name": "forecast_after",
+            "in": "query",
+            "schema": { "type": "string", "format": "date-time" },
+            "description": "Filtrar por data prevista apos."
+          },
+          {
+            "name": "forecast_before",
+            "in": "query",
+            "schema": { "type": "string", "format": "date-time" },
+            "description": "Filtrar por data prevista antes."
+          },
+          { "$ref": "#/components/parameters/created_after" },
+          { "$ref": "#/components/parameters/created_before" },
+          { "$ref": "#/components/parameters/updated_after" },
+          { "$ref": "#/components/parameters/updated_before" }
+        ],
+        "responses": {
+          "200": {
+            "description": "Lista de negocios retornada com sucesso.",
+            "content": { "application/json": { "schema": { "$ref": "#/components/schemas/DealsListResponse" } } }
+          },
+          "401": { "$ref": "#/components/responses/Unauthorized" },
+          "403": { "$ref": "#/components/responses/InsufficientScope" },
+          "422": { "$ref": "#/components/responses/ValidationError" },
+          "429": { "$ref": "#/components/responses/RateLimitExceeded" }
+        }
+      },
+      "post": {
+        "operationId": "createDeal",
+        "summary": "Criar negocio",
+        "description": "Cria um novo negocio no workspace.",
+        "tags": ["Negocios"],
+        "requestBody": {
+          "required": true,
+          "content": { "application/json": { "schema": { "$ref": "#/components/schemas/CreateDealRequest" } } }
+        },
+        "responses": {
+          "201": {
+            "description": "Negocio criado com sucesso.",
+            "content": { "application/json": { "schema": { "$ref": "#/components/schemas/DealResponse" } } }
+          },
+          "401": { "$ref": "#/components/responses/Unauthorized" },
+          "403": { "$ref": "#/components/responses/InsufficientScope" },
+          "422": { "$ref": "#/components/responses/ValidationError" },
+          "429": { "$ref": "#/components/responses/RateLimitExceeded" }
+        }
+      }
+    },
+    "/v1/deals/{id}": {
+      "get": {
+        "operationId": "getDeal",
+        "summary": "Buscar negocio",
+        "description": "Retorna um negocio por ID com pipeline, estagio, produtos e campos adicionais embutidos.",
+        "tags": ["Negocios"],
+        "parameters": [{ "$ref": "#/components/parameters/id" }],
+        "responses": {
+          "200": {
+            "description": "Negocio retornado com sucesso.",
+            "content": { "application/json": { "schema": { "$ref": "#/components/schemas/DealWithEmbeddedResponse" } } }
+          },
+          "401": { "$ref": "#/components/responses/Unauthorized" },
+          "403": { "$ref": "#/components/responses/InsufficientScope" },
+          "404": { "$ref": "#/components/responses/NotFound" }
+        }
+      },
+      "patch": {
+        "operationId": "updateDeal",
+        "summary": "Atualizar negocio",
+        "description": "Atualiza um negocio. Apenas campos enviados sao modificados.",
+        "tags": ["Negocios"],
+        "parameters": [{ "$ref": "#/components/parameters/id" }],
+        "requestBody": {
+          "required": true,
+          "content": { "application/json": { "schema": { "$ref": "#/components/schemas/UpdateDealRequest" } } }
+        },
+        "responses": {
+          "200": {
+            "description": "Negocio atualizado com sucesso.",
+            "content": { "application/json": { "schema": { "$ref": "#/components/schemas/DealResponse" } } }
+          },
+          "401": { "$ref": "#/components/responses/Unauthorized" },
+          "403": { "$ref": "#/components/responses/InsufficientScope" },
+          "404": { "$ref": "#/components/responses/NotFound" },
+          "422": { "$ref": "#/components/responses/ValidationError" }
+        }
+      },
+      "delete": {
+        "operationId": "deleteDeal",
+        "summary": "Deletar negocio",
+        "description": "Soft-delete: o registro nao e mais acessivel pela API.",
+        "tags": ["Negocios"],
+        "parameters": [{ "$ref": "#/components/parameters/id" }],
+        "responses": {
+          "204": { "description": "Negocio deletado com sucesso." },
+          "401": { "$ref": "#/components/responses/Unauthorized" },
+          "403": { "$ref": "#/components/responses/InsufficientScope" },
+          "404": { "$ref": "#/components/responses/NotFound" }
+        }
+      }
+    }
+  },
+  "components": {
+    "securitySchemes": {
+      "bearerAuth": { "type": "http", "scheme": "bearer", "description": "OAuth 2.1 access token." }
+    },
+    "parameters": {
+      "id": {
+        "name": "id",
+        "in": "path",
+        "required": true,
+        "schema": { "type": "string", "format": "uuid" },
+        "description": "UUID of the resource."
+      },
+      "page": { "name": "page", "in": "query", "schema": { "type": "integer", "default": 1, "minimum": 1 } },
+      "per_page": {
+        "name": "per_page",
+        "in": "query",
+        "schema": { "type": "integer", "default": 50, "minimum": 1, "maximum": 100 },
+        "description": "Max 100."
+      },
+      "order_by": { "name": "order_by", "in": "query", "schema": { "type": "string", "default": "created_at" } },
+      "order": { "name": "order", "in": "query", "schema": { "type": "string", "enum": ["asc", "desc"], "default": "desc" } },
+      "created_after": { "name": "created_after", "in": "query", "schema": { "type": "string", "format": "date-time" } },
+      "created_before": { "name": "created_before", "in": "query", "schema": { "type": "string", "format": "date-time" } },
+      "updated_after": { "name": "updated_after", "in": "query", "schema": { "type": "string", "format": "date-time" } },
+      "updated_before": { "name": "updated_before", "in": "query", "schema": { "type": "string", "format": "date-time" } }
+    },
+    "responses": {
+      "Unauthorized": {
+        "description": "Missing or invalid token.",
+        "content": { "application/json": { "schema": { "$ref": "#/components/schemas/ErrorResponse" } } }
+      },
+      "InsufficientScope": {
+        "description": "Token lacks the required scope.",
+        "content": { "application/json": { "schema": { "$ref": "#/components/schemas/ErrorResponse" } } }
+      },
+      "NotFound": {
+        "description": "Resource not found.",
+        "content": { "application/json": { "schema": { "$ref": "#/components/schemas/ErrorResponse" } } }
+      },
+      "ValidationError": {
+        "description": "Input validation failed.",
+        "content": { "application/json": { "schema": { "$ref": "#/components/schemas/ValidationErrorResponse" } } }
+      },
+      "RateLimitExceeded": {
+        "description": "Rate limit exceeded.",
+        "content": { "application/json": { "schema": { "$ref": "#/components/schemas/ErrorResponse" } } }
+      }
+    },
+    "schemas": {
+      "ErrorResponse": {
+        "type": "object",
+        "properties": {
+          "error": {
+            "type": "object",
+            "properties": {
+              "code": { "type": "string", "example": "not_found" },
+              "message": { "type": "string", "example": "Resource not found." },
+              "request_id": { "type": "string", "format": "uuid" }
+            }
+          }
+        }
+      },
+      "ValidationErrorResponse": {
+        "type": "object",
+        "properties": {
+          "error": {
+            "type": "object",
+            "properties": {
+              "code": { "type": "string", "example": "validation_error" },
+              "message": { "type": "string", "example": "Validation failed." },
+              "fields": { "type": "object", "additionalProperties": { "type": "string" } },
+              "request_id": { "type": "string", "format": "uuid" }
+            }
+          }
+        }
+      },
+      "PaginationMeta": {
+        "type": "object",
+        "properties": {
+          "total": { "type": "integer", "example": 150 },
+          "page": { "type": "integer", "example": 1 },
+          "per_page": { "type": "integer", "example": 50 },
+          "has_more": { "type": "boolean", "example": true }
+        }
+      },
+      "ContactEmail": {
+        "type": "object",
+        "required": ["email"],
+        "properties": {
+          "email": { "type": "string", "format": "email", "example": "nome@empresa.com" },
+          "reminder": {
+            "type": "string",
+            "enum": ["personal", "work", "other"],
+            "description": "Type of email. Accepted values: personal, work, other.",
+            "example": "work"
+          }
+        },
+        "example": { "email": "nome@empresa.com", "reminder": "work" }
+      },
+      "ContactPhone": {
+        "type": "object",
+        "required": ["phone"],
+        "properties": {
+          "phone": { "type": "string", "example": "+5511999990001" },
+          "reminder": {
+            "type": "string",
+            "enum": ["mobile", "work", "residential", "other"],
+            "description": "Type of phone. Accepted values: mobile, work, residential, other.",
+            "example": "mobile"
+          }
+        },
+        "example": { "phone": "+5511999990001", "reminder": "mobile" }
+      },
+      "CustomFieldValue": {
+        "type": "object",
+        "properties": {
+          "id": { "type": "string", "format": "uuid" },
+          "value": { "type": "string", "nullable": true },
+          "field": {
+            "type": "object",
+            "properties": {
+              "id": { "type": "string", "format": "uuid" },
+              "label": { "type": "string" },
+              "key": { "type": "string" },
+              "type": { "type": "string" }
+            }
+          }
+        }
+      },
+      "Deal": {
+        "type": "object",
+        "properties": {
+          "id": { "type": "string", "format": "uuid" },
+          "name": { "type": "string", "example": "Contrato Anual Acme Corp" },
+          "pipeline_id": { "type": "string", "format": "uuid" },
+          "stage_id": { "type": "string", "format": "uuid" },
+          "price_cts": { "type": "integer", "description": "Valor em centavos.", "example": 250000 },
+          "currency_id": { "type": "string", "example": "BRL" },
+          "owner_user_id": { "type": "string", "format": "uuid", "nullable": true },
+          "source": { "type": "string", "nullable": true, "example": "indicacao" },
+          "forecast_date": { "type": "string", "format": "date", "nullable": true, "example": "2026-12-31" },
+          "created_at": { "type": "string", "format": "date-time" },
+          "updated_at": { "type": "string", "format": "date-time" }
+        }
+      },
+      "DealWithEmbedded": {
+        "allOf": [
+          { "$ref": "#/components/schemas/Deal" },
+          {
+            "type": "object",
+            "properties": {
+              "pipeline": {
+                "type": "object",
+                "properties": {
+                  "id": { "type": "string", "format": "uuid" },
+                  "name": { "type": "string" }
+                }
+              },
+              "stage": {
+                "type": "object",
+                "properties": {
+                  "id": { "type": "string", "format": "uuid" },
+                  "name": { "type": "string" },
+                  "type": { "type": "string", "enum": ["open", "win", "lost"] }
+                }
+              },
+              "products": {
+                "type": "array",
+                "items": {
+                  "type": "object",
+                  "properties": {
+                    "id": { "type": "string", "format": "uuid" },
+                    "name": { "type": "string" },
+                    "quantity": { "type": "integer" },
+                    "unit_price_cts": { "type": "integer" },
+                    "total_price_cts": { "type": "integer" }
+                  }
+                }
+              },
+              "custom_fields": { "type": "array", "items": { "$ref": "#/components/schemas/CustomFieldValue" } }
+            }
+          }
+        ]
+      },
+      "CreateDealRequest": {
+        "type": "object",
+        "required": ["name", "pipeline_id", "stage_id", "currency_id"],
+        "properties": {
+          "name": { "type": "string", "example": "Contrato Anual Acme Corp" },
+          "pipeline_id": { "type": "string", "format": "uuid" },
+          "stage_id": { "type": "string", "format": "uuid" },
+          "currency_id": { "type": "string", "example": "BRL" },
+          "price_cts": { "type": "integer", "minimum": 0, "example": 250000 },
+          "owner_user_id": { "type": "string", "format": "uuid" },
+          "source": { "type": "string" },
+          "forecast_date": { "type": "string", "format": "date" }
+        }
+      },
+      "UpdateDealRequest": {
+        "type": "object",
+        "properties": {
+          "name": { "type": "string" },
+          "pipeline_id": { "type": "string", "format": "uuid" },
+          "stage_id": { "type": "string", "format": "uuid" },
+          "currency_id": { "type": "string" },
+          "price_cts": { "type": "integer", "minimum": 0 },
+          "owner_user_id": { "type": "string", "format": "uuid", "nullable": true },
+          "source": { "type": "string", "nullable": true },
+          "forecast_date": { "type": "string", "format": "date", "nullable": true }
+        }
+      },
+      "DealsListResponse": {
+        "type": "object",
+        "properties": {
+          "data": { "type": "array", "items": { "$ref": "#/components/schemas/Deal" } },
+          "meta": { "$ref": "#/components/schemas/PaginationMeta" }
+        }
+      },
+      "DealResponse": {
+        "type": "object",
+        "properties": {
+          "data": { "$ref": "#/components/schemas/Deal" }
+        }
+      },
+      "DealWithEmbeddedResponse": {
+        "type": "object",
+        "properties": {
+          "data": { "$ref": "#/components/schemas/DealWithEmbedded" }
+        }
+      }
+    }
+  }
+}

@@ -45,8 +45,8 @@ GET /v1/deals?forecast_after=2026-06-01T00:00:00Z&forecast_before=2026-06-30T23:
 ## Tag filters
 
 ```bash
-GET /v1/people?tag[]=vip-client
-GET /v1/people?tag[]=vip-client&tag[]=lead
+GET /v1/people?tag=vip-client
+GET /v1/people?tag=vip-client&tag=lead
 ```
 
 When multiple tags are provided, all returned records will have all of them (AND).

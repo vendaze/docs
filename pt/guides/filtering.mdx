@@ -45,8 +45,8 @@ GET /v1/deals?forecast_after=2026-06-01T00:00:00Z&forecast_before=2026-06-30T23:
 ## Filtros por tag
 
 ```bash
-GET /v1/people?tag[]=cliente-vip
-GET /v1/people?tag[]=cliente-vip&tag[]=lead
+GET /v1/people?tag=cliente-vip
+GET /v1/people?tag=cliente-vip&tag=lead
 ```
 
 Quando múltiplas tags são fornecidas, todos os registros retornados terão todas elas (AND).

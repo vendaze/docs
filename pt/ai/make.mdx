@@ -1,6 +1,6 @@
 ---
 title: 'Make'
-description: 'Crie cenários avançados integrando o Vendaze com o Make (ex-Integromat).'
+description: 'Crie cenários avançados integrando a Vendaze com o Make (ex-Integromat).'
 icon: 'circle-nodes'
 ---
 
@@ -8,7 +8,7 @@ O Make (anteriormente Integromat) permite construir cenários de automação com
 
 ## Como conectar
 
-### 1. Registrar o app no Vendaze
+### 1. Registrar o app na Vendaze
 
 ```bash
 curl -X POST https://api.vendaze.com/v1/auth/register-app \
@@ -27,7 +27,7 @@ curl -X POST https://api.vendaze.com/v1/auth/register-app \
 2. Em um cenário, adicione um módulo **Vendaze**
 3. Clique em **Add** para criar uma nova conexão
 4. Insira o `client_id` e `client_secret` recebidos por email
-5. Clique em **Save** — você será redirecionado para autorizar no Vendaze
+5. Clique em **Save** — você será redirecionado para autorizar na Vendaze
 6. Selecione o workspace e confirme os escopos
 
 ### 3. Módulos disponíveis
@@ -63,10 +63,10 @@ curl -X POST https://api.vendaze.com/v1/auth/register-app \
 ## Exemplos de cenários
 
 **Sincronização bidirecional:**
-Quando um negócio é criado no Vendaze, cria um projeto no Asana. Quando o projeto no Asana é marcado como concluído, atualiza o negócio no Vendaze para o stage "Ganho".
+Quando um negócio é criado na Vendaze, cria um projeto no Asana. Quando o projeto no Asana é marcado como concluído, atualiza o negócio na Vendaze para o stage "Ganho".
 
 **Enriquecimento de contatos:**
-Quando um novo contato é criado no Vendaze, chama uma API de enriquecimento de dados, e usa o módulo **Update a Person** para preencher campos adicionais com as informações retornadas.
+Quando um novo contato é criado na Vendaze, chama uma API de enriquecimento de dados, e usa o módulo **Update a Person** para preencher campos adicionais com as informações retornadas.
 
 **Notificação de negócio parado:**
 Verifica diariamente os negócios que não foram atualizados nos últimos 7 dias e envia uma mensagem no Slack para o responsável.
@@ -79,4 +79,4 @@ Para erros `401`, configure um handler que renova o token de acesso via módulo 
 
 ## Agendamento
 
-Cenários com Watch modules verificam novos eventos no intervalo configurado (mínimo 1 minuto no plano Core). Para dados em tempo real, configure um webhook no painel do Vendaze apontando para o URL de entrada do Make.
+Cenários com Watch modules verificam novos eventos no intervalo configurado (mínimo 1 minuto no plano Core). Para dados em tempo real, configure um webhook no painel da Vendaze apontando para o URL de entrada do Make.

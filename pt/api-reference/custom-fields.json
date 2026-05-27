@@ -1,0 +1,298 @@
+{
+  "openapi": "3.1.0",
+  "info": {
+    "title": "Campos Adicionais",
+    "description": "Gerencie campos personalizados definidos pelo workspace.",
+    "version": "1.0.0",
+    "contact": { "name": "Vendaze Support", "email": "suporte@vendaze.com" }
+  },
+  "servers": [{ "url": "https://api.vendaze.com", "description": "Production" }],
+  "security": [{ "bearerAuth": [] }],
+  "tags": [{ "name": "Campos Adicionais" }],
+  "paths": {
+    "/v1/custom-fields": {
+      "get": {
+        "operationId": "listCustomFields",
+        "summary": "Listar campos adicionais",
+        "description": "Retorna todos os campos adicionais do workspace.",
+        "tags": ["Campos Adicionais"],
+        "parameters": [
+          { "$ref": "#/components/parameters/page" },
+          { "$ref": "#/components/parameters/per_page" },
+          { "$ref": "#/components/parameters/order_by" },
+          { "$ref": "#/components/parameters/order" },
+          { "name": "show_people", "in": "query", "schema": { "type": "boolean" }, "description": "Filtrar campos visiveis em pessoas." },
+          {
+            "name": "show_companies",
+            "in": "query",
+            "schema": { "type": "boolean" },
+            "description": "Filtrar campos visiveis em empresas."
+          },
+          { "name": "show_deals", "in": "query", "schema": { "type": "boolean" }, "description": "Filtrar campos visiveis em negocios." }
+        ],
+        "responses": {
+          "200": {
+            "description": "Lista de campos adicionais retornada com sucesso.",
+            "content": { "application/json": { "schema": { "$ref": "#/components/schemas/CustomFieldsListResponse" } } }
+          },
+          "401": { "$ref": "#/components/responses/Unauthorized" },
+          "403": { "$ref": "#/components/responses/InsufficientScope" },
+          "422": { "$ref": "#/components/responses/ValidationError" },
+          "429": { "$ref": "#/components/responses/RateLimitExceeded" }
+        }
+      },
+      "post": {
+        "operationId": "createCustomField",
+        "summary": "Criar campo adicional",
+        "description": "Cria um novo campo adicional no workspace.",
+        "tags": ["Campos Adicionais"],
+        "requestBody": {
+          "required": true,
+          "content": { "application/json": { "schema": { "$ref": "#/components/schemas/CreateCustomFieldRequest" } } }
+        },
+        "responses": {
+          "201": {
+            "description": "Campo adicional criado com sucesso.",
+            "content": { "application/json": { "schema": { "$ref": "#/components/schemas/CustomFieldResponse" } } }
+          },
+          "401": { "$ref": "#/components/responses/Unauthorized" },
+          "403": { "$ref": "#/components/responses/InsufficientScope" },
+          "422": { "$ref": "#/components/responses/ValidationError" },
+          "429": { "$ref": "#/components/responses/RateLimitExceeded" }
+        }
+      }
+    },
+    "/v1/custom-fields/{id}": {
+      "get": {
+        "operationId": "getCustomField",
+        "summary": "Buscar campo adicional",
+        "description": "Retorna um campo adicional por ID.",
+        "tags": ["Campos Adicionais"],
+        "parameters": [{ "$ref": "#/components/parameters/id" }],
+        "responses": {
+          "200": {
+            "description": "Campo adicional retornado com sucesso.",
+            "content": { "application/json": { "schema": { "$ref": "#/components/schemas/CustomFieldResponse" } } }
+          },
+          "401": { "$ref": "#/components/responses/Unauthorized" },
+          "403": { "$ref": "#/components/responses/InsufficientScope" },
+          "404": { "$ref": "#/components/responses/NotFound" }
+        }
+      },
+      "patch": {
+        "operationId": "updateCustomField",
+        "summary": "Atualizar campo adicional",
+        "description": "Atualiza um campo adicional. Apenas campos enviados sao modificados.",
+        "tags": ["Campos Adicionais"],
+        "parameters": [{ "$ref": "#/components/parameters/id" }],
+        "requestBody": {
+          "required": true,
+          "content": { "application/json": { "schema": { "$ref": "#/components/schemas/UpdateCustomFieldRequest" } } }
+        },
+        "responses": {
+          "200": {
+            "description": "Campo adicional atualizado com sucesso.",
+            "content": { "application/json": { "schema": { "$ref": "#/components/schemas/CustomFieldResponse" } } }
+          },
+          "401": { "$ref": "#/components/responses/Unauthorized" },
+          "403": { "$ref": "#/components/responses/InsufficientScope" },
+          "404": { "$ref": "#/components/responses/NotFound" },
+          "422": { "$ref": "#/components/responses/ValidationError" }
+        }
+      },
+      "delete": {
+        "operationId": "deleteCustomField",
+        "summary": "Deletar campo adicional",
+        "description": "Soft-delete: o registro nao e mais acessivel pela API.",
+        "tags": ["Campos Adicionais"],
+        "parameters": [{ "$ref": "#/components/parameters/id" }],
+        "responses": {
+          "204": { "description": "Campo adicional deletado com sucesso." },
+          "401": { "$ref": "#/components/responses/Unauthorized" },
+          "403": { "$ref": "#/components/responses/InsufficientScope" },
+          "404": { "$ref": "#/components/responses/NotFound" }
+        }
+      }
+    }
+  },
+  "components": {
+    "securitySchemes": {
+      "bearerAuth": { "type": "http", "scheme": "bearer", "description": "OAuth 2.1 access token." }
+    },
+    "parameters": {
+      "id": {
+        "name": "id",
+        "in": "path",
+        "required": true,
+        "schema": { "type": "string", "format": "uuid" },
+        "description": "UUID of the resource."
+      },
+      "page": { "name": "page", "in": "query", "schema": { "type": "integer", "default": 1, "minimum": 1 } },
+      "per_page": {
+        "name": "per_page",
+        "in": "query",
+        "schema": { "type": "integer", "default": 50, "minimum": 1, "maximum": 100 },
+        "description": "Max 100."
+      },
+      "order_by": { "name": "order_by", "in": "query", "schema": { "type": "string", "default": "created_at" } },
+      "order": { "name": "order", "in": "query", "schema": { "type": "string", "enum": ["asc", "desc"], "default": "desc" } },
+      "created_after": { "name": "created_after", "in": "query", "schema": { "type": "string", "format": "date-time" } },
+      "created_before": { "name": "created_before", "in": "query", "schema": { "type": "string", "format": "date-time" } },
+      "updated_after": { "name": "updated_after", "in": "query", "schema": { "type": "string", "format": "date-time" } },
+      "updated_before": { "name": "updated_before", "in": "query", "schema": { "type": "string", "format": "date-time" } }
+    },
+    "responses": {
+      "Unauthorized": {
+        "description": "Missing or invalid token.",
+        "content": { "application/json": { "schema": { "$ref": "#/components/schemas/ErrorResponse" } } }
+      },
+      "InsufficientScope": {
+        "description": "Token lacks the required scope.",
+        "content": { "application/json": { "schema": { "$ref": "#/components/schemas/ErrorResponse" } } }
+      },
+      "NotFound": {
+        "description": "Resource not found.",
+        "content": { "application/json": { "schema": { "$ref": "#/components/schemas/ErrorResponse" } } }
+      },
+      "ValidationError": {
+        "description": "Input validation failed.",
+        "content": { "application/json": { "schema": { "$ref": "#/components/schemas/ValidationErrorResponse" } } }
+      },
+      "RateLimitExceeded": {
+        "description": "Rate limit exceeded.",
+        "content": { "application/json": { "schema": { "$ref": "#/components/schemas/ErrorResponse" } } }
+      }
+    },
+    "schemas": {
+      "ErrorResponse": {
+        "type": "object",
+        "properties": {
+          "error": {
+            "type": "object",
+            "properties": {
+              "code": { "type": "string", "example": "not_found" },
+              "message": { "type": "string", "example": "Resource not found." },
+              "request_id": { "type": "string", "format": "uuid" }
+            }
+          }
+        }
+      },
+      "ValidationErrorResponse": {
+        "type": "object",
+        "properties": {
+          "error": {
+            "type": "object",
+            "properties": {
+              "code": { "type": "string", "example": "validation_error" },
+              "message": { "type": "string", "example": "Validation failed." },
+              "fields": { "type": "object", "additionalProperties": { "type": "string" } },
+              "request_id": { "type": "string", "format": "uuid" }
+            }
+          }
+        }
+      },
+      "PaginationMeta": {
+        "type": "object",
+        "properties": {
+          "total": { "type": "integer", "example": 150 },
+          "page": { "type": "integer", "example": 1 },
+          "per_page": { "type": "integer", "example": 50 },
+          "has_more": { "type": "boolean", "example": true }
+        }
+      },
+      "ContactEmail": {
+        "type": "object",
+        "required": ["email"],
+        "properties": {
+          "email": { "type": "string", "format": "email", "example": "nome@empresa.com" },
+          "reminder": {
+            "type": "string",
+            "enum": ["personal", "work", "other"],
+            "description": "Type of email. Accepted values: personal, work, other.",
+            "example": "work"
+          }
+        },
+        "example": { "email": "nome@empresa.com", "reminder": "work" }
+      },
+      "ContactPhone": {
+        "type": "object",
+        "required": ["phone"],
+        "properties": {
+          "phone": { "type": "string", "example": "+5511999990001" },
+          "reminder": {
+            "type": "string",
+            "enum": ["mobile", "work", "residential", "other"],
+            "description": "Type of phone. Accepted values: mobile, work, residential, other.",
+            "example": "mobile"
+          }
+        },
+        "example": { "phone": "+5511999990001", "reminder": "mobile" }
+      },
+      "CustomField": {
+        "type": "object",
+        "properties": {
+          "id": { "type": "string", "format": "uuid" },
+          "label": { "type": "string", "maxLength": 40, "example": "Segmento de Mercado" },
+          "key": { "type": "string", "maxLength": 35, "example": "segmento_mercado" },
+          "type": {
+            "type": "string",
+            "enum": ["text", "long_text", "select", "multi_select", "cpf", "cnpj", "date", "number", "link", "address"],
+            "example": "select"
+          },
+          "value": {
+            "type": "string",
+            "nullable": true,
+            "description": "Opcoes para campos select/multi_select.",
+            "example": "[\"SaaS\",\"E-commerce\",\"Financeiro\"]"
+          },
+          "required": { "type": "boolean", "default": false, "example": false },
+          "show_people": { "type": "boolean", "default": true, "example": true },
+          "show_companies": { "type": "boolean", "default": true, "example": true },
+          "show_deals": { "type": "boolean", "default": false, "example": false },
+          "created_at": { "type": "string", "format": "date-time" }
+        }
+      },
+      "CreateCustomFieldRequest": {
+        "type": "object",
+        "required": ["label", "key", "type"],
+        "properties": {
+          "label": { "type": "string", "maxLength": 40, "example": "Segmento de Mercado" },
+          "key": { "type": "string", "maxLength": 35, "example": "segmento_mercado" },
+          "type": {
+            "type": "string",
+            "enum": ["text", "long_text", "select", "multi_select", "cpf", "cnpj", "date", "number", "link", "address"]
+          },
+          "value": { "type": "string", "description": "Opcoes para campos select/multi_select." },
+          "required": { "type": "boolean" },
+          "show_people": { "type": "boolean" },
+          "show_companies": { "type": "boolean" },
+          "show_deals": { "type": "boolean" }
+        }
+      },
+      "UpdateCustomFieldRequest": {
+        "type": "object",
+        "properties": {
+          "label": { "type": "string", "maxLength": 40 },
+          "value": { "type": "string", "nullable": true, "description": "Opcoes para campos select/multi_select." },
+          "required": { "type": "boolean" },
+          "show_people": { "type": "boolean" },
+          "show_companies": { "type": "boolean" },
+          "show_deals": { "type": "boolean" }
+        }
+      },
+      "CustomFieldsListResponse": {
+        "type": "object",
+        "properties": {
+          "data": { "type": "array", "items": { "$ref": "#/components/schemas/CustomField" } },
+          "meta": { "$ref": "#/components/schemas/PaginationMeta" }
+        }
+      },
+      "CustomFieldResponse": {
+        "type": "object",
+        "properties": {
+          "data": { "$ref": "#/components/schemas/CustomField" }
+        }
+      }
+    }
+  }
+}

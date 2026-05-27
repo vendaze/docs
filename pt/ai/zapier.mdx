@@ -1,16 +1,16 @@
 ---
 title: 'Zapier'
-description: 'Conecte o Vendaze a mais de 7.000 aplicativos com o Zapier, sem escrever código.'
+description: 'Conecte a Vendaze a mais de 7.000 aplicativos com o Zapier, sem escrever código.'
 icon: 'bolt'
 ---
 
-O Zapier permite criar automações entre o Vendaze e milhares de outros aplicativos usando uma interface visual. Crie contatos quando um formulário é preenchido, atualize negócios quando um contrato é assinado, ou sincronize dados com sua planilha favorita.
+O Zapier permite criar automações entre a Vendaze e milhares de outros aplicativos usando uma interface visual. Crie contatos quando um formulário é preenchido, atualize negócios quando um contrato é assinado, ou sincronize dados com sua planilha favorita.
 
 ## Como conectar
 
-### 1. Criar um app no Vendaze
+### 1. Criar um app na Vendaze
 
-Antes de configurar o Zapier, você precisa de um `client_id` e `client_secret` do Vendaze:
+Antes de configurar o Zapier, você precisa de um `client_id` e `client_secret` da Vendaze:
 
 ```bash
 curl -X POST https://api.vendaze.com/v1/auth/register-app \
@@ -31,7 +31,7 @@ Você receberá o `client_id` e `client_secret` por email.
 2. Clique em **Create Zap**
 3. Na seção de trigger ou action, busque por **Vendaze**
 4. Clique em **Connect** e insira seu `client_id` e `client_secret`
-5. Você será redirecionado para o Vendaze para autorizar o acesso ao workspace
+5. Você será redirecionado para a Vendaze para autorizar o acesso ao workspace
 6. Selecione o workspace que deseja conectar e autorize os escopos solicitados
 
 ### 3. Configurar o Zap
@@ -60,13 +60,13 @@ Após conectar, escolha o trigger e a action:
 ## Exemplos de automações
 
 **Formulário para CRM:**
-Quando alguém preenche um formulário no Typeform, cria automaticamente um contato no Vendaze com os dados preenchidos.
+Quando alguém preenche um formulário no Typeform, cria automaticamente um contato na Vendaze com os dados preenchidos.
 
 **CRM para planilha:**
 Quando um negócio é movido para o stage "Ganho", adiciona uma linha no Google Sheets com os dados do negócio.
 
 **Email para tarefa:**
-Quando um email marcado com uma tag específica chega no Gmail, cria uma tarefa no Vendaze para acompanhamento.
+Quando um email marcado com uma tag específica chega no Gmail, cria uma tarefa na Vendaze para acompanhamento.
 
 ## Observações
 

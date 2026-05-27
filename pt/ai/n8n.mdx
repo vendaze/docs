@@ -1,6 +1,6 @@
 ---
 title: 'n8n'
-description: 'Automatize workflows com o n8n usando a API REST ou o MCP Server do Vendaze.'
+description: 'Automatize workflows com o n8n usando a API REST ou o MCP Server da Vendaze.'
 icon: 'diagram-project'
 ---
 
@@ -21,7 +21,7 @@ Esta abordagem dá controle total sobre cada chamada à API.
    - **Client Secret:** seu `client_secret`
    - **Scope:** `people:read people:write companies:read companies:write deals:read deals:write tasks:read tasks:write`
    - **Auth URI Query Parameters:** `code_challenge_method=S256`
-4. Clique em **Connect my account** e autorize no Vendaze
+4. Clique em **Connect my account** e autorize na Vendaze
 
 ### Usar o nó HTTP Request
 
@@ -53,7 +53,7 @@ HTTP Request (GET /v1/people?page=1)
 
 ## Opção 2: Via nó MCP Client
 
-O n8n tem suporte nativo ao MCP (Model Context Protocol), o que permite usar o MCP Server do Vendaze diretamente.
+O n8n tem suporte nativo ao MCP (Model Context Protocol), o que permite usar o MCP Server da Vendaze diretamente.
 
 ### Configurar o MCP Client
 
@@ -82,7 +82,7 @@ O n8n tem suporte nativo ao MCP (Model Context Protocol), o que permite usar o M
 Todo dia às 08h, busca todos os negócios atualizados nas últimas 24 horas e envia um resumo por email com os dados consolidados.
 
 **Webhook para CRM:**
-Recebe dados de um formulário externo via webhook, transforma os dados com um nó **Set**, e cria o contato e o negócio no Vendaze em sequência.
+Recebe dados de um formulário externo via webhook, transforma os dados com um nó **Set**, e cria o contato e o negócio na Vendaze em sequência.
 
 **Atribuição automática:**
 Quando um negócio é criado sem `owner_user_id`, busca o usuário com menos tarefas abertas e atribui automaticamente.

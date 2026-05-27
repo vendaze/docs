@@ -1,17 +1,17 @@
 ---
 title: 'GitHub Copilot'
-description: 'Integre o Vendaze ao GitHub Copilot no VS Code via MCP Server para acessar dados do CRM enquanto desenvolve.'
+description: 'Integre a Vendaze ao GitHub Copilot no VS Code via MCP Server para acessar dados do CRM enquanto desenvolve.'
 icon: 'github'
 ---
 
-O GitHub Copilot no VS Code suporta servidores MCP a partir da versão 1.99 do editor, com o modo de agente habilitado. Com o MCP Server do Vendaze configurado, o Copilot pode consultar e manipular dados do CRM diretamente durante uma sessão de desenvolvimento.
+O GitHub Copilot no VS Code suporta servidores MCP a partir da versão 1.99 do editor, com o modo de agente habilitado. Com o MCP Server da Vendaze configurado, o Copilot pode consultar e manipular dados do CRM diretamente durante uma sessão de desenvolvimento.
 
 ## Pré-requisitos
 
 - VS Code versão 1.99 ou superior
 - GitHub Copilot ativo na conta
 - GitHub Copilot Chat habilitado
-- Access token válido do Vendaze
+- Access token válido da Vendaze
 
 ## Configurar o MCP Server
 
@@ -54,7 +54,7 @@ Abra o Copilot Chat com `Cmd/Ctrl + Shift + I` e use o modo **Agent** (selecione
 Você pode referenciar ferramentas MCP diretamente em comentários enquanto escreve código:
 
 ```typescript
-// Copilot: usa o MCP do Vendaze para listar os campos adicionais disponíveis
+// Copilot: usa o MCP da Vendaze para listar os campos adicionais disponíveis
 // e gerar os tipos TypeScript correspondentes para custom_fields
 ```
 
@@ -62,7 +62,7 @@ O Copilot buscará os dados reais via MCP e gerará os tipos baseados na respost
 
 ## Configuração por workspace
 
-Para projetos de integração com o Vendaze, adicione um arquivo `.vscode/settings.json` ao repositório com a configuração do MCP (sem o token):
+Para projetos de integração com a Vendaze, adicione um arquivo `.vscode/settings.json` ao repositório com a configuração do MCP (sem o token):
 
 ```json
 {
