@@ -59,9 +59,7 @@
         "summary": "Register an app",
         "description": "Register a new OAuth app. Credentials are sent by email. No authentication required.",
         "security": [],
-        "tags": [
-          "OAuth"
-        ],
+        "tags": ["OAuth"],
         "requestBody": {
           "required": true,
           "content": {
@@ -98,9 +96,7 @@
         "summary": "Rotate app credentials",
         "description": "Issues a new client_secret, immediately invalidating the previous one. Active user tokens are revoked only if the scopes change. New credentials are sent to the email address registered with the app. The email address cannot be changed.",
         "security": [],
-        "tags": [
-          "OAuth"
-        ],
+        "tags": ["OAuth"],
         "requestBody": {
           "required": true,
           "content": {
@@ -147,9 +143,7 @@
         "summary": "Start authorization",
         "description": "Redirects the user to the Vendaze authorization page.",
         "security": [],
-        "tags": [
-          "OAuth"
-        ],
+        "tags": ["OAuth"],
         "parameters": [
           {
             "name": "client_id",
@@ -177,9 +171,7 @@
             "required": true,
             "schema": {
               "type": "string",
-              "enum": [
-                "code"
-              ]
+              "enum": ["code"]
             },
             "description": "Must be \"code\"."
           },
@@ -216,9 +208,7 @@
             "required": true,
             "schema": {
               "type": "string",
-              "enum": [
-                "S256"
-              ]
+              "enum": ["S256"]
             },
             "description": "Must be \"S256\"."
           }
@@ -249,9 +239,7 @@
         "summary": "Issue or refresh a token",
         "description": "Exchange an authorization code for tokens, or refresh an access token using a refresh token.",
         "security": [],
-        "tags": [
-          "OAuth"
-        ],
+        "tags": ["OAuth"],
         "requestBody": {
           "required": true,
           "content": {
@@ -305,9 +293,7 @@
         "summary": "Revoke a token",
         "description": "Revoke an access token or refresh token. Returns 200 even if already revoked.",
         "security": [],
-        "tags": [
-          "OAuth"
-        ],
+        "tags": ["OAuth"],
         "requestBody": {
           "required": true,
           "content": {
@@ -343,9 +329,7 @@
         "operationId": "listPeople",
         "summary": "List people",
         "description": "Returns a paginated list of people in the authorized workspace.",
-        "tags": [
-          "People"
-        ],
+        "tags": ["People"],
         "parameters": [
           {
             "$ref": "#/components/parameters/page"
@@ -464,9 +448,7 @@
         "operationId": "createPerson",
         "summary": "Create a person",
         "description": "Creates a new person in the workspace.",
-        "tags": [
-          "People"
-        ],
+        "tags": ["People"],
         "requestBody": {
           "required": true,
           "content": {
@@ -508,9 +490,7 @@
         "operationId": "getPerson",
         "summary": "Get a person",
         "description": "Returns a person by ID with embedded company, tags, lists, and custom fields.",
-        "tags": [
-          "People"
-        ],
+        "tags": ["People"],
         "parameters": [
           {
             "$ref": "#/components/parameters/id"
@@ -542,9 +522,7 @@
         "operationId": "updatePerson",
         "summary": "Update a person",
         "description": "Updates a person. Only fields included in the body are modified.",
-        "tags": [
-          "People"
-        ],
+        "tags": ["People"],
         "parameters": [
           {
             "$ref": "#/components/parameters/id"
@@ -589,9 +567,7 @@
         "operationId": "deletePerson",
         "summary": "Delete a person",
         "description": "Soft-delete: the record is no longer accessible via the API.",
-        "tags": [
-          "People"
-        ],
+        "tags": ["People"],
         "parameters": [
           {
             "$ref": "#/components/parameters/id"
@@ -618,9 +594,7 @@
         "operationId": "listCompanies",
         "summary": "List companies",
         "description": "Returns a paginated list of companies in the authorized workspace.",
-        "tags": [
-          "Companies"
-        ],
+        "tags": ["Companies"],
         "parameters": [
           {
             "$ref": "#/components/parameters/page"
@@ -722,9 +696,7 @@
         "operationId": "createCompany",
         "summary": "Create a company",
         "description": "Creates a new company in the workspace.",
-        "tags": [
-          "Companies"
-        ],
+        "tags": ["Companies"],
         "requestBody": {
           "required": true,
           "content": {
@@ -766,9 +738,7 @@
         "operationId": "getCompany",
         "summary": "Get a company",
         "description": "Returns a company by ID with embedded tags, lists, and custom fields.",
-        "tags": [
-          "Companies"
-        ],
+        "tags": ["Companies"],
         "parameters": [
           {
             "$ref": "#/components/parameters/id"
@@ -800,9 +770,7 @@
         "operationId": "updateCompany",
         "summary": "Update a company",
         "description": "Updates a company. Only fields included in the body are modified.",
-        "tags": [
-          "Companies"
-        ],
+        "tags": ["Companies"],
         "parameters": [
           {
             "$ref": "#/components/parameters/id"
@@ -847,9 +815,7 @@
         "operationId": "deleteCompany",
         "summary": "Delete a company",
         "description": "Soft-delete: the record is no longer accessible via the API.",
-        "tags": [
-          "Companies"
-        ],
+        "tags": ["Companies"],
         "parameters": [
           {
             "$ref": "#/components/parameters/id"
@@ -876,9 +842,7 @@
         "operationId": "listDeals",
         "summary": "List deals",
         "description": "Returns a paginated list of deals in the authorized workspace.",
-        "tags": [
-          "Deals"
-        ],
+        "tags": ["Deals"],
         "parameters": [
           {
             "$ref": "#/components/parameters/page"
@@ -1019,9 +983,7 @@
         "operationId": "createDeal",
         "summary": "Create a deal",
         "description": "Creates a new deal in the workspace.",
-        "tags": [
-          "Deals"
-        ],
+        "tags": ["Deals"],
         "requestBody": {
           "required": true,
           "content": {
@@ -1063,9 +1025,7 @@
         "operationId": "getDeal",
         "summary": "Get a deal",
         "description": "Returns a deal by ID with embedded pipeline, stage, products, and custom fields.",
-        "tags": [
-          "Deals"
-        ],
+        "tags": ["Deals"],
         "parameters": [
           {
             "$ref": "#/components/parameters/id"
@@ -1097,9 +1057,7 @@
         "operationId": "updateDeal",
         "summary": "Update a deal",
         "description": "Updates a deal. Only fields included in the body are modified.",
-        "tags": [
-          "Deals"
-        ],
+        "tags": ["Deals"],
         "parameters": [
           {
             "$ref": "#/components/parameters/id"
@@ -1144,9 +1102,7 @@
         "operationId": "deleteDeal",
         "summary": "Delete a deal",
         "description": "Soft-delete: the record is no longer accessible via the API.",
-        "tags": [
-          "Deals"
-        ],
+        "tags": ["Deals"],
         "parameters": [
           {
             "$ref": "#/components/parameters/id"
@@ -1173,9 +1129,7 @@
         "operationId": "listTasks",
         "summary": "List tasks",
         "description": "Returns a paginated list of tasks in the authorized workspace.",
-        "tags": [
-          "Tasks"
-        ],
+        "tags": ["Tasks"],
         "parameters": [
           {
             "$ref": "#/components/parameters/page"
@@ -1230,11 +1184,7 @@
             "in": "query",
             "schema": {
               "type": "string",
-              "enum": [
-                "high",
-                "medium",
-                "low"
-              ]
+              "enum": ["high", "medium", "low"]
             },
             "description": "Filter by priority."
           },
@@ -1282,9 +1232,7 @@
         "operationId": "createTask",
         "summary": "Create a task",
         "description": "Creates a new task in the workspace.",
-        "tags": [
-          "Tasks"
-        ],
+        "tags": ["Tasks"],
         "requestBody": {
           "required": true,
           "content": {
@@ -1326,9 +1274,7 @@
         "operationId": "getTask",
         "summary": "Get a task",
         "description": "Returns a task by ID.",
-        "tags": [
-          "Tasks"
-        ],
+        "tags": ["Tasks"],
         "parameters": [
           {
             "$ref": "#/components/parameters/id"
@@ -1360,9 +1306,7 @@
         "operationId": "updateTask",
         "summary": "Update a task",
         "description": "Updates a task. Only fields included in the body are modified.",
-        "tags": [
-          "Tasks"
-        ],
+        "tags": ["Tasks"],
         "parameters": [
           {
             "$ref": "#/components/parameters/id"
@@ -1407,9 +1351,7 @@
         "operationId": "deleteTask",
         "summary": "Delete a task",
         "description": "Permanently removes the task from the workspace.",
-        "tags": [
-          "Tasks"
-        ],
+        "tags": ["Tasks"],
         "parameters": [
           {
             "$ref": "#/components/parameters/id"
@@ -1436,9 +1378,7 @@
         "operationId": "listActivities",
         "summary": "List activities",
         "description": "Returns activities. At least one entity filter (person_id, company_id, or deal_id) is required.",
-        "tags": [
-          "Activities"
-        ],
+        "tags": ["Activities"],
         "parameters": [
           {
             "$ref": "#/components/parameters/page"
@@ -1484,12 +1424,7 @@
             "in": "query",
             "schema": {
               "type": "string",
-              "enum": [
-                "notes",
-                "email",
-                "call",
-                "meeting"
-              ]
+              "enum": ["notes", "email", "call", "meeting"]
             },
             "description": "Filter by activity type."
           },
@@ -1529,9 +1464,7 @@
         "operationId": "createActivity",
         "summary": "Create an activity",
         "description": "Creates an activity. At least one entity (person_id, company_id, or deal_id) must be provided.",
-        "tags": [
-          "Activities"
-        ],
+        "tags": ["Activities"],
         "requestBody": {
           "required": true,
           "content": {
@@ -1573,9 +1506,7 @@
         "operationId": "getActivity",
         "summary": "Get an activity",
         "description": "Returns an activity by ID.",
-        "tags": [
-          "Activities"
-        ],
+        "tags": ["Activities"],
         "parameters": [
           {
             "$ref": "#/components/parameters/id"
@@ -1607,9 +1538,7 @@
         "operationId": "deleteActivity",
         "summary": "Delete an activity",
         "description": "Permanently removes the activity from the workspace.",
-        "tags": [
-          "Activities"
-        ],
+        "tags": ["Activities"],
         "parameters": [
           {
             "$ref": "#/components/parameters/id"
@@ -1636,9 +1565,7 @@
         "operationId": "listProducts",
         "summary": "List products",
         "description": "Returns a paginated list of products in the workspace.",
-        "tags": [
-          "Products"
-        ],
+        "tags": ["Products"],
         "parameters": [
           {
             "$ref": "#/components/parameters/page"
@@ -1682,9 +1609,7 @@
         "operationId": "createProduct",
         "summary": "Create a product",
         "description": "Creates a new product in the workspace.",
-        "tags": [
-          "Products"
-        ],
+        "tags": ["Products"],
         "requestBody": {
           "required": true,
           "content": {
@@ -1726,9 +1651,7 @@
         "operationId": "getProduct",
         "summary": "Get a product",
         "description": "Returns a product by ID.",
-        "tags": [
-          "Products"
-        ],
+        "tags": ["Products"],
         "parameters": [
           {
             "$ref": "#/components/parameters/id"
@@ -1760,9 +1683,7 @@
         "operationId": "updateProduct",
         "summary": "Update a product",
         "description": "Updates a product. Only fields included in the body are modified.",
-        "tags": [
-          "Products"
-        ],
+        "tags": ["Products"],
         "parameters": [
           {
             "$ref": "#/components/parameters/id"
@@ -1807,9 +1728,7 @@
         "operationId": "deleteProduct",
         "summary": "Delete a product",
         "description": "Soft-delete: the record is no longer accessible via the API.",
-        "tags": [
-          "Products"
-        ],
+        "tags": ["Products"],
         "parameters": [
           {
             "$ref": "#/components/parameters/id"
@@ -1836,9 +1755,7 @@
         "operationId": "listTags",
         "summary": "List tags",
         "description": "Returns all tags in the workspace.",
-        "tags": [
-          "Tags"
-        ],
+        "tags": ["Tags"],
         "parameters": [
           {
             "$ref": "#/components/parameters/page"
@@ -1882,9 +1799,7 @@
         "operationId": "createTag",
         "summary": "Create a tag",
         "description": "Creates a new tag in the workspace.",
-        "tags": [
-          "Tags"
-        ],
+        "tags": ["Tags"],
         "requestBody": {
           "required": true,
           "content": {
@@ -1926,9 +1841,7 @@
         "operationId": "getTag",
         "summary": "Get a tag",
         "description": "Returns a tag by ID.",
-        "tags": [
-          "Tags"
-        ],
+        "tags": ["Tags"],
         "parameters": [
           {
             "$ref": "#/components/parameters/id"
@@ -1960,9 +1873,7 @@
         "operationId": "updateTag",
         "summary": "Update a tag",
         "description": "Updates a tag. Only fields included in the body are modified.",
-        "tags": [
-          "Tags"
-        ],
+        "tags": ["Tags"],
         "parameters": [
           {
             "$ref": "#/components/parameters/id"
@@ -2007,9 +1918,7 @@
         "operationId": "deleteTag",
         "summary": "Delete a tag",
         "description": "Soft-delete: the record is no longer accessible via the API.",
-        "tags": [
-          "Tags"
-        ],
+        "tags": ["Tags"],
         "parameters": [
           {
             "$ref": "#/components/parameters/id"
@@ -2036,9 +1945,7 @@
         "operationId": "listLists",
         "summary": "List contact lists",
         "description": "Returns all contact lists in the workspace.",
-        "tags": [
-          "Lists"
-        ],
+        "tags": ["Lists"],
         "parameters": [
           {
             "$ref": "#/components/parameters/page"
@@ -2082,9 +1989,7 @@
         "operationId": "createList",
         "summary": "Create a list",
         "description": "Creates a new contact list in the workspace.",
-        "tags": [
-          "Lists"
-        ],
+        "tags": ["Lists"],
         "requestBody": {
           "required": true,
           "content": {
@@ -2126,9 +2031,7 @@
         "operationId": "getList",
         "summary": "Get a list",
         "description": "Returns a contact list by ID.",
-        "tags": [
-          "Lists"
-        ],
+        "tags": ["Lists"],
         "parameters": [
           {
             "$ref": "#/components/parameters/id"
@@ -2160,9 +2063,7 @@
         "operationId": "updateList",
         "summary": "Update a list",
         "description": "Updates a contact list. Only fields included in the body are modified.",
-        "tags": [
-          "Lists"
-        ],
+        "tags": ["Lists"],
         "parameters": [
           {
             "$ref": "#/components/parameters/id"
@@ -2207,9 +2108,7 @@
         "operationId": "deleteList",
         "summary": "Delete a list",
         "description": "Soft-delete: the record is no longer accessible via the API.",
-        "tags": [
-          "Lists"
-        ],
+        "tags": ["Lists"],
         "parameters": [
           {
             "$ref": "#/components/parameters/id"
@@ -2236,9 +2135,7 @@
         "operationId": "listCustomFields",
         "summary": "List custom fields",
         "description": "Returns all custom fields in the workspace.",
-        "tags": [
-          "Custom Fields"
-        ],
+        "tags": ["Custom Fields"],
         "parameters": [
           {
             "$ref": "#/components/parameters/page"
@@ -2306,9 +2203,7 @@
         "operationId": "createCustomField",
         "summary": "Create a custom field",
         "description": "Creates a new custom field in the workspace.",
-        "tags": [
-          "Custom Fields"
-        ],
+        "tags": ["Custom Fields"],
         "requestBody": {
           "required": true,
           "content": {
@@ -2350,9 +2245,7 @@
         "operationId": "getCustomField",
         "summary": "Get a custom field",
         "description": "Returns a custom field by ID.",
-        "tags": [
-          "Custom Fields"
-        ],
+        "tags": ["Custom Fields"],
         "parameters": [
           {
             "$ref": "#/components/parameters/id"
@@ -2384,9 +2277,7 @@
         "operationId": "updateCustomField",
         "summary": "Update a custom field",
         "description": "Updates a custom field. Only fields included in the body are modified.",
-        "tags": [
-          "Custom Fields"
-        ],
+        "tags": ["Custom Fields"],
         "parameters": [
           {
             "$ref": "#/components/parameters/id"
@@ -2431,9 +2322,7 @@
         "operationId": "deleteCustomField",
         "summary": "Delete a custom field",
         "description": "Soft-delete: the record is no longer accessible via the API.",
-        "tags": [
-          "Custom Fields"
-        ],
+        "tags": ["Custom Fields"],
         "parameters": [
           {
             "$ref": "#/components/parameters/id"
@@ -2508,10 +2397,7 @@
         "in": "query",
         "schema": {
           "type": "string",
-          "enum": [
-            "asc",
-            "desc"
-          ],
+          "enum": ["asc", "desc"],
           "default": "desc"
         }
       },
@@ -2674,9 +2560,7 @@
       },
       "ContactEmail": {
         "type": "object",
-        "required": [
-          "email"
-        ],
+        "required": ["email"],
         "properties": {
           "email": {
             "type": "string",
@@ -2685,11 +2569,7 @@
           },
           "reminder": {
             "type": "string",
-            "enum": [
-              "personal",
-              "work",
-              "other"
-            ],
+            "enum": ["personal", "work", "other"],
             "description": "Type of email. Accepted values: personal, work, other.",
             "example": "work"
           }
@@ -2701,9 +2581,7 @@
       },
       "ContactPhone": {
         "type": "object",
-        "required": [
-          "phone"
-        ],
+        "required": ["phone"],
         "properties": {
           "phone": {
             "type": "string",
@@ -2711,12 +2589,7 @@
           },
           "reminder": {
             "type": "string",
-            "enum": [
-              "mobile",
-              "work",
-              "residential",
-              "other"
-            ],
+            "enum": ["mobile", "work", "residential", "other"],
             "description": "Type of phone. Accepted values: mobile, work, residential, other.",
             "example": "mobile"
           }
@@ -2829,12 +2702,7 @@
       },
       "RegisterAppRequest": {
         "type": "object",
-        "required": [
-          "app_name",
-          "email",
-          "redirect_uris",
-          "scopes"
-        ],
+        "required": ["app_name", "email", "redirect_uris", "scopes"],
         "properties": {
           "app_name": {
             "type": "string",
@@ -2863,19 +2731,14 @@
               "type": "string",
               "format": "uri"
             },
-            "example": [
-              "https://mysaas.com/callback/vendaze"
-            ]
+            "example": ["https://mysaas.com/callback/vendaze"]
           },
           "scopes": {
             "type": "array",
             "items": {
               "$ref": "#/components/schemas/ScopeValue"
             },
-            "example": [
-              "people:read",
-              "deals:write"
-            ],
+            "example": ["people:read", "deals:write"],
             "description": "Scopes your app needs. Users approve them individually on the consent screen."
           }
         }
@@ -2905,12 +2768,7 @@
       },
       "RotateAppRequest": {
         "type": "object",
-        "required": [
-          "client_id",
-          "app_name",
-          "redirect_uris",
-          "scopes"
-        ],
+        "required": ["client_id", "app_name", "redirect_uris", "scopes"],
         "properties": {
           "client_id": {
             "type": "string",
@@ -2940,9 +2798,7 @@
               "type": "string",
               "format": "uri"
             },
-            "example": [
-              "https://mysaas.com/callback/vendaze"
-            ],
+            "example": ["https://mysaas.com/callback/vendaze"],
             "description": "New list of redirect URIs. Replaces the previous list entirely."
           },
           "scopes": {
@@ -2950,10 +2806,7 @@
             "items": {
               "$ref": "#/components/schemas/ScopeValue"
             },
-            "example": [
-              "people:read",
-              "deals:write"
-            ],
+            "example": ["people:read", "deals:write"],
             "description": "New list of scopes. Replaces the previous list entirely."
           }
         }
@@ -2984,18 +2837,11 @@
       },
       "TokenRequest": {
         "type": "object",
-        "required": [
-          "grant_type",
-          "client_id",
-          "client_secret"
-        ],
+        "required": ["grant_type", "client_id", "client_secret"],
         "properties": {
           "grant_type": {
             "type": "string",
-            "enum": [
-              "authorization_code",
-              "refresh_token"
-            ]
+            "enum": ["authorization_code", "refresh_token"]
           },
           "code": {
             "type": "string",
@@ -3051,11 +2897,7 @@
       },
       "RevokeTokenRequest": {
         "type": "object",
-        "required": [
-          "token",
-          "client_id",
-          "client_secret"
-        ],
+        "required": ["token", "client_id", "client_secret"],
         "properties": {
           "token": {
             "type": "string",
@@ -3182,9 +3024,7 @@
       },
       "CreatePersonRequest": {
         "type": "object",
-        "required": [
-          "full_name"
-        ],
+        "required": ["full_name"],
         "properties": {
           "full_name": {
             "type": "string",
@@ -3335,10 +3175,7 @@
           },
           "permission": {
             "type": "string",
-            "enum": [
-              "all_users",
-              "owners"
-            ],
+            "enum": ["all_users", "owners"],
             "example": "all_users"
           },
           "created_at": {
@@ -3383,9 +3220,7 @@
       },
       "CreateCompanyRequest": {
         "type": "object",
-        "required": [
-          "full_name"
-        ],
+        "required": ["full_name"],
         "properties": {
           "full_name": {
             "type": "string",
@@ -3409,10 +3244,7 @@
           },
           "permission": {
             "type": "string",
-            "enum": [
-              "all_users",
-              "owners"
-            ]
+            "enum": ["all_users", "owners"]
           }
         }
       },
@@ -3441,10 +3273,7 @@
           },
           "permission": {
             "type": "string",
-            "enum": [
-              "all_users",
-              "owners"
-            ]
+            "enum": ["all_users", "owners"]
           }
         }
       },
@@ -3564,11 +3393,7 @@
                   },
                   "type": {
                     "type": "string",
-                    "enum": [
-                      "open",
-                      "win",
-                      "lost"
-                    ]
+                    "enum": ["open", "win", "lost"]
                   }
                 }
               },
@@ -3608,12 +3433,7 @@
       },
       "CreateDealRequest": {
         "type": "object",
-        "required": [
-          "name",
-          "pipeline_id",
-          "stage_id",
-          "currency_id"
-        ],
+        "required": ["name", "pipeline_id", "stage_id", "currency_id"],
         "properties": {
           "name": {
             "type": "string",
@@ -3765,11 +3585,7 @@
           },
           "priority": {
             "type": "string",
-            "enum": [
-              "high",
-              "medium",
-              "low"
-            ],
+            "enum": ["high", "medium", "low"],
             "nullable": true,
             "example": "high"
           },
@@ -3790,10 +3606,7 @@
       },
       "CreateTaskRequest": {
         "type": "object",
-        "required": [
-          "title",
-          "due_date"
-        ],
+        "required": ["title", "due_date"],
         "properties": {
           "title": {
             "type": "string",
@@ -3830,11 +3643,7 @@
           },
           "priority": {
             "type": "string",
-            "enum": [
-              "high",
-              "medium",
-              "low"
-            ]
+            "enum": ["high", "medium", "low"]
           }
         }
       },
@@ -3880,11 +3689,7 @@
           },
           "priority": {
             "type": "string",
-            "enum": [
-              "high",
-              "medium",
-              "low"
-            ],
+            "enum": ["high", "medium", "low"],
             "nullable": true
           },
           "completed": {
@@ -3923,12 +3728,7 @@
           },
           "type": {
             "type": "string",
-            "enum": [
-              "notes",
-              "email",
-              "call",
-              "meeting"
-            ],
+            "enum": ["notes", "email", "call", "meeting"],
             "example": "call"
           },
           "content_html": {
@@ -3969,18 +3769,11 @@
       },
       "CreateActivityRequest": {
         "type": "object",
-        "required": [
-          "type"
-        ],
+        "required": ["type"],
         "properties": {
           "type": {
             "type": "string",
-            "enum": [
-              "notes",
-              "email",
-              "call",
-              "meeting"
-            ],
+            "enum": ["notes", "email", "call", "meeting"],
             "example": "call"
           },
           "content_html": {
@@ -4064,12 +3857,7 @@
           },
           "billing_cycle": {
             "type": "string",
-            "enum": [
-              "one_time",
-              "monthly",
-              "quarterly",
-              "annually"
-            ],
+            "enum": ["one_time", "monthly", "quarterly", "annually"],
             "default": "one_time",
             "example": "monthly"
           },
@@ -4081,10 +3869,7 @@
       },
       "CreateProductRequest": {
         "type": "object",
-        "required": [
-          "name",
-          "currency_id"
-        ],
+        "required": ["name", "currency_id"],
         "properties": {
           "name": {
             "type": "string",
@@ -4111,12 +3896,7 @@
           },
           "billing_cycle": {
             "type": "string",
-            "enum": [
-              "one_time",
-              "monthly",
-              "quarterly",
-              "annually"
-            ]
+            "enum": ["one_time", "monthly", "quarterly", "annually"]
           }
         }
       },
@@ -4147,12 +3927,7 @@
           },
           "billing_cycle": {
             "type": "string",
-            "enum": [
-              "one_time",
-              "monthly",
-              "quarterly",
-              "annually"
-            ]
+            "enum": ["one_time", "monthly", "quarterly", "annually"]
           }
         }
       },
@@ -4180,9 +3955,7 @@
       },
       "CreateTagRequest": {
         "type": "object",
-        "required": [
-          "name"
-        ],
+        "required": ["name"],
         "properties": {
           "name": {
             "type": "string",
@@ -4240,9 +4013,7 @@
       },
       "CreateListRequest": {
         "type": "object",
-        "required": [
-          "name"
-        ],
+        "required": ["name"],
         "properties": {
           "name": {
             "type": "string",
@@ -4301,18 +4072,7 @@
           },
           "type": {
             "type": "string",
-            "enum": [
-              "text",
-              "long_text",
-              "select",
-              "multi_select",
-              "cpf",
-              "cnpj",
-              "date",
-              "number",
-              "link",
-              "address"
-            ],
+            "enum": ["text", "long_text", "select", "multi_select", "cpf", "cnpj", "date", "number", "link", "address"],
             "example": "select"
           },
           "value": {
@@ -4349,11 +4109,7 @@
       },
       "CreateCustomFieldRequest": {
         "type": "object",
-        "required": [
-          "label",
-          "key",
-          "type"
-        ],
+        "required": ["label", "key", "type"],
         "properties": {
           "label": {
             "type": "string",
@@ -4367,18 +4123,7 @@
           },
           "type": {
             "type": "string",
-            "enum": [
-              "text",
-              "long_text",
-              "select",
-              "multi_select",
-              "cpf",
-              "cnpj",
-              "date",
-              "number",
-              "link",
-              "address"
-            ]
+            "enum": ["text", "long_text", "select", "multi_select", "cpf", "cnpj", "date", "number", "link", "address"]
           },
           "value": {
             "type": "string",
