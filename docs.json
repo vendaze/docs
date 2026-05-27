@@ -23,6 +23,9 @@
       "dark": "#0b0c0d"
     }
   },
+  "contextual": {
+    "options": ["copy", "view", "claude", "chatgpt", "perplexity"]
+  },
   "navigation": {
     "global": {
       "anchors": [
@@ -56,10 +59,6 @@
           }
         },
         "tabs": [
-          {
-            "tab": "Home",
-            "pages": ["pt/index"]
-          },
           {
             "tab": "Guias",
             "groups": [
@@ -141,10 +140,6 @@
           }
         },
         "tabs": [
-          {
-            "tab": "Home",
-            "pages": ["en/index"]
-          },
           {
             "tab": "Guides",
             "groups": [
