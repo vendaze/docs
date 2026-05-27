@@ -2,6 +2,8 @@
 title: 'Idempotency'
 description: 'How to use idempotency keys to safely retry requests without duplicating data.'
 icon: 'repeat'
+keywords:
+  ['idempotency', 'Idempotency-Key', 'safe retries', 'duplicate prevention', 'API reliability']
 ---
 
 Write operations in the Vendaze API support idempotency via the `Idempotency-Key` header. This allows you to safely retry a request if you did not receive a response, without the risk of creating duplicate records.

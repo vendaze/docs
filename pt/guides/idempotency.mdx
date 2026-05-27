@@ -2,6 +2,8 @@
 title: 'Idempotência'
 description: 'Como usar a chave de idempotência para enviar requisições com segurança sem duplicar dados.'
 icon: 'repeat'
+keywords:
+  ['idempotência', 'Idempotency-Key', 'retry seguro', 'evitar duplicatas', 'confiabilidade API']
 ---
 
 Operações de escrita na Vendaze API suportam idempotência via header `Idempotency-Key`. Isso permite que você reenvie uma requisição com segurança caso não tenha recebido resposta, sem risco de criar registros duplicados.

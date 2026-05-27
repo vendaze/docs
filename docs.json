@@ -9,7 +9,8 @@
   "favicon": "/favicon.svg",
   "logo": {
     "light": "/logo/light.svg",
-    "dark": "/logo/dark.svg"
+    "dark": "/logo/dark.svg",
+    "href": "https://docs.vendaze.com"
   },
   "appearance": {
     "default": "system"
@@ -21,6 +22,21 @@
     "color": {
       "light": "#ffffff",
       "dark": "#0b0c0d"
+    }
+  },
+  "thumbnails": {
+    "background": "/images/banner-home.png"
+  },
+  "seo": {
+    "metatags": {
+      "canonical": "https://docs.vendaze.com",
+      "og:site_name": "Vendaze Docs",
+      "og:type": "website",
+      "og:image": "https://docs.vendaze.com/images/banner-home.png",
+      "twitter:card": "summary_large_image",
+      "twitter:site": "@VendazeCRM",
+      "robots": "index, follow",
+      "googlebot": "index, follow"
     }
   },
   "contextual": {
@@ -41,7 +57,7 @@
         "language": "pt",
         "default": true,
         "navbar": {
-          "links": [{ "label": "Suporte", "href": "mailto:suporte@vendaze.com" }],
+          "links": [{ "label": "Suporte", "href": "https://help.vendaze.com" }],
           "primary": {
             "type": "button",
             "label": "Dashboard",
