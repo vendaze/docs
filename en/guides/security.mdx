@@ -1,0 +1,88 @@
+---
+title: 'Security'
+description: "Security best practices to protect your integration and your users' data."
+icon: 'shield-halved'
+---
+
+The Vendaze API was designed with security in mind. This guide describes the recommended practices for integrators who want to maintain a secure and reliable integration.
+
+## Protect the client_secret
+
+The `client_secret` is sent by email once at the time of app registration. Treat it like a password:
+
+- Store it in a secrets manager (AWS Secrets Manager, HashiCorp Vault, Cloudflare Secrets) — never in environment variables exposed in logs
+- Never include it in code repositories, even private ones
+- Never expose it in a frontend, mobile app, or any client running on the user's device
+- Rotate it immediately if you suspect it has been compromised — contact support
+
+## Store tokens securely
+
+Access tokens and refresh tokens grant access to your user's workspace data:
+
+- Store refresh tokens encrypted in a database, never in cookies or localStorage
+- Use `httpOnly` and `Secure` flags for session cookies that reference tokens
+- Implement refresh token expiration and rotation — the Vendaze API invalidates the previous refresh token on each renewal
+- Revoke tokens immediately when the user disconnects the integration via `POST /oauth/revoke`
+
+## Use HTTPS on all redirects
+
+The `redirect_uri` registered for your app must always use `https://`. The only exception is `localhost` during development. In production, any redirect without HTTPS is rejected with an `invalid_redirect_uri` error.
+
+## Validate the state parameter
+
+The `state` parameter in the OAuth flow protects against CSRF attacks. Correct usage:
+
+```javascript
+// Before redirecting the user to /oauth/authorize
+const state = randomUUID();
+sessionStorage.setItem('oauth_state', state);
+
+// In the callback, before processing the code
+const receivedState = new URL(window.location).searchParams.get('state');
+const expectedState = sessionStorage.getItem('oauth_state');
+
+if (receivedState !== expectedState) {
+  throw new Error('State mismatch — possible CSRF attack');
+}
+```
+
+## PKCE is required
+
+The Vendaze API requires PKCE with `code_challenge_method=S256` on all authorization flows. PKCE protects against authorization code interception. Plain PKCE (`code_challenge_method=plain`) is not accepted.
+
+## Request only the scopes you need
+
+Register and request only the scopes your integration actually needs. Unnecessary scopes expand the attack surface and reduce user trust when authorizing.
+
+| If you need to...       | Request...                                                                       |
+| ----------------------- | -------------------------------------------------------------------------------- |
+| Read contacts only      | `people:read`                                                                    |
+| Create and update deals | `deals:write`                                                                    |
+| Full CRM sync           | `people:read people:write companies:read companies:write deals:read deals:write` |
+
+## Rotate the client_secret regularly
+
+Contact support to request `client_secret` rotation. After rotation:
+
+1. The new `client_secret` is sent by email
+2. Existing tokens remain valid until they expire naturally
+3. New code exchanges and refresh token renewals require the new `client_secret`
+
+## Monitor API usage
+
+Use the `X-RateLimit-Remaining` and `X-Request-ID` headers to monitor usage patterns. Unexpected spikes may indicate that tokens have been compromised. In that case, revoke all tokens via `POST /oauth/revoke` and notify your users.
+
+## Incident response
+
+If you suspect your `client_secret` or tokens have been compromised:
+
+1. Revoke all active tokens via `POST /oauth/revoke`
+2. Contact support at `security@vendaze.com`
+3. Notify affected users
+4. Generate a new `client_secret`
+5. Request new authorization from users
+
+<Warning>
+  Never implement the authorization code exchange in the frontend. The `client_secret` must never be
+  exposed in code that runs on the client.
+</Warning>

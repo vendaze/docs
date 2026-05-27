@@ -1,0 +1,84 @@
+---
+title: 'Maio 2026'
+description: 'Melhorias de filtros, suporte a campos adicionais em listagens por ID e novos eventos de webhook.'
+icon: 'calendar'
+---
+
+<Update label="v1.2.0" date="2026-05-26">
+  ## Campos adicionais retornados em consultas por ID
+
+Ao buscar qualquer registro por ID (`GET /v1/people/:id`, `GET /v1/companies/:id`, `GET /v1/deals/:id`), o objeto `custom_fields` agora é retornado automaticamente com os valores preenchidos para aquele registro.
+
+```json
+{
+  "data": {
+    "id": "550e8400-e29b-41d4-a716-446655440000",
+    "full_name": "Ana Costa",
+    "custom_fields": [
+      {
+        "id": "assoc-uuid",
+        "value": "indicacao",
+        "field": {
+          "id": "field-uuid",
+          "label": "Origem do Lead",
+          "key": "origem_lead",
+          "type": "select"
+        }
+      }
+    ]
+  }
+}
+```
+
+Campos adicionais sem valor para o registro aparecem com `value: null`.
+
+## Novos eventos de webhook: products
+
+Dois novos eventos foram adicionados para produtos:
+
+- `product.created` — disparado quando um novo produto é criado no workspace
+- `product.updated` — disparado quando um produto é atualizado
+
+Veja a documentação de [Webhooks](/pt/guides/webhooks) para o formato completo do payload.
+
+## Header Idempotency-Key agora aceito em todos os endpoints POST
+
+O header `Idempotency-Key` passou a ser suportado em todos os endpoints de criação (`POST /v1/*`). Anteriormente estava disponível apenas em `/v1/deals` e `/v1/people`.
+
+</Update>
+
+<Update label="v1.1.1" date="2026-05-12">
+  ## Correção: filtro tag[] com valores especiais
+
+Corrigido bug onde tags contendo caracteres especiais (como `&` e `+`) não eram filtradas corretamente quando passadas via `tag[]=valor`. O encoding agora é tratado corretamente antes da comparação.
+
+## Correção: order_by=full_name em companies
+
+O parâmetro `order_by=full_name` em `GET /v1/companies` retornava erro `422` indevidamente. Corrigido — ordenação por `full_name` agora funciona para pessoas e empresas.
+
+</Update>
+
+<Update label="v1.1.0" date="2026-05-05">
+  ## Filtros de preço em negócios
+
+Os parâmetros `price_min_cts`, `price_max_cts` e `currency` foram adicionados ao endpoint `GET /v1/deals`:
+
+```bash
+GET /v1/deals?price_min_cts=50000&price_max_cts=500000&currency=BRL
+```
+
+Valores sempre em centavos. Filtragem por `currency` usa correspondência exata com o código ISO da moeda.
+
+## Filtros de intervalo de data para deals: forecast_after e forecast_before
+
+Negócios agora podem ser filtrados pela data de previsão de fechamento:
+
+```bash
+GET /v1/deals?forecast_after=2026-06-01T00:00:00Z&forecast_before=2026-06-30T23:59:59Z
+```
+
+## Melhoria de performance em listagens com custom_field[]
+
+Queries usando `custom_field[UUID]=valor` agora usam índice composto em `custom_fields_associate`, reduzindo o tempo de resposta em até 60% para workspaces com alto volume de campos adicionais.
+
+</Update>

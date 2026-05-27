@@ -1,0 +1,45 @@
+---
+title: 'Suporte'
+description: 'Como obter ajuda, reportar problemas e acompanhar o status da API do Vendaze.'
+icon: 'life-ring'
+---
+
+## Canais de suporte
+
+<CardGroup cols={2}>
+  <Card title="Suporte por e-mail" icon="envelope" href="mailto:suporte@vendaze.com">
+    Para dúvidas sobre integração, problemas de autenticação ou comportamento inesperado da API.
+    Respondemos em até 1 dia útil.
+  </Card>
+  <Card title="Status da API" icon="signal-bars" href="https://status.vendaze.com">
+    Verifique o status em tempo real de todos os serviços da Vendaze, incluindo a API, autenticação
+    e banco de dados.
+  </Card>
+</CardGroup>
+
+## Antes de abrir um chamado
+
+Para que possamos ajudar mais rápido, inclua sempre:
+
+- O `request_id` retornado na resposta de erro (campo `error.request_id`)
+- O endpoint chamado e o método HTTP utilizado
+- O body da requisição (sem tokens ou segredos)
+- O status HTTP recebido e o corpo completo da resposta
+- O horário aproximado da ocorrência (com fuso horário)
+
+## Tempos de resposta
+
+| Canal            | Horário    | Tempo de resposta |
+| ---------------- | ---------- | ----------------- |
+| E-mail (crítico) | 24/7       | 4 horas           |
+| E-mail (geral)   | Dias úteis | 1 dia útil        |
+| Status page      | Sempre     | Tempo real        |
+
+<Note>
+  Erros com status `500` são considerados críticos. Inclua o `request_id` para agilizar a
+  investigação.
+</Note>
+
+## Changelog
+
+Todas as mudanças na API são documentadas na aba **Changelog**. Acompanhe para se manter informado sobre novidades, depreciações e correções.

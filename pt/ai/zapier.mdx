@@ -1,0 +1,75 @@
+---
+title: 'Zapier'
+description: 'Conecte o Vendaze a mais de 7.000 aplicativos com o Zapier, sem escrever código.'
+icon: 'bolt'
+---
+
+O Zapier permite criar automações entre o Vendaze e milhares de outros aplicativos usando uma interface visual. Crie contatos quando um formulário é preenchido, atualize negócios quando um contrato é assinado, ou sincronize dados com sua planilha favorita.
+
+## Como conectar
+
+### 1. Criar um app no Vendaze
+
+Antes de configurar o Zapier, você precisa de um `client_id` e `client_secret` do Vendaze:
+
+```bash
+curl -X POST https://api.vendaze.com/v1/auth/register-app \
+  -H "Content-Type: application/json" \
+  -d '{
+    "app_name": "Zapier Integration",
+    "email": "dev@seuapp.com",
+    "redirect_uris": ["https://zapier.com/dashboard/auth/oauth/return/App"],
+    "scopes": ["people:read", "people:write", "companies:read", "companies:write", "deals:read", "deals:write"]
+  }'
+```
+
+Você receberá o `client_id` e `client_secret` por email.
+
+### 2. Configurar a conexão no Zapier
+
+1. Acesse [zapier.com](https://zapier.com) e faça login
+2. Clique em **Create Zap**
+3. Na seção de trigger ou action, busque por **Vendaze**
+4. Clique em **Connect** e insira seu `client_id` e `client_secret`
+5. Você será redirecionado para o Vendaze para autorizar o acesso ao workspace
+6. Selecione o workspace que deseja conectar e autorize os escopos solicitados
+
+### 3. Configurar o Zap
+
+Após conectar, escolha o trigger e a action:
+
+**Triggers disponíveis** (o que inicia o Zap):
+
+- Novo contato criado
+- Contato atualizado
+- Nova empresa criada
+- Novo negócio criado
+- Negócio atualizado
+- Nova tarefa criada
+
+**Actions disponíveis** (o que o Zap faz):
+
+- Criar contato
+- Atualizar contato
+- Criar empresa
+- Criar negócio
+- Atualizar negócio
+- Criar tarefa
+- Registrar atividade
+
+## Exemplos de automações
+
+**Formulário para CRM:**
+Quando alguém preenche um formulário no Typeform, cria automaticamente um contato no Vendaze com os dados preenchidos.
+
+**CRM para planilha:**
+Quando um negócio é movido para o stage "Ganho", adiciona uma linha no Google Sheets com os dados do negócio.
+
+**Email para tarefa:**
+Quando um email marcado com uma tag específica chega no Gmail, cria uma tarefa no Vendaze para acompanhamento.
+
+## Observações
+
+- O Zapier verifica novos eventos a cada 5 a 15 minutos, dependendo do plano
+- Para notificações em tempo real, considere usar Webhooks em conjunto com o Zapier
+- Os campos adicionais do workspace aparecem como campos opcionais nas actions de criação e atualização

@@ -1,0 +1,105 @@
+---
+title: 'Errors'
+description: 'HTTP status codes, error codes, and how to handle failures in your integration.'
+icon: 'triangle-exclamation'
+---
+
+The Vendaze API uses standard HTTP status codes and returns a consistent error format on every failure.
+
+## Error format
+
+```json
+{
+  "error": {
+    "code": "not_found",
+    "message": "Person not found.",
+    "request_id": "550e8400-e29b-41d4-a716-446655440000"
+  }
+}
+```
+
+| Field        | Description                                                          |
+| ------------ | -------------------------------------------------------------------- |
+| `code`       | Machine-readable error code. Use in error handling logic.            |
+| `message`    | Human-readable description for developers. Do not show to end users. |
+| `request_id` | Unique request ID. Include when contacting support.                  |
+
+<Note>A 2xx response never contains `error`. A non-2xx response always contains `error`.</Note>
+
+## HTTP status codes
+
+| Status | Meaning                                                                           |
+| ------ | --------------------------------------------------------------------------------- |
+| `200`  | Success. Resource read or updated.                                                |
+| `201`  | Created successfully.                                                             |
+| `204`  | No content. Resource deleted. Empty body.                                         |
+| `400`  | Malformed request or missing required parameter.                                  |
+| `401`  | Unauthenticated. Token missing, invalid, or expired.                              |
+| `403`  | Forbidden. Valid token but insufficient scope.                                    |
+| `404`  | Not found. Resource does not exist, was deleted, or belongs to another workspace. |
+| `422`  | Validation failed. See the `fields` object.                                       |
+| `429`  | Rate limit exceeded.                                                              |
+| `500`  | Internal error. Something went wrong on the server.                               |
+
+## Error code reference
+
+| Code                  | HTTP | When it occurs                                                         |
+| --------------------- | ---- | ---------------------------------------------------------------------- |
+| `unauthorized`        | 401  | Bearer token missing or signature invalid.                             |
+| `token_expired`       | 401  | Access token expired. Refresh using the refresh token.                 |
+| `insufficient_scope`  | 403  | Token lacks the required scope for this endpoint.                      |
+| `forbidden`           | 403  | Authenticated but not allowed to access this resource.                 |
+| `not_found`           | 404  | Resource does not exist, was deleted, or belongs to another workspace. |
+| `validation_error`    | 422  | Input failed validation. See `fields` for details.                     |
+| `rate_limit_exceeded` | 429  | Too many requests. Wait the time indicated by `Retry-After`.           |
+| `internal_error`      | 500  | Unexpected error. Use `request_id` when contacting support.            |
+
+## Validation errors
+
+When validation fails, the response includes a `fields` object mapping each field to its problem:
+
+```json
+{
+  "error": {
+    "code": "validation_error",
+    "message": "Validation failed.",
+    "fields": {
+      "per_page": "Must be at most 100.",
+      "due_date": "Invalid ISO 8601 date format."
+    },
+    "request_id": "uuid"
+  }
+}
+```
+
+## Error handling in code
+
+```javascript
+async function apiCall(url, options) {
+  const res = await fetch(url, options);
+
+  if (!res.ok) {
+    const { error } = await res.json();
+
+    switch (error.code) {
+      case 'token_expired':
+        await refreshAccessToken();
+        return apiCall(url, options);
+
+      case 'rate_limit_exceeded': {
+        const retryAfter = parseInt(res.headers.get('Retry-After') ?? '60');
+        await new Promise((r) => setTimeout(r, retryAfter * 1000));
+        return apiCall(url, options);
+      }
+
+      case 'not_found':
+        return null;
+
+      default:
+        throw new Error(`${error.code}: ${error.message} (request_id: ${error.request_id})`);
+    }
+  }
+
+  return res.json();
+}
+```

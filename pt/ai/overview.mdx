@@ -1,0 +1,72 @@
+---
+title: 'IA e Automações'
+description: 'Conecte ferramentas de IA e plataformas de automação diretamente ao Vendaze via MCP Server e integrações nativas.'
+icon: 'robot'
+---
+
+A Vendaze API expõe um servidor MCP (Model Context Protocol) que permite que assistentes de IA e ambientes de desenvolvimento acessem dados do CRM diretamente, sem precisar escrever código de integração manualmente.
+
+## O que é o MCP Server do Vendaze
+
+O MCP Server do Vendaze está disponível em:
+
+```
+https://api.vendaze.com/mcp
+```
+
+Ele expõe as principais operações da API como ferramentas que modelos de linguagem podem chamar diretamente. Um assistente de IA com acesso ao MCP Server pode:
+
+- Buscar contatos, empresas e negócios por critérios específicos
+- Criar e atualizar registros no CRM
+- Listar tarefas abertas por responsável ou entidade
+- Registrar atividades (ligações, reuniões, emails) em negócios e contatos
+- Consultar campos adicionais e seus valores
+
+## Ferramentas disponíveis no MCP
+
+<CardGroup cols={2}>
+  <Card title="Claude" icon="comment-dots" href="/pt/ai/claude">
+    Use o Vendaze diretamente no Claude Desktop com MCP.
+  </Card>
+  <Card title="Cursor" icon="arrow-pointer" href="/pt/ai/cursor">
+    Acesse dados do CRM enquanto desenvolve no Cursor.
+  </Card>
+  <Card title="GitHub Copilot" icon="github" href="/pt/ai/copilot">
+    Integre o Vendaze ao Copilot no VS Code.
+  </Card>
+  <Card title="n8n" icon="diagram-project" href="/pt/ai/n8n">
+    Crie workflows automatizados com o n8n.
+  </Card>
+</CardGroup>
+
+## Plataformas de automação
+
+<CardGroup cols={2}>
+  <Card title="Zapier" icon="bolt" href="/pt/ai/zapier">
+    Conecte o Vendaze a mais de 7.000 apps sem código.
+  </Card>
+  <Card title="Make" icon="circle-nodes" href="/pt/ai/make">
+    Construa cenários avançados com Make (ex-Integromat).
+  </Card>
+</CardGroup>
+
+## Autenticação no MCP Server
+
+O MCP Server usa o mesmo fluxo OAuth 2.1 da API REST. O access token Bearer é passado na configuração do cliente MCP. Veja o guia de cada ferramenta para instruções específicas de configuração.
+
+## Escopos recomendados para IA
+
+Para uso com assistentes de IA, recomendamos registrar um app com os seguintes escopos:
+
+```
+people:read
+people:write
+companies:read
+companies:write
+deals:read
+deals:write
+tasks:read
+tasks:write
+```
+
+Se o caso de uso for apenas leitura, omita os escopos de escrita para reduzir o risco de modificações acidentais.

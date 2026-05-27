@@ -1,0 +1,87 @@
+---
+title: 'Paginação'
+description: 'Como lidar com grandes conjuntos de resultados usando paginação baseada em páginas.'
+icon: 'bars-staggered'
+---
+
+Todos os endpoints de listagem na Vendaze API retornam resultados paginados. Nenhum endpoint retorna uma lista ilimitada de registros.
+
+## Como funciona
+
+Use os parâmetros `page` e `per_page` para navegar pelos resultados:
+
+```bash
+GET /v1/people?page=1&per_page=50
+GET /v1/people?page=2&per_page=50
+```
+
+## Metadados de paginação
+
+Toda resposta de listagem inclui um objeto `meta`:
+
+```json
+{
+  "data": [ ... ],
+  "meta": {
+    "total": 234,
+    "page": 2,
+    "per_page": 50,
+    "has_more": true
+  }
+}
+```
+
+| Campo      | Descrição                                               |
+| ---------- | ------------------------------------------------------- |
+| `total`    | Total de registros que correspondem aos filtros atuais. |
+| `page`     | Número da página atual.                                 |
+| `per_page` | Número de registros por página.                         |
+| `has_more` | `true` se existem mais páginas após esta.               |
+
+## Parâmetros disponíveis
+
+| Parâmetro  | Tipo    | Padrão       | Máximo | Descrição                                            |
+| ---------- | ------- | ------------ | ------ | ---------------------------------------------------- |
+| `page`     | integer | `1`          | -      | Número da página a buscar.                           |
+| `per_page` | integer | `50`         | `100`  | Registros por página. Retorna `422` se acima de 100. |
+| `order_by` | string  | `created_at` | -      | Campo de ordenação.                                  |
+| `order`    | string  | `desc`       | -      | `asc` ou `desc`.                                     |
+
+## Buscar todos os registros
+
+Para recuperar todos os registros, itere pelas páginas até `has_more` ser `false`:
+
+```javascript
+async function fetchAll(endpoint, accessToken) {
+  const results = [];
+  let page = 1;
+
+  while (true) {
+    const res = await fetch(`https://api.vendaze.com${endpoint}?page=${page}&per_page=100`, {
+      headers: { Authorization: `Bearer ${accessToken}` },
+    });
+    const { data, meta } = await res.json();
+    results.push(...data);
+    if (!meta.has_more) break;
+    page++;
+  }
+
+  return results;
+}
+```
+
+<Note>
+  Fique atento aos limites de taxa ao iterar sobre grandes datasets. Use filtros para estreitar o
+  conjunto de resultados quando possível.
+</Note>
+
+## Ordenação disponível por recurso
+
+| Recurso    | Campos de ordenação                             |
+| ---------- | ----------------------------------------------- |
+| People     | `created_at`, `updated_at`, `full_name`         |
+| Companies  | `created_at`, `updated_at`, `full_name`         |
+| Deals      | `created_at`, `updated_at`, `name`, `price_cts` |
+| Tasks      | `created_at`, `updated_at`, `due_date`          |
+| Activities | `created_at`                                    |
+| Products   | `created_at`, `name`                            |

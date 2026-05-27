@@ -1,0 +1,98 @@
+---
+title: 'n8n'
+description: 'Automatize workflows com o n8n usando a API REST ou o MCP Server do Vendaze.'
+icon: 'diagram-project'
+---
+
+O n8n é uma plataforma de automação open source que pode ser auto-hospedada ou usada na nuvem. Ele oferece dois caminhos para se integrar ao Vendaze: via nó HTTP Request (usando a API REST) ou via nó MCP Client (usando o MCP Server).
+
+## Opção 1: Via nó HTTP Request (API REST)
+
+Esta abordagem dá controle total sobre cada chamada à API.
+
+### Configurar credenciais OAuth2
+
+1. No n8n, vá em **Credentials** e clique em **Add credential**
+2. Selecione **OAuth2 API**
+3. Preencha:
+   - **Authorization URL:** `https://api.vendaze.com/oauth/authorize`
+   - **Access Token URL:** `https://api.vendaze.com/oauth/token`
+   - **Client ID:** seu `client_id`
+   - **Client Secret:** seu `client_secret`
+   - **Scope:** `people:read people:write companies:read companies:write deals:read deals:write tasks:read tasks:write`
+   - **Auth URI Query Parameters:** `code_challenge_method=S256`
+4. Clique em **Connect my account** e autorize no Vendaze
+
+### Usar o nó HTTP Request
+
+```json
+{
+  "method": "GET",
+  "url": "https://api.vendaze.com/v1/people",
+  "authentication": "predefinedCredentialType",
+  "nodeCredentialType": "oAuth2Api",
+  "queryParameters": {
+    "page": "1",
+    "per_page": "50"
+  }
+}
+```
+
+### Iterar sobre todas as páginas
+
+Use o nó **Loop Over Items** junto com um nó **IF** para verificar `meta.has_more`:
+
+```
+HTTP Request (GET /v1/people?page=1)
+  -> Set (extrai data e meta)
+  -> Loop: IF meta.has_more === true
+       -> HTTP Request (página seguinte)
+     ELSE
+       -> Continua o workflow
+```
+
+## Opção 2: Via nó MCP Client
+
+O n8n tem suporte nativo ao MCP (Model Context Protocol), o que permite usar o MCP Server do Vendaze diretamente.
+
+### Configurar o MCP Client
+
+1. Adicione um nó **MCP Client** ao seu workflow
+2. Em **Server URL**, insira: `https://api.vendaze.com/mcp`
+3. Em **Authentication**, selecione **Header Auth**
+4. Adicione o header: `Authorization: Bearer SEU_ACCESS_TOKEN`
+5. O nó listará automaticamente as ferramentas disponíveis
+
+### Chamar uma ferramenta MCP
+
+```json
+{
+  "tool": "list_deals",
+  "parameters": {
+    "pipeline_id": "uuid-do-pipeline",
+    "stage_id": "uuid-do-stage",
+    "per_page": 100
+  }
+}
+```
+
+## Exemplos de workflows
+
+**Sincronização periódica:**
+Todo dia às 08h, busca todos os negócios atualizados nas últimas 24 horas e envia um resumo por email com os dados consolidados.
+
+**Webhook para CRM:**
+Recebe dados de um formulário externo via webhook, transforma os dados com um nó **Set**, e cria o contato e o negócio no Vendaze em sequência.
+
+**Atribuição automática:**
+Quando um negócio é criado sem `owner_user_id`, busca o usuário com menos tarefas abertas e atribui automaticamente.
+
+## Self-hosting
+
+Se você hospeda o n8n localmente, o fluxo OAuth requer que o `redirect_uri` cadastrado no app Vendaze aponte para sua instância local. Registre o app com:
+
+```
+"redirect_uris": ["http://localhost:5678/rest/oauth2-credential/callback"]
+```
+
+Em produção, substitua `localhost:5678` pelo domínio da sua instância n8n.

@@ -1,0 +1,87 @@
+---
+title: 'Pagination'
+description: 'How to handle large result sets using page-based pagination.'
+icon: 'bars-staggered'
+---
+
+All listing endpoints in the Vendaze API return paginated results. No endpoint returns an unbounded list of records.
+
+## How it works
+
+Use the `page` and `per_page` query parameters to navigate through results:
+
+```bash
+GET /v1/people?page=1&per_page=50
+GET /v1/people?page=2&per_page=50
+```
+
+## Pagination metadata
+
+Every listing response includes a `meta` object:
+
+```json
+{
+  "data": [ ... ],
+  "meta": {
+    "total": 234,
+    "page": 2,
+    "per_page": 50,
+    "has_more": true
+  }
+}
+```
+
+| Field      | Description                                           |
+| ---------- | ----------------------------------------------------- |
+| `total`    | Total number of records matching the current filters. |
+| `page`     | Current page number.                                  |
+| `per_page` | Records per page.                                     |
+| `has_more` | `true` if there are more pages after this one.        |
+
+## Available parameters
+
+| Parameter  | Type    | Default      | Max   | Description                                   |
+| ---------- | ------- | ------------ | ----- | --------------------------------------------- |
+| `page`     | integer | `1`          | -     | Page number to retrieve.                      |
+| `per_page` | integer | `50`         | `100` | Records per page. Returns `422` if above 100. |
+| `order_by` | string  | `created_at` | -     | Field to sort by.                             |
+| `order`    | string  | `desc`       | -     | `asc` or `desc`.                              |
+
+## Fetching all records
+
+To retrieve all records, iterate through pages until `has_more` is `false`:
+
+```javascript
+async function fetchAll(endpoint, accessToken) {
+  const results = [];
+  let page = 1;
+
+  while (true) {
+    const res = await fetch(`https://api.vendaze.com${endpoint}?page=${page}&per_page=100`, {
+      headers: { Authorization: `Bearer ${accessToken}` },
+    });
+    const { data, meta } = await res.json();
+    results.push(...data);
+    if (!meta.has_more) break;
+    page++;
+  }
+
+  return results;
+}
+```
+
+<Note>
+  Be mindful of rate limits when iterating over large datasets. Use filters to narrow the result set
+  when possible.
+</Note>
+
+## Sortable fields by resource
+
+| Resource   | Sortable fields                                 |
+| ---------- | ----------------------------------------------- |
+| People     | `created_at`, `updated_at`, `full_name`         |
+| Companies  | `created_at`, `updated_at`, `full_name`         |
+| Deals      | `created_at`, `updated_at`, `name`, `price_cts` |
+| Tasks      | `created_at`, `updated_at`, `due_date`          |
+| Activities | `created_at`                                    |
+| Products   | `created_at`, `name`                            |

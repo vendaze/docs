@@ -1,0 +1,97 @@
+---
+title: 'Register Your App'
+description: 'Get your client credentials to start building a Vendaze integration.'
+icon: 'plug'
+---
+
+Before your app can authenticate Vendaze users, you need to register it. Registration is open to any developer with no approval process. Your credentials arrive by email within seconds.
+
+## What you need
+
+- A valid email address to receive the credentials
+- At least one HTTPS redirect URI for your OAuth callback
+- A decision on which scopes your integration needs
+
+## Register via API
+
+Send a `POST` to `/v1/auth/register-app`:
+
+```bash
+curl -X POST https://api.vendaze.com/v1/auth/register-app \
+  -H "Content-Type: application/json" \
+  -d '{
+    "app_name": "My Integration",
+    "email": "dev@yourapp.com",
+    "description": "Syncs contacts and deals between Vendaze and MyApp",
+    "redirect_uris": ["https://yourapp.com/oauth/callback"],
+    "scopes": ["people:read", "people:write", "deals:read"]
+  }'
+```
+
+**Response (201):**
+
+```json
+{
+  "data": {
+    "app_name": "My Integration",
+    "client_id": "9a8b7c6d-5e4f-3a2b-1c0d-9e8f7a6b5c4d",
+    "message": "Credentials sent to dev@yourapp.com"
+  }
+}
+```
+
+Your `client_secret` is sent **only by email** and never returned in the API response. Store it securely as soon as you receive it.
+
+## Request parameters
+
+| Parameter       | Type     | Required | Description                                                           |
+| --------------- | -------- | -------- | --------------------------------------------------------------------- |
+| `app_name`      | string   | Yes      | Integration name shown to users on the consent screen. Max 100 chars. |
+| `email`         | string   | Yes      | Email where credentials will be sent. One app per email address.      |
+| `description`   | string   | No       | Short description of what your app does. Max 500 chars.               |
+| `redirect_uris` | string[] | Yes      | One or more HTTPS URIs for the OAuth callback. Exact match required.  |
+| `scopes`        | string[] | Yes      | Scopes your app needs. Users approve them individually.               |
+
+## Redirect URIs
+
+URIs must be exact HTTPS URLs. Wildcards and patterns are not accepted:
+
+```
+Accepted:  https://yourapp.com/oauth/callback
+Accepted:  https://yourapp.com/integrations/vendaze/callback
+Rejected:  https://yourapp.com/oauth/*
+Rejected:  http://yourapp.com/callback
+```
+
+During local development, `http://localhost` and `http://127.0.0.1` are accepted.
+
+You can register multiple redirect URIs for different environments. At authorization time, the `redirect_uri` in the request must exactly match one of the registered URIs.
+
+## Available scopes
+
+| Scope             | Description                      |
+| ----------------- | -------------------------------- |
+| `people:read`     | Read contacts (people)           |
+| `people:write`    | Create, update, delete people    |
+| `companies:read`  | Read companies                   |
+| `companies:write` | Create, update, delete companies |
+| `deals:read`      | Read deals                       |
+| `deals:write`     | Create, update, delete deals     |
+| `tasks:read`      | Read tasks                       |
+| `tasks:write`     | Create, update, delete tasks     |
+
+Requesting a scope during registration does not guarantee it. Users can approve or decline each scope individually during the consent flow.
+
+<Warning>
+  Your `client_secret` is shown only once, in the email you receive after registration. If you lose
+  it, contact support to rotate it. Never commit it to version control or include it in client-side
+  code.
+</Warning>
+
+## Next step
+
+With your `client_id` and `client_secret`, you are ready to implement the OAuth flow.
+
+<Card title="Authentication" icon="lock" href="/en/guides/authentication">
+  Implement the OAuth 2.1 flow to authorize Vendaze users in your app.
+</Card>

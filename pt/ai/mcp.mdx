@@ -1,0 +1,99 @@
+---
+title: 'MCP Server'
+description: 'Referência completa do servidor MCP do Vendaze e as ferramentas disponíveis para modelos de linguagem.'
+icon: 'plug'
+---
+
+O servidor MCP (Model Context Protocol) do Vendaze expõe as operações da API como ferramentas estruturadas que qualquer cliente MCP pode chamar. Isso permite que assistentes de IA acessem e manipulem dados do CRM de forma segura e controlada.
+
+## Endpoint
+
+```
+https://api.vendaze.com/mcp
+```
+
+O servidor segue a especificação MCP e é compatível com qualquer cliente que implemente o protocolo, incluindo Claude Desktop, Cursor, GitHub Copilot e n8n.
+
+## Autenticação
+
+O MCP Server usa Bearer token no header de autorização. Configure o token de acesso OAuth no seu cliente MCP:
+
+```json
+{
+  "mcpServers": {
+    "vendaze": {
+      "url": "https://api.vendaze.com/mcp",
+      "headers": {
+        "Authorization": "Bearer SEU_ACCESS_TOKEN"
+      }
+    }
+  }
+}
+```
+
+O access token tem validade de 1 hora. Use o refresh token para renová-lo antes de expirar.
+
+## Ferramentas disponíveis
+
+### People
+
+| Ferramenta      | Descrição                                                |
+| --------------- | -------------------------------------------------------- |
+| `list_people`   | Lista contatos com suporte a filtros e paginação.        |
+| `get_person`    | Busca uma pessoa por ID com campos adicionais e empresa. |
+| `create_person` | Cria um novo contato no workspace.                       |
+| `update_person` | Atualiza campos de um contato existente.                 |
+| `delete_person` | Remove (soft delete) um contato.                         |
+
+### Companies
+
+| Ferramenta       | Descrição                                         |
+| ---------------- | ------------------------------------------------- |
+| `list_companies` | Lista empresas com suporte a filtros e paginação. |
+| `get_company`    | Busca uma empresa por ID com campos adicionais.   |
+| `create_company` | Cria uma nova empresa no workspace.               |
+| `update_company` | Atualiza campos de uma empresa existente.         |
+| `delete_company` | Remove (soft delete) uma empresa.                 |
+
+### Deals
+
+| Ferramenta    | Descrição                                                       |
+| ------------- | --------------------------------------------------------------- |
+| `list_deals`  | Lista negócios com suporte a filtros de pipeline, preço e data. |
+| `get_deal`    | Busca um negócio por ID com pipeline, stage e produtos.         |
+| `create_deal` | Cria um novo negócio.                                           |
+| `update_deal` | Atualiza campos de um negócio existente.                        |
+| `delete_deal` | Remove (soft delete) um negócio.                                |
+
+### Tasks
+
+| Ferramenta    | Descrição                                                   |
+| ------------- | ----------------------------------------------------------- |
+| `list_tasks`  | Lista tarefas filtradas por entidade, prioridade ou status. |
+| `get_task`    | Busca uma tarefa por ID.                                    |
+| `create_task` | Cria uma nova tarefa.                                       |
+| `update_task` | Atualiza uma tarefa existente.                              |
+| `delete_task` | Remove uma tarefa.                                          |
+
+### Activities
+
+| Ferramenta        | Descrição                                                      |
+| ----------------- | -------------------------------------------------------------- |
+| `list_activities` | Lista atividades vinculadas a uma pessoa, empresa ou negócio.  |
+| `get_activity`    | Busca uma atividade por ID.                                    |
+| `create_activity` | Registra uma nova atividade (ligação, reunião, email ou nota). |
+| `delete_activity` | Remove uma atividade.                                          |
+
+### Utilitários
+
+| Ferramenta           | Descrição                                            |
+| -------------------- | ---------------------------------------------------- |
+| `list_custom_fields` | Lista os campos adicionais disponíveis no workspace. |
+| `list_tags`          | Lista todas as tags do workspace.                    |
+| `list_products`      | Lista os produtos disponíveis.                       |
+
+## Limitações
+
+- O MCP Server aplica os mesmos rate limits da API REST por `client_id`
+- Tokens expirados resultam em erro `401` — o cliente deve renovar o token e tentar novamente
+- Campos adicionais são retornados apenas em ferramentas de busca por ID (`get_*`), não em listagens

@@ -1,0 +1,92 @@
+---
+title: 'Vendaze for Developers'
+description: 'Official documentation for the Vendaze public API. Build integrations with the B2B CRM for sales teams.'
+---
+
+<div style={{ textAlign: 'center', padding: '2rem 0 1rem' }}>
+  <h1 style={{ fontSize: '2.5rem', fontWeight: 700, marginBottom: '1rem' }}>
+    Welcome to the Vendaze API
+  </h1>
+  <p
+    style={{
+      fontSize: '1.15rem',
+      color: 'var(--colors-content-secondary)',
+      maxWidth: '600px',
+      margin: '0 auto',
+    }}
+  >
+    Connect your application to Vendaze and access contacts, deals, tasks, and more through a
+    modern, secure REST API.
+  </p>
+</div>
+
+## What you can build
+
+<CardGroup cols={3}>
+  <Card title="Sync contacts" icon="user-group">
+    Read and write people and companies between Vendaze and your system in real time.
+  </Card>
+  <Card title="Manage deals" icon="handshake">
+    Open and move deals in the sales pipeline programmatically.
+  </Card>
+  <Card title="Log activities" icon="clock-rotate-left">
+    Record calls, emails, meetings, and notes on contacts and deals.
+  </Card>
+  <Card title="Manage tasks" icon="circle-check">
+    Create and update tasks assigned to sales reps.
+  </Card>
+  <Card title="Custom fields" icon="sliders">
+    Read custom field values defined by the workspace.
+  </Card>
+  <Card title="Connect with AI" icon="robot">
+    Integrate via MCP with Claude, Cursor, and other AI agents.
+  </Card>
+</CardGroup>
+
+## Where to start
+
+<Steps>
+  <Step title="Register your app">
+    Get your `client_id` and `client_secret` in minutes. No approval required, no waiting.
+
+    [Register your app](/en/guides/register-app)
+
+  </Step>
+  <Step title="Implement authentication">
+    Add the OAuth 2.1 flow with PKCE to authorize Vendaze users in your product.
+
+    [Authentication guide](/en/guides/authentication)
+
+  </Step>
+  <Step title="Make your first request">
+    Use your `access_token` to call `GET /v1/people` and retrieve workspace contacts.
+
+    [First request](/en/guides/first-request)
+
+  </Step>
+</Steps>
+
+## Base URL
+
+```
+https://api.vendaze.com
+```
+
+All endpoints are versioned under `/v1`.
+
+## Quick resources
+
+<CardGroup cols={2}>
+  <Card title="API Reference" icon="code" href="/api-reference">
+    Full reference for all endpoints, parameters, and responses with interactive playground.
+  </Card>
+  <Card title="Changelog" icon="clock" href="/en/changelog/may-2026">
+    New features, fixes, and API changes organized by date.
+  </Card>
+  <Card title="MCP & AI Connectors" icon="robot" href="/en/ai/overview">
+    Connect Vendaze to AI agents like Claude, Cursor, and GitHub Copilot.
+  </Card>
+  <Card title="Support" icon="envelope" href="/en/guides/support">
+    Contact the technical team for questions and incidents.
+  </Card>
+</CardGroup>

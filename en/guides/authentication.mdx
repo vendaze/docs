@@ -1,0 +1,182 @@
+---
+title: 'Authentication'
+description: 'Implement OAuth 2.1 with PKCE to authorize Vendaze users in your app.'
+icon: 'lock'
+---
+
+The Vendaze API uses **OAuth 2.1 Authorization Code flow with PKCE** (Proof Key for Code Exchange). This is the same standard used by HubSpot and Pipedrive for third-party integrations.
+
+<Card title="Register your app first" icon="plug" href="/en/guides/register-app" horizontal>
+  You need a `client_id` and `client_secret` before continuing.
+</Card>
+
+## How it works
+
+```
+1. Generate PKCE pair     code_verifier + code_challenge
+2. Redirect the user      GET /oauth/authorize
+3. User logs in           selects workspace, approves scopes
+4. Receive auth code      your redirect_uri?code=...&state=...
+5. Exchange for tokens    POST /oauth/token
+6. Make API calls         Authorization: Bearer {access_token}
+7. Refresh when expired   POST /oauth/token (grant_type=refresh_token)
+```
+
+## Step 1 - Generate PKCE values
+
+PKCE prevents authorization code interception attacks. Generate these on your server before redirecting:
+
+```javascript
+// Node.js example
+const crypto = require('crypto');
+
+const codeVerifier = crypto.randomBytes(32).toString('base64url');
+
+const codeChallenge = crypto.createHash('sha256').update(codeVerifier).digest('base64url');
+```
+
+Store the `code_verifier` server-side. You will need it in Step 5.
+
+## Step 2 - Redirect the user
+
+Build the authorization URL and redirect the user's browser to it:
+
+```
+GET https://api.vendaze.com/oauth/authorize
+  ?client_id=YOUR_CLIENT_ID
+  &redirect_uri=https://yourapp.com/oauth/callback
+  &response_type=code
+  &scope=people:read deals:write
+  &state=RANDOM_CSRF_TOKEN
+  &code_challenge=BASE64URL_SHA256_OF_VERIFIER
+  &code_challenge_method=S256
+```
+
+| Parameter               | Required | Description                                                           |
+| ----------------------- | -------- | --------------------------------------------------------------------- |
+| `client_id`             | Yes      | Your app's client ID.                                                 |
+| `redirect_uri`          | Yes      | Must exactly match a registered URI.                                  |
+| `response_type`         | Yes      | Must be `code`.                                                       |
+| `scope`                 | Yes      | Space-separated scopes.                                               |
+| `state`                 | Yes      | Random string you generate. Returned unchanged. Used to prevent CSRF. |
+| `code_challenge`        | Yes      | `BASE64URL(SHA256(code_verifier))`                                    |
+| `code_challenge_method` | Yes      | Must be `S256`.                                                       |
+
+<Warning>
+  Always verify that the `state` parameter in the callback matches what you sent. Reject the request
+  if they do not match — it is a CSRF protection mechanism.
+</Warning>
+
+## Step 3 - User authorizes
+
+The user is redirected to Vendaze, where they:
+
+1. Log in (if not already logged in)
+2. Select which workspace to connect to your app
+3. Review and approve the requested scopes
+4. Click "Authorize"
+
+## Step 4 - Handle the callback
+
+After approval, the user is redirected to your `redirect_uri`:
+
+```
+https://yourapp.com/oauth/callback?code=AUTH_CODE&state=YOUR_STATE
+```
+
+Verify `state` matches, then proceed to exchange the code. If the user denies authorization:
+
+```
+https://yourapp.com/oauth/callback?error=access_denied&state=YOUR_STATE
+```
+
+## Step 5 - Exchange code for tokens
+
+<Warning>
+  Authorization codes expire in 5 minutes and can only be used once. Exchange immediately after
+  receiving the callback.
+</Warning>
+
+```bash
+curl -X POST https://api.vendaze.com/oauth/token \
+  -H "Content-Type: application/json" \
+  -d '{
+    "grant_type": "authorization_code",
+    "code": "AUTH_CODE_FROM_CALLBACK",
+    "redirect_uri": "https://yourapp.com/oauth/callback",
+    "client_id": "YOUR_CLIENT_ID",
+    "client_secret": "YOUR_CLIENT_SECRET",
+    "code_verifier": "YOUR_ORIGINAL_CODE_VERIFIER"
+  }'
+```
+
+**Response (200):**
+
+```json
+{
+  "access_token": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9...",
+  "refresh_token": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9...",
+  "token_type": "Bearer",
+  "expires_in": 3600
+}
+```
+
+| Field           | Description                                                              |
+| --------------- | ------------------------------------------------------------------------ |
+| `access_token`  | Use this in every API request. Expires in 1 hour.                        |
+| `refresh_token` | Use this to get a new access token. Valid for 60 days if used regularly. |
+| `token_type`    | Always `Bearer`.                                                         |
+| `expires_in`    | Seconds until the access token expires.                                  |
+
+Store both tokens securely on your server. Never expose them in client-side code or URLs.
+
+## Step 6 - Make API calls
+
+Include the `access_token` in every request as a Bearer token:
+
+```bash
+curl https://api.vendaze.com/v1/people \
+  -H "Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9..."
+```
+
+## Step 7 - Refresh the access token
+
+Access tokens expire after 1 hour. Refresh them using the refresh token:
+
+```bash
+curl -X POST https://api.vendaze.com/oauth/token \
+  -H "Content-Type: application/json" \
+  -d '{
+    "grant_type": "refresh_token",
+    "refresh_token": "YOUR_REFRESH_TOKEN",
+    "client_id": "YOUR_CLIENT_ID",
+    "client_secret": "YOUR_CLIENT_SECRET"
+  }'
+```
+
+The response is identical to Step 5. Replace both tokens on your side — a new refresh token is issued on every refresh.
+
+<Note>
+  Refresh tokens expire if unused for 60 days. Each time you use a refresh token, the 60-day window
+  resets. If a refresh token expires, the user must go through the full authorization flow again.
+</Note>
+
+## Revoking access
+
+To disconnect a workspace from your app:
+
+```bash
+curl -X POST https://api.vendaze.com/oauth/revoke \
+  -H "Content-Type: application/json" \
+  -d '{
+    "token": "ACCESS_OR_REFRESH_TOKEN",
+    "client_id": "YOUR_CLIENT_ID",
+    "client_secret": "YOUR_CLIENT_SECRET"
+  }'
+```
+
+Returns `200` regardless of whether the token was already revoked or expired (idempotent).
+
+<Card title="Make your first request" icon="terminal" href="/en/guides/first-request">
+  Use your access token to make a real API call.
+</Card>

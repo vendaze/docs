@@ -1,0 +1,99 @@
+---
+title: 'MCP Server'
+description: 'Complete reference for the Vendaze MCP server and the tools available to language models.'
+icon: 'plug'
+---
+
+The Vendaze MCP (Model Context Protocol) server exposes API operations as structured tools that any MCP client can call. This allows AI assistants to access and manipulate CRM data in a secure and controlled way.
+
+## Endpoint
+
+```
+https://api.vendaze.com/mcp
+```
+
+The server follows the MCP specification and is compatible with any client that implements the protocol, including Claude Desktop, Cursor, GitHub Copilot, and n8n.
+
+## Authentication
+
+The MCP Server uses a Bearer token in the authorization header. Configure the OAuth access token in your MCP client:
+
+```json
+{
+  "mcpServers": {
+    "vendaze": {
+      "url": "https://api.vendaze.com/mcp",
+      "headers": {
+        "Authorization": "Bearer YOUR_ACCESS_TOKEN"
+      }
+    }
+  }
+}
+```
+
+The access token is valid for 1 hour. Use the refresh token to renew it before it expires.
+
+## Available tools
+
+### People
+
+| Tool            | Description                                            |
+| --------------- | ------------------------------------------------------ |
+| `list_people`   | Lists contacts with filter and pagination support.     |
+| `get_person`    | Fetches a person by ID with custom fields and company. |
+| `create_person` | Creates a new contact in the workspace.                |
+| `update_person` | Updates fields on an existing contact.                 |
+| `delete_person` | Removes (soft delete) a contact.                       |
+
+### Companies
+
+| Tool             | Description                                         |
+| ---------------- | --------------------------------------------------- |
+| `list_companies` | Lists companies with filter and pagination support. |
+| `get_company`    | Fetches a company by ID with custom fields.         |
+| `create_company` | Creates a new company in the workspace.             |
+| `update_company` | Updates fields on an existing company.              |
+| `delete_company` | Removes (soft delete) a company.                    |
+
+### Deals
+
+| Tool          | Description                                                |
+| ------------- | ---------------------------------------------------------- |
+| `list_deals`  | Lists deals with pipeline, price, and date filter support. |
+| `get_deal`    | Fetches a deal by ID with pipeline, stage, and products.   |
+| `create_deal` | Creates a new deal.                                        |
+| `update_deal` | Updates fields on an existing deal.                        |
+| `delete_deal` | Removes (soft delete) a deal.                              |
+
+### Tasks
+
+| Tool          | Description                                          |
+| ------------- | ---------------------------------------------------- |
+| `list_tasks`  | Lists tasks filtered by entity, priority, or status. |
+| `get_task`    | Fetches a task by ID.                                |
+| `create_task` | Creates a new task.                                  |
+| `update_task` | Updates an existing task.                            |
+| `delete_task` | Removes a task.                                      |
+
+### Activities
+
+| Tool              | Description                                            |
+| ----------------- | ------------------------------------------------------ |
+| `list_activities` | Lists activities linked to a person, company, or deal. |
+| `get_activity`    | Fetches an activity by ID.                             |
+| `create_activity` | Logs a new activity (call, meeting, email, or note).   |
+| `delete_activity` | Removes an activity.                                   |
+
+### Utilities
+
+| Tool                 | Description                                         |
+| -------------------- | --------------------------------------------------- |
+| `list_custom_fields` | Lists the custom fields available in the workspace. |
+| `list_tags`          | Lists all tags in the workspace.                    |
+| `list_products`      | Lists available products.                           |
+
+## Limitations
+
+- The MCP Server applies the same rate limits as the REST API per `client_id`
+- Expired tokens result in a `401` error — the client must renew the token and retry
+- Custom fields are returned only in ID lookup tools (`get_*`), not in listings

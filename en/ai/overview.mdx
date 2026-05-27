@@ -1,0 +1,72 @@
+---
+title: 'AI and Automations'
+description: 'Connect AI tools and automation platforms directly to Vendaze via MCP Server and native integrations.'
+icon: 'robot'
+---
+
+The Vendaze API exposes an MCP (Model Context Protocol) server that allows AI assistants and development environments to access CRM data directly, without needing to write integration code manually.
+
+## What is the Vendaze MCP Server
+
+The Vendaze MCP Server is available at:
+
+```
+https://api.vendaze.com/mcp
+```
+
+It exposes the core API operations as tools that language models can call directly. An AI assistant with access to the MCP Server can:
+
+- Search for contacts, companies, and deals by specific criteria
+- Create and update records in the CRM
+- List open tasks by owner or entity
+- Log activities (calls, meetings, emails) on deals and contacts
+- Query custom fields and their values
+
+## Available tools in MCP
+
+<CardGroup cols={2}>
+  <Card title="Claude" icon="comment-dots" href="/en/ai/claude">
+    Use Vendaze directly in Claude Desktop with MCP.
+  </Card>
+  <Card title="Cursor" icon="arrow-pointer" href="/en/ai/cursor">
+    Access CRM data while developing in Cursor.
+  </Card>
+  <Card title="GitHub Copilot" icon="github" href="/en/ai/copilot">
+    Integrate Vendaze with Copilot in VS Code.
+  </Card>
+  <Card title="n8n" icon="diagram-project" href="/en/ai/n8n">
+    Build automated workflows with n8n.
+  </Card>
+</CardGroup>
+
+## Automation platforms
+
+<CardGroup cols={2}>
+  <Card title="Zapier" icon="bolt" href="/en/ai/zapier">
+    Connect Vendaze to 7,000+ apps without code.
+  </Card>
+  <Card title="Make" icon="circle-nodes" href="/en/ai/make">
+    Build advanced scenarios with Make (formerly Integromat).
+  </Card>
+</CardGroup>
+
+## Authentication on the MCP Server
+
+The MCP Server uses the same OAuth 2.1 flow as the REST API. The Bearer access token is passed in the MCP client configuration. See the guide for each tool for specific setup instructions.
+
+## Recommended scopes for AI
+
+For use with AI assistants, we recommend registering an app with the following scopes:
+
+```
+people:read
+people:write
+companies:read
+companies:write
+deals:read
+deals:write
+tasks:read
+tasks:write
+```
+
+If the use case is read-only, omit the write scopes to reduce the risk of accidental modifications.

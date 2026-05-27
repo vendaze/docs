@@ -1,0 +1,97 @@
+---
+title: 'Registre seu Aplicativo'
+description: 'Obtenha suas credenciais de cliente para começar a construir uma integração com o Vendaze.'
+icon: 'plug'
+---
+
+Antes que seu aplicativo possa autenticar usuários do Vendaze, você precisa registrá-lo. O registro é aberto a qualquer desenvolvedor, sem processo de aprovação. Suas credenciais chegam por e-mail em segundos.
+
+## O que você vai precisar
+
+- Um endereço de e-mail válido para receber as credenciais
+- Pelo menos uma URI de redirecionamento HTTPS para o callback OAuth
+- Uma decisão sobre quais escopos sua integração precisa
+
+## Registrar via API
+
+Envie um `POST` para `/v1/auth/register-app`:
+
+```bash
+curl -X POST https://api.vendaze.com/v1/auth/register-app \
+  -H "Content-Type: application/json" \
+  -d '{
+    "app_name": "Minha Integração",
+    "email": "dev@meuapp.com",
+    "description": "Sincroniza contatos e negócios entre o Vendaze e o MeuApp",
+    "redirect_uris": ["https://meuapp.com/oauth/callback"],
+    "scopes": ["people:read", "people:write", "deals:read"]
+  }'
+```
+
+**Resposta (201):**
+
+```json
+{
+  "data": {
+    "app_name": "Minha Integração",
+    "client_id": "9a8b7c6d-5e4f-3a2b-1c0d-9e8f7a6b5c4d",
+    "message": "Credenciais enviadas para dev@meuapp.com"
+  }
+}
+```
+
+Seu `client_secret` é enviado **somente por e-mail** e nunca retorna na resposta da API. Guarde-o com segurança assim que receber.
+
+## Parâmetros da requisição
+
+| Parâmetro       | Tipo     | Obrigatório | Descrição                                                                         |
+| --------------- | -------- | ----------- | --------------------------------------------------------------------------------- |
+| `app_name`      | string   | Sim         | Nome da integração exibido aos usuários na tela de consentimento. Máx. 100 chars. |
+| `email`         | string   | Sim         | E-mail para receber as credenciais. Um aplicativo por endereço de e-mail.         |
+| `description`   | string   | Não         | Descrição curta do que seu app faz. Máx. 500 chars.                               |
+| `redirect_uris` | string[] | Sim         | Uma ou mais URIs HTTPS para o callback OAuth. Correspondência exata obrigatória.  |
+| `scopes`        | string[] | Sim         | Escopos que seu app precisa. Usuários aprovam individualmente.                    |
+
+## URIs de redirecionamento
+
+As URIs devem ser URLs HTTPS exatas. Curingas e padrões não são aceitos:
+
+```
+Aceito:   https://meuapp.com/oauth/callback
+Aceito:   https://meuapp.com/integracoes/vendaze/callback
+Recusado: https://meuapp.com/oauth/*
+Recusado: http://meuapp.com/callback
+```
+
+Durante o desenvolvimento local, `http://localhost` e `http://127.0.0.1` são aceitos.
+
+Você pode registrar múltiplas URIs de redirecionamento para diferentes ambientes. Na hora da autorização, a `redirect_uri` da requisição precisa corresponder exatamente a uma das URIs registradas.
+
+## Escopos disponíveis
+
+| Escopo            | Descrição                          |
+| ----------------- | ---------------------------------- |
+| `people:read`     | Ler contatos (pessoas)             |
+| `people:write`    | Criar, atualizar, deletar pessoas  |
+| `companies:read`  | Ler empresas                       |
+| `companies:write` | Criar, atualizar, deletar empresas |
+| `deals:read`      | Ler negócios                       |
+| `deals:write`     | Criar, atualizar, deletar negócios |
+| `tasks:read`      | Ler tarefas                        |
+| `tasks:write`     | Criar, atualizar, deletar tarefas  |
+
+Solicitar um escopo durante o registro não garante que o usuário o aprove. Usuários podem aprovar ou recusar cada escopo individualmente durante o fluxo de consentimento.
+
+<Warning>
+  Seu `client_secret` aparece apenas uma vez, no e-mail que você recebe após o registro. Se
+  perdê-lo, entre em contato com o suporte para rotacioná-lo. Nunca o comite em repositórios ou
+  inclua em código client-side.
+</Warning>
+
+## Próxima etapa
+
+Com seu `client_id` e `client_secret`, você está pronto para implementar o fluxo OAuth.
+
+<Card title="Autenticação" icon="lock" href="/pt/guides/authentication">
+  Implemente o fluxo OAuth 2.1 para autorizar usuários do Vendaze no seu aplicativo.
+</Card>

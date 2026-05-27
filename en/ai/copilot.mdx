@@ -1,0 +1,96 @@
+---
+title: 'GitHub Copilot'
+description: 'Integrate Vendaze with GitHub Copilot in VS Code via MCP Server to access CRM data while developing.'
+icon: 'github'
+---
+
+GitHub Copilot in VS Code supports MCP servers starting from editor version 1.99, with agent mode enabled. With the Vendaze MCP Server configured, Copilot can query and manipulate CRM data directly during a development session.
+
+## Prerequisites
+
+- VS Code version 1.99 or higher
+- Active GitHub Copilot subscription
+- GitHub Copilot Chat enabled
+- Valid Vendaze access token
+
+## Configure the MCP Server
+
+Add the Vendaze server to VS Code settings. You can do this through the UI or by editing `settings.json` directly:
+
+```json
+{
+  "github.copilot.chat.mcp.servers": {
+    "vendaze": {
+      "url": "https://api.vendaze.com/mcp",
+      "headers": {
+        "Authorization": "Bearer YOUR_ACCESS_TOKEN"
+      }
+    }
+  }
+}
+```
+
+To open `settings.json`: `Cmd/Ctrl + Shift + P` > **Preferences: Open User Settings (JSON)**.
+
+After saving, restart VS Code. In the Copilot Chat panel, the tools icon will show available MCP servers.
+
+## Use in Copilot Chat
+
+Open Copilot Chat with `Cmd/Ctrl + Shift + I` and use **Agent** mode (select the agent icon). With the agent active, Copilot can call MCP Server tools automatically when relevant to the conversation:
+
+**Example prompts:**
+
+- "Which deals are in the 'Proposal Sent' stage with a value above $50,000?"
+- "Find the contact with email john@acme.com and show me all their fields."
+- "Create a 'call' activity on deal ID xyz-456 with note 'Call completed, awaiting response'."
+
+**During development:**
+
+- "I'm implementing the deal creation endpoint. Check the available workspace fields and suggest the example request body."
+- "My test is failing when creating a contact. Fetch a real contact and compare it with the payload I'm sending."
+
+## Use with code comments
+
+You can reference MCP tools directly in comments while writing code:
+
+```typescript
+// Copilot: use the Vendaze MCP to list available custom fields
+// and generate the corresponding TypeScript types for custom_fields
+```
+
+Copilot will fetch real data via MCP and generate types based on the actual API response.
+
+## Per-workspace configuration
+
+For Vendaze integration projects, add a `.vscode/settings.json` file to the repository with the MCP configuration (without the token):
+
+```json
+{
+  "github.copilot.chat.mcp.servers": {
+    "vendaze": {
+      "url": "https://api.vendaze.com/mcp"
+    }
+  }
+}
+```
+
+Each team member adds the authorization header in their personal VS Code user settings, keeping tokens out of the repository.
+
+## Token renewal
+
+Access tokens expire in 1 hour. Create a task in `package.json` to renew automatically:
+
+```json
+{
+  "scripts": {
+    "renew-mcp": "node scripts/renew-vendaze-token.js --target vscode"
+  }
+}
+```
+
+The renewal script updates the VS Code `settings.json` with the new token. See the pattern in the [Claude guide](/en/ai/claude#token-renewal).
+
+<Note>
+  MCP support in Copilot requires agent mode to be enabled in Copilot Chat. Check GitHub Copilot
+  settings to confirm that agent mode is active.
+</Note>

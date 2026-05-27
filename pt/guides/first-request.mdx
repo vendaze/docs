@@ -1,0 +1,145 @@
+---
+title: 'Primeira Solicitação'
+description: 'Guia completo do registro até a sua primeira chamada real à API do Vendaze.'
+icon: 'terminal'
+---
+
+Este guia percorre o fluxo completo de ponta a ponta: registrar o aplicativo, autorizar um usuário e buscar os contatos do workspace.
+
+## Pré-requisitos
+
+- Conta no Vendaze com pelo menos um workspace ativo
+- `curl` disponível no terminal
+
+## 1. Registrar o aplicativo
+
+```bash
+curl -X POST https://api.vendaze.com/v1/auth/register-app \
+  -H "Content-Type: application/json" \
+  -d '{
+    "app_name": "Minha Integração de Teste",
+    "email": "dev@meuapp.com",
+    "redirect_uris": ["https://meuapp.com/oauth/callback"],
+    "scopes": ["people:read", "companies:read", "deals:read"]
+  }'
+```
+
+Verifique sua caixa de entrada. Você receberá seu `client_id` e `client_secret`.
+
+## 2. Construir a URL de autorização
+
+Gere o `code_verifier` e `code_challenge`:
+
+```bash
+CODE_VERIFIER=$(openssl rand -base64 32 | tr -d '=' | tr '+/' '-_')
+CODE_CHALLENGE=$(echo -n "$CODE_VERIFIER" | openssl dgst -sha256 -binary | openssl base64 | tr -d '=' | tr '+/' '-_')
+
+echo "code_verifier: $CODE_VERIFIER"
+echo "code_challenge: $CODE_CHALLENGE"
+```
+
+Construa a URL de autorização e abra no browser:
+
+```
+https://api.vendaze.com/oauth/authorize
+  ?client_id=SEU_CLIENT_ID
+  &redirect_uri=https://meuapp.com/oauth/callback
+  &response_type=code
+  &scope=people:read companies:read deals:read
+  &state=token-csrf-aleatorio-123
+  &code_challenge=SEU_CODE_CHALLENGE
+  &code_challenge_method=S256
+```
+
+## 3. Autorizar e obter o code
+
+Você será redirecionado para o Vendaze, onde vai:
+
+1. Fazer login com sua conta Vendaze
+2. Selecionar um workspace para conectar
+3. Revisar os escopos solicitados
+4. Clicar em "Autorizar"
+
+Após autorizar, o browser redireciona para:
+
+```
+https://meuapp.com/oauth/callback?code=AUTH_CODE_AQUI&state=token-csrf-aleatorio-123
+```
+
+Copie o valor de `code` da URL.
+
+## 4. Trocar o code pelos tokens
+
+```bash
+curl -X POST https://api.vendaze.com/oauth/token \
+  -H "Content-Type: application/json" \
+  -d '{
+    "grant_type": "authorization_code",
+    "code": "AUTH_CODE_AQUI",
+    "redirect_uri": "https://meuapp.com/oauth/callback",
+    "client_id": "SEU_CLIENT_ID",
+    "client_secret": "SEU_CLIENT_SECRET",
+    "code_verifier": "SEU_CODE_VERIFIER"
+  }'
+```
+
+Resposta:
+
+```json
+{
+  "access_token": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9...",
+  "refresh_token": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9...",
+  "token_type": "Bearer",
+  "expires_in": 3600
+}
+```
+
+## 5. Buscar contatos
+
+```bash
+curl https://api.vendaze.com/v1/people \
+  -H "Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9..."
+```
+
+Resposta:
+
+```json
+{
+  "data": [
+    {
+      "id": "550e8400-e29b-41d4-a716-446655440000",
+      "full_name": "Ana Costa",
+      "emails": [{ "value": "ana@empresa.com", "label": "work" }],
+      "phones": [{ "value": "+5511999990001", "label": "mobile" }],
+      "company_id": "7c9e6679-7425-40de-944b-e07fc1f90ae7",
+      "position": "Head of Sales",
+      "ranking": 4.5,
+      "created_at": "2026-01-15T10:30:00Z",
+      "updated_at": "2026-05-20T14:22:00Z"
+    }
+  ],
+  "meta": {
+    "total": 42,
+    "page": 1,
+    "per_page": 50,
+    "has_more": false
+  }
+}
+```
+
+## Próximos passos
+
+<CardGroup cols={2}>
+  <Card title="Paginação" icon="bars-staggered" href="/pt/guides/pagination">
+    Lide com grandes conjuntos de resultados.
+  </Card>
+  <Card title="Filtros" icon="filter" href="/pt/guides/filtering">
+    Filtre pessoas, empresas e negócios.
+  </Card>
+  <Card title="Erros" icon="triangle-exclamation" href="/pt/guides/errors">
+    Entenda os códigos de erro e como tratá-los.
+  </Card>
+  <Card title="API Reference" icon="code" href="/api-reference">
+    Referência completa de todos os endpoints.
+  </Card>
+</CardGroup>

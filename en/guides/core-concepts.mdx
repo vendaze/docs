@@ -1,0 +1,134 @@
+---
+title: 'Core Concepts'
+description: 'Understand the key concepts behind the Vendaze API before you start building.'
+icon: 'book'
+---
+
+Before making your first API call, take a few minutes to understand these concepts. They will save you time during development and help you design a more robust integration.
+
+## Workspaces
+
+Vendaze is a **multi-workspace platform**. A single account can belong to multiple workspaces, like a consultant working across several clients or a company with multiple business units.
+
+When a user authorizes your app via OAuth, they choose **one specific workspace** to connect. All operations made with that token belong exclusively to that workspace.
+
+<Note>
+  You never send the `workspace_id` in requests. It is embedded in the `access_token` at
+  authorization time and resolved automatically by the API on every call.
+</Note>
+
+To access a different workspace, the user must go through the OAuth flow again.
+
+## Authentication model
+
+The Vendaze API uses **OAuth 2.1 with PKCE** (Proof Key for Code Exchange). Your app:
+
+1. Registers with Vendaze to receive a `client_id` and `client_secret`
+2. Redirects users to authorize access to their workspace
+3. Receives an `access_token` (valid for 1 hour) and a `refresh_token` (valid for 60 days)
+4. Includes the `access_token` as a Bearer token in every request
+
+Tokens are workspace-scoped. A token issued for Workspace A cannot read data from Workspace B.
+
+## Scopes
+
+Scopes define what your app can do. You declare the required scopes when registering the app, and users approve them individually on the consent screen.
+
+| Scope             | Access                           |
+| ----------------- | -------------------------------- |
+| `people:read`     | Read contacts (people)           |
+| `people:write`    | Create, update, delete people    |
+| `companies:read`  | Read companies                   |
+| `companies:write` | Create, update, delete companies |
+| `deals:read`      | Read deals                       |
+| `deals:write`     | Create, update, delete deals     |
+| `tasks:read`      | Read tasks                       |
+| `tasks:write`     | Create, update, delete tasks     |
+
+<Tip>
+  Request only the scopes your app genuinely needs. Users tend to distrust apps that request broad
+  permissions without justification.
+</Tip>
+
+## Resource IDs
+
+All IDs in the Vendaze API are **UUIDs** in string format:
+
+```json
+"id": "550e8400-e29b-41d4-a716-446655440000"
+```
+
+Never use sequential numeric IDs to reference resources.
+
+## Dates and times
+
+All timestamps are **ISO 8601 UTC** strings:
+
+```
+"created_at": "2026-05-26T14:00:00Z"
+```
+
+When sending dates in request filters or bodies, always use ISO 8601 UTC. Other formats are rejected with a `422` error.
+
+## Monetary values
+
+Price fields like `price_cts` are **integers representing the amount in cents**:
+
+```json
+"price_cts": 19900
+```
+
+The value `19900` represents $199.00 (or R$ 199,00 in BRL). Your app is responsible for conversion and display formatting. This approach eliminates floating-point rounding issues and is consistent across all currencies.
+
+## Soft delete
+
+Resources like people, companies, deals, and products support **soft delete**. When deleted via the API, the record is marked as deleted internally but not permanently removed from the database.
+
+From your integration's perspective, the behavior is transparent:
+
+- `DELETE /v1/people/:id` returns `204` and the record becomes inaccessible
+- `GET /v1/people/:id` for a deleted record returns `404`
+- Listing endpoints never return deleted records
+
+## Response envelope
+
+Every Vendaze API response follows the same format:
+
+```json
+// Single object
+{ "data": { ... } }
+
+// Paginated list
+{
+  "data": [ ... ],
+  "meta": {
+    "total": 150,
+    "page": 1,
+    "per_page": 50,
+    "has_more": true
+  }
+}
+
+// Error
+{
+  "error": {
+    "code": "not_found",
+    "message": "Person not found.",
+    "request_id": "550e8400-e29b-41d4-a716-446655440000"
+  }
+}
+```
+
+A 2xx response never contains `error`. A non-2xx response always contains `error`. Never check for errors inside a successful response body.
+
+## Field names
+
+All fields use **snake_case**:
+
+```json
+{
+  "full_name": "Ana Costa",
+  "owner_user_id": "b3a8c1d2-f3e4-4a5b-9c6d-7e8f9a0b1c2d",
+  "created_at": "2026-05-26T14:00:00Z"
+}
+```

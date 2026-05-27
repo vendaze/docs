@@ -1,0 +1,84 @@
+---
+title: 'May 2026'
+description: 'Filter improvements, custom fields in ID lookups, and new webhook events.'
+icon: 'calendar'
+---
+
+<Update label="v1.2.0" date="2026-05-26">
+  ## Custom fields returned in ID lookups
+
+When fetching any record by ID (`GET /v1/people/:id`, `GET /v1/companies/:id`, `GET /v1/deals/:id`), the `custom_fields` object is now returned automatically with the values filled in for that record.
+
+```json
+{
+  "data": {
+    "id": "550e8400-e29b-41d4-a716-446655440000",
+    "full_name": "Ana Costa",
+    "custom_fields": [
+      {
+        "id": "assoc-uuid",
+        "value": "referral",
+        "field": {
+          "id": "field-uuid",
+          "label": "Lead Source",
+          "key": "lead_source",
+          "type": "select"
+        }
+      }
+    ]
+  }
+}
+```
+
+Custom fields with no value for the record appear with `value: null`.
+
+## New webhook events: products
+
+Two new events were added for products:
+
+- `product.created` — fired when a new product is created in the workspace
+- `product.updated` — fired when a product is updated
+
+See the [Webhooks](/en/guides/webhooks) documentation for the full payload format.
+
+## Idempotency-Key header now accepted on all POST endpoints
+
+The `Idempotency-Key` header is now supported on all creation endpoints (`POST /v1/*`). Previously it was available only on `/v1/deals` and `/v1/people`.
+
+</Update>
+
+<Update label="v1.1.1" date="2026-05-12">
+  ## Fix: tag[] filter with special characters
+
+Fixed a bug where tags containing special characters (such as `&` and `+`) were not filtered correctly when passed via `tag[]=value`. Encoding is now handled correctly before comparison.
+
+## Fix: order_by=full_name on companies
+
+The `order_by=full_name` parameter on `GET /v1/companies` was incorrectly returning a `422` error. Fixed — sorting by `full_name` now works for both people and companies.
+
+</Update>
+
+<Update label="v1.1.0" date="2026-05-05">
+  ## Price filters on deals
+
+The `price_min_cts`, `price_max_cts`, and `currency` parameters were added to `GET /v1/deals`:
+
+```bash
+GET /v1/deals?price_min_cts=50000&price_max_cts=500000&currency=USD
+```
+
+Values are always in cents. Filtering by `currency` uses exact matching with the ISO currency code.
+
+## Date range filters for deals: forecast_after and forecast_before
+
+Deals can now be filtered by expected closing date:
+
+```bash
+GET /v1/deals?forecast_after=2026-06-01T00:00:00Z&forecast_before=2026-06-30T23:59:59Z
+```
+
+## Performance improvement on listings with custom_field[]
+
+Queries using `custom_field[UUID]=value` now use a composite index on `custom_fields_associate`, reducing response time by up to 60% for workspaces with a high volume of custom fields.
+
+</Update>

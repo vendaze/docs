@@ -1,0 +1,47 @@
+---
+title: 'Welcome'
+description: 'Introduction to the Vendaze public API for developers and integrators.'
+icon: 'hand-wave'
+---
+
+## What is the Vendaze API
+
+The Vendaze API is a public REST interface that allows external applications to read and write data in Vendaze, the B2B CRM for sales teams.
+
+With it, you can build native integrations, automations, custom dashboards, and AI agents that operate directly on your commercial team's data.
+
+## Who this documentation is for
+
+<CardGroup cols={2}>
+  <Card title="SaaS developers" icon="code">
+    You have a product and want to offer native integration with Vendaze for your customers.
+  </Card>
+  <Card title="Engineering teams" icon="building">
+    You want to connect internal tools to Vendaze, such as ETL pipelines, data warehouses, or
+    automations.
+  </Card>
+  <Card title="Agencies and consultants" icon="briefcase">
+    You build custom solutions for clients who use Vendaze.
+  </Card>
+  <Card title="AI enthusiasts" icon="robot">
+    You want to connect AI agents like Claude or Cursor to the CRM via MCP.
+  </Card>
+</CardGroup>
+
+## How the API works
+
+Vendaze is a **multi-workspace platform**. Each user can belong to multiple workspaces — like a consultant working across several clients. Each workspace is a completely isolated environment with its own data: contacts, deals, tasks, and configurations.
+
+When a user authorizes your app via OAuth, they choose which workspace to connect. All API calls made with that token operate exclusively within that workspace. You never need to send or track the `workspace_id`. It is embedded in the access token and resolved automatically by the API.
+
+## What you need before you start
+
+1. A Vendaze account with at least one active workspace
+2. A server with HTTPS support to receive the OAuth callback
+3. Basic familiarity with REST APIs and the OAuth 2.1 flow
+
+There is no approval process to become an integrator. Any developer can register an app and start building immediately.
+
+<Card title="Ready to get started?" icon="rocket" href="/en/guides/register-app" horizontal>
+  Register your app and get your credentials now.
+</Card>

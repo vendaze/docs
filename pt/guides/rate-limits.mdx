@@ -1,0 +1,83 @@
+---
+title: 'Limites de Taxa'
+description: 'Entenda os limites que se aplicam às requisições da API e como tratá-los.'
+icon: 'gauge-high'
+---
+
+A Vendaze API aplica limites de taxa por aplicativo (`client_id`) por minuto para garantir uso justo e proteger a disponibilidade do serviço.
+
+## Limites por método HTTP
+
+| Método   | Limite        | Aplica-se a                |
+| -------- | ------------- | -------------------------- |
+| `GET`    | 1.000 req/min | Todos os endpoints `/v1/*` |
+| `POST`   | 200 req/min   | Todos os endpoints `/v1/*` |
+| `PATCH`  | 200 req/min   | Todos os endpoints `/v1/*` |
+| `DELETE` | 100 req/min   | Todos os endpoints `/v1/*` |
+
+Endpoints OAuth têm limites mais restritos por IP:
+
+| Endpoint                     | Limite             |
+| ---------------------------- | ------------------ |
+| `POST /oauth/token`          | 20 req/min por IP  |
+| `POST /oauth/revoke`         | 20 req/min por IP  |
+| `GET /oauth/authorize`       | 20 req/min por IP  |
+| `POST /v1/auth/register-app` | 10 req/hora por IP |
+
+## Headers de controle
+
+Toda resposta inclui headers com seu consumo atual:
+
+```
+X-RateLimit-Limit: 1000
+X-RateLimit-Remaining: 847
+X-RateLimit-Reset: 1748000060
+```
+
+| Header                  | Descrição                                   |
+| ----------------------- | ------------------------------------------- |
+| `X-RateLimit-Limit`     | Limite total da janela atual.               |
+| `X-RateLimit-Remaining` | Requisições restantes na janela.            |
+| `X-RateLimit-Reset`     | Unix timestamp de quando a janela reinicia. |
+
+## Quando o limite é excedido
+
+```http
+HTTP/1.1 429 Too Many Requests
+Retry-After: 60
+```
+
+```json
+{
+  "error": {
+    "code": "rate_limit_exceeded",
+    "message": "Rate limit exceeded. Try again in 60 seconds.",
+    "request_id": "uuid"
+  }
+}
+```
+
+## Como tratar
+
+Use backoff exponencial com jitter:
+
+```javascript
+async function withRetry(fn, maxAttempts = 3) {
+  for (let attempt = 0; attempt < maxAttempts; attempt++) {
+    const res = await fn();
+    if (res.status !== 429) return res;
+
+    const retryAfter = parseInt(res.headers.get('Retry-After') ?? '60');
+    const jitter = Math.random() * 1000;
+    await new Promise((r) => setTimeout(r, retryAfter * 1000 + jitter));
+  }
+  throw new Error('Max retry attempts exceeded');
+}
+```
+
+## Dicas para ficar dentro dos limites
+
+- **Cache de respostas:** Não rebusque dados que você já tem armazenados localmente.
+- **Use filtros:** Busque apenas os registros necessários em vez de buscar tudo e filtrar na memória.
+- **Evite polling:** Processe dados quando acionado por eventos, não em loops constantes.
+- **Distribua escritas:** Ao sincronizar grandes volumes, distribua as escritas ao longo do tempo.

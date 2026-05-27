@@ -1,0 +1,82 @@
+---
+title: 'Make'
+description: 'Build advanced scenarios integrating Vendaze with Make (formerly Integromat).'
+icon: 'circle-nodes'
+---
+
+Make (formerly Integromat) lets you build complex automation scenarios with conditional logic, data transformation, and multiple integrations in series or in parallel. It is a powerful option for teams that need more control than Zapier provides.
+
+## How to connect
+
+### 1. Register the app in Vendaze
+
+```bash
+curl -X POST https://api.vendaze.com/v1/auth/register-app \
+  -H "Content-Type: application/json" \
+  -d '{
+    "app_name": "Make Integration",
+    "email": "dev@yourapp.com",
+    "redirect_uris": ["https://www.make.com/oauth/cb/oauth2"],
+    "scopes": ["people:read", "people:write", "companies:read", "companies:write", "deals:read", "deals:write", "tasks:read", "tasks:write"]
+  }'
+```
+
+### 2. Create the connection in Make
+
+1. Go to [make.com](https://make.com) and log in
+2. In a scenario, add a **Vendaze** module
+3. Click **Add** to create a new connection
+4. Enter the `client_id` and `client_secret` received by email
+5. Click **Save** — you will be redirected to authorize in Vendaze
+6. Select the workspace and confirm the scopes
+
+### 3. Available modules
+
+**Triggers (Watch):**
+
+- Watch People — monitors new or updated contacts
+- Watch Companies — monitors new companies
+- Watch Deals — monitors new or updated deals
+- Watch Tasks — monitors new tasks
+
+**Actions:**
+
+- Create a Person
+- Update a Person
+- Get a Person
+- Search People
+- Create a Company
+- Update a Company
+- Search Companies
+- Create a Deal
+- Update a Deal
+- Search Deals
+- Create a Task
+- Update a Task
+- Log an Activity
+
+**Iterators:**
+
+- List All People — iterates through all contacts
+- List All Deals — iterates through all deals
+
+## Example scenarios
+
+**Bidirectional sync:**
+When a deal is created in Vendaze, create a project in Asana. When the Asana project is marked as complete, update the deal in Vendaze to the "Won" stage.
+
+**Contact enrichment:**
+When a new contact is created in Vendaze, call a data enrichment API, then use the **Update a Person** module to fill in custom fields with the returned information.
+
+**Stalled deal notification:**
+Check daily for deals that have not been updated in the last 7 days and send a Slack message to the responsible owner.
+
+## Error handling in Make
+
+Make supports per-module error handling. Configure an error handler for `429` (rate limit) responses using the **Resume** option with a 60-second delay.
+
+For `401` errors, configure a handler that renews the access token via an HTTP module before retrying.
+
+## Scheduling
+
+Scenarios with Watch modules check for new events at the configured interval (minimum 1 minute on the Core plan). For real-time data, configure a webhook in the Vendaze dashboard pointing to the Make inbound URL.

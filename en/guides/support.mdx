@@ -1,0 +1,44 @@
+---
+title: 'Support'
+description: 'How to get help, report issues, and monitor the status of the Vendaze API.'
+icon: 'life-ring'
+---
+
+## Support channels
+
+<CardGroup cols={2}>
+  <Card title="Email support" icon="envelope" href="mailto:support@vendaze.com">
+    For integration questions, authentication problems, or unexpected API behavior. We respond
+    within 1 business day.
+  </Card>
+  <Card title="API status" icon="signal-bars" href="https://status.vendaze.com">
+    Check real-time status for all Vendaze services including the API, authentication, and database.
+  </Card>
+</CardGroup>
+
+## Before opening a support ticket
+
+To help us respond faster, always include:
+
+- The `request_id` from the error response (field `error.request_id`)
+- The endpoint called and the HTTP method used
+- The request body (without tokens or secrets)
+- The HTTP status received and the full response body
+- The approximate time of occurrence (with timezone)
+
+## Response times
+
+| Channel          | Hours         | Response time  |
+| ---------------- | ------------- | -------------- |
+| Email (critical) | 24/7          | 4 hours        |
+| Email (general)  | Business days | 1 business day |
+| Status page      | Always        | Real-time      |
+
+<Note>
+  Errors with status `500` are considered critical. Include the `request_id` to speed up the
+  investigation.
+</Note>
+
+## Changelog
+
+All API changes are documented in the **Changelog** tab. Follow it to stay informed about new features, deprecations, and bug fixes.

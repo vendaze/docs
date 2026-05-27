@@ -1,0 +1,98 @@
+---
+title: 'n8n'
+description: 'Automate workflows with n8n using the Vendaze REST API or MCP Server.'
+icon: 'diagram-project'
+---
+
+n8n is an open-source automation platform that can be self-hosted or used in the cloud. It offers two paths to integrate with Vendaze: via the HTTP Request node (using the REST API) or via the MCP Client node (using the MCP Server).
+
+## Option 1: Via HTTP Request node (REST API)
+
+This approach gives full control over each API call.
+
+### Set up OAuth2 credentials
+
+1. In n8n, go to **Credentials** and click **Add credential**
+2. Select **OAuth2 API**
+3. Fill in:
+   - **Authorization URL:** `https://api.vendaze.com/oauth/authorize`
+   - **Access Token URL:** `https://api.vendaze.com/oauth/token`
+   - **Client ID:** your `client_id`
+   - **Client Secret:** your `client_secret`
+   - **Scope:** `people:read people:write companies:read companies:write deals:read deals:write tasks:read tasks:write`
+   - **Auth URI Query Parameters:** `code_challenge_method=S256`
+4. Click **Connect my account** and authorize in Vendaze
+
+### Use the HTTP Request node
+
+```json
+{
+  "method": "GET",
+  "url": "https://api.vendaze.com/v1/people",
+  "authentication": "predefinedCredentialType",
+  "nodeCredentialType": "oAuth2Api",
+  "queryParameters": {
+    "page": "1",
+    "per_page": "50"
+  }
+}
+```
+
+### Iterate over all pages
+
+Use the **Loop Over Items** node together with an **IF** node to check `meta.has_more`:
+
+```
+HTTP Request (GET /v1/people?page=1)
+  -> Set (extract data and meta)
+  -> Loop: IF meta.has_more === true
+       -> HTTP Request (next page)
+     ELSE
+       -> Continue workflow
+```
+
+## Option 2: Via MCP Client node
+
+n8n has native support for MCP (Model Context Protocol), which allows you to use the Vendaze MCP Server directly.
+
+### Configure the MCP Client
+
+1. Add an **MCP Client** node to your workflow
+2. In **Server URL**, enter: `https://api.vendaze.com/mcp`
+3. In **Authentication**, select **Header Auth**
+4. Add the header: `Authorization: Bearer YOUR_ACCESS_TOKEN`
+5. The node will automatically list the available tools
+
+### Call an MCP tool
+
+```json
+{
+  "tool": "list_deals",
+  "parameters": {
+    "pipeline_id": "pipeline-uuid",
+    "stage_id": "stage-uuid",
+    "per_page": 100
+  }
+}
+```
+
+## Example workflows
+
+**Periodic sync:**
+Every day at 8am, fetch all deals updated in the last 24 hours and send a summary email with consolidated data.
+
+**Webhook to CRM:**
+Receive data from an external form via webhook, transform the data with a **Set** node, and create the contact and deal in Vendaze in sequence.
+
+**Automatic assignment:**
+When a deal is created without an `owner_user_id`, find the user with the fewest open tasks and assign them automatically.
+
+## Self-hosting
+
+If you self-host n8n, the OAuth flow requires the `redirect_uri` registered in the Vendaze app to point to your local instance. Register the app with:
+
+```
+"redirect_uris": ["http://localhost:5678/rest/oauth2-credential/callback"]
+```
+
+In production, replace `localhost:5678` with your n8n instance domain.

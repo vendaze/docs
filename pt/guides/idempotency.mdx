@@ -1,0 +1,129 @@
+---
+title: 'Idempotência'
+description: 'Como usar a chave de idempotência para enviar requisições com segurança sem duplicar dados.'
+icon: 'repeat'
+---
+
+Operações de escrita na Vendaze API suportam idempotência via header `Idempotency-Key`. Isso permite que você reenvie uma requisição com segurança caso não tenha recebido resposta, sem risco de criar registros duplicados.
+
+## O que é idempotência
+
+Uma operação é idempotente quando executá-la múltiplas vezes produz o mesmo resultado que executá-la uma única vez. Na prática, isso significa que se sua rede cair durante uma criação de negócio, você pode repetir a mesma requisição e ter garantia de que apenas um negócio será criado.
+
+## Como usar
+
+Inclua o header `Idempotency-Key` com uma string única gerada por você:
+
+```bash
+curl -X POST https://api.vendaze.com/v1/deals \
+  -H "Authorization: Bearer SEU_ACCESS_TOKEN" \
+  -H "Content-Type: application/json" \
+  -H "Idempotency-Key: 7f8a9b2c-3d4e-5f60-a1b2-c3d4e5f60718" \
+  -d '{
+    "name": "Contrato Anual Acme",
+    "pipeline_id": "uuid-do-pipeline",
+    "stage_id": "uuid-do-stage",
+    "currency_id": "BRL",
+    "price_cts": 1200000
+  }'
+```
+
+Se você enviar a mesma requisição novamente com o mesmo `Idempotency-Key`, a API retorna a resposta original sem processar novamente.
+
+## Formato da chave
+
+A chave deve ser:
+
+- Uma string de até 255 caracteres
+- Única por operação (recomendado: UUID v4)
+- Gerada pelo seu sistema, não reutilizada entre operações distintas
+
+```javascript
+import { randomUUID } from 'crypto';
+
+// Gere uma chave única por tentativa de operação
+const idempotencyKey = randomUUID();
+```
+
+## Comportamento por cenário
+
+| Cenário                                              | Comportamento                                    |
+| ---------------------------------------------------- | ------------------------------------------------ |
+| Primeira requisição                                  | Processa normalmente e armazena a resposta.      |
+| Requisição repetida com mesma chave e mesmo body     | Retorna a resposta original sem reprocessar.     |
+| Requisição repetida com mesma chave e body diferente | Retorna `422` com código `idempotency_conflict`. |
+| Requisição repetida após 24 horas                    | Chave expirada. Processa como nova requisição.   |
+
+## Endpoints que suportam idempotência
+
+O header `Idempotency-Key` é aceito em todos os endpoints de escrita:
+
+- `POST /v1/people`
+- `POST /v1/companies`
+- `POST /v1/deals`
+- `POST /v1/tasks`
+- `POST /v1/activities`
+- `POST /v1/products`
+- `POST /v1/tags`
+- `POST /v1/lists`
+- `POST /v1/custom-fields`
+
+Endpoints `PATCH` e `DELETE` são naturalmente idempotentes pelo próprio protocolo HTTP e não necessitam do header.
+
+## Padrão recomendado para criações críticas
+
+```javascript
+async function createDeal(payload, accessToken) {
+  const idempotencyKey = randomUUID();
+
+  for (let attempt = 0; attempt < 3; attempt++) {
+    try {
+      const res = await fetch('https://api.vendaze.com/v1/deals', {
+        method: 'POST',
+        headers: {
+          Authorization: `Bearer ${accessToken}`,
+          'Content-Type': 'application/json',
+          'Idempotency-Key': idempotencyKey,
+        },
+        body: JSON.stringify(payload),
+      });
+
+      if (res.ok) return res.json();
+
+      // Não retentar em erros de validação
+      if (res.status === 422) throw new Error('Validation failed');
+
+      // Retentar em falhas de rede ou 5xx
+      if (res.status >= 500 || !res.status) {
+        await new Promise((r) => setTimeout(r, 1000 * (attempt + 1)));
+        continue;
+      }
+
+      throw new Error(`Unexpected status: ${res.status}`);
+    } catch (err) {
+      if (attempt === 2) throw err;
+    }
+  }
+}
+```
+
+<Note>
+  A chave de idempotência persiste por 24 horas. Use sempre um UUID v4 gerado no momento da
+  operação. Nunca reutilize chaves entre operações diferentes.
+</Note>
+
+## Conflito de chave
+
+Se você enviar uma chave já usada com um body diferente, a API retorna:
+
+```json
+{
+  "error": {
+    "code": "idempotency_conflict",
+    "message": "An idempotency key was reused with a different request body.",
+    "request_id": "uuid"
+  }
+}
+```
+
+Isso protege contra bugs onde a mesma chave é acidentalmente reutilizada para duas operações distintas.

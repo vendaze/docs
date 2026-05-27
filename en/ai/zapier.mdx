@@ -1,0 +1,75 @@
+---
+title: 'Zapier'
+description: 'Connect Vendaze to 7,000+ apps with Zapier, without writing code.'
+icon: 'bolt'
+---
+
+Zapier lets you build automations between Vendaze and thousands of other apps using a visual interface. Create contacts when a form is filled out, update deals when a contract is signed, or sync data with your favorite spreadsheet.
+
+## How to connect
+
+### 1. Create an app in Vendaze
+
+Before configuring Zapier, you need a `client_id` and `client_secret` from Vendaze:
+
+```bash
+curl -X POST https://api.vendaze.com/v1/auth/register-app \
+  -H "Content-Type: application/json" \
+  -d '{
+    "app_name": "Zapier Integration",
+    "email": "dev@yourapp.com",
+    "redirect_uris": ["https://zapier.com/dashboard/auth/oauth/return/App"],
+    "scopes": ["people:read", "people:write", "companies:read", "companies:write", "deals:read", "deals:write"]
+  }'
+```
+
+You will receive the `client_id` and `client_secret` by email.
+
+### 2. Set up the connection in Zapier
+
+1. Go to [zapier.com](https://zapier.com) and log in
+2. Click **Create Zap**
+3. In the trigger or action section, search for **Vendaze**
+4. Click **Connect** and enter your `client_id` and `client_secret`
+5. You will be redirected to Vendaze to authorize access to the workspace
+6. Select the workspace you want to connect and authorize the requested scopes
+
+### 3. Configure the Zap
+
+After connecting, choose the trigger and action:
+
+**Available triggers** (what starts the Zap):
+
+- New contact created
+- Contact updated
+- New company created
+- New deal created
+- Deal updated
+- New task created
+
+**Available actions** (what the Zap does):
+
+- Create contact
+- Update contact
+- Create company
+- Create deal
+- Update deal
+- Create task
+- Log activity
+
+## Example automations
+
+**Form to CRM:**
+When someone fills out a Typeform form, automatically create a contact in Vendaze with the submitted data.
+
+**CRM to spreadsheet:**
+When a deal moves to the "Won" stage, add a row in Google Sheets with the deal data.
+
+**Email to task:**
+When an email tagged with a specific label arrives in Gmail, create a follow-up task in Vendaze.
+
+## Notes
+
+- Zapier checks for new events every 5 to 15 minutes, depending on the plan
+- For real-time notifications, consider using Webhooks alongside Zapier
+- Workspace custom fields appear as optional fields in creation and update actions

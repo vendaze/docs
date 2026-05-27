@@ -1,0 +1,134 @@
+---
+title: 'Conceitos Básicos'
+description: 'Entenda os fundamentos da API do Vendaze antes de começar a integrar.'
+icon: 'book'
+---
+
+Antes de fazer sua primeira chamada à API, dedique alguns minutos para entender estes conceitos. Eles vão economizar tempo durante o desenvolvimento e ajudar a projetar uma integração mais sólida.
+
+## Workspaces
+
+O Vendaze é uma plataforma **multi-workspace**. Uma única conta pode pertencer a vários workspaces, como um consultor que atende vários clientes ou uma empresa com múltiplas unidades de negócio.
+
+Quando um usuário autoriza seu aplicativo via OAuth, ele escolhe **um workspace específico** para conectar. Todas as operações feitas com aquele token pertencem exclusivamente a esse workspace.
+
+<Note>
+  Você nunca envia o `workspace_id` nas requisições. Ele é embutido no `access_token` no momento da
+  autorização e resolvido automaticamente pela API em cada chamada.
+</Note>
+
+Para acessar um workspace diferente, o usuário precisa passar pelo fluxo OAuth novamente.
+
+## Modelo de autenticação
+
+A Vendaze API usa **OAuth 2.1 com PKCE** (Proof Key for Code Exchange). Seu aplicativo:
+
+1. Registra-se no Vendaze para receber `client_id` e `client_secret`
+2. Redireciona usuários para autorizar acesso ao workspace deles
+3. Recebe um `access_token` (válido por 1 hora) e um `refresh_token` (válido por 60 dias)
+4. Inclui o `access_token` como Bearer token em toda requisição
+
+O token é workspace-scoped. Um token emitido para o Workspace A não consegue ler dados do Workspace B.
+
+## Escopos
+
+Escopos definem o que seu aplicativo pode fazer. Você declara os escopos necessários ao registrar o aplicativo e os usuários os aprovam individualmente na tela de consentimento.
+
+| Escopo            | Acesso                             |
+| ----------------- | ---------------------------------- |
+| `people:read`     | Ler contatos (pessoas)             |
+| `people:write`    | Criar, atualizar, deletar pessoas  |
+| `companies:read`  | Ler empresas                       |
+| `companies:write` | Criar, atualizar, deletar empresas |
+| `deals:read`      | Ler negócios                       |
+| `deals:write`     | Criar, atualizar, deletar negócios |
+| `tasks:read`      | Ler tarefas                        |
+| `tasks:write`     | Criar, atualizar, deletar tarefas  |
+
+<Tip>
+  Solicite apenas os escopos que seu aplicativo genuinamente precisa. Usuários tendem a desconfiar
+  de apps que pedem permissões amplas sem justificativa.
+</Tip>
+
+## IDs de recursos
+
+Todos os IDs na Vendaze API são **UUIDs** em formato string:
+
+```json
+"id": "550e8400-e29b-41d4-a716-446655440000"
+```
+
+Nunca use IDs numéricos sequenciais para referenciar recursos.
+
+## Datas e horários
+
+Todos os timestamps são strings **ISO 8601 UTC**:
+
+```
+"created_at": "2026-05-26T14:00:00Z"
+```
+
+Ao enviar datas em filtros ou bodies de requisição, sempre use ISO 8601 UTC. Outros formatos são rejeitados com erro `422`.
+
+## Valores monetários
+
+Campos de preço como `price_cts` são **inteiros representando o valor em centavos**:
+
+```json
+"price_cts": 19900
+```
+
+O valor `19900` representa R$ 199,00. Seu aplicativo é responsável pela conversão e formatação para exibição. Essa abordagem evita problemas de arredondamento de ponto flutuante e é consistente entre todas as moedas.
+
+## Soft delete
+
+Recursos como pessoas, empresas, negócios e produtos suportam **soft delete**. Ao deletar via API, o registro é marcado internamente como deletado, mas não é removido permanentemente do banco.
+
+Da perspectiva da sua integração, o comportamento é transparente:
+
+- `DELETE /v1/people/:id` retorna `204` e o registro deixa de ser acessível
+- `GET /v1/people/:id` para um registro deletado retorna `404`
+- Endpoints de listagem nunca retornam registros deletados
+
+## Envelope de resposta
+
+Toda resposta da Vendaze API segue o mesmo formato:
+
+```json
+// Objeto único
+{ "data": { ... } }
+
+// Lista paginada
+{
+  "data": [ ... ],
+  "meta": {
+    "total": 150,
+    "page": 1,
+    "per_page": 50,
+    "has_more": true
+  }
+}
+
+// Erro
+{
+  "error": {
+    "code": "not_found",
+    "message": "Person not found.",
+    "request_id": "550e8400-e29b-41d4-a716-446655440000"
+  }
+}
+```
+
+Uma resposta com status 2xx nunca contém `error`. Uma resposta com status não-2xx sempre contém `error`. Nunca verifique erros dentro de uma resposta bem-sucedida.
+
+## Nomes de campos
+
+Todos os campos usam **snake_case**:
+
+```json
+{
+  "full_name": "Ana Costa",
+  "owner_user_id": "b3a8c1d2-f3e4-4a5b-9c6d-7e8f9a0b1c2d",
+  "created_at": "2026-05-26T14:00:00Z"
+}
+```

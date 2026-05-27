@@ -1,0 +1,103 @@
+---
+title: 'Webhooks'
+description: 'Receba notificações em tempo real quando eventos ocorrem nos dados do workspace.'
+icon: 'webhook'
+---
+
+Webhooks permitem que o Vendaze notifique seu aplicativo quando eventos ocorrem no workspace. Em vez de fazer polling continuamente, seu servidor recebe uma notificação HTTP assim que algo muda.
+
+<Note>
+  Webhooks são configurados pelo cliente do Vendaze no painel da plataforma, não via API pública.
+  Este guia explica como receber e validar as notificações.
+</Note>
+
+## Como funciona
+
+1. O cliente do Vendaze configura um webhook no painel: define a URL de destino e os eventos desejados
+2. O Vendaze gera um `webhook_secret` único para aquele endpoint
+3. Quando um evento ocorre, o Vendaze faz um `POST` para a URL configurada com o payload assinado
+4. Seu servidor valida a assinatura e processa o evento
+
+## Eventos disponíveis
+
+| Evento             | Quando ocorre                   |
+| ------------------ | ------------------------------- |
+| `person.created`   | Uma nova pessoa é criada        |
+| `person.updated`   | Uma pessoa é atualizada         |
+| `company.created`  | Uma nova empresa é criada       |
+| `company.updated`  | Uma empresa é atualizada        |
+| `deal.created`     | Um novo negócio é criado        |
+| `deal.updated`     | Um negócio é atualizado         |
+| `activity.created` | Uma nova atividade é registrada |
+| `activity.updated` | Uma atividade é atualizada      |
+| `task.created`     | Uma nova tarefa é criada        |
+| `task.updated`     | Uma tarefa é atualizada         |
+| `product.created`  | Um novo produto é criado        |
+| `product.updated`  | Um produto é atualizado         |
+
+## Formato do payload
+
+```json
+{
+  "event": "person.created",
+  "workspace_slug": "workspace-do-cliente",
+  "timestamp": "2026-05-26T14:00:00Z",
+  "data": {
+    "id": "550e8400-e29b-41d4-a716-446655440000",
+    "full_name": "Ana Costa",
+    "emails": [{ "value": "ana@empresa.com", "label": "work" }],
+    "created_at": "2026-05-26T14:00:00Z"
+  }
+}
+```
+
+## Validar a assinatura
+
+Cada entrega é assinada com HMAC-SHA256 usando o `webhook_secret`. Valide antes de processar.
+
+**Headers enviados pelo Vendaze:**
+
+```
+X-Vendaze-Signature: sha256=abc123...
+X-Vendaze-Timestamp: 1748000000
+```
+
+**Validação em Node.js:**
+
+```javascript
+const crypto = require('crypto');
+
+function isValidSignature(body, timestamp, receivedSignature, secret) {
+  // Rejeitar payloads com mais de 5 minutos
+  const now = Math.floor(Date.now() / 1000);
+  if (now - parseInt(timestamp) > 300) return false;
+
+  const message = `${timestamp}.${JSON.stringify(body)}`;
+  const expected = 'sha256=' + crypto.createHmac('sha256', secret).update(message).digest('hex');
+
+  return crypto.timingSafeEqual(Buffer.from(receivedSignature), Buffer.from(expected));
+}
+```
+
+<Warning>
+  Rejeite payloads com timestamp superior a 5 minutos. Isso protege contra ataques de replay.
+</Warning>
+
+## Política de reenvio
+
+Se seu servidor não retornar status `2xx` em 10 segundos, o Vendaze tenta novamente:
+
+| Tentativa | Espera     |
+| --------- | ---------- |
+| 2         | 1 minuto   |
+| 3         | 5 minutos  |
+| 4         | 30 minutos |
+| 5         | 2 horas    |
+
+Após 5 falhas consecutivas, o endpoint é marcado como `suspended`. O cliente reativa no painel.
+
+## Boas práticas
+
+- **Responda rapidamente:** retorne `200` imediatamente e processe em background.
+- **Seja idempotente:** o mesmo evento pode chegar mais de uma vez. Use o `id` do payload para deduplicar.
+- **Guarde os logs:** armazene os payloads recebidos para facilitar debug e auditoria.

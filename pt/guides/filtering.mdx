@@ -1,0 +1,98 @@
+---
+title: 'Filtros'
+description: 'Use parâmetros de query para filtrar e buscar registros nos endpoints de listagem.'
+icon: 'filter'
+---
+
+Endpoints de listagem suportam filtros via parâmetros de query. Múltiplos filtros são combinados com lógica AND — todos os critérios precisam ser atendidos.
+
+## Filtros de texto
+
+Campos de texto usam correspondência parcial sem distinção de maiúsculas (equivalente a `ILIKE '%valor%'`):
+
+```bash
+GET /v1/people?full_name=silva
+GET /v1/companies?full_name=tech
+GET /v1/deals?name=contrato
+```
+
+## Filtros de correspondência exata
+
+```bash
+GET /v1/people?company_id=7c9e6679-7425-40de-944b-e07fc1f90ae7
+GET /v1/people?owner_user_id=b3a8c1d2-f3e4-4a5b-9c6d-7e8f9a0b1c2d
+GET /v1/tasks?completed=true
+GET /v1/tasks?priority=high
+GET /v1/activities?type=call
+```
+
+## Filtros de intervalo de data
+
+Sempre em ISO 8601 UTC:
+
+```bash
+GET /v1/people?created_after=2026-01-01T00:00:00Z&created_before=2026-12-31T23:59:59Z
+GET /v1/deals?updated_after=2026-05-01T00:00:00Z
+GET /v1/deals?forecast_after=2026-06-01T00:00:00Z&forecast_before=2026-06-30T23:59:59Z
+```
+
+| Filtro                              | Aplica-se a                                      |
+| ----------------------------------- | ------------------------------------------------ |
+| `created_after`, `created_before`   | Pessoas, Empresas, Negócios, Tarefas, Atividades |
+| `updated_after`, `updated_before`   | Pessoas, Empresas, Negócios                      |
+| `forecast_after`, `forecast_before` | Negócios                                         |
+
+## Filtros por tag
+
+```bash
+GET /v1/people?tag[]=cliente-vip
+GET /v1/people?tag[]=cliente-vip&tag[]=lead
+```
+
+Quando múltiplas tags são fornecidas, todos os registros retornados terão todas elas (AND).
+
+## Filtros de preço (negócios)
+
+Valores em centavos:
+
+```bash
+GET /v1/deals?price_min_cts=100000
+GET /v1/deals?price_min_cts=50000&price_max_cts=500000
+GET /v1/deals?currency=BRL
+```
+
+## Filtros por campo adicional
+
+```bash
+GET /v1/people?custom_field[UUID_DO_CAMPO]=valor
+GET /v1/companies?custom_field[UUID_DO_CAMPO]=12.345.678/0001-99
+```
+
+| Tipo do campo                          | Comparação                          |
+| -------------------------------------- | ----------------------------------- |
+| `text`, `long_text`, `link`, `address` | Parcial sem distinção de maiúsculas |
+| `cpf`, `cnpj`                          | Exata                               |
+| `select`                               | Exata                               |
+| `multi_select`                         | Contém o valor                      |
+| `number`                               | Exata (numérico)                    |
+| `date`                                 | Exata (ISO 8601)                    |
+
+Use `GET /v1/custom-fields` para listar os campos disponíveis no workspace e obter os UUIDs.
+
+## Filtros inválidos
+
+Filtros com campo inexistente ou valor com formato incorreto retornam `422`:
+
+```json
+{
+  "error": {
+    "code": "validation_error",
+    "message": "Validation failed.",
+    "fields": {
+      "created_after": "Invalid ISO 8601 date format.",
+      "priority": "Must be one of: high, medium, low."
+    },
+    "request_id": "uuid"
+  }
+}
+```

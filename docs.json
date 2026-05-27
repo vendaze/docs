@@ -1,126 +1,201 @@
 {
-  "$schema": "https://mintlify.com/docs.json",
-  "theme": "mint",
-  "name": "Mintlify Starter Kit",
+  "theme": "palm",
+  "name": "Vendaze Developers",
   "colors": {
-    "primary": "#16A34A",
-    "light": "#07C983",
-    "dark": "#15803D"
+    "primary": "#00c767",
+    "light": "#00c767",
+    "dark": "#00c767"
+  },
+  "background": {
+    "color": {
+      "light": "#ffffff",
+      "dark": "#0b0c0d"
+    }
+  },
+  "fonts": {
+    "family": "Public Sans"
   },
   "favicon": "/favicon.svg",
+  "logo": {
+    "light": "/logo/light.svg",
+    "dark": "/logo/dark.svg"
+  },
   "navigation": {
-    "tabs": [
+    "global": {
+      "anchors": [
+        {
+          "anchor": "Status",
+          "href": "https://status.vendaze.com",
+          "icon": "signal-bars"
+        }
+      ]
+    },
+    "languages": [
       {
-        "tab": "Guides",
-        "groups": [
+        "language": "pt",
+        "default": true,
+        "navbar": {
+          "links": [{ "label": "Suporte", "href": "mailto:suporte@vendaze.com" }],
+          "primary": {
+            "type": "button",
+            "label": "Dashboard",
+            "href": "https://app.vendaze.com"
+          }
+        },
+        "footer": {
+          "socials": {
+            "x": "https://x.com/vendaze",
+            "linkedin": "https://linkedin.com/company/vendaze",
+            "instagram": "https://instagram.com/vendaze"
+          }
+        },
+        "tabs": [
           {
-            "group": "Getting started",
-            "pages": [
-              "index",
-              "quickstart",
-              "development"
+            "tab": "Home",
+            "pages": ["pt/index"]
+          },
+          {
+            "tab": "Guias",
+            "groups": [
+              {
+                "group": "Visão Geral",
+                "pages": ["pt/guides/welcome", "pt/guides/support", "pt/guides/core-concepts"]
+              },
+              {
+                "group": "Começando",
+                "pages": ["pt/guides/register-app", "pt/guides/authentication", "pt/guides/first-request"]
+              },
+              {
+                "group": "Utilizando a API",
+                "pages": [
+                  "pt/guides/pagination",
+                  "pt/guides/filtering",
+                  "pt/guides/custom-fields",
+                  "pt/guides/webhooks",
+                  "pt/guides/errors",
+                  "pt/guides/rate-limits"
+                ]
+              },
+              {
+                "group": "Boas Práticas",
+                "pages": ["pt/guides/idempotency", "pt/guides/versioning", "pt/guides/security"]
+              }
             ]
           },
           {
-            "group": "Customization",
-            "pages": [
-              "essentials/settings",
-              "essentials/navigation"
+            "tab": "API Reference",
+            "openapi": "api-reference/openapi.json"
+          },
+          {
+            "tab": "Changelog",
+            "groups": [
+              {
+                "group": "2026",
+                "pages": ["pt/changelog/may-2026", "pt/changelog/april-2026"]
+              }
             ]
           },
           {
-            "group": "Writing content",
-            "pages": [
-              "essentials/markdown",
-              "essentials/code",
-              "essentials/images",
-              "essentials/components",
-              "essentials/reusable-snippets"
-            ]
-          },
-          {
-            "group": "Agent ready",
-            "pages": [
-              "agent-ready/prompt",
-              "agent-ready/visibility",
-              "agent-ready/contextual",
-              "ai-tools/cursor",
-              "ai-tools/claude-code",
-              "ai-tools/windsurf"
+            "tab": "MCP e Conectores IA",
+            "groups": [
+              {
+                "group": "Visão Geral",
+                "pages": ["pt/ai/overview"]
+              },
+              {
+                "group": "Conectores",
+                "pages": ["pt/ai/mcp", "pt/ai/zapier", "pt/ai/make", "pt/ai/n8n"]
+              },
+              {
+                "group": "Agentes de IA",
+                "pages": ["pt/ai/claude", "pt/ai/cursor", "pt/ai/copilot"]
+              }
             ]
           }
         ]
       },
       {
-        "tab": "API reference",
-        "groups": [
+        "language": "en",
+        "navbar": {
+          "links": [{ "label": "Support", "href": "mailto:support@vendaze.com" }],
+          "primary": {
+            "type": "button",
+            "label": "Dashboard",
+            "href": "https://app.vendaze.com"
+          }
+        },
+        "footer": {
+          "socials": {
+            "x": "https://x.com/vendaze",
+            "linkedin": "https://linkedin.com/company/vendaze",
+            "instagram": "https://instagram.com/vendaze"
+          }
+        },
+        "tabs": [
           {
-            "group": "API documentation",
-            "pages": [
-              "api-reference/introduction"
+            "tab": "Home",
+            "pages": ["en/index"]
+          },
+          {
+            "tab": "Guides",
+            "groups": [
+              {
+                "group": "Overview",
+                "pages": ["en/guides/welcome", "en/guides/support", "en/guides/core-concepts"]
+              },
+              {
+                "group": "Getting Started",
+                "pages": ["en/guides/register-app", "en/guides/authentication", "en/guides/first-request"]
+              },
+              {
+                "group": "Using the API",
+                "pages": [
+                  "en/guides/pagination",
+                  "en/guides/filtering",
+                  "en/guides/custom-fields",
+                  "en/guides/webhooks",
+                  "en/guides/errors",
+                  "en/guides/rate-limits"
+                ]
+              },
+              {
+                "group": "Best Practices",
+                "pages": ["en/guides/idempotency", "en/guides/versioning", "en/guides/security"]
+              }
             ]
           },
           {
-            "group": "Endpoint examples",
-            "pages": [
-              "api-reference/endpoint/get",
-              "api-reference/endpoint/create",
-              "api-reference/endpoint/delete",
-              "api-reference/endpoint/webhook"
+            "tab": "API Reference",
+            "openapi": "api-reference/openapi.json"
+          },
+          {
+            "tab": "Changelog",
+            "groups": [
+              {
+                "group": "2026",
+                "pages": ["en/changelog/may-2026", "en/changelog/april-2026"]
+              }
+            ]
+          },
+          {
+            "tab": "MCP & AI Connectors",
+            "groups": [
+              {
+                "group": "Overview",
+                "pages": ["en/ai/overview"]
+              },
+              {
+                "group": "Connectors",
+                "pages": ["en/ai/mcp", "en/ai/zapier", "en/ai/make", "en/ai/n8n"]
+              },
+              {
+                "group": "AI Agents",
+                "pages": ["en/ai/claude", "en/ai/cursor", "en/ai/copilot"]
+              }
             ]
           }
         ]
       }
-    ],
-    "global": {
-      "anchors": [
-        {
-          "anchor": "Documentation",
-          "href": "https://mintlify.com/docs",
-          "icon": "book-open-cover"
-        },
-        {
-          "anchor": "Blog",
-          "href": "https://mintlify.com/blog",
-          "icon": "newspaper"
-        }
-      ]
-    }
-  },
-  "logo": {
-    "light": "/logo/light.svg",
-    "dark": "/logo/dark.svg"
-  },
-  "navbar": {
-    "links": [
-      {
-        "label": "Support",
-        "href": "mailto:hi@mintlify.com"
-      }
-    ],
-    "primary": {
-      "type": "button",
-      "label": "Dashboard",
-      "href": "https://dashboard.mintlify.com"
-    }
-  },
-  "contextual": {
-    "options": [
-     "copy",
-     "view",
-     "chatgpt",
-     "claude",
-     "perplexity",
-     "mcp",
-     "cursor",
-     "vscode"
-   ]
-  },
-  "footer": {
-    "socials": {
-      "x": "https://x.com/mintlify",
-      "github": "https://github.com/mintlify",
-      "linkedin": "https://linkedin.com/company/mintlify"
-    }
+    ]
   }
 }

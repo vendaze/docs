@@ -1,0 +1,82 @@
+---
+title: 'Versioning'
+description: 'How the Vendaze API is versioned and what to expect when new versions are released.'
+icon: 'code-branch'
+---
+
+The Vendaze API uses URL-based versioning. The current version is `v1`, included in the path of all resource endpoints: `/v1/people`, `/v1/deals`, etc.
+
+## Current version
+
+```
+https://api.vendaze.com/v1/
+```
+
+OAuth endpoints (`/oauth/authorize`, `/oauth/token`, `/oauth/revoke`) and the app registration endpoint (`/v1/auth/register-app`) do not change version alongside resources.
+
+## Compatibility policy
+
+Within the same major version (e.g., `v1`), the Vendaze API is backward-compatible. This means you can update your integration safely without risk of breakage when:
+
+- New optional fields are added to existing responses
+- New endpoints are introduced
+- New optional query parameters are added
+- New values are added to `enum` type fields in responses
+
+## What constitutes a breaking change
+
+Changes that require a new major version:
+
+- Removal of an existing response field
+- Changing the type of an existing field
+- Removal of an endpoint
+- Changing the meaning of an existing error code
+- Making a previously optional parameter required
+- Changing the response object structure
+
+## Deprecation process
+
+When a version is discontinued:
+
+1. Announcement with at least 6 months notice via changelog and email to registered developers
+2. Deprecation headers added to responses from the old version:
+   ```
+   Deprecation: true
+   Sunset: Sat, 01 Jan 2028 00:00:00 GMT
+   ```
+3. The old version continues to work until the sunset date
+4. After the sunset date, requests return `410 Gone`
+
+## Detecting deprecation headers
+
+Monitor the `Deprecation` header in responses to know when a version is being discontinued:
+
+```javascript
+async function apiCall(url, options) {
+  const res = await fetch(url, options);
+
+  if (res.headers.get('Deprecation')) {
+    const sunset = res.headers.get('Sunset');
+    console.warn(`[Vendaze API] This version will be sunset on: ${sunset}`);
+  }
+
+  return res.json();
+}
+```
+
+## Custom field versioning
+
+Custom fields are defined per workspace and are not affected by API versioning. The `custom_fields` object structure in responses remains stable within `v1`.
+
+## Changelog
+
+All API changes are documented in the changelog. Subscribe to updates to receive notifications:
+
+<CardGroup cols={2}>
+  <Card title="May 2026" icon="calendar" href="/en/changelog/may-2026">
+    Latest changes and additions.
+  </Card>
+  <Card title="April 2026" icon="calendar" href="/en/changelog/april-2026">
+    v1.0.0 launch.
+  </Card>
+</CardGroup>

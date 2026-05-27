@@ -1,0 +1,98 @@
+---
+title: 'Filtering'
+description: 'Use query parameters to filter and search records in listing endpoints.'
+icon: 'filter'
+---
+
+Listing endpoints support filters via query parameters. Multiple filters are combined with AND logic — all criteria must be met.
+
+## Text filters
+
+Text fields use case-insensitive partial matching (equivalent to `ILIKE '%value%'`):
+
+```bash
+GET /v1/people?full_name=costa
+GET /v1/companies?full_name=tech
+GET /v1/deals?name=enterprise
+```
+
+## Exact match filters
+
+```bash
+GET /v1/people?company_id=7c9e6679-7425-40de-944b-e07fc1f90ae7
+GET /v1/people?owner_user_id=b3a8c1d2-f3e4-4a5b-9c6d-7e8f9a0b1c2d
+GET /v1/tasks?completed=true
+GET /v1/tasks?priority=high
+GET /v1/activities?type=call
+```
+
+## Date range filters
+
+Always in ISO 8601 UTC:
+
+```bash
+GET /v1/people?created_after=2026-01-01T00:00:00Z&created_before=2026-12-31T23:59:59Z
+GET /v1/deals?updated_after=2026-05-01T00:00:00Z
+GET /v1/deals?forecast_after=2026-06-01T00:00:00Z&forecast_before=2026-06-30T23:59:59Z
+```
+
+| Filter                              | Applies to                                  |
+| ----------------------------------- | ------------------------------------------- |
+| `created_after`, `created_before`   | People, Companies, Deals, Tasks, Activities |
+| `updated_after`, `updated_before`   | People, Companies, Deals                    |
+| `forecast_after`, `forecast_before` | Deals                                       |
+
+## Tag filters
+
+```bash
+GET /v1/people?tag[]=vip-client
+GET /v1/people?tag[]=vip-client&tag[]=lead
+```
+
+When multiple tags are provided, all returned records will have all of them (AND).
+
+## Price filters (deals)
+
+Values in cents:
+
+```bash
+GET /v1/deals?price_min_cts=100000
+GET /v1/deals?price_min_cts=50000&price_max_cts=500000
+GET /v1/deals?currency=USD
+```
+
+## Custom field filters
+
+```bash
+GET /v1/people?custom_field[FIELD_UUID]=value
+GET /v1/companies?custom_field[FIELD_UUID]=specific-value
+```
+
+| Field type                             | Comparison                     |
+| -------------------------------------- | ------------------------------ |
+| `text`, `long_text`, `link`, `address` | Case-insensitive partial match |
+| `cpf`, `cnpj`                          | Exact                          |
+| `select`                               | Exact                          |
+| `multi_select`                         | Contains the value             |
+| `number`                               | Exact (numeric)                |
+| `date`                                 | Exact (ISO 8601)               |
+
+Use `GET /v1/custom-fields` to list available fields in the workspace and retrieve their UUIDs.
+
+## Invalid filters
+
+Filters with nonexistent fields or incorrectly formatted values return `422`:
+
+```json
+{
+  "error": {
+    "code": "validation_error",
+    "message": "Validation failed.",
+    "fields": {
+      "created_after": "Invalid ISO 8601 date format.",
+      "priority": "Must be one of: high, medium, low."
+    },
+    "request_id": "uuid"
+  }
+}
+```

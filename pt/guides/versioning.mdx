@@ -1,0 +1,82 @@
+---
+title: 'Versionamento'
+description: 'Como a Vendaze API é versionada e o que esperar quando novas versões forem lançadas.'
+icon: 'code-branch'
+---
+
+A Vendaze API usa versionamento por URL. A versão atual é `v1`, incluída no path de todos os endpoints de recursos: `/v1/people`, `/v1/deals`, etc.
+
+## Versão atual
+
+```
+https://api.vendaze.com/v1/
+```
+
+Os endpoints OAuth (`/oauth/authorize`, `/oauth/token`, `/oauth/revoke`) e o endpoint de registro de app (`/v1/auth/register-app`) não mudam de versão junto com os recursos.
+
+## Política de compatibilidade
+
+Dentro de uma mesma versão principal (ex: `v1`), a Vendaze API é compatível com versões anteriores. Isso significa que você pode atualizar sua integração com segurança sem risco de quebra quando:
+
+- Novos campos opcionais são adicionados a respostas existentes
+- Novos endpoints são introduzidos
+- Novos parâmetros de query opcionais são adicionados
+- Novos valores são adicionados a campos de tipo `enum` em respostas
+
+## O que constitui uma quebra de compatibilidade
+
+Mudanças que exigem uma nova versão principal:
+
+- Remoção de um campo de resposta existente
+- Alteração do tipo de um campo existente
+- Remoção de um endpoint
+- Mudança no significado de um código de erro existente
+- Tornar obrigatório um parâmetro que era opcional
+- Alteração na estrutura do objeto de resposta
+
+## Processo de deprecação
+
+Quando uma versão é descontinuada:
+
+1. Anúncio com no mínimo 6 meses de antecedência via changelog e email para desenvolvedores registrados
+2. Headers de deprecação adicionados às respostas da versão antiga:
+   ```
+   Deprecation: true
+   Sunset: Sat, 01 Jan 2028 00:00:00 GMT
+   ```
+3. A versão antiga continua funcionando até a data de encerramento
+4. Após a data de encerramento, requisições retornam `410 Gone`
+
+## Detectar headers de deprecação
+
+Monitore o header `Deprecation` nas respostas para saber quando uma versão está sendo descontinuada:
+
+```javascript
+async function apiCall(url, options) {
+  const res = await fetch(url, options);
+
+  if (res.headers.get('Deprecation')) {
+    const sunset = res.headers.get('Sunset');
+    console.warn(`[Vendaze API] Esta versão será encerrada em: ${sunset}`);
+  }
+
+  return res.json();
+}
+```
+
+## Versionamento de campos adicionais
+
+Campos adicionais (custom fields) são definidos por workspace e não são afetados pelo versionamento da API. A estrutura do objeto `custom_fields` nas respostas permanece estável dentro de `v1`.
+
+## Changelog
+
+Todas as mudanças na API são documentadas no changelog. Assine as atualizações para receber notificações:
+
+<CardGroup cols={2}>
+  <Card title="Maio 2026" icon="calendar" href="/pt/changelog/may-2026">
+    Últimas mudanças e adições.
+  </Card>
+  <Card title="Abril 2026" icon="calendar" href="/pt/changelog/april-2026">
+    Lançamento da v1.0.0.
+  </Card>
+</CardGroup>

@@ -1,0 +1,111 @@
+---
+title: 'Custom Fields'
+description: 'Read and filter workspace-defined custom fields on people, companies, and deals.'
+icon: 'sliders'
+---
+
+Vendaze workspaces can define custom fields to capture data that does not fit in the standard schema: tax IDs, lead sources, business segments, internal scores, and any other information relevant to the sales process.
+
+## How they work
+
+Custom fields are defined per workspace and associated with individual records. Each field has:
+
+- **Label:** human-readable name shown in the UI (e.g., "Lead Source")
+- **Key:** short identifier for programmatic use (e.g., `lead_source`)
+- **Type:** defines valid values and comparison rules
+- **Visibility:** whether it appears on people, companies, and/or deals
+
+## Available types
+
+| Type           | Description                       | Example value                   |
+| -------------- | --------------------------------- | ------------------------------- |
+| `text`         | Single line of text               | `"Acme Corp"`                   |
+| `long_text`    | Multi-line text                   | `"Notes about the customer..."` |
+| `number`       | Numeric value                     | `42`                            |
+| `date`         | ISO 8601 date                     | `"2026-05-26"`                  |
+| `select`       | One option from a predefined list | `"hot"`                         |
+| `multi_select` | Multiple options                  | `["hot", "inbound"]`            |
+| `cpf`          | Brazilian individual tax ID       | `"000.000.000-00"`              |
+| `cnpj`         | Brazilian company tax ID          | `"00.000.000/0001-00"`          |
+| `link`         | URL                               | `"https://linkedin.com/in/ana"` |
+| `address`      | Physical address                  | `"123 Main St"`                 |
+
+## List workspace fields
+
+```bash
+GET /v1/custom-fields
+```
+
+Filter by entity type:
+
+```bash
+GET /v1/custom-fields?show_people=true
+GET /v1/custom-fields?show_deals=true
+```
+
+Response:
+
+```json
+{
+  "data": [
+    {
+      "id": "a1b2c3d4-e5f6-7890-abcd-ef1234567890",
+      "label": "Lead Source",
+      "key": "lead_source",
+      "type": "select",
+      "value": ["organic", "paid", "referral", "outbound"],
+      "required": false,
+      "show_people": true,
+      "show_companies": false,
+      "show_deals": true,
+      "created_at": "2026-01-10T09:00:00Z"
+    }
+  ],
+  "meta": { "total": 5, "page": 1, "per_page": 50, "has_more": false }
+}
+```
+
+## Read values on a record
+
+When retrieving a record by ID, custom field values are returned in the `custom_fields` object:
+
+```json
+{
+  "data": {
+    "id": "550e8400-e29b-41d4-a716-446655440000",
+    "full_name": "Ana Costa",
+    "custom_fields": [
+      {
+        "id": "assoc-uuid",
+        "value": "referral",
+        "field": {
+          "id": "a1b2c3d4-e5f6-7890-abcd-ef1234567890",
+          "label": "Lead Source",
+          "key": "lead_source",
+          "type": "select"
+        }
+      }
+    ]
+  }
+}
+```
+
+Custom fields do **not** appear in listing responses — only in individual record lookups.
+
+## Filter by custom field
+
+```bash
+GET /v1/people?custom_field[FIELD_UUID]=referral
+GET /v1/companies?custom_field[FIELD_UUID]=00.000.000/0001-00
+```
+
+Comparison depends on the field type:
+
+| Type                                   | Comparison                     |
+| -------------------------------------- | ------------------------------ |
+| `text`, `long_text`, `link`, `address` | Case-insensitive partial match |
+| `cpf`, `cnpj`                          | Exact                          |
+| `select`                               | Exact                          |
+| `multi_select`                         | Contains the value             |
+| `number`                               | Exact                          |
+| `date`                                 | Exact                          |

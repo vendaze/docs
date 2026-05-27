@@ -1,0 +1,87 @@
+---
+title: 'Cursor'
+description: 'Access Vendaze CRM data directly in Cursor via MCP Server while developing your integration.'
+icon: 'arrow-pointer'
+---
+
+Cursor supports MCP servers, letting the editor's AI assistant access real CRM data while you develop. This is especially useful for inspecting production data, testing queries, and debugging your integration without leaving the editor.
+
+## Configure the MCP Server in Cursor
+
+Open Cursor settings and navigate to **Features > MCP Servers**, or edit the `~/.cursor/mcp.json` file directly:
+
+```json
+{
+  "mcpServers": {
+    "vendaze": {
+      "url": "https://api.vendaze.com/mcp",
+      "headers": {
+        "Authorization": "Bearer YOUR_ACCESS_TOKEN"
+      }
+    }
+  }
+}
+```
+
+After saving, Cursor will automatically reload the available MCP servers.
+
+## How to use in the editor
+
+With MCP configured, the Cursor assistant (Cmd/Ctrl + L) can call Vendaze tools during a conversation:
+
+**Inspect real data:**
+
+- "Fetch the 5 most recent deals in the workspace and show me the response structure."
+- "What is the UUID of the main pipeline? I need to hardcode it for the test."
+- "List the available custom fields for people."
+
+**Debug your integration:**
+
+- "The code is creating a deal without `currency_id`. Check if that field is required by querying the API."
+- "Fetch person ID abc-123 and compare it with the type we defined in `src/types/api.ts`."
+
+**Generate test data:**
+
+- "Create 3 test contacts with fictional names and emails for me to use in integration tests."
+
+## Use with `.cursor/rules`
+
+Add a `.cursor/rules` file to your project to give the assistant context about the integration:
+
+```markdown
+# Project rules — Vendaze Integration
+
+## API
+
+- Base URL: https://api.vendaze.com/v1
+- Auth: Bearer token via OAuth 2.1
+- Pagination: page + per_page, max 100 per page
+- Monetary values always in cents
+
+## MCP Server
+
+- URL: https://api.vendaze.com/mcp
+- Available tools: list_people, get_person, create_person, list_deals, etc.
+- Custom fields returned only in get\_\* (not in listings)
+
+## Code conventions
+
+- Handled error codes: token_expired (renew), rate_limit_exceeded (retry with backoff)
+- Never expose client_secret in the frontend
+- workspace_id always from JWT, never from the client
+```
+
+## Token renewal
+
+To avoid token expiration during a long development session, configure a task in `package.json` to renew before starting:
+
+```json
+{
+  "scripts": {
+    "dev": "node scripts/renew-vendaze-token.js && next dev",
+    "renew-token": "node scripts/renew-vendaze-token.js"
+  }
+}
+```
+
+The renewal script follows the same pattern described in the [Claude guide](/en/ai/claude#token-renewal).

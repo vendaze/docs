@@ -1,0 +1,111 @@
+---
+title: 'Campos Adicionais'
+description: 'Leia e filtre campos personalizados definidos pelo workspace em pessoas, empresas e negócios.'
+icon: 'sliders'
+---
+
+Workspaces do Vendaze podem definir campos adicionais para capturar dados que não se encaixam no schema padrão: CNPJ, origem do lead, segmento, pontuação interna, e qualquer outra informação relevante para o processo comercial.
+
+## Como funcionam
+
+Campos adicionais são definidos por workspace e associados a registros individuais. Cada campo tem:
+
+- **Label:** nome legível exibido na interface (ex: "Origem do Lead")
+- **Key:** identificador curto para uso programático (ex: `origem_lead`)
+- **Tipo:** define os valores válidos e as regras de comparação
+- **Visibilidade:** se aparece em pessoas, empresas e/ou negócios
+
+## Tipos disponíveis
+
+| Tipo           | Descrição                      | Exemplo de valor                   |
+| -------------- | ------------------------------ | ---------------------------------- |
+| `text`         | Texto em linha única           | `"Acme Corp"`                      |
+| `long_text`    | Texto multilinha               | `"Observações sobre o cliente..."` |
+| `number`       | Valor numérico                 | `42`                               |
+| `date`         | Data em ISO 8601               | `"2026-05-26"`                     |
+| `select`       | Uma opção de lista predefinida | `"hot"`                            |
+| `multi_select` | Múltiplas opções               | `["hot", "inbound"]`               |
+| `cpf`          | CPF brasileiro                 | `"000.000.000-00"`                 |
+| `cnpj`         | CNPJ brasileiro                | `"00.000.000/0001-00"`             |
+| `link`         | URL                            | `"https://linkedin.com/in/ana"`    |
+| `address`      | Endereço físico                | `"Rua das Flores, 123"`            |
+
+## Listar campos do workspace
+
+```bash
+GET /v1/custom-fields
+```
+
+Filtre por tipo de entidade:
+
+```bash
+GET /v1/custom-fields?show_people=true
+GET /v1/custom-fields?show_deals=true
+```
+
+Resposta:
+
+```json
+{
+  "data": [
+    {
+      "id": "a1b2c3d4-e5f6-7890-abcd-ef1234567890",
+      "label": "Origem do Lead",
+      "key": "origem_lead",
+      "type": "select",
+      "value": ["organico", "pago", "indicacao", "prospeccao"],
+      "required": false,
+      "show_people": true,
+      "show_companies": false,
+      "show_deals": true,
+      "created_at": "2026-01-10T09:00:00Z"
+    }
+  ],
+  "meta": { "total": 5, "page": 1, "per_page": 50, "has_more": false }
+}
+```
+
+## Ler valores em um registro
+
+Ao buscar um registro por ID, os valores dos campos adicionais são retornados no objeto `custom_fields`:
+
+```json
+{
+  "data": {
+    "id": "550e8400-e29b-41d4-a716-446655440000",
+    "full_name": "Ana Costa",
+    "custom_fields": [
+      {
+        "id": "assoc-uuid",
+        "value": "indicacao",
+        "field": {
+          "id": "a1b2c3d4-e5f6-7890-abcd-ef1234567890",
+          "label": "Origem do Lead",
+          "key": "origem_lead",
+          "type": "select"
+        }
+      }
+    ]
+  }
+}
+```
+
+Campos adicionais **não** aparecem em respostas de listagem — apenas em consultas por ID.
+
+## Filtrar por campo adicional
+
+```bash
+GET /v1/people?custom_field[FIELD_UUID]=indicacao
+GET /v1/companies?custom_field[FIELD_UUID]=00.000.000/0001-00
+```
+
+A comparação depende do tipo do campo:
+
+| Tipo                                   | Comparação                           |
+| -------------------------------------- | ------------------------------------ |
+| `text`, `long_text`, `link`, `address` | Parcial, sem distinção de maiúsculas |
+| `cpf`, `cnpj`                          | Exata                                |
+| `select`                               | Exata                                |
+| `multi_select`                         | Contém o valor                       |
+| `number`                               | Exata                                |
+| `date`                                 | Exata                                |

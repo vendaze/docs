@@ -1,0 +1,88 @@
+---
+title: 'Segurança'
+description: 'Boas práticas de segurança para proteger sua integração e os dados dos seus usuários.'
+icon: 'shield-halved'
+---
+
+A Vendaze API foi projetada com segurança em mente. Este guia descreve as práticas recomendadas para integradores que querem manter uma integração segura e confiável.
+
+## Proteja o client_secret
+
+O `client_secret` é enviado por email uma única vez no momento do registro do app. Trate-o como uma senha:
+
+- Armazene em um gerenciador de segredos (AWS Secrets Manager, HashiCorp Vault, Cloudflare Secrets) — nunca em variáveis de ambiente expostas em logs
+- Nunca inclua em repositórios de código, mesmo que privados
+- Nunca exponha em frontend, app mobile ou qualquer cliente que rode no dispositivo do usuário
+- Rotacione imediatamente se suspeitar de comprometimento — entre em contato com o suporte
+
+## Armazene tokens com segurança
+
+Access tokens e refresh tokens concedem acesso aos dados do workspace do seu usuário:
+
+- Armazene refresh tokens criptografados em banco de dados, nunca em cookies ou localStorage
+- Use `httpOnly` e `Secure` para cookies de sessão que referenciem tokens
+- Implemente expiração e rotação de refresh tokens — a Vendaze API invalida o refresh token anterior a cada renovação
+- Revogue tokens imediatamente quando o usuário desconectar a integração via `POST /oauth/revoke`
+
+## Use HTTPS em todos os redirects
+
+O `redirect_uri` registrado no seu app deve sempre usar `https://`. A única exceção é `localhost` durante desenvolvimento. Em produção, qualquer redirect sem HTTPS é rejeitado com erro `invalid_redirect_uri`.
+
+## Valide o parâmetro state
+
+O parâmetro `state` no fluxo OAuth protege contra ataques de CSRF. Seu uso correto:
+
+```javascript
+// Antes de redirecionar o usuário para /oauth/authorize
+const state = randomUUID();
+sessionStorage.setItem('oauth_state', state);
+
+// Na callback, antes de processar o code
+const receivedState = new URL(window.location).searchParams.get('state');
+const expectedState = sessionStorage.getItem('oauth_state');
+
+if (receivedState !== expectedState) {
+  throw new Error('State mismatch — possible CSRF attack');
+}
+```
+
+## PKCE é obrigatório
+
+A Vendaze API exige PKCE com `code_challenge_method=S256` em todos os fluxos de autorização. O PKCE protege contra interceptação do authorization code. Plain PKCE (`code_challenge_method=plain`) não é aceito.
+
+## Solicite apenas os escopos necessários
+
+Registre e solicite apenas os escopos que sua integração realmente precisa. Escopos desnecessários ampliam a superfície de ataque e reduzem a confiança dos usuários na hora de autorizar.
+
+| Se você precisa de...         | Solicite...                                                                      |
+| ----------------------------- | -------------------------------------------------------------------------------- |
+| Apenas ler contatos           | `people:read`                                                                    |
+| Criar e atualizar negócios    | `deals:write`                                                                    |
+| Sincronização completa de CRM | `people:read people:write companies:read companies:write deals:read deals:write` |
+
+## Rotacione o client_secret regularmente
+
+Entre em contato com o suporte para solicitar rotação do `client_secret`. Após a rotação:
+
+1. O novo `client_secret` é enviado por email
+2. Tokens existentes permanecem válidos até expirarem naturalmente
+3. Novas trocas de code e renovações de refresh token exigem o novo `client_secret`
+
+## Monitore o uso da API
+
+Use os headers `X-RateLimit-Remaining` e `X-Request-ID` para monitorar padrões de uso. Picos inesperados podem indicar que tokens foram comprometidos. Nesse caso, revogue todos os tokens via `POST /oauth/revoke` e notifique seus usuários.
+
+## Resposta a incidentes
+
+Se suspeitar de comprometimento do `client_secret` ou de tokens:
+
+1. Revogue todos os tokens ativos via `POST /oauth/revoke`
+2. Entre em contato com o suporte em `security@vendaze.com`
+3. Notifique os usuários afetados
+4. Gere um novo `client_secret`
+5. Solicite nova autorização aos usuários
+
+<Warning>
+  Nunca implemente a troca do authorization code no frontend. O `client_secret` nunca deve ser
+  exposto em código que rode no cliente.
+</Warning>
