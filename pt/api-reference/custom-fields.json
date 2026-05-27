@@ -232,8 +232,8 @@
         "type": "object",
         "properties": {
           "id": { "type": "string", "format": "uuid" },
-          "label": { "type": "string", "maxLength": 40, "example": "Segmento de Mercado" },
-          "key": { "type": "string", "maxLength": 35, "example": "segmento_mercado" },
+          "label": { "type": "string", "maxLength": 40, "example": "Market Segment" },
+          "key": { "type": "string", "maxLength": 35, "example": "market_segment" },
           "type": {
             "type": "string",
             "enum": ["text", "long_text", "select", "multi_select", "cpf", "cnpj", "date", "number", "link", "address"],
@@ -243,7 +243,7 @@
             "type": "string",
             "nullable": true,
             "description": "Opcoes para campos select/multi_select.",
-            "example": "[\"SaaS\",\"E-commerce\",\"Financeiro\"]"
+            "example": "[\"SaaS\",\"E-commerce\",\"Finance\"]"
           },
           "required": { "type": "boolean", "default": false, "example": false },
           "show_people": { "type": "boolean", "default": true, "example": true },
@@ -256,8 +256,8 @@
         "type": "object",
         "required": ["label", "key", "type"],
         "properties": {
-          "label": { "type": "string", "maxLength": 40, "example": "Segmento de Mercado" },
-          "key": { "type": "string", "maxLength": 35, "example": "segmento_mercado" },
+          "label": { "type": "string", "maxLength": 40, "example": "Market Segment" },
+          "key": { "type": "string", "maxLength": 35, "example": "market_segment" },
           "type": {
             "type": "string",
             "enum": ["text", "long_text", "select", "multi_select", "cpf", "cnpj", "date", "number", "link", "address"]

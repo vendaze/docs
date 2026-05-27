@@ -58,10 +58,10 @@ Resposta:
   "data": [
     {
       "id": "a1b2c3d4-e5f6-7890-abcd-ef1234567890",
-      "label": "Origem do Lead",
-      "key": "origem_lead",
+      "label": "Lead Source",
+      "key": "lead_source",
       "type": "select",
-      "value": ["organico", "pago", "indicacao", "prospeccao"],
+      "value": ["organic", "paid", "referral", "outbound"],
       "required": false,
       "show_people": true,
       "show_companies": false,
@@ -85,11 +85,11 @@ Ao buscar um registro por ID, os valores dos campos adicionais são retornados n
     "custom_fields": [
       {
         "id": "assoc-uuid",
-        "value": "indicacao",
+        "value": "referral",
         "field": {
           "id": "a1b2c3d4-e5f6-7890-abcd-ef1234567890",
-          "label": "Origem do Lead",
-          "key": "origem_lead",
+          "label": "Lead Source",
+          "key": "lead_source",
           "type": "select"
         }
       }

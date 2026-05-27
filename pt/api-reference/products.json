@@ -224,10 +224,10 @@
         "type": "object",
         "properties": {
           "id": { "type": "string", "format": "uuid" },
-          "name": { "type": "string", "maxLength": 80, "example": "Plano Pro Mensal" },
+          "name": { "type": "string", "maxLength": 80, "example": "Pro Plan Monthly" },
           "price_cts": { "type": "integer", "description": "Preco em centavos.", "example": 19900 },
           "currency_id": { "type": "string", "example": "BRL" },
-          "description": { "type": "string", "nullable": true, "example": "Acesso completo a todos os recursos." },
+          "description": { "type": "string", "nullable": true, "example": "Full access to all features." },
           "code": { "type": "string", "nullable": true, "example": "PRO-M" },
           "is_active": { "type": "boolean", "default": true, "example": true },
           "billing_cycle": {
@@ -243,7 +243,7 @@
         "type": "object",
         "required": ["name", "currency_id"],
         "properties": {
-          "name": { "type": "string", "maxLength": 80, "example": "Plano Pro Mensal" },
+          "name": { "type": "string", "maxLength": 80, "example": "Pro Plan Monthly" },
           "currency_id": { "type": "string", "example": "BRL" },
           "price_cts": { "type": "integer", "minimum": 0, "example": 19900 },
           "description": { "type": "string" },

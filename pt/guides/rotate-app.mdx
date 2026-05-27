@@ -1,0 +1,124 @@
+---
+title: 'Rotacionar credenciais do aplicativo'
+description: 'Substitua as credenciais do seu aplicativo quando precisar atualizar nome, descrição, URIs de redirecionamento ou escopos.'
+icon: 'rotate'
+keywords:
+  [
+    'rotacionar credenciais',
+    'client_id',
+    'client_secret',
+    'atualizar app',
+    'invalidar credenciais',
+    'OAuth app',
+  ]
+---
+
+Rotacionar seu aplicativo gera um novo `client_secret` e invalida o anterior. É a única forma de atualizar o nome, descrição, avatar, URIs de redirecionamento ou escopos do seu aplicativo.
+
+<Warning>
+  Se você alterar os escopos durante a rotação, todas as sessões ativas dos usuários serão
+  revogadas. Eles precisarão passar pelo fluxo OAuth novamente para aprovar os novos escopos. Se os
+  escopos forem mantidos, as sessões existentes continuam funcionando normalmente.
+</Warning>
+
+## Quando rotacionar
+
+- Você precisa alterar o nome, descrição ou avatar do aplicativo
+- Você precisa adicionar ou remover URIs de redirecionamento
+- Você precisa solicitar escopos diferentes
+- Seu `client_secret` foi comprometido ou perdido
+
+## Como funciona
+
+A rotação não é uma atualização. É um novo registro usando o `client_id` como prova de propriedade. As novas credenciais são sempre enviadas para o e-mail cadastrado no aplicativo. Esse e-mail não pode ser alterado.
+
+<Steps>
+  <Step title="Envie a requisição de rotação">
+    Chame `POST /v1/auth/rotate-app` com seu `client_id` atual e os novos valores desejados.
+  </Step>
+  <Step title="Receba as novas credenciais por e-mail">
+    Um novo `client_secret` é gerado e enviado para o e-mail cadastrado no aplicativo. O secret
+    antigo é invalidado imediatamente.
+  </Step>
+  <Step title="Atualize seu aplicativo">
+    Substitua o `client_secret` armazenado no seu aplicativo pelo novo valor.
+  </Step>
+  <Step title="Usuários reautorizam (somente se os escopos mudaram)">
+    Se você alterou os escopos, os tokens existentes são revogados e os usuários precisam
+    reautorizar. Se os escopos forem mantidos, as sessões ativas continuam funcionando normalmente.
+  </Step>
+</Steps>
+
+## Rotacionar via API
+
+Envie um `POST` para `/v1/auth/rotate-app`:
+
+```bash
+curl -X POST https://api.vendaze.com/v1/auth/rotate-app \
+  -H "Content-Type: application/json" \
+  -d '{
+    "client_id": "9a8b7c6d-5e4f-3a2b-1c0d-9e8f7a6b5c4d",
+    "app_name": "Minha Integração v2",
+    "description": "Descrição atualizada da Minha Integração",
+    "avatar_url": "https://meuapp.com/assets/vendaze-avatar-v2.webp",
+    "redirect_uris": ["https://meuapp.com/oauth/callback"],
+    "scopes": ["people:read", "people:write", "deals:read", "deals:write"]
+  }'
+```
+
+**Resposta (201):**
+
+```json
+{
+  "data": {
+    "app_name": "Minha Integração v2",
+    "client_id": "1b2c3d4e-5f6a-7b8c-9d0e-1f2a3b4c5d6e",
+    "message": "New credentials sent to dev@meuapp.com"
+  }
+}
+```
+
+O novo `client_secret` é enviado **somente por e-mail** para o endereço cadastrado no aplicativo e nunca retorna na resposta da API. Guarde-o com segurança assim que receber.
+
+## Parâmetros da requisição
+
+| Parâmetro       | Tipo     | Obrigatório | Descrição                                                                               |
+| --------------- | -------- | ----------- | --------------------------------------------------------------------------------------- |
+| `client_id`     | string   | Sim         | `client_id` atual do aplicativo a ser rotacionado.                                      |
+| `app_name`      | string   | Sim         | Novo nome exibido aos usuários na tela de consentimento. Máx. 100 chars.                |
+| `description`   | string   | Não         | Nova descrição do que seu app faz. Máx. 500 chars.                                      |
+| `avatar_url`    | string   | Não         | URL HTTPS de uma imagem WebP exibida na tela de consentimento. Máx. 400x400 px.         |
+| `redirect_uris` | string[] | Sim         | Nova lista de URIs HTTPS de redirecionamento. Substitui a lista anterior integralmente. |
+| `scopes`        | string[] | Sim         | Nova lista de escopos. Substitui a lista anterior integralmente.                        |
+
+<Note>
+  O e-mail cadastrado não pode ser alterado. As novas credenciais são sempre enviadas para o
+  endereço original usado no registro.
+</Note>
+
+## O que muda após a rotação
+
+| Campo              | Após a rotação                                                                    |
+| ------------------ | --------------------------------------------------------------------------------- |
+| `client_secret`    | Novo valor. Enviado por e-mail. Atualize seu aplicativo.                          |
+| Tokens ativos      | Revogados somente se os escopos mudaram. Escopos iguais mantêm as sessões ativas. |
+| Nome do aplicativo | Atualizado para o valor da requisição.                                            |
+| URIs de redirect   | Substituídas pela lista da requisição.                                            |
+| Escopos            | Substituídos pela lista da requisição.                                            |
+
+## Impacto nos seus usuários
+
+Se você alterar os escopos, todos os access tokens e refresh tokens são revogados imediatamente. Na próxima chamada à API, o aplicativo do usuário receberá um `401 Unauthorized`. Seu aplicativo deve tratar isso redirecionando o usuário pelo fluxo OAuth novamente.
+
+Se os escopos forem mantidos, as sessões ativas não são afetadas. Os usuários não perceberão a rotação.
+
+## Relacionados
+
+<CardGroup cols={2}>
+  <Card title="Registre seu aplicativo" icon="plug" href="/pt/guides/register-app">
+    Registro inicial para obter suas primeiras credenciais.
+  </Card>
+  <Card title="Autenticação" icon="lock" href="/pt/guides/authentication">
+    Implemente o fluxo OAuth 2.1 após atualizar suas credenciais.
+  </Card>
+</CardGroup>

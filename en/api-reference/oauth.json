@@ -31,6 +31,31 @@
         }
       }
     },
+    "/v1/auth/rotate-app": {
+      "post": {
+        "operationId": "rotateApp",
+        "summary": "Rotate app credentials",
+        "description": "Issues a new client_secret, immediately invalidating the previous one. Active user tokens are revoked only if the scopes change. New credentials are sent to the email address registered with the app. The email address cannot be changed.",
+        "security": [],
+        "tags": ["OAuth"],
+        "requestBody": {
+          "required": true,
+          "content": { "application/json": { "schema": { "$ref": "#/components/schemas/RotateAppRequest" } } }
+        },
+        "responses": {
+          "201": {
+            "description": "Credentials rotated successfully. New credentials sent by email.",
+            "content": { "application/json": { "schema": { "$ref": "#/components/schemas/RotateAppResponse" } } }
+          },
+          "401": {
+            "description": "Invalid client_id or email address.",
+            "content": { "application/json": { "schema": { "$ref": "#/components/schemas/ErrorResponse" } } }
+          },
+          "422": { "$ref": "#/components/responses/ValidationError" },
+          "429": { "$ref": "#/components/responses/RateLimitExceeded" }
+        }
+      }
+    },
     "/oauth/authorize": {
       "get": {
         "operationId": "authorize",
@@ -296,6 +321,30 @@
           }
         }
       },
+      "ScopeValue": {
+        "type": "string",
+        "enum": [
+          "people:read",
+          "people:write",
+          "companies:read",
+          "companies:write",
+          "deals:read",
+          "deals:write",
+          "tasks:read",
+          "tasks:write",
+          "activities:read",
+          "activities:write",
+          "products:read",
+          "products:write",
+          "tags:read",
+          "tags:write",
+          "lists:read",
+          "lists:write",
+          "custom_fields:read",
+          "custom_fields:write"
+        ],
+        "description": "A single OAuth scope value."
+      },
       "RegisterAppRequest": {
         "type": "object",
         "required": ["app_name", "email", "redirect_uris", "scopes"],
@@ -303,12 +352,23 @@
           "app_name": { "type": "string", "maxLength": 100, "example": "My SaaS" },
           "email": { "type": "string", "format": "email", "example": "dev@mysaas.com" },
           "description": { "type": "string", "maxLength": 500, "example": "Integration with Vendaze to sync contacts." },
+          "avatar_url": {
+            "type": "string",
+            "format": "uri",
+            "example": "https://mysaas.com/assets/vendaze-avatar.webp",
+            "description": "URL of the app avatar shown on the consent screen. Must be a publicly accessible HTTPS URL pointing to a WebP image. Maximum dimensions: 400x400 px."
+          },
           "redirect_uris": {
             "type": "array",
             "items": { "type": "string", "format": "uri" },
             "example": ["https://mysaas.com/callback/vendaze"]
           },
-          "scopes": { "type": "array", "items": { "type": "string" }, "example": ["people:read", "deals:write"] }
+          "scopes": {
+            "type": "array",
+            "items": { "$ref": "#/components/schemas/ScopeValue" },
+            "example": ["people:read", "deals:write"],
+            "description": "Scopes your app needs. Users approve them individually on the consent screen."
+          }
         }
       },
       "RegisterAppResponse": {
@@ -320,6 +380,56 @@
               "app_name": { "type": "string", "example": "My SaaS" },
               "client_id": { "type": "string", "format": "uuid", "example": "9a8b7c6d-5e4f-3a2b-1c0d-9e8f7a6b5c4d" },
               "message": { "type": "string", "example": "Credentials sent to dev@mysaas.com" }
+            }
+          }
+        }
+      },
+      "RotateAppRequest": {
+        "type": "object",
+        "required": ["client_id", "app_name", "redirect_uris", "scopes"],
+        "properties": {
+          "client_id": {
+            "type": "string",
+            "format": "uuid",
+            "example": "9a8b7c6d-5e4f-3a2b-1c0d-9e8f7a6b5c4d",
+            "description": "Current client_id of the app being rotated."
+          },
+          "app_name": { "type": "string", "maxLength": 100, "example": "My SaaS v2" },
+          "description": { "type": "string", "maxLength": 500, "example": "Updated integration with Vendaze." },
+          "avatar_url": {
+            "type": "string",
+            "format": "uri",
+            "example": "https://mysaas.com/assets/vendaze-avatar-v2.webp",
+            "description": "URL of the app avatar shown on the consent screen. Must be a publicly accessible HTTPS URL pointing to a WebP image. Maximum dimensions: 400x400 px."
+          },
+          "redirect_uris": {
+            "type": "array",
+            "items": { "type": "string", "format": "uri" },
+            "example": ["https://mysaas.com/callback/vendaze"],
+            "description": "New list of redirect URIs. Replaces the previous list entirely."
+          },
+          "scopes": {
+            "type": "array",
+            "items": { "$ref": "#/components/schemas/ScopeValue" },
+            "example": ["people:read", "deals:write"],
+            "description": "New list of scopes. Replaces the previous list entirely."
+          }
+        }
+      },
+      "RotateAppResponse": {
+        "type": "object",
+        "properties": {
+          "data": {
+            "type": "object",
+            "properties": {
+              "app_name": { "type": "string", "example": "My SaaS v2" },
+              "client_id": {
+                "type": "string",
+                "format": "uuid",
+                "example": "1b2c3d4e-5f6a-7b8c-9d0e-1f2a3b4c5d6e",
+                "description": "New client_id. The previous client_id is now invalid."
+              },
+              "message": { "type": "string", "example": "New credentials sent to dev@mysaas.com" }
             }
           }
         }

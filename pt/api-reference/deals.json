@@ -274,13 +274,13 @@
         "type": "object",
         "properties": {
           "id": { "type": "string", "format": "uuid" },
-          "name": { "type": "string", "example": "Contrato Anual Acme Corp" },
+          "name": { "type": "string", "example": "Acme Corp Annual Contract" },
           "pipeline_id": { "type": "string", "format": "uuid" },
           "stage_id": { "type": "string", "format": "uuid" },
           "price_cts": { "type": "integer", "description": "Valor em centavos.", "example": 250000 },
           "currency_id": { "type": "string", "example": "BRL" },
           "owner_user_id": { "type": "string", "format": "uuid", "nullable": true },
-          "source": { "type": "string", "nullable": true, "example": "indicacao" },
+          "source": { "type": "string", "nullable": true, "example": "referral" },
           "forecast_date": { "type": "string", "format": "date", "nullable": true, "example": "2026-12-31" },
           "created_at": { "type": "string", "format": "date-time" },
           "updated_at": { "type": "string", "format": "date-time" }
@@ -329,7 +329,7 @@
         "type": "object",
         "required": ["name", "pipeline_id", "stage_id", "currency_id"],
         "properties": {
-          "name": { "type": "string", "example": "Contrato Anual Acme Corp" },
+          "name": { "type": "string", "example": "Acme Corp Annual Contract" },
           "pipeline_id": { "type": "string", "format": "uuid" },
           "stage_id": { "type": "string", "format": "uuid" },
           "currency_id": { "type": "string", "example": "BRL" },

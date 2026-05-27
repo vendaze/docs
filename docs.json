@@ -84,7 +84,7 @@
               },
               {
                 "group": "Começando",
-                "pages": ["pt/guides/register-app", "pt/guides/authentication", "pt/guides/first-request"]
+                "pages": ["pt/guides/register-app", "pt/guides/rotate-app", "pt/guides/authentication", "pt/guides/first-request"]
               },
               {
                 "group": "Utilizando a API",
@@ -165,7 +165,7 @@
               },
               {
                 "group": "Getting Started",
-                "pages": ["en/guides/register-app", "en/guides/authentication", "en/guides/first-request"]
+                "pages": ["en/guides/register-app", "en/guides/rotate-app", "en/guides/authentication", "en/guides/first-request"]
               },
               {
                 "group": "Using the API",

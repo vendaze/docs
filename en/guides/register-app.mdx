@@ -38,6 +38,7 @@ curl -X POST https://api.vendaze.com/v1/auth/register-app \
     "app_name": "My Integration",
     "email": "dev@yourapp.com",
     "description": "Syncs contacts and deals between Vendaze and MyApp",
+    "avatar_url": "https://yourapp.com/assets/vendaze-avatar.webp",
     "redirect_uris": ["https://yourapp.com/oauth/callback"],
     "scopes": ["people:read", "people:write", "deals:read"]
   }'
@@ -59,13 +60,14 @@ Your `client_secret` is sent **only by email** and never returned in the API res
 
 ## Request parameters
 
-| Parameter       | Type     | Required | Description                                                           |
-| --------------- | -------- | -------- | --------------------------------------------------------------------- |
-| `app_name`      | string   | Yes      | Integration name shown to users on the consent screen. Max 100 chars. |
-| `email`         | string   | Yes      | Email where credentials will be sent. One app per email address.      |
-| `description`   | string   | No       | Short description of what your app does. Max 500 chars.               |
-| `redirect_uris` | string[] | Yes      | One or more HTTPS URIs for the OAuth callback. Exact match required.  |
-| `scopes`        | string[] | Yes      | Scopes your app needs. Users approve them individually.               |
+| Parameter       | Type     | Required | Description                                                            |
+| --------------- | -------- | -------- | ---------------------------------------------------------------------- |
+| `app_name`      | string   | Yes      | Integration name shown to users on the consent screen. Max 100 chars.  |
+| `email`         | string   | Yes      | Email where credentials will be sent. One app per email address.       |
+| `description`   | string   | No       | Short description of what your app does. Max 500 chars.                |
+| `avatar_url`    | string   | No       | HTTPS URL of a WebP image shown on the consent screen. Max 400×400 px. |
+| `redirect_uris` | string[] | Yes      | One or more HTTPS URIs for the OAuth callback. Exact match required.   |
+| `scopes`        | string[] | Yes      | Scopes your app needs. Users approve them individually.                |
 
 ## Redirect URIs
 
@@ -99,14 +101,19 @@ Requesting a scope during registration does not guarantee it. Users can approve 
 
 <Warning>
   Your `client_secret` is shown only once, in the email you receive after registration. If you lose
-  it, contact support to rotate it. Never commit it to version control or include it in client-side
-  code.
+  it, you can rotate your credentials using your `client_id` and registered email. Never commit it
+  to version control or include it in client-side code.
 </Warning>
 
 ## Next step
 
 With your `client_id` and `client_secret`, you are ready to implement the OAuth flow.
 
-<Card title="Authentication" icon="lock" href="/en/guides/authentication">
-  Implement the OAuth 2.1 flow to authorize Vendaze users in your app.
-</Card>
+<CardGroup cols={2}>
+  <Card title="Authentication" icon="lock" href="/en/guides/authentication">
+    Implement the OAuth 2.1 flow to authorize Vendaze users in your app.
+  </Card>
+  <Card title="Rotate app credentials" icon="rotate" href="/en/guides/rotate-app">
+    Need to update your app name, redirect URIs, or scopes? Learn how to rotate your credentials.
+  </Card>
+</CardGroup>

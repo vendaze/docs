@@ -31,6 +31,31 @@
         }
       }
     },
+    "/v1/auth/rotate-app": {
+      "post": {
+        "operationId": "rotateApp",
+        "summary": "Rotacionar credenciais do aplicativo",
+        "description": "Gera um novo client_secret, invalidando imediatamente o anterior. Os tokens ativos dos usuarios sao revogados somente se os escopos forem alterados. As novas credenciais sao enviadas para o e-mail cadastrado no aplicativo. O e-mail nao pode ser alterado.",
+        "security": [],
+        "tags": ["OAuth"],
+        "requestBody": {
+          "required": true,
+          "content": { "application/json": { "schema": { "$ref": "#/components/schemas/RotateAppRequest" } } }
+        },
+        "responses": {
+          "201": {
+            "description": "Credenciais rotacionadas com sucesso. Novas credenciais enviadas por e-mail.",
+            "content": { "application/json": { "schema": { "$ref": "#/components/schemas/RotateAppResponse" } } }
+          },
+          "401": {
+            "description": "client_id ou e-mail invalidos.",
+            "content": { "application/json": { "schema": { "$ref": "#/components/schemas/ErrorResponse" } } }
+          },
+          "422": { "$ref": "#/components/responses/ValidationError" },
+          "429": { "$ref": "#/components/responses/RateLimitExceeded" }
+        }
+      }
+    },
     "/oauth/authorize": {
       "get": {
         "operationId": "authorize",
@@ -296,6 +321,30 @@
           }
         }
       },
+      "ScopeValue": {
+        "type": "string",
+        "enum": [
+          "people:read",
+          "people:write",
+          "companies:read",
+          "companies:write",
+          "deals:read",
+          "deals:write",
+          "tasks:read",
+          "tasks:write",
+          "activities:read",
+          "activities:write",
+          "products:read",
+          "products:write",
+          "tags:read",
+          "tags:write",
+          "lists:read",
+          "lists:write",
+          "custom_fields:read",
+          "custom_fields:write"
+        ],
+        "description": "Um valor de escopo OAuth."
+      },
       "RegisterAppRequest": {
         "type": "object",
         "required": ["app_name", "email", "redirect_uris", "scopes"],
@@ -303,12 +352,23 @@
           "app_name": { "type": "string", "maxLength": 100, "example": "Meu SaaS" },
           "email": { "type": "string", "format": "email", "example": "dev@meusaas.com" },
           "description": { "type": "string", "maxLength": 500, "example": "Integracao com a Vendaze para sincronizar contatos." },
+          "avatar_url": {
+            "type": "string",
+            "format": "uri",
+            "example": "https://meusaas.com/assets/vendaze-avatar.webp",
+            "description": "URL do avatar do aplicativo exibido na tela de consentimento. Deve ser uma URL HTTPS publicamente acessivel apontando para uma imagem WebP. Dimensoes maximas: 400x400 px."
+          },
           "redirect_uris": {
             "type": "array",
             "items": { "type": "string", "format": "uri" },
             "example": ["https://meusaas.com/callback/vendaze"]
           },
-          "scopes": { "type": "array", "items": { "type": "string" }, "example": ["people:read", "deals:write"] }
+          "scopes": {
+            "type": "array",
+            "items": { "$ref": "#/components/schemas/ScopeValue" },
+            "example": ["people:read", "deals:write"],
+            "description": "Escopos que seu app precisa. Usuarios aprovam individualmente na tela de consentimento."
+          }
         }
       },
       "RegisterAppResponse": {
@@ -319,7 +379,57 @@
             "properties": {
               "app_name": { "type": "string", "example": "Meu SaaS" },
               "client_id": { "type": "string", "format": "uuid", "example": "9a8b7c6d-5e4f-3a2b-1c0d-9e8f7a6b5c4d" },
-              "message": { "type": "string", "example": "Credenciais enviadas para dev@meusaas.com" }
+              "message": { "type": "string", "example": "Credentials sent to dev@meusaas.com" }
+            }
+          }
+        }
+      },
+      "RotateAppRequest": {
+        "type": "object",
+        "required": ["client_id", "app_name", "redirect_uris", "scopes"],
+        "properties": {
+          "client_id": {
+            "type": "string",
+            "format": "uuid",
+            "example": "9a8b7c6d-5e4f-3a2b-1c0d-9e8f7a6b5c4d",
+            "description": "client_id atual do aplicativo a ser rotacionado."
+          },
+          "app_name": { "type": "string", "maxLength": 100, "example": "Meu SaaS v2" },
+          "description": { "type": "string", "maxLength": 500, "example": "Integracao atualizada com a Vendaze." },
+          "avatar_url": {
+            "type": "string",
+            "format": "uri",
+            "example": "https://meusaas.com/assets/vendaze-avatar-v2.webp",
+            "description": "URL do avatar do aplicativo exibido na tela de consentimento. Deve ser uma URL HTTPS publicamente acessivel apontando para uma imagem WebP. Dimensoes maximas: 400x400 px."
+          },
+          "redirect_uris": {
+            "type": "array",
+            "items": { "type": "string", "format": "uri" },
+            "example": ["https://meusaas.com/callback/vendaze"],
+            "description": "Nova lista de URIs de redirecionamento. Substitui a lista anterior integralmente."
+          },
+          "scopes": {
+            "type": "array",
+            "items": { "$ref": "#/components/schemas/ScopeValue" },
+            "example": ["people:read", "deals:write"],
+            "description": "Nova lista de escopos. Substitui a lista anterior integralmente."
+          }
+        }
+      },
+      "RotateAppResponse": {
+        "type": "object",
+        "properties": {
+          "data": {
+            "type": "object",
+            "properties": {
+              "app_name": { "type": "string", "example": "Meu SaaS v2" },
+              "client_id": {
+                "type": "string",
+                "format": "uuid",
+                "example": "1b2c3d4e-5f6a-7b8c-9d0e-1f2a3b4c5d6e",
+                "description": "Novo client_id. O client_id anterior agora e invalido."
+              },
+              "message": { "type": "string", "example": "New credentials sent to dev@meusaas.com" }
             }
           }
         }

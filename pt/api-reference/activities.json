@@ -230,7 +230,7 @@
         "properties": {
           "id": { "type": "string", "format": "uuid" },
           "type": { "type": "string", "enum": ["notes", "email", "call", "meeting"], "example": "call" },
-          "content_html": { "type": "string", "nullable": true, "example": "<p>Discutido proposta comercial.</p>" },
+          "content_html": { "type": "string", "nullable": true, "example": "<p>Discussed commercial proposal.</p>" },
           "person_id": { "type": "string", "format": "uuid", "nullable": true },
           "company_id": { "type": "string", "format": "uuid", "nullable": true },
           "deal_id": { "type": "string", "format": "uuid", "nullable": true },
