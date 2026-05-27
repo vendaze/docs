@@ -47,9 +47,12 @@
         },
         "footer": {
           "socials": {
-            "x": "https://x.com/vendaze",
-            "linkedin": "https://linkedin.com/company/vendaze",
-            "instagram": "https://instagram.com/vendazecrm"
+            "x": "https://x.com/VendazeCRM",
+            "linkedin": "https://www.linkedin.com/company/vendaze",
+            "instagram": "https://www.instagram.com/vendazecrm",
+            "youtube": "https://www.youtube.com/@VendazeCRM",
+            "facebook": "https://www.facebook.com/vendazecrm/",
+            "github": "https://github.com/vendaze"
           }
         },
         "tabs": [
@@ -129,9 +132,12 @@
         },
         "footer": {
           "socials": {
-            "x": "https://x.com/vendaze",
-            "linkedin": "https://linkedin.com/company/vendaze",
-            "instagram": "https://instagram.com/vendazecrm"
+            "x": "https://x.com/VendazeCRM",
+            "linkedin": "https://www.linkedin.com/company/vendaze",
+            "instagram": "https://www.instagram.com/vendazecrm",
+            "youtube": "https://www.youtube.com/@VendazeCRM",
+            "facebook": "https://www.facebook.com/vendazecrm/",
+            "github": "https://github.com/vendaze"
           }
         },
         "tabs": [
