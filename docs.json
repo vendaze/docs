@@ -1,6 +1,6 @@
 {
   "theme": "palm",
-  "name": "Vendaze Docs",
+  "name": "Vendaze Developers",
   "colors": {
     "primary": "#00c767",
     "light": "#00c767",
@@ -10,7 +10,7 @@
   "logo": {
     "light": "/logo/light.svg",
     "dark": "/logo/dark.svg",
-    "href": "https://docs.vendaze.com"
+    "href": "https://developers.vendaze.com"
   },
   "appearance": {
     "default": "system"
@@ -29,10 +29,10 @@
   },
   "seo": {
     "metatags": {
-      "canonical": "https://docs.vendaze.com",
-      "og:site_name": "Vendaze Docs",
+      "canonical": "https://developers.vendaze.com",
+      "og:site_name": "Vendaze Developers",
       "og:type": "website",
-      "og:image": "https://docs.vendaze.com/images/banner-home.png",
+      "og:image": "https://developers.vendaze.com/images/banner-home.png",
       "twitter:card": "summary_large_image",
       "twitter:site": "@VendazeCRM",
       "robots": "index, follow",
