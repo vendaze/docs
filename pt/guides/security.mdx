@@ -10,10 +10,10 @@ A Vendaze API foi projetada com segurança em mente. Este guia descreve as prát
 
 O `client_secret` é enviado por email uma única vez no momento do registro do app. Trate-o como uma senha:
 
-- Armazene em um gerenciador de segredos (AWS Secrets Manager, HashiCorp Vault, Cloudflare Secrets) — nunca em variáveis de ambiente expostas em logs
+- Armazene em um gerenciador de segredos (AWS Secrets Manager, HashiCorp Vault, Cloudflare Secrets). Nunca em variáveis de ambiente expostas em logs.
 - Nunca inclua em repositórios de código, mesmo que privados
 - Nunca exponha em frontend, app mobile ou qualquer cliente que rode no dispositivo do usuário
-- Rotacione imediatamente se suspeitar de comprometimento — entre em contato com o suporte
+- Rotacione imediatamente se suspeitar de comprometimento. Entre em contato com o suporte.
 
 ## Armazene tokens com segurança
 
@@ -21,7 +21,7 @@ Access tokens e refresh tokens concedem acesso aos dados do workspace do seu usu
 
 - Armazene refresh tokens criptografados em banco de dados, nunca em cookies ou localStorage
 - Use `httpOnly` e `Secure` para cookies de sessão que referenciem tokens
-- Implemente expiração e rotação de refresh tokens — a Vendaze API invalida o refresh token anterior a cada renovação
+- Implemente expiração e rotação de refresh tokens. A Vendaze API invalida o refresh token anterior a cada renovação.
 - Revogue tokens imediatamente quando o usuário desconectar a integração via `POST /oauth/revoke`
 
 ## Use HTTPS em todos os redirects

@@ -1,39 +1,28 @@
 ---
 title: 'MCP Server'
-description: 'Referência completa do servidor MCP da Vendaze e as ferramentas disponíveis para modelos de linguagem.'
+description: 'Conecte seu assistente de IA à Vendaze e deixe-o ler e gerenciar seu CRM diretamente na conversa.'
 icon: 'plug'
 ---
 
-O servidor MCP (Model Context Protocol) da Vendaze expõe as operações da API como ferramentas estruturadas que qualquer cliente MCP pode chamar. Isso permite que assistentes de IA acessem e manipulem dados do CRM de forma segura e controlada.
+O servidor MCP (Model Context Protocol) da Vendaze permite conectar assistentes de IA à sua conta Vendaze. Uma vez conectado, seu assistente pode buscar contatos, visualizar negócios, criar tarefas, registrar atividades e muito mais, tudo dentro da conversa, sem precisar abrir a Vendaze.
 
-## Endpoint
+O MCP da Vendaze está disponível como integração listada no **Claude**, no **ChatGPT** e no **Manus**.
 
-```
-https://api.vendaze.com/mcp
-```
+<CardGroup cols={3}>
+  <Card title="Claude" icon="comment-dots" href="/pt/ai/claude">
+    Conecte pelo diretório de apps do Claude.
+  </Card>
+  <Card title="ChatGPT" icon="robot" href="/pt/ai/chatgpt">
+    Conecte pelos conectores do ChatGPT.
+  </Card>
+  <Card title="Manus" icon="wand-magic-sparkles" href="/pt/ai/manus">
+    Conecte pelo painel de integrações do Manus.
+  </Card>
+</CardGroup>
 
-O servidor segue a especificação MCP e é compatível com qualquer cliente que implemente o protocolo, incluindo Claude Desktop, Cursor, GitHub Copilot e n8n.
+## O que seu assistente pode fazer
 
-## Autenticação
-
-O MCP Server usa Bearer token no header de autorização. Configure o token de acesso OAuth no seu cliente MCP:
-
-```json
-{
-  "mcpServers": {
-    "vendaze": {
-      "url": "https://api.vendaze.com/mcp",
-      "headers": {
-        "Authorization": "Bearer SEU_ACCESS_TOKEN"
-      }
-    }
-  }
-}
-```
-
-O access token tem validade de 1 hora. Use o refresh token para renová-lo antes de expirar.
-
-## Ferramentas disponíveis
+Uma vez conectado, seu assistente de IA tem acesso às seguintes ações na sua conta Vendaze:
 
 ### People
 
@@ -92,8 +81,20 @@ O access token tem validade de 1 hora. Use o refresh token para renová-lo antes
 | `list_tags`          | Lista todas as tags do workspace.                    |
 | `list_products`      | Lista os produtos disponíveis.                       |
 
-## Limitações
+## Exemplos de perguntas
 
-- O MCP Server aplica os mesmos rate limits da API REST por `client_id`
-- Tokens expirados resultam em erro `401` — o cliente deve renovar o token e tentar novamente
+Depois de conectar, você pode conversar com o assistente de forma natural:
+
+- "Quais são os 10 negócios com maior valor no pipeline Comercial?"
+- "Mostre os contatos da empresa Acme Corp com todas as informações."
+- "Quais tarefas estão abertas com prazo vencido?"
+- "Crie um contato chamado João Silva, da empresa XYZ, com email joao@xyz.com."
+- "Mova o negócio 'Contrato Trimestral' para o stage 'Proposta Enviada'."
+- "Adicione uma nota no contato Ana Costa dizendo que ela retorna no dia 15."
+- "Registra uma ligação no negócio da Acme Corp dizendo que estamos aguardando aprovação do jurídico."
+
+## Observações
+
+- O MCP Server aplica os mesmos rate limits da API REST
+- A conexão usa a autorização OAuth da sua conta Vendaze. O assistente acessa apenas o workspace que você autorizou.
 - Campos adicionais são retornados apenas em ferramentas de busca por ID (`get_*`), não em listagens

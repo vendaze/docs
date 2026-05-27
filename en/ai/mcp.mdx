@@ -1,39 +1,28 @@
 ---
 title: 'MCP Server'
-description: 'Complete reference for the Vendaze MCP server and the tools available to language models.'
+description: 'Connect your AI assistant to Vendaze and let it read and manage your CRM directly in the conversation.'
 icon: 'plug'
 ---
 
-The Vendaze MCP (Model Context Protocol) server exposes API operations as structured tools that any MCP client can call. This allows AI assistants to access and manipulate CRM data in a secure and controlled way.
+The Vendaze MCP (Model Context Protocol) server lets you connect AI assistants to your Vendaze account. Once connected, your assistant can search contacts, view deals, create tasks, log activities, and much more, all from within the conversation, without you having to open Vendaze.
 
-## Endpoint
+The Vendaze MCP is available as a listed integration in **Claude**, **ChatGPT**, and **Manus**.
 
-```
-https://api.vendaze.com/mcp
-```
+<CardGroup cols={3}>
+  <Card title="Claude" icon="comment-dots" href="/en/ai/claude">
+    Connect via the Claude app directory.
+  </Card>
+  <Card title="ChatGPT" icon="robot" href="/en/ai/chatgpt">
+    Connect via ChatGPT connectors.
+  </Card>
+  <Card title="Manus" icon="wand-magic-sparkles" href="/en/ai/manus">
+    Connect via the Manus integrations panel.
+  </Card>
+</CardGroup>
 
-The server follows the MCP specification and is compatible with any client that implements the protocol, including Claude Desktop, Cursor, GitHub Copilot, and n8n.
+## What your assistant can do
 
-## Authentication
-
-The MCP Server uses a Bearer token in the authorization header. Configure the OAuth access token in your MCP client:
-
-```json
-{
-  "mcpServers": {
-    "vendaze": {
-      "url": "https://api.vendaze.com/mcp",
-      "headers": {
-        "Authorization": "Bearer YOUR_ACCESS_TOKEN"
-      }
-    }
-  }
-}
-```
-
-The access token is valid for 1 hour. Use the refresh token to renew it before it expires.
-
-## Available tools
+Once connected, your AI assistant has access to the following actions on your Vendaze account:
 
 ### People
 
@@ -92,8 +81,20 @@ The access token is valid for 1 hour. Use the refresh token to renew it before i
 | `list_tags`          | Lists all tags in the workspace.                    |
 | `list_products`      | Lists available products.                           |
 
-## Limitations
+## Example prompts
 
-- The MCP Server applies the same rate limits as the REST API per `client_id`
-- Expired tokens result in a `401` error — the client must renew the token and retry
+Once connected, you can talk to your assistant naturally:
+
+- "What are the 10 highest-value deals in the Commercial pipeline?"
+- "Show me the contacts at Acme Corp with all their information."
+- "Which tasks are open with an overdue date?"
+- "Create a contact named John Smith at company XYZ with email john@xyz.com."
+- "Move the deal 'Quarterly Contract' to the 'Proposal Sent' stage."
+- "Add a note on contact Ana Costa saying she returns on the 15th."
+- "Log a call on the Acme Corp deal saying we're waiting for their legal team's approval."
+
+## Notes
+
+- The MCP Server applies the same rate limits as the REST API
+- The connection uses your Vendaze account's OAuth authorization. The assistant only accesses the workspace you authorized.
 - Custom fields are returned only in ID lookup tools (`get_*`), not in listings

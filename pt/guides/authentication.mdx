@@ -69,7 +69,7 @@ GET https://api.vendaze.com/oauth/authorize
 
 <Warning>
   Sempre verifique que o parâmetro `state` no callback é igual ao que você enviou. Rejeite a
-  requisição se não bater — é o mecanismo de proteção contra CSRF.
+  requisição se não bater. É o mecanismo de proteção contra CSRF.
 </Warning>
 
 ## Passo 3 - Usuário autoriza
@@ -161,7 +161,7 @@ curl -X POST https://api.vendaze.com/oauth/token \
   }'
 ```
 
-A resposta é idêntica ao Passo 5. Substitua os dois tokens no seu lado — um novo refresh token é emitido a cada renovação.
+A resposta é idêntica ao Passo 5. Substitua os dois tokens no seu lado. Um novo refresh token é emitido a cada renovação.
 
 <Note>
   Refresh tokens expiram se ficarem sem uso por 60 dias. A cada renovação, a janela de 60 dias é

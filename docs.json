@@ -109,12 +109,12 @@
                 "pages": ["pt/ai/overview"]
               },
               {
-                "group": "Conectores",
-                "pages": ["pt/ai/mcp", "pt/ai/zapier", "pt/ai/make", "pt/ai/n8n"]
+                "group": "MCP Server",
+                "pages": ["pt/ai/mcp", "pt/ai/claude", "pt/ai/chatgpt", "pt/ai/manus"]
               },
               {
-                "group": "Agentes de IA",
-                "pages": ["pt/ai/claude", "pt/ai/cursor", "pt/ai/copilot"]
+                "group": "Automações",
+                "pages": ["pt/ai/zapier"]
               }
             ]
           }
@@ -194,12 +194,12 @@
                 "pages": ["en/ai/overview"]
               },
               {
-                "group": "Connectors",
-                "pages": ["en/ai/mcp", "en/ai/zapier", "en/ai/make", "en/ai/n8n"]
+                "group": "MCP Server",
+                "pages": ["en/ai/mcp", "en/ai/claude", "en/ai/chatgpt", "en/ai/manus"]
               },
               {
-                "group": "AI Agents",
-                "pages": ["en/ai/claude", "en/ai/cursor", "en/ai/copilot"]
+                "group": "Automations",
+                "pages": ["en/ai/zapier"]
               }
             ]
           }

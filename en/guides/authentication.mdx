@@ -64,7 +64,7 @@ GET https://api.vendaze.com/oauth/authorize
 
 <Warning>
   Always verify that the `state` parameter in the callback matches what you sent. Reject the request
-  if they do not match — it is a CSRF protection mechanism.
+  if they do not match. It is a CSRF protection mechanism.
 </Warning>
 
 ## Step 3 - User authorizes
@@ -156,7 +156,7 @@ curl -X POST https://api.vendaze.com/oauth/token \
   }'
 ```
 
-The response is identical to Step 5. Replace both tokens on your side — a new refresh token is issued on every refresh.
+The response is identical to Step 5. Replace both tokens on your side. A new refresh token is issued on every refresh.
 
 <Note>
   Refresh tokens expire if unused for 60 days. Each time you use a refresh token, the 60-day window

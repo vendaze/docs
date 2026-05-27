@@ -1,40 +1,20 @@
 ---
 title: 'Zapier'
-description: 'Connect Vendaze to 7,000+ apps with Zapier, without writing code.'
+description: 'Connect Vendaze to 7,000+ apps with the native Zapier integration, without writing code.'
 icon: 'bolt'
 ---
 
-Zapier lets you build automations between Vendaze and thousands of other apps using a visual interface. Create contacts when a form is filled out, update deals when a contract is signed, or sync data with your favorite spreadsheet.
+Vendaze has an official app on Zapier. Any Vendaze customer can connect their account directly from the Zapier platform, no developer credentials required.
 
 ## How to connect
 
-### 1. Create an app in Vendaze
+1. Go to [zapier.com/apps/vendaze/integrations](https://zapier.com/apps/vendaze/integrations)
+2. Click **Connect Vendaze**
+3. You will be redirected to Vendaze to authorize access to your workspace
+4. Select the workspace you want to connect and confirm the requested scopes
+5. Done. Your Vendaze account is connected and ready to use in Zaps.
 
-Before configuring Zapier, you need a `client_id` and `client_secret` from Vendaze:
-
-```bash
-curl -X POST https://api.vendaze.com/v1/auth/register-app \
-  -H "Content-Type: application/json" \
-  -d '{
-    "app_name": "Zapier Integration",
-    "email": "dev@yourapp.com",
-    "redirect_uris": ["https://zapier.com/dashboard/auth/oauth/return/App"],
-    "scopes": ["people:read", "people:write", "companies:read", "companies:write", "deals:read", "deals:write"]
-  }'
-```
-
-You will receive the `client_id` and `client_secret` by email.
-
-### 2. Set up the connection in Zapier
-
-1. Go to [zapier.com](https://zapier.com) and log in
-2. Click **Create Zap**
-3. In the trigger or action section, search for **Vendaze**
-4. Click **Connect** and enter your `client_id` and `client_secret`
-5. You will be redirected to Vendaze to authorize access to the workspace
-6. Select the workspace you want to connect and authorize the requested scopes
-
-### 3. Configure the Zap
+## Configure a Zap
 
 After connecting, choose the trigger and action:
 
@@ -70,6 +50,6 @@ When an email tagged with a specific label arrives in Gmail, create a follow-up 
 
 ## Notes
 
-- Zapier checks for new events every 5 to 15 minutes, depending on the plan
-- For real-time notifications, consider using Webhooks alongside Zapier
+- Zapier checks for new events every 5 to 15 minutes, depending on your Zapier plan
 - Workspace custom fields appear as optional fields in creation and update actions
+- To reconnect or manage permissions, go to **My Apps** in Zapier and find the Vendaze connection

@@ -1,40 +1,20 @@
 ---
 title: 'Zapier'
-description: 'Conecte a Vendaze a mais de 7.000 aplicativos com o Zapier, sem escrever código.'
+description: 'Conecte a Vendaze a mais de 7.000 aplicativos com a integração nativa do Zapier, sem escrever código.'
 icon: 'bolt'
 ---
 
-O Zapier permite criar automações entre a Vendaze e milhares de outros aplicativos usando uma interface visual. Crie contatos quando um formulário é preenchido, atualize negócios quando um contrato é assinado, ou sincronize dados com sua planilha favorita.
+A Vendaze tem um aplicativo oficial no Zapier. Qualquer cliente da Vendaze pode conectar sua conta diretamente pela plataforma do Zapier, sem precisar de credenciais de desenvolvedor.
 
 ## Como conectar
 
-### 1. Criar um app na Vendaze
+1. Acesse [zapier.com/apps/vendaze/integrations](https://zapier.com/apps/vendaze/integrations)
+2. Clique em **Connect Vendaze**
+3. Você será redirecionado para a Vendaze para autorizar o acesso ao seu workspace
+4. Selecione o workspace que deseja conectar e confirme os escopos solicitados
+5. Pronto. Sua conta Vendaze está conectada e pronta para usar nos Zaps.
 
-Antes de configurar o Zapier, você precisa de um `client_id` e `client_secret` da Vendaze:
-
-```bash
-curl -X POST https://api.vendaze.com/v1/auth/register-app \
-  -H "Content-Type: application/json" \
-  -d '{
-    "app_name": "Zapier Integration",
-    "email": "dev@seuapp.com",
-    "redirect_uris": ["https://zapier.com/dashboard/auth/oauth/return/App"],
-    "scopes": ["people:read", "people:write", "companies:read", "companies:write", "deals:read", "deals:write"]
-  }'
-```
-
-Você receberá o `client_id` e `client_secret` por email.
-
-### 2. Configurar a conexão no Zapier
-
-1. Acesse [zapier.com](https://zapier.com) e faça login
-2. Clique em **Create Zap**
-3. Na seção de trigger ou action, busque por **Vendaze**
-4. Clique em **Connect** e insira seu `client_id` e `client_secret`
-5. Você será redirecionado para a Vendaze para autorizar o acesso ao workspace
-6. Selecione o workspace que deseja conectar e autorize os escopos solicitados
-
-### 3. Configurar o Zap
+## Configurar um Zap
 
 Após conectar, escolha o trigger e a action:
 
@@ -70,6 +50,6 @@ Quando um email marcado com uma tag específica chega no Gmail, cria uma tarefa 
 
 ## Observações
 
-- O Zapier verifica novos eventos a cada 5 a 15 minutos, dependendo do plano
-- Para notificações em tempo real, considere usar Webhooks em conjunto com o Zapier
+- O Zapier verifica novos eventos a cada 5 a 15 minutos, dependendo do seu plano no Zapier
 - Os campos adicionais do workspace aparecem como campos opcionais nas actions de criação e atualização
+- Para reconectar ou gerenciar permissões, acesse **Meus Apps** no Zapier e localize a conexão com a Vendaze

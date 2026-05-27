@@ -36,8 +36,8 @@ Custom fields with no value for the record appear with `value: null`.
 
 Two new events were added for products:
 
-- `product.created` — fired when a new product is created in the workspace
-- `product.updated` — fired when a product is updated
+- `product.created`: fired when a new product is created in the workspace
+- `product.updated`: fired when a product is updated
 
 See the [Webhooks](/en/guides/webhooks) documentation for the full payload format.
 
@@ -54,7 +54,7 @@ Fixed a bug where tags containing special characters (such as `&` and `+`) were 
 
 ## Fix: order_by=full_name on companies
 
-The `order_by=full_name` parameter on `GET /v1/companies` was incorrectly returning a `422` error. Fixed — sorting by `full_name` now works for both people and companies.
+The `order_by=full_name` parameter on `GET /v1/companies` was incorrectly returning a `422` error. Fixed: sorting by `full_name` now works for both people and companies.
 
 </Update>
 

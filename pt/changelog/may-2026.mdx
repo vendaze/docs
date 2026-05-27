@@ -36,8 +36,8 @@ Campos adicionais sem valor para o registro aparecem com `value: null`.
 
 Dois novos eventos foram adicionados para produtos:
 
-- `product.created` — disparado quando um novo produto é criado no workspace
-- `product.updated` — disparado quando um produto é atualizado
+- `product.created`: disparado quando um novo produto é criado no workspace
+- `product.updated`: disparado quando um produto é atualizado
 
 Veja a documentação de [Webhooks](/pt/guides/webhooks) para o formato completo do payload.
 
@@ -54,7 +54,7 @@ Corrigido bug onde tags contendo caracteres especiais (como `&` e `+`) não eram
 
 ## Correção: order_by=full_name em companies
 
-O parâmetro `order_by=full_name` em `GET /v1/companies` retornava erro `422` indevidamente. Corrigido — ordenação por `full_name` agora funciona para pessoas e empresas.
+O parâmetro `order_by=full_name` em `GET /v1/companies` retornava erro `422` indevidamente. Corrigido: ordenação por `full_name` agora funciona para pessoas e empresas.
 
 </Update>
 

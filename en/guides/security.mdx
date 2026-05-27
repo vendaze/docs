@@ -10,10 +10,10 @@ The Vendaze API was designed with security in mind. This guide describes the rec
 
 The `client_secret` is sent by email once at the time of app registration. Treat it like a password:
 
-- Store it in a secrets manager (AWS Secrets Manager, HashiCorp Vault, Cloudflare Secrets) — never in environment variables exposed in logs
+- Store it in a secrets manager (AWS Secrets Manager, HashiCorp Vault, Cloudflare Secrets). Never store it in environment variables exposed in logs.
 - Never include it in code repositories, even private ones
 - Never expose it in a frontend, mobile app, or any client running on the user's device
-- Rotate it immediately if you suspect it has been compromised — contact support
+- Rotate it immediately if you suspect it has been compromised. Contact support.
 
 ## Store tokens securely
 
@@ -21,7 +21,7 @@ Access tokens and refresh tokens grant access to your user's workspace data:
 
 - Store refresh tokens encrypted in a database, never in cookies or localStorage
 - Use `httpOnly` and `Secure` flags for session cookies that reference tokens
-- Implement refresh token expiration and rotation — the Vendaze API invalidates the previous refresh token on each renewal
+- Implement refresh token expiration and rotation. The Vendaze API invalidates the previous refresh token on each renewal.
 - Revoke tokens immediately when the user disconnects the integration via `POST /oauth/revoke`
 
 ## Use HTTPS on all redirects

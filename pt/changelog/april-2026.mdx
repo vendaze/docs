@@ -11,10 +11,10 @@ A Vendaze API v1 está disponível para todos os desenvolvedores. Este é o lan�
 
 ### OAuth 2.1 com PKCE obrigatório
 
-- `GET /oauth/authorize` — inicia o fluxo de autorização
-- `POST /oauth/token` — troca de authorization code por tokens e renovação via refresh token
-- `POST /oauth/revoke` — revogação de access token ou refresh token
-- `POST /v1/auth/register-app` — registro de novo app integrador (público)
+- `GET /oauth/authorize`: inicia o fluxo de autorização
+- `POST /oauth/token`: troca de authorization code por tokens e renovação via refresh token
+- `POST /oauth/revoke`: revogação de access token ou refresh token
+- `POST /v1/auth/register-app`: registro de novo app integrador (público)
 
 PKCE com `code_challenge_method=S256` é obrigatório em todos os fluxos. Plain PKCE não é aceito.
 

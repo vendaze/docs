@@ -1,72 +1,43 @@
 ---
 title: 'IA e Automações'
-description: 'Conecte ferramentas de IA e plataformas de automação diretamente ao Vendaze via MCP Server e integrações nativas.'
+description: 'Conecte assistentes de IA e plataformas de automação diretamente à sua conta Vendaze.'
 icon: 'robot'
 ---
 
-A Vendaze API expõe um servidor MCP (Model Context Protocol) que permite que assistentes de IA e ambientes de desenvolvimento acessem dados do CRM diretamente, sem precisar escrever código de integração manualmente.
+A Vendaze se integra nativamente com assistentes de IA e plataformas de automação. Conecte sua conta uma vez e deixe suas ferramentas interagir com o CRM diretamente, sem precisar escrever código.
 
-## O que é o MCP Server da Vendaze
+## Assistentes de IA
 
-O MCP Server da Vendaze está disponível em:
+O servidor MCP (Model Context Protocol) da Vendaze está listado como integração oficial em três plataformas. Conecte sua conta e comece a fazer perguntas e executar ações no seu CRM por meio de conversa natural.
 
-```
-https://api.vendaze.com/mcp
-```
-
-Ele expõe as principais operações da API como ferramentas que modelos de linguagem podem chamar diretamente. Um assistente de IA com acesso ao MCP Server pode:
-
-- Buscar contatos, empresas e negócios por critérios específicos
-- Criar e atualizar registros no CRM
-- Listar tarefas abertas por responsável ou entidade
-- Registrar atividades (ligações, reuniões, emails) em negócios e contatos
-- Consultar campos adicionais e seus valores
-
-## Ferramentas disponíveis no MCP
-
-<CardGroup cols={2}>
+<CardGroup cols={3}>
   <Card title="Claude" icon="comment-dots" href="/pt/ai/claude">
-    Use a Vendaze diretamente no Claude Desktop com MCP.
+    Conecte pelo painel de integrações do Claude.
   </Card>
-  <Card title="Cursor" icon="arrow-pointer" href="/pt/ai/cursor">
-    Acesse dados do CRM enquanto desenvolve no Cursor.
+  <Card title="ChatGPT" icon="robot" href="/pt/ai/chatgpt">
+    Conecte pelos conectores do ChatGPT.
   </Card>
-  <Card title="GitHub Copilot" icon="github" href="/pt/ai/copilot">
-    Integre a Vendaze ao Copilot no VS Code.
-  </Card>
-  <Card title="n8n" icon="diagram-project" href="/pt/ai/n8n">
-    Crie workflows automatizados com o n8n.
+  <Card title="Manus" icon="wand-magic-sparkles" href="/pt/ai/manus">
+    Conecte pelo painel de integrações do Manus.
   </Card>
 </CardGroup>
+
+Depois de conectar, você pode conversar com o assistente de forma natural:
+
+- "Quais são meus negócios abertos este mês e qual o valor total?"
+- "Cria um contato chamado João Silva da empresa XYZ com email joao@xyz.com."
+- "Quais tarefas estão vencidas?"
+- "Move o negócio Contrato Trimestral para o stage Proposta Enviada."
+
+Para a lista completa de ações disponíveis, veja a [referência do MCP Server](/pt/ai/mcp).
 
 ## Plataformas de automação
 
-<CardGroup cols={2}>
+A Vendaze tem um aplicativo nativo listado no Zapier. Conecte sua conta diretamente pela plataforma, sem precisar de credenciais de desenvolvedor.
+
+<CardGroup cols={1}>
   <Card title="Zapier" icon="bolt" href="/pt/ai/zapier">
-    Conecte a Vendaze a mais de 7.000 apps sem código.
-  </Card>
-  <Card title="Make" icon="circle-nodes" href="/pt/ai/make">
-    Construa cenários avançados com Make (ex-Integromat).
+    Conecte a Vendaze a mais de 7.000 apps sem código. App nativo disponível em
+    zapier.com/apps/vendaze.
   </Card>
 </CardGroup>
-
-## Autenticação no MCP Server
-
-O MCP Server usa o mesmo fluxo OAuth 2.1 da API REST. O access token Bearer é passado na configuração do cliente MCP. Veja o guia de cada ferramenta para instruções específicas de configuração.
-
-## Escopos recomendados para IA
-
-Para uso com assistentes de IA, recomendamos registrar um app com os seguintes escopos:
-
-```
-people:read
-people:write
-companies:read
-companies:write
-deals:read
-deals:write
-tasks:read
-tasks:write
-```
-
-Se o caso de uso for apenas leitura, omita os escopos de escrita para reduzir o risco de modificações acidentais.

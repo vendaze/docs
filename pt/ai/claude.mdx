@@ -1,104 +1,42 @@
 ---
 title: 'Claude'
-description: 'Use a Vendaze diretamente no Claude Desktop via MCP Server para consultar e atualizar seu CRM em linguagem natural.'
+description: 'Conecte sua conta Vendaze ao Claude e gerencie seu CRM diretamente na conversa.'
 icon: 'comment-dots'
 ---
 
-O Claude Desktop suporta servidores MCP nativamente. Com o MCP Server da Vendaze configurado, você pode fazer perguntas ao Claude sobre seus dados de CRM e pedir que ele realize ações diretamente, sem precisar abrir a Vendaze.
+A Vendaze está listada como integração no Claude. Você pode conectar sua conta Vendaze diretamente pelo painel de apps do Claude, sem nenhuma configuração técnica.
 
-## Pré-requisitos
+## Como conectar
 
-- Claude Desktop instalado (versão que suporte MCP)
-- Access token válido da Vendaze (obtido via fluxo OAuth 2.1)
-
-## Configurar o MCP Server
-
-Edite o arquivo de configuração do Claude Desktop:
-
-**macOS:** `~/Library/Application Support/Claude/claude_desktop_config.json`  
-**Windows:** `%APPDATA%\Claude\claude_desktop_config.json`
-
-Adicione o servidor Vendaze:
-
-```json
-{
-  "mcpServers": {
-    "vendaze": {
-      "url": "https://api.vendaze.com/mcp",
-      "headers": {
-        "Authorization": "Bearer SEU_ACCESS_TOKEN"
-      }
-    }
-  }
-}
-```
-
-Reinicie o Claude Desktop. O ícone de ferramentas no chat indicará que o servidor MCP está conectado.
-
-## Obter o access token
-
-Se você ainda não tem um access token, siga o [guia de primeira solicitação](/pt/guides/first-request) para registrar um app e passar pelo fluxo OAuth.
-
-Para uso pessoal com o Claude Desktop, recomendamos registrar um app com escopos amplos e gerar um token de longa duração via refresh token.
+1. Acesse [claude.ai](https://claude.ai) e vá em **Configurações > Integrações** (ou o painel de apps no Claude Desktop)
+2. Busque por **Vendaze** e clique em **Conectar**
+3. Você será redirecionado para a Vendaze para autorizar o acesso ao seu workspace
+4. Selecione o workspace que deseja conectar e confirme os escopos solicitados
+5. Pronto. O Claude agora tem acesso à sua conta Vendaze.
 
 ## O que você pode fazer
 
-Com o MCP configurado, você pode conversar com o Claude em linguagem natural:
+Com a Vendaze conectada, você pode conversar com o Claude em linguagem natural:
 
 **Consultas:**
 
 - "Quais são os 10 negócios com maior valor no pipeline Comercial?"
-- "Mostre-me os contatos da empresa Acme Corp com todas as suas informações."
+- "Mostre-me os contatos da empresa Acme Corp com todas as informações."
 - "Quais tarefas estão abertas com prazo vencido?"
-- "Liste as atividades do negócio ID abc-123 das últimas duas semanas."
+- "Liste as atividades do negócio da Acme Corp das últimas duas semanas."
 
 **Ações:**
 
 - "Crie um contato chamado João Silva, da empresa XYZ, com email joao@xyz.com."
 - "Mova o negócio 'Contrato Trimestral' para o stage 'Proposta Enviada'."
 - "Adicione uma nota no contato Ana Costa dizendo que ela retorna no dia 15."
-- "Crie uma tarefa para ligar para o cliente amanhã às 14h, vinculada ao negócio ID xyz-456."
+- "Crie uma tarefa para ligar para o cliente amanhã às 14h, vinculada ao negócio Contrato Trimestral."
 
-## Renovação de token
+## Gerenciar a conexão
 
-Access tokens expiram em 1 hora. Para evitar interrupções ao usar o Claude, crie um script que renova o token automaticamente e atualiza o arquivo de configuração:
-
-```javascript
-// renew-token.js — rodar antes de usar o Claude Desktop
-const { execSync } = require('child_process');
-const fs = require('fs');
-const path = require('path');
-
-async function renewToken() {
-  const res = await fetch('https://api.vendaze.com/oauth/token', {
-    method: 'POST',
-    headers: { 'Content-Type': 'application/json' },
-    body: JSON.stringify({
-      grant_type: 'refresh_token',
-      refresh_token: process.env.VENDAZE_REFRESH_TOKEN,
-      client_id: process.env.VENDAZE_CLIENT_ID,
-      client_secret: process.env.VENDAZE_CLIENT_SECRET,
-    }),
-  });
-
-  const { access_token } = await res.json();
-
-  const configPath = path.join(
-    process.env.HOME,
-    'Library/Application Support/Claude/claude_desktop_config.json',
-  );
-
-  const config = JSON.parse(fs.readFileSync(configPath, 'utf-8'));
-  config.mcpServers.vendaze.headers.Authorization = `Bearer ${access_token}`;
-  fs.writeFileSync(configPath, JSON.stringify(config, null, 2));
-
-  console.log('Token renovado com sucesso.');
-}
-
-renewToken();
-```
+Para desconectar ou reconectar sua conta Vendaze, acesse **Configurações > Integrações** no Claude e gerencie a conexão com a Vendaze por lá.
 
 <Note>
-  Armazene o `refresh_token` em um local seguro, como as variáveis de ambiente do sistema ou um
-  gerenciador de senhas. Nunca em texto puro em arquivos rastreados por git.
+  O Claude acessa apenas o workspace que você autorizou durante o fluxo de conexão. Para trocar de
+  workspace, desconecte e reconecte selecionando o workspace desejado.
 </Note>
