@@ -1,6 +1,6 @@
 {
   "theme": "palm",
-  "name": "Vendaze Developers",
+  "name": "Vendaze Docs",
   "colors": {
     "primary": "#00c767",
     "light": "#00c767",
@@ -49,7 +49,7 @@
           "socials": {
             "x": "https://x.com/vendaze",
             "linkedin": "https://linkedin.com/company/vendaze",
-            "instagram": "https://instagram.com/vendaze"
+            "instagram": "https://instagram.com/vendazecrm"
           }
         },
         "tabs": [
@@ -131,7 +131,7 @@
           "socials": {
             "x": "https://x.com/vendaze",
             "linkedin": "https://linkedin.com/company/vendaze",
-            "instagram": "https://instagram.com/vendaze"
+            "instagram": "https://instagram.com/vendazecrm"
           }
         },
         "tabs": [
