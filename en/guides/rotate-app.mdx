@@ -1,40 +1,32 @@
 ---
 title: 'Rotate app credentials'
-description: 'Replace your app credentials when you need to update its name, description, redirect URIs, or scopes.'
+description: 'Replace your app credentials and optionally update its name, description, redirect URIs, or avatar.'
 icon: 'rotate'
 keywords:
-  [
-    'rotate credentials',
-    'client_id',
-    'client_secret',
-    'update app',
-    'invalidate credentials',
-    'OAuth app',
-  ]
+  ['rotate credentials', 'client_secret', 'update app', 'invalidate credentials', 'OAuth app']
 ---
 
-Rotating your app issues a new `client_secret` and immediately invalidates the previous one. This is the only way to update your app's name, description, avatar, redirect URIs, or scopes.
+Rotating your app issues a new `client_secret` and immediately invalidates the previous one. You only need to send `client_id` and `email` to rotate. Any other fields you include will update the app. Fields you omit stay unchanged.
 
 <Warning>
-  If you change the scopes during rotation, all active user sessions will be revoked. Users will
-  need to go through the OAuth flow again to approve the new scopes. If you keep the same scopes,
-  existing sessions are preserved.
+  The old `client_secret` is invalidated immediately after rotation. Update your app as soon as you
+  receive the new credentials by email.
 </Warning>
 
 ## When to rotate
 
+- Your `client_secret` was compromised or lost
 - You need to change the app name, description, or avatar
 - You need to add or remove redirect URIs
-- You need to request different scopes
-- Your `client_secret` was compromised or lost
 
 ## How it works
 
-Rotation is not an update. It is a re-registration using your `client_id` as proof of ownership. The new credentials are always sent to the email address registered with the app. That email cannot be changed.
+Rotation is not a full update. It uses your `client_id` and `email` as proof of ownership. The new credentials are always sent to the email address registered with the app. That email cannot be changed and is never returned by the API.
 
 <Steps>
   <Step title="Submit the rotation request">
-    Call `POST /v1/auth/rotate-app` with your current `client_id` and the new values you want.
+    Call `POST /v1/auth/rotate-app` with your `client_id`, `email`, and any fields you want to
+    update.
   </Step>
   <Step title="Receive new credentials by email">
     A new `client_secret` is generated and sent to the email address registered with the app. The
@@ -43,26 +35,33 @@ Rotation is not an update. It is a re-registration using your `client_id` as pro
   <Step title="Update your app">
     Replace the stored `client_secret` in your app with the new value.
   </Step>
-  <Step title="Users re-authorize (only if scopes changed)">
-    If you changed the scopes, existing tokens are revoked and users must re-authorize. If the
-    scopes are unchanged, active sessions continue working normally.
-  </Step>
 </Steps>
 
 ## Rotate via API
 
-Send a `POST` to `/v1/auth/rotate-app`:
+Minimal request: only rotates the credentials, keeps all existing app data:
 
 ```bash
 curl -X POST https://api.vendaze.com/v1/auth/rotate-app \
   -H "Content-Type: application/json" \
   -d '{
     "client_id": "9a8b7c6d-5e4f-3a2b-1c0d-9e8f7a6b5c4d",
+    "email": "you@yourcompany.com"
+  }'
+```
+
+With optional updates: rotates credentials and updates the app at the same time:
+
+```bash
+curl -X POST https://api.vendaze.com/v1/auth/rotate-app \
+  -H "Content-Type: application/json" \
+  -d '{
+    "client_id": "9a8b7c6d-5e4f-3a2b-1c0d-9e8f7a6b5c4d",
+    "email": "you@yourcompany.com",
     "app_name": "My Integration v2",
     "description": "Updated description for My Integration",
-    "avatar_url": "https://yourapp.com/assets/logo-v2.webp",
-    "redirect_uris": ["https://yourapp.com/oauth/callback"],
-    "scopes": ["people:read", "people:write", "deals:read", "deals:write"]
+    "avatar_url": "https://yourapp.com/assets/logo-v2.png",
+    "redirect_uris": ["https://yourapp.com/oauth/callback"]
   }'
 ```
 
@@ -72,8 +71,8 @@ curl -X POST https://api.vendaze.com/v1/auth/rotate-app \
 {
   "data": {
     "app_name": "My Integration v2",
-    "client_id": "1b2c3d4e-5f6a-7b8c-9d0e-1f2a3b4c5d6e",
-    "avatar_url": "https://storage.vendaze.com/assets/integrations/myintegrationv2.webp",
+    "client_id": "9a8b7c6d-5e4f-3a2b-1c0d-9e8f7a6b5c4d",
+    "avatar_url": "https://storage.vendaze.com/assets/integrations/myintegrationv2.jpg",
     "message": "New credentials sent by email."
   }
 }
@@ -83,35 +82,31 @@ The new `client_secret` is sent **only by email** and never returned in the API 
 
 ## Request parameters
 
-| Parameter       | Type     | Required | Description                                                                                                                     |
-| --------------- | -------- | -------- | ------------------------------------------------------------------------------------------------------------------------------- |
-| `client_id`     | string   | Yes      | Current `client_id` of the app being rotated.                                                                                   |
-| `app_name`      | string   | Yes      | New name shown to users on the consent screen. Max 100 chars.                                                                   |
-| `description`   | string   | No       | New description of what your app does. Max 500 chars.                                                                           |
-| `avatar_url`    | string   | No       | HTTPS URL of your app logo. Vendaze fetches the image, validates it, and stores it. Accepted formats: WebP, JPEG, PNG. Max 2MB. |
-| `redirect_uris` | string[] | Yes      | New list of HTTPS redirect URIs. Replaces the previous list entirely.                                                           |
-| `scopes`        | string[] | Yes      | New list of scopes. Replaces the previous list entirely.                                                                        |
+| Parameter       | Type     | Required | Description                                                                                                                                                                                                                              |
+| --------------- | -------- | -------- | ---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| `client_id`     | string   | Yes      | Current `client_id` of the app being rotated.                                                                                                                                                                                            |
+| `email`         | string   | Yes      | Email address registered with the app. Used to verify ownership. The API never reveals which email is on file. It returns an error if the value does not match.                                                                          |
+| `app_name`      | string   | No       | New name shown to users on the consent screen. Max 100 chars. If omitted, the current name is kept.                                                                                                                                      |
+| `description`   | string   | No       | New description of what your app does. Max 500 chars. If omitted, the current description is kept.                                                                                                                                       |
+| `avatar_url`    | string   | No       | HTTPS URL of your app logo. Vendaze fetches the image, validates it, converts it to JPEG (max 400x400px), and stores it. Accepted formats: JPEG, PNG, WebP, GIF, BMP, TIFF. SVG is not accepted. If omitted, the current avatar is kept. |
+| `redirect_uris` | string[] | No       | New list of HTTPS redirect URIs. Replaces the previous list entirely. If omitted, the current list is kept.                                                                                                                              |
 
 <Note>
-  The registered email address cannot be changed. New credentials are always sent to the original
-  email used during registration.
+  Scopes cannot be changed via rotation. To request different scopes, you need to register a new
+  app.
 </Note>
 
 ## What changes after rotation
 
-| Field              | After rotation                                                         |
-| ------------------ | ---------------------------------------------------------------------- |
-| `client_secret`    | New value. Sent by email. Update your app.                             |
-| Active user tokens | Revoked only if scopes changed. Unchanged scopes keep sessions active. |
-| App name           | Updated to the value in the request.                                   |
-| Redirect URIs      | Replaced by the list in the request.                                   |
-| Scopes             | Replaced by the list in the request.                                   |
-
-## Impact on your users
-
-If you change the scopes, all access tokens and refresh tokens are immediately revoked. The next time a user's app makes an API call, it will receive a `401 Unauthorized`. Your app should handle this by redirecting the user through the OAuth flow again.
-
-If you keep the same scopes, active sessions are not affected. Users will not notice the rotation.
+| Field           | After rotation                             |
+| --------------- | ------------------------------------------ |
+| `client_secret` | New value. Sent by email. Update your app. |
+| `client_id`     | Does not change. Stays the same.           |
+| `app_name`      | Updated if sent in the request.            |
+| `description`   | Updated if sent in the request.            |
+| `avatar`        | Updated if `avatar_url` sent in request.   |
+| `redirect_uris` | Updated if sent in the request.            |
+| Active tokens   | Not affected. Existing sessions continue.  |
 
 ## Related
 

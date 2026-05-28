@@ -1,40 +1,31 @@
 ---
 title: 'Rotacionar credenciais do aplicativo'
-description: 'Substitua as credenciais do seu aplicativo quando precisar atualizar nome, descrição, URIs de redirecionamento ou escopos.'
+description: 'Substitua as credenciais do seu aplicativo e atualize opcionalmente nome, descrição, URIs de redirecionamento ou avatar.'
 icon: 'rotate'
 keywords:
-  [
-    'rotacionar credenciais',
-    'client_id',
-    'client_secret',
-    'atualizar app',
-    'invalidar credenciais',
-    'OAuth app',
-  ]
+  ['rotacionar credenciais', 'client_secret', 'atualizar app', 'invalidar credenciais', 'OAuth app']
 ---
 
-Rotacionar seu aplicativo gera um novo `client_secret` e invalida o anterior. É a única forma de atualizar o nome, descrição, avatar, URIs de redirecionamento ou escopos do seu aplicativo.
+Rotacionar seu aplicativo gera um novo `client_secret` e invalida o anterior imediatamente. Você só precisa enviar `client_id` e `email` para rotacionar. Qualquer outro campo que você incluir atualizará o aplicativo. Campos omitidos permanecem inalterados.
 
 <Warning>
-  Se você alterar os escopos durante a rotação, todas as sessões ativas dos usuários serão
-  revogadas. Eles precisarão passar pelo fluxo OAuth novamente para aprovar os novos escopos. Se os
-  escopos forem mantidos, as sessões existentes continuam funcionando normalmente.
+  O `client_secret` antigo é invalidado imediatamente após a rotação. Atualize seu aplicativo assim
+  que receber as novas credenciais por e-mail.
 </Warning>
 
 ## Quando rotacionar
 
+- Seu `client_secret` foi comprometido ou perdido
 - Você precisa alterar o nome, descrição ou avatar do aplicativo
 - Você precisa adicionar ou remover URIs de redirecionamento
-- Você precisa solicitar escopos diferentes
-- Seu `client_secret` foi comprometido ou perdido
 
 ## Como funciona
 
-A rotação não é uma atualização. É um novo registro usando o `client_id` como prova de propriedade. As novas credenciais são sempre enviadas para o e-mail cadastrado no aplicativo. Esse e-mail não pode ser alterado.
+A rotação usa o `client_id` e o `email` como prova de propriedade. As novas credenciais são sempre enviadas para o e-mail cadastrado no aplicativo. Esse e-mail não pode ser alterado e nunca é retornado pela API.
 
 <Steps>
   <Step title="Envie a requisição de rotação">
-    Chame `POST /v1/auth/rotate-app` com seu `client_id` atual e os novos valores desejados.
+    Chame `POST /v1/auth/rotate-app` com seu `client_id`, `email` e os campos que deseja atualizar.
   </Step>
   <Step title="Receba as novas credenciais por e-mail">
     Um novo `client_secret` é gerado e enviado para o e-mail cadastrado no aplicativo. O secret
@@ -43,26 +34,33 @@ A rotação não é uma atualização. É um novo registro usando o `client_id` 
   <Step title="Atualize seu aplicativo">
     Substitua o `client_secret` armazenado no seu aplicativo pelo novo valor.
   </Step>
-  <Step title="Usuários reautorizam (somente se os escopos mudaram)">
-    Se você alterou os escopos, os tokens existentes são revogados e os usuários precisam
-    reautorizar. Se os escopos forem mantidos, as sessões ativas continuam funcionando normalmente.
-  </Step>
 </Steps>
 
 ## Rotacionar via API
 
-Envie um `POST` para `/v1/auth/rotate-app`:
+Requisição mínima: apenas rotaciona as credenciais, mantém todos os dados atuais do aplicativo:
 
 ```bash
 curl -X POST https://api.vendaze.com/v1/auth/rotate-app \
   -H "Content-Type: application/json" \
   -d '{
     "client_id": "9a8b7c6d-5e4f-3a2b-1c0d-9e8f7a6b5c4d",
+    "email": "voce@suaempresa.com"
+  }'
+```
+
+Com atualizações opcionais: rotaciona as credenciais e atualiza o aplicativo ao mesmo tempo:
+
+```bash
+curl -X POST https://api.vendaze.com/v1/auth/rotate-app \
+  -H "Content-Type: application/json" \
+  -d '{
+    "client_id": "9a8b7c6d-5e4f-3a2b-1c0d-9e8f7a6b5c4d",
+    "email": "voce@suaempresa.com",
     "app_name": "Minha Integração v2",
     "description": "Descrição atualizada da Minha Integração",
-    "avatar_url": "https://meuapp.com/assets/logo-v2.webp",
-    "redirect_uris": ["https://meuapp.com/oauth/callback"],
-    "scopes": ["people:read", "people:write", "deals:read", "deals:write"]
+    "avatar_url": "https://meuapp.com/assets/logo-v2.png",
+    "redirect_uris": ["https://meuapp.com/oauth/callback"]
   }'
 ```
 
@@ -72,46 +70,42 @@ curl -X POST https://api.vendaze.com/v1/auth/rotate-app \
 {
   "data": {
     "app_name": "Minha Integração v2",
-    "client_id": "1b2c3d4e-5f6a-7b8c-9d0e-1f2a3b4c5d6e",
-    "avatar_url": "https://storage.vendaze.com/assets/integrations/minhaintegracaov2.webp",
+    "client_id": "9a8b7c6d-5e4f-3a2b-1c0d-9e8f7a6b5c4d",
+    "avatar_url": "https://storage.vendaze.com/assets/integrations/minhaintegracaov2.jpg",
     "message": "New credentials sent by email."
   }
 }
 ```
 
-O novo `client_secret` é enviado **somente por e-mail** para o endereço cadastrado no aplicativo e nunca retorna na resposta da API. Guarde-o com segurança assim que receber.
+O novo `client_secret` é enviado **somente por e-mail** e nunca retorna na resposta da API. Guarde-o com segurança assim que receber.
 
 ## Parâmetros da requisição
 
-| Parâmetro       | Tipo     | Obrigatório | Descrição                                                                                                                                   |
-| --------------- | -------- | ----------- | ------------------------------------------------------------------------------------------------------------------------------------------- |
-| `client_id`     | string   | Sim         | `client_id` atual do aplicativo a ser rotacionado.                                                                                          |
-| `app_name`      | string   | Sim         | Novo nome exibido aos usuários na tela de consentimento. Máx. 100 chars.                                                                    |
-| `description`   | string   | Não         | Nova descrição do que seu app faz. Máx. 500 chars.                                                                                          |
-| `avatar_url`    | string   | Não         | URL HTTPS do logo do seu app. A Vendaze faz o download da imagem, valida o formato e armazena. Formatos aceitos: WebP, JPEG, PNG. Máx. 2MB. |
-| `redirect_uris` | string[] | Sim         | Nova lista de URIs HTTPS de redirecionamento. Substitui a lista anterior integralmente.                                                     |
-| `scopes`        | string[] | Sim         | Nova lista de escopos. Substitui a lista anterior integralmente.                                                                            |
+| Parâmetro       | Tipo     | Obrigatório | Descrição                                                                                                                                                                                                                                      |
+| --------------- | -------- | ----------- | ---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| `client_id`     | string   | Sim         | `client_id` atual do aplicativo a ser rotacionado.                                                                                                                                                                                             |
+| `email`         | string   | Sim         | E-mail cadastrado no aplicativo. Usado para verificar a propriedade. A API nunca revela qual e-mail está cadastrado. Retorna erro se o valor não corresponder.                                                                                 |
+| `app_name`      | string   | Não         | Novo nome exibido aos usuários na tela de consentimento. Máx. 100 chars. Se omitido, o nome atual é mantido.                                                                                                                                   |
+| `description`   | string   | Não         | Nova descrição do que seu app faz. Máx. 500 chars. Se omitido, a descrição atual é mantida.                                                                                                                                                    |
+| `avatar_url`    | string   | Não         | URL HTTPS do logo do seu app. A Vendaze faz o download da imagem, valida o formato, converte para JPEG (máx. 400x400px) e armazena. Formatos aceitos: JPEG, PNG, WebP, GIF, BMP, TIFF. SVG não é aceito. Se omitido, o avatar atual é mantido. |
+| `redirect_uris` | string[] | Não         | Nova lista de URIs HTTPS de redirecionamento. Substitui a lista anterior integralmente. Se omitido, a lista atual é mantida.                                                                                                                   |
 
 <Note>
-  O e-mail cadastrado não pode ser alterado. As novas credenciais são sempre enviadas para o
-  endereço original usado no registro.
+  Os escopos não podem ser alterados via rotação. Para solicitar escopos diferentes, é necessário
+  registrar um novo aplicativo.
 </Note>
 
 ## O que muda após a rotação
 
-| Campo              | Após a rotação                                                                    |
-| ------------------ | --------------------------------------------------------------------------------- |
-| `client_secret`    | Novo valor. Enviado por e-mail. Atualize seu aplicativo.                          |
-| Tokens ativos      | Revogados somente se os escopos mudaram. Escopos iguais mantêm as sessões ativas. |
-| Nome do aplicativo | Atualizado para o valor da requisição.                                            |
-| URIs de redirect   | Substituídas pela lista da requisição.                                            |
-| Escopos            | Substituídos pela lista da requisição.                                            |
-
-## Impacto nos seus usuários
-
-Se você alterar os escopos, todos os access tokens e refresh tokens são revogados imediatamente. Na próxima chamada à API, o aplicativo do usuário receberá um `401 Unauthorized`. Seu aplicativo deve tratar isso redirecionando o usuário pelo fluxo OAuth novamente.
-
-Se os escopos forem mantidos, as sessões ativas não são afetadas. Os usuários não perceberão a rotação.
+| Campo            | Após a rotação                                    |
+| ---------------- | ------------------------------------------------- |
+| `client_secret`  | Novo valor. Enviado por e-mail. Atualize seu app. |
+| `client_id`      | Não muda. Permanece o mesmo.                      |
+| Nome             | Atualizado se enviado na requisição.              |
+| Descrição        | Atualizada se enviada na requisição.              |
+| Avatar           | Atualizado se `avatar_url` enviado na requisição. |
+| URIs de redirect | Atualizadas se enviadas na requisição.            |
+| Tokens ativos    | Não afetados. Sessões existentes continuam.       |
 
 ## Relacionados
 

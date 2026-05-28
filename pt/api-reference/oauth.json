@@ -35,7 +35,7 @@
       "post": {
         "operationId": "rotateApp",
         "summary": "Rotacionar credenciais do aplicativo",
-        "description": "Gera um novo client_secret, invalidando o anterior imediatamente. Os tokens ativos dos usuários são revogados somente se os escopos mudarem. As novas credenciais são enviadas para o e-mail cadastrado no aplicativo. O e-mail não pode ser alterado.",
+        "description": "Gera um novo client_secret e invalida o anterior imediatamente. O client_id permanece o mesmo. Os tokens ativos dos usuários não são afetados.",
         "security": [],
         "tags": ["OAuth"],
         "requestBody": {
@@ -391,32 +391,43 @@
       },
       "RotateAppRequest": {
         "type": "object",
-        "required": ["client_id", "app_name", "redirect_uris", "scopes"],
+        "required": ["client_id", "email"],
         "properties": {
           "client_id": {
             "type": "string",
+            "format": "uuid",
             "example": "9a8b7c6d-5e4f-3a2b-1c0d-9e8f7a6b5c4d",
             "description": "client_id atual do aplicativo a ser rotacionado."
           },
-          "app_name": { "type": "string", "maxLength": 100, "example": "Meu SaaS v2" },
-          "description": { "type": "string", "maxLength": 500, "example": "Integração atualizada com a Vendaze." },
+          "email": {
+            "type": "string",
+            "format": "email",
+            "example": "dev@meusaas.com",
+            "description": "E-mail cadastrado no aplicativo. Usado para verificar a propriedade. A API nunca revela qual e-mail está cadastrado."
+          },
+          "app_name": {
+            "type": "string",
+            "maxLength": 100,
+            "example": "Meu SaaS v2",
+            "description": "Novo nome exibido aos usuários na tela de consentimento. Máx. 100 chars. Se omitido, o nome atual é mantido."
+          },
+          "description": {
+            "type": "string",
+            "maxLength": 500,
+            "example": "Integração atualizada com a Vendaze.",
+            "description": "Nova descrição do que seu app faz. Máx. 500 chars. Se omitido, a descrição atual é mantida."
+          },
           "avatar_url": {
             "type": "string",
             "format": "uri",
             "example": "https://meusaas.com/assets/logo-v2.webp",
-            "description": "URL HTTPS do logo do seu app. A Vendaze faz o download da imagem, valida o formato pelo magic byte e armazena. Formatos aceitos: WebP, JPEG, PNG. Máx. 2MB."
+            "description": "URL HTTPS do logo do seu app. A Vendaze faz o download da imagem, valida o formato, converte para JPEG (máx. 400x400px) e armazena. Formatos aceitos: JPEG, PNG, WebP, GIF, BMP, TIFF. SVG não é aceito. Se omitido, o avatar atual é mantido."
           },
           "redirect_uris": {
             "type": "array",
             "items": { "type": "string", "format": "uri" },
             "example": ["https://meusaas.com/callback/vendaze"],
-            "description": "Nova lista de URIs de redirecionamento. Substitui a lista anterior integralmente."
-          },
-          "scopes": {
-            "type": "array",
-            "items": { "$ref": "#/components/schemas/ScopeValue" },
-            "example": ["people:read", "deals:write"],
-            "description": "Nova lista de escopos. Substitui a lista anterior integralmente."
+            "description": "Nova lista de URIs HTTPS de redirecionamento. Substitui a lista anterior integralmente. Se omitido, a lista atual é mantida."
           }
         }
       },
@@ -429,12 +440,13 @@
               "app_name": { "type": "string", "example": "Meu SaaS v2" },
               "client_id": {
                 "type": "string",
-                "example": "1b2c3d4e-5f6a-7b8c-9d0e-1f2a3b4c5d6e",
-                "description": "Novo client_id. O client_id anterior agora é inválido."
+                "format": "uuid",
+                "example": "9a8b7c6d-5e4f-3a2b-1c0d-9e8f7a6b5c4d",
+                "description": "O client_id do aplicativo. Não muda após a rotação."
               },
               "avatar_url": {
                 "type": "string",
-                "example": "https://storage.vendaze.com/assets/integrations/meusaasv2.webp",
+                "example": "https://storage.vendaze.com/assets/integrations/meusaasv2.jpg",
                 "description": "URL pública do avatar armazenado. Presente somente se avatar_url foi enviado na requisição."
               },
               "message": { "type": "string", "example": "New credentials sent by email." }
