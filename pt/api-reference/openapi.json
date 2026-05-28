@@ -185,11 +185,11 @@
           {
             "name": "state",
             "in": "query",
-            "required": true,
+            "required": false,
             "schema": {
               "type": "string"
             },
-            "description": "String opaca gerada pelo cliente para prevenção de CSRF."
+            "description": "String aleatória gerada pelo cliente. Retornada sem alteração no callback. Fortemente recomendada para prevenção de CSRF."
           }
         ],
         "responses": {
@@ -2824,7 +2824,7 @@
             "type": "string",
             "format": "uri",
             "example": "https://meusaas.com/assets/logo.webp",
-            "description": "URL HTTPS do logo do seu app. A Vendaze faz o download da imagem, valida o formato pelo magic byte e armazena. Formatos aceitos: WebP, JPEG, PNG. Máx. 2MB."
+            "description": "URL HTTPS do logo do seu app. A Vendaze faz o download da imagem, valida o formato pelo magic byte e armazena. Formatos aceitos: JPEG, PNG, WebP, GIF, BMP, TIFF. SVG não é aceito. Máx. 2MB."
           },
           "redirect_uris": {
             "type": "array",

@@ -40,12 +40,12 @@ GET https://api.vendaze.com/oauth/authorize
   &state=TOKEN_CSRF_ALEATORIO
 ```
 
-| Parâmetro       | Obrigatório | Descrição                                                                      |
-| --------------- | ----------- | ------------------------------------------------------------------------------ |
-| `client_id`     | Sim         | O client ID do seu aplicativo.                                                 |
-| `redirect_uri`  | Sim         | Deve corresponder exatamente a uma URI registrada.                             |
-| `response_type` | Sim         | Deve ser `code`.                                                               |
-| `state`         | Sim         | String aleatória que você gera. Retornada sem alteração. Proteção contra CSRF. |
+| Parâmetro       | Obrigatório | Descrição                                                                                                  |
+| --------------- | ----------- | ---------------------------------------------------------------------------------------------------------- |
+| `client_id`     | Sim         | O client ID do seu aplicativo.                                                                             |
+| `redirect_uri`  | Sim         | Deve corresponder exatamente a uma URI registrada.                                                         |
+| `response_type` | Sim         | Deve ser `code`.                                                                                           |
+| `state`         | Não         | String aleatória que você gera. Retornada sem alteração. Fortemente recomendada para proteção contra CSRF. |
 
 <Warning>
   Verifique que o `state` no callback é igual ao que você enviou. Rejeite se não bater.
@@ -72,7 +72,7 @@ https://meuapp.com/oauth/callback?error=access_denied&state=SEU_STATE
 ## Passo 4 - Trocar o code pelos tokens
 
 <Warning>
-  Códigos de autorização expiram em 5 minutos e só podem ser usados uma vez. Troque imediatamente
+  Códigos de autorização expiram em 10 minutos e só podem ser usados uma vez. Troque imediatamente
   após receber o callback.
 </Warning>
 
