@@ -56,7 +56,7 @@ A Vendaze API usa códigos de status HTTP padrão e retorna um formato de erro c
 | `insufficient_scope`  | 403  | Token sem o escopo necessário para este endpoint.              |
 | `forbidden`           | 403  | Autenticado, mas sem permissão para este recurso.              |
 | `not_found`           | 404  | Recurso inexistente, deletado, ou de outro workspace.          |
-| `conflict`            | 409  | Conflito com dados existentes. Veja `message` para detalhes.  |
+| `conflict`            | 409  | Conflito com dados existentes. Veja `message` para detalhes.   |
 | `validation_error`    | 422  | Input falhou na validação. Veja `fields` para detalhes.        |
 | `rate_limit_exceeded` | 429  | Muitas requisições. Aguarde o tempo indicado em `Retry-After`. |
 | `internal_error`      | 500  | Erro inesperado. Use o `request_id` ao contatar suporte.       |

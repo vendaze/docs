@@ -57,7 +57,7 @@ Toda resposta de listagem inclui um objeto `meta`:
 
 ## Buscar todos os registros
 
-Para recuperar todos os registros, itere pelas páginas até `has_more` ser `false`:
+Itere pelas páginas até `has_more` ser `false`:
 
 ```javascript
 async function fetchAll(endpoint, accessToken) {
@@ -76,12 +76,6 @@ async function fetchAll(endpoint, accessToken) {
 
   return results;
 }
-```
-
-<Note>
-  Fique atento aos limites de taxa ao iterar sobre grandes datasets. Use filtros para estreitar o
-  conjunto de resultados quando possível.
-</Note>
 
 ## Ordenação disponível por recurso
 
@@ -93,3 +87,4 @@ async function fetchAll(endpoint, accessToken) {
 | Tasks      | `created_at`, `updated_at`, `due_date`          |
 | Activities | `created_at`                                    |
 | Products   | `created_at`, `name`                            |
+```

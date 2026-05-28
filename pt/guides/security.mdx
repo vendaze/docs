@@ -10,19 +10,54 @@ keywords:
     'armazenamento de token',
     'integração segura',
     'Vendaze segurança',
+    'integração server-side',
+    'integração back-end',
   ]
 ---
 
 A Vendaze API foi projetada com segurança em mente. Este guia descreve as práticas recomendadas para integradores que querem manter uma integração segura e confiável.
 
+## Esta integração exige um back-end
+
+A Vendaze API usa OAuth 2.1 com `client_secret`. Isso significa que sua integração **precisa ter um componente server-side**: um back-end que você controla, onde os segredos são armazenados e as trocas de token acontecem.
+
+Esta não é uma integração para:
+
+- Single-page applications (SPAs) que rodam inteiramente no browser
+- Aplicativos mobile sem um back-end dedicado
+- Sites estáticos ou front-ends serverless
+
+Se seu aplicativo não tem back-end hoje, você precisa construir um antes de integrar com a Vendaze. O `client_secret` nunca pode ser enviado para nenhum ambiente que o usuário final possa inspecionar.
+
+<Warning>
+  Qualquer `client_secret` encontrado no DevTools do browser, em um binário de app mobile ou em um
+  repositório público deve ser tratado como comprometido. Rotacione imediatamente.
+</Warning>
+
+## Como você recebe o client_secret
+
+O `client_secret` nunca é retornado em nenhuma resposta da API. Ele é entregue exclusivamente por e-mail, via um link seguro que expira em 15 minutos.
+
+**No registro:** após chamar `POST /v1/auth/register-app`, você recebe um e-mail com um link. Abra-o em até 15 minutos para visualizar seu `client_secret`. Copie-o para seu gerenciador de segredos imediatamente. O link não pode ser reaberto após expirar ou após você visualizá-lo.
+
+**Na rotação:** após chamar `POST /v1/auth/rotate-app`, um novo link é enviado para o e-mail cadastrado no aplicativo. A mesma janela de 15 minutos se aplica. O `client_secret` anterior é invalidado no momento em que você envia a requisição de rotação, não quando você abre o link.
+
+Se o link expirar antes de você abri-lo, envie uma nova requisição de rotação. Um novo link será enviado.
+
+<Warning>
+  Se você perder o `client_secret` e o link tiver expirado, você precisa rotacionar suas
+  credenciais. Use `POST /v1/auth/rotate-app` com seu `client_id` e e-mail cadastrado para receber
+  um novo link.
+</Warning>
+
 ## Proteja o client_secret
 
-O `client_secret` é enviado por email uma única vez no momento do registro do app. Trate-o como uma senha:
+Trate o `client_secret` como uma senha de banco de dados:
 
-- Armazene em um gerenciador de segredos (AWS Secrets Manager, HashiCorp Vault, Cloudflare Secrets). Nunca em variáveis de ambiente expostas em logs.
+- Armazene em um gerenciador de segredos (AWS Secrets Manager, HashiCorp Vault, Cloudflare Secrets). Nunca em variáveis de ambiente que aparecem em logs ou artefatos de build.
 - Nunca inclua em repositórios de código, mesmo que privados
 - Nunca exponha em frontend, app mobile ou qualquer cliente que rode no dispositivo do usuário
-- Rotacione imediatamente se suspeitar de comprometimento. Entre em contato com o suporte.
+- Rotacione imediatamente se suspeitar de comprometimento
 
 ## Armazene tokens com segurança
 
@@ -55,10 +90,6 @@ if (receivedState !== expectedState) {
 }
 ```
 
-## PKCE é obrigatório
-
-A Vendaze API exige PKCE com `code_challenge_method=S256` em todos os fluxos de autorização. O PKCE protege contra interceptação do authorization code. Plain PKCE (`code_challenge_method=plain`) não é aceito.
-
 ## Solicite apenas os escopos necessários
 
 Registre e solicite apenas os escopos que sua integração realmente precisa. Escopos desnecessários ampliam a superfície de ataque e reduzem a confiança dos usuários na hora de autorizar.
@@ -73,9 +104,10 @@ Registre e solicite apenas os escopos que sua integração realmente precisa. Es
 
 Use `POST /v1/auth/rotate-app` para rotacionar suas credenciais a qualquer momento. Após a rotação:
 
-1. O novo `client_secret` é enviado por email para o endereço cadastrado no aplicativo
-2. Tokens existentes permanecem válidos até expirarem naturalmente
-3. Novas trocas de code e renovações de refresh token exigem o novo `client_secret`
+1. Um novo link é enviado por e-mail para o endereço cadastrado no aplicativo. Abra-o em até 15 minutos para visualizar o novo `client_secret`.
+2. O `client_secret` anterior é invalidado imediatamente quando você envia a requisição de rotação.
+3. Tokens existentes permanecem válidos até expirarem naturalmente.
+4. Novas trocas de code e renovações de refresh token exigem o novo `client_secret`.
 
 ## Monitore o uso da API
 
@@ -88,7 +120,7 @@ Se suspeitar de comprometimento do `client_secret` ou de tokens:
 1. Revogue todos os tokens ativos via `POST /oauth/revoke`
 2. Entre em contato com o suporte em `security@vendaze.com`
 3. Notifique os usuários afetados
-4. Gere um novo `client_secret`
+4. Rotacione suas credenciais via `POST /v1/auth/rotate-app`
 5. Solicite nova autorização aos usuários
 
 <Warning>

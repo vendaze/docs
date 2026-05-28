@@ -51,7 +51,7 @@ Every listing response includes a `meta` object:
 
 ## Fetching all records
 
-To retrieve all records, iterate through pages until `has_more` is `false`:
+Iterate through pages until `has_more` is `false`:
 
 ```javascript
 async function fetchAll(endpoint, accessToken) {
@@ -70,12 +70,6 @@ async function fetchAll(endpoint, accessToken) {
 
   return results;
 }
-```
-
-<Note>
-  Be mindful of rate limits when iterating over large datasets. Use filters to narrow the result set
-  when possible.
-</Note>
 
 ## Sortable fields by resource
 
@@ -87,3 +81,4 @@ async function fetchAll(endpoint, accessToken) {
 | Tasks      | `created_at`, `updated_at`, `due_date`          |
 | Activities | `created_at`                                    |
 | Products   | `created_at`, `name`                            |
+```

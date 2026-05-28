@@ -8,10 +8,6 @@ keywords:
 
 Write operations in the Vendaze API support idempotency via the `Idempotency-Key` header. This allows you to safely retry a request if you did not receive a response, without the risk of creating duplicate records.
 
-## What idempotency means
-
-An operation is idempotent when executing it multiple times produces the same result as executing it once. In practice, if your network drops during a deal creation, you can repeat the same request and be guaranteed that only one deal will be created.
-
 ## How to use it
 
 Include the `Idempotency-Key` header with a unique string you generate:

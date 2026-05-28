@@ -1,57 +1,34 @@
 ---
 title: 'Autenticação'
-description: 'Implemente o OAuth 2.1 com PKCE para autorizar usuários da Vendaze no seu aplicativo.'
+description: 'Implemente o OAuth 2.1 para autorizar usuários da Vendaze no seu aplicativo.'
 icon: 'lock'
 keywords:
   [
     'OAuth 2.1',
-    'PKCE',
     'authorization code flow',
     'access token',
     'autenticação Vendaze',
     'integração OAuth',
+    'client_secret',
   ]
 ---
 
-A Vendaze API usa **OAuth 2.1 Authorization Code flow com PKCE** (Proof Key for Code Exchange). Esse é o mesmo padrão utilizado por HubSpot e Pipedrive para integrações de terceiros.
+A Vendaze API usa **OAuth 2.1 Authorization Code flow** com `client_secret`. Esta é uma integração server-side: todas as trocas de token precisam acontecer no seu back-end. O `client_secret` nunca pode ser exposto em código no browser, binários de app mobile ou qualquer ambiente que o usuário final possa inspecionar.
 
-<Card
-  title="Registre seu aplicativo primeiro"
-  icon="plug"
-  href="/pt/guides/register-app"
-  horizontal
->
-  Você precisa de um `client_id` e `client_secret` antes de continuar.
-</Card>
+Antes de continuar, você precisa de um `client_id` e `client_secret`. Veja [Registre seu aplicativo](/pt/guides/register-app).
 
 ## Como funciona
 
 ```
-1. Gerar par PKCE         code_verifier + code_challenge
-2. Redirecionar usuário   GET /oauth/authorize
-3. Usuário loga           seleciona workspace, aprova escopos
-4. Receber auth code      sua redirect_uri?code=...&state=...
-5. Trocar pelos tokens    POST /oauth/token
-6. Fazer requisições      Authorization: Bearer {access_token}
-7. Renovar ao expirar     POST /oauth/token (grant_type=refresh_token)
+1. Redirecionar usuário   GET /oauth/authorize
+2. Usuário loga           seleciona workspace, aprova escopos
+3. Receber auth code      sua redirect_uri?code=...&state=...
+4. Trocar pelos tokens    POST /oauth/token
+5. Fazer requisições      Authorization: Bearer {access_token}
+6. Renovar ao expirar     POST /oauth/token (grant_type=refresh_token)
 ```
 
-## Passo 1 - Gerar os valores PKCE
-
-PKCE previne ataques de interceptação de código de autorização. Gere esses valores no seu servidor antes de redirecionar:
-
-```javascript
-// Exemplo Node.js
-const crypto = require('crypto');
-
-const codeVerifier = crypto.randomBytes(32).toString('base64url');
-
-const codeChallenge = crypto.createHash('sha256').update(codeVerifier).digest('base64url');
-```
-
-Armazene o `code_verifier` no servidor. Você vai precisar dele no Passo 5.
-
-## Passo 2 - Redirecionar o usuário
+## Passo 1 - Redirecionar o usuário
 
 Construa a URL de autorização e redirecione o browser do usuário para ela:
 
@@ -60,37 +37,25 @@ GET https://api.vendaze.com/oauth/authorize
   ?client_id=SEU_CLIENT_ID
   &redirect_uri=https://meuapp.com/oauth/callback
   &response_type=code
-  &scope=people:read deals:write
   &state=TOKEN_CSRF_ALEATORIO
-  &code_challenge=BASE64URL_SHA256_DO_VERIFIER
-  &code_challenge_method=S256
 ```
 
-| Parâmetro               | Obrigatório | Descrição                                                                      |
-| ----------------------- | ----------- | ------------------------------------------------------------------------------ |
-| `client_id`             | Sim         | O client ID do seu aplicativo.                                                 |
-| `redirect_uri`          | Sim         | Deve corresponder exatamente a uma URI registrada.                             |
-| `response_type`         | Sim         | Deve ser `code`.                                                               |
-| `scope`                 | Sim         | Escopos separados por espaço.                                                  |
-| `state`                 | Sim         | String aleatória que você gera. Retornada sem alteração. Proteção contra CSRF. |
-| `code_challenge`        | Sim         | `BASE64URL(SHA256(code_verifier))`                                             |
-| `code_challenge_method` | Sim         | Deve ser `S256`.                                                               |
+| Parâmetro       | Obrigatório | Descrição                                                                      |
+| --------------- | ----------- | ------------------------------------------------------------------------------ |
+| `client_id`     | Sim         | O client ID do seu aplicativo.                                                 |
+| `redirect_uri`  | Sim         | Deve corresponder exatamente a uma URI registrada.                             |
+| `response_type` | Sim         | Deve ser `code`.                                                               |
+| `state`         | Sim         | String aleatória que você gera. Retornada sem alteração. Proteção contra CSRF. |
 
 <Warning>
-  Sempre verifique que o parâmetro `state` no callback é igual ao que você enviou. Rejeite a
-  requisição se não bater. É o mecanismo de proteção contra CSRF.
+  Verifique que o `state` no callback é igual ao que você enviou. Rejeite se não bater.
 </Warning>
 
-## Passo 3 - Usuário autoriza
+## Passo 2 - Usuário autoriza
 
-O usuário é redirecionado para a Vendaze, onde ele:
+O usuário seleciona o workspace e aprova os escopos na tela de consent da Vendaze.
 
-1. Faz login (se ainda não estiver logado)
-2. Seleciona qual workspace conectar ao seu aplicativo
-3. Revisa e aprova os escopos solicitados
-4. Clica em "Autorizar"
-
-## Passo 4 - Receber o callback
+## Passo 3 - Receber o callback
 
 Após aprovar, o usuário é redirecionado para sua `redirect_uri`:
 
@@ -104,7 +69,7 @@ Verifique que o `state` bate e troque o code pelos tokens. Se o usuário recusar
 https://meuapp.com/oauth/callback?error=access_denied&state=SEU_STATE
 ```
 
-## Passo 5 - Trocar o code pelos tokens
+## Passo 4 - Trocar o code pelos tokens
 
 <Warning>
   Códigos de autorização expiram em 5 minutos e só podem ser usados uma vez. Troque imediatamente
@@ -119,8 +84,7 @@ curl -X POST https://api.vendaze.com/oauth/token \
     "code": "AUTH_CODE_DO_CALLBACK",
     "redirect_uri": "https://meuapp.com/oauth/callback",
     "client_id": "SEU_CLIENT_ID",
-    "client_secret": "SEU_CLIENT_SECRET",
-    "code_verifier": "SEU_CODE_VERIFIER_ORIGINAL"
+    "client_secret": "SEU_CLIENT_SECRET"
   }'
 ```
 
@@ -146,7 +110,7 @@ curl -X POST https://api.vendaze.com/oauth/token \
 
 Armazene os dois tokens com segurança no servidor. Nunca os exponha em código client-side ou em URLs.
 
-## Passo 6 - Fazer requisições
+## Passo 5 - Fazer requisições
 
 Inclua o `access_token` em toda requisição como Bearer token:
 
@@ -155,7 +119,7 @@ curl https://api.vendaze.com/v1/people \
   -H "Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9..."
 ```
 
-## Passo 7 - Renovar o access token
+## Passo 6 - Renovar o access token
 
 Access tokens expiram em 1 hora. Renove usando o refresh token:
 
@@ -170,7 +134,7 @@ curl -X POST https://api.vendaze.com/oauth/token \
   }'
 ```
 
-A resposta é idêntica ao Passo 5. Substitua os dois tokens no seu lado. Um novo refresh token é emitido a cada renovação.
+A resposta é idêntica ao Passo 4. Substitua os dois tokens no seu lado. Um novo refresh token é emitido a cada renovação.
 
 <Note>
   Refresh tokens expiram se ficarem sem uso por 60 dias. A cada renovação, a janela de 60 dias é
@@ -193,6 +157,6 @@ curl -X POST https://api.vendaze.com/oauth/revoke \
 
 Retorna `200` independentemente de o token já estar revogado ou expirado (idempotente).
 
-<Card title="Faça sua primeira solicitação" icon="terminal" href="/pt/guides/first-request">
-  Use seu access token para fazer uma chamada real à API.
-</Card>
+---
+
+Próximo: [Faça sua primeira requisição](/pt/guides/first-request) para usar seu access token em uma chamada real à API.

@@ -65,9 +65,7 @@ Retry-After: 60
 }
 ```
 
-## Como tratar
-
-Use backoff exponencial com jitter:
+Use backoff exponencial com jitter ao receber um `429`:
 
 ```javascript
 async function withRetry(fn, maxAttempts = 3) {
@@ -82,10 +80,3 @@ async function withRetry(fn, maxAttempts = 3) {
   throw new Error('Max retry attempts exceeded');
 }
 ```
-
-## Dicas para ficar dentro dos limites
-
-- **Cache de respostas:** Não rebusque dados que você já tem armazenados localmente.
-- **Use filtros:** Busque apenas os registros necessários em vez de buscar tudo e filtrar na memória.
-- **Evite polling:** Processe dados quando acionado por eventos, não em loops constantes.
-- **Distribua escritas:** Ao sincronizar grandes volumes, distribua as escritas ao longo do tempo.

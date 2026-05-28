@@ -50,19 +50,11 @@ When a version is discontinued:
 
 ## Detecting deprecation headers
 
-Monitor the `Deprecation` header in responses to know when a version is being discontinued:
+Monitor the `Deprecation` header in responses:
 
-```javascript
-async function apiCall(url, options) {
-  const res = await fetch(url, options);
-
-  if (res.headers.get('Deprecation')) {
-    const sunset = res.headers.get('Sunset');
-    console.warn(`[Vendaze API] This version will be sunset on: ${sunset}`);
-  }
-
-  return res.json();
-}
+```
+Deprecation: true
+Sunset: Sat, 01 Jan 2028 00:00:00 GMT
 ```
 
 ## Custom field versioning
@@ -71,11 +63,11 @@ Custom fields are defined per workspace and are not affected by API versioning. 
 
 ## Changelog
 
-All API changes are documented in the changelog. Subscribe to updates to receive notifications:
+All API changes are documented in the changelog:
 
 <CardGroup cols={2}>
   <Card title="May 2026" icon="calendar" href="/en/changelog/may-2026">
-    Latest changes and additions.
+    Latest changes.
   </Card>
   <Card title="April 2026" icon="calendar" href="/en/changelog/april-2026">
     v1.0.0 launch.

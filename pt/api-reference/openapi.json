@@ -145,7 +145,7 @@
       "get": {
         "operationId": "authorize",
         "summary": "Iniciar autorização",
-        "description": "Redireciona o usuário para a página de autorização da Vendaze.",
+        "description": "Redireciona o browser do usuário para a tela de consent da Vendaze. Os escopos são resolvidos a partir do registro do aplicativo.",
         "security": [],
         "tags": [
           "OAuth"
@@ -183,15 +183,6 @@
             "description": "Deve ser \"code\"."
           },
           {
-            "name": "scope",
-            "in": "query",
-            "required": true,
-            "schema": {
-              "type": "string"
-            },
-            "description": "Escopos separados por espaço. Exemplo: \"people:read deals:write\"."
-          },
-          {
             "name": "state",
             "in": "query",
             "required": true,
@@ -199,32 +190,11 @@
               "type": "string"
             },
             "description": "String opaca gerada pelo cliente para prevenção de CSRF."
-          },
-          {
-            "name": "code_challenge",
-            "in": "query",
-            "required": true,
-            "schema": {
-              "type": "string"
-            },
-            "description": "BASE64URL(SHA256(code_verifier))."
-          },
-          {
-            "name": "code_challenge_method",
-            "in": "query",
-            "required": true,
-            "schema": {
-              "type": "string",
-              "enum": [
-                "S256"
-              ]
-            },
-            "description": "Deve ser \"S256\"."
           }
         ],
         "responses": {
           "302": {
-            "description": "Redirecionamento para a página de autorização."
+            "description": "Redirecionamento para a tela de consent da Vendaze."
           },
           "400": {
             "description": "Parâmetro inválido.",
@@ -3015,10 +2985,6 @@
           },
           "client_secret": {
             "type": "string"
-          },
-          "code_verifier": {
-            "type": "string",
-            "description": "String original antes do hash. Obrigatório para grant_type=authorization_code."
           },
           "refresh_token": {
             "type": "string",

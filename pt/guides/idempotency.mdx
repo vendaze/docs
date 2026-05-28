@@ -8,10 +8,6 @@ keywords:
 
 Operações de escrita na Vendaze API suportam idempotência via header `Idempotency-Key`. Isso permite que você reenvie uma requisição com segurança caso não tenha recebido resposta, sem risco de criar registros duplicados.
 
-## O que é idempotência
-
-Uma operação é idempotente quando executá-la múltiplas vezes produz o mesmo resultado que executá-la uma única vez. Na prática, isso significa que se sua rede cair durante uma criação de negócio, você pode repetir a mesma requisição e ter garantia de que apenas um negócio será criado.
-
 ## Como usar
 
 Inclua o header `Idempotency-Key` com uma string única gerada por você:

@@ -29,16 +29,6 @@ Check your inbox. You will receive your `client_id` and `client_secret`.
 
 ## 2. Build the authorization URL
 
-Generate the `code_verifier` and `code_challenge`:
-
-```bash
-CODE_VERIFIER=$(openssl rand -base64 32 | tr -d '=' | tr '+/' '-_')
-CODE_CHALLENGE=$(echo -n "$CODE_VERIFIER" | openssl dgst -sha256 -binary | openssl base64 | tr -d '=' | tr '+/' '-_')
-
-echo "code_verifier: $CODE_VERIFIER"
-echo "code_challenge: $CODE_CHALLENGE"
-```
-
 Build the authorization URL and open it in your browser:
 
 ```
@@ -46,10 +36,7 @@ https://api.vendaze.com/oauth/authorize
   ?client_id=YOUR_CLIENT_ID
   &redirect_uri=https://yourapp.com/oauth/callback
   &response_type=code
-  &scope=people:read companies:read deals:read
   &state=random-csrf-token-123
-  &code_challenge=YOUR_CODE_CHALLENGE
-  &code_challenge_method=S256
 ```
 
 ## 3. Authorize and get the code
@@ -79,8 +66,7 @@ curl -X POST https://api.vendaze.com/oauth/token \
     "code": "AUTH_CODE_HERE",
     "redirect_uri": "https://yourapp.com/oauth/callback",
     "client_id": "YOUR_CLIENT_ID",
-    "client_secret": "YOUR_CLIENT_SECRET",
-    "code_verifier": "YOUR_CODE_VERIFIER"
+    "client_secret": "YOUR_CLIENT_SECRET"
   }'
 ```
 
@@ -133,15 +119,15 @@ Response:
 
 <CardGroup cols={2}>
   <Card title="Pagination" icon="bars-staggered" href="/en/guides/pagination">
-    Handle large result sets with page and per_page.
+    `page`, `per_page`, `order_by`, `order`
   </Card>
   <Card title="Filtering" icon="filter" href="/en/guides/filtering">
-    Filter people, companies, and deals.
+    Text, date, tag, and custom field filters.
   </Card>
   <Card title="Errors" icon="triangle-exclamation" href="/en/guides/errors">
-    Understand error codes and how to handle them.
+    Error codes and response format.
   </Card>
   <Card title="API Reference" icon="code" href="/api-reference">
-    Full reference for all endpoints.
+    Full endpoint reference.
   </Card>
 </CardGroup>

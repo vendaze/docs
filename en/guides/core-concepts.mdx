@@ -22,7 +22,7 @@ To access a different workspace, the user must go through the OAuth flow again.
 
 ## Authentication model
 
-The Vendaze API uses **OAuth 2.1 with PKCE** (Proof Key for Code Exchange). Your app:
+The Vendaze API uses **OAuth 2.1 Authorization Code flow** with `client_secret`. Your app:
 
 1. Registers with Vendaze to receive a `client_id` and `client_secret`
 2. Redirects users to authorize access to their workspace
