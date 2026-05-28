@@ -49,17 +49,19 @@ A Vendaze API usa códigos de status HTTP padrão e retorna um formato de erro c
 
 ## Referência de códigos de erro
 
-| Código                | HTTP | Quando ocorre                                                  |
-| --------------------- | ---- | -------------------------------------------------------------- |
-| `unauthorized`        | 401  | Token Bearer ausente ou assinatura inválida.                   |
-| `token_expired`       | 401  | Access token expirado. Renove usando o refresh token.          |
-| `insufficient_scope`  | 403  | Token sem o escopo necessário para este endpoint.              |
-| `forbidden`           | 403  | Autenticado, mas sem permissão para este recurso.              |
-| `not_found`           | 404  | Recurso inexistente, deletado, ou de outro workspace.          |
-| `conflict`            | 409  | Conflito com dados existentes. Veja `message` para detalhes.   |
-| `validation_error`    | 422  | Input falhou na validação. Veja `fields` para detalhes.        |
-| `rate_limit_exceeded` | 429  | Muitas requisições. Aguarde o tempo indicado em `Retry-After`. |
-| `internal_error`      | 500  | Erro inesperado. Use o `request_id` ao contatar suporte.       |
+| Código                | HTTP | Quando ocorre                                                                                 |
+| --------------------- | ---- | --------------------------------------------------------------------------------------------- |
+| `unauthorized`        | 401  | Token Bearer ausente ou assinatura inválida.                                                  |
+| `token_expired`       | 401  | Access token expirado. Renove usando o refresh token.                                         |
+| `invalid_client`      | 401  | `client_id` ou `client_secret` inválido nos endpoints OAuth.                                  |
+| `invalid_grant`       | 400  | Código de autorização inválido, expirado ou já utilizado. Refresh token inválido ou expirado. |
+| `insufficient_scope`  | 403  | Token sem o escopo necessário para este endpoint.                                             |
+| `forbidden`           | 403  | Autenticado, mas sem permissão para este recurso.                                             |
+| `not_found`           | 404  | Recurso inexistente, deletado, ou de outro workspace.                                         |
+| `conflict`            | 409  | Conflito com dados existentes. Veja `message` para detalhes.                                  |
+| `validation_error`    | 422  | Input falhou na validação. Veja `fields` para detalhes.                                       |
+| `rate_limit_exceeded` | 429  | Muitas requisições. Aguarde o tempo indicado em `Retry-After`.                                |
+| `internal_error`      | 500  | Erro inesperado. Use o `request_id` ao contatar suporte.                                      |
 
 ## Erros de validação
 
@@ -92,6 +94,15 @@ async function apiCall(url, options) {
       case 'token_expired':
         await refreshAccessToken();
         return apiCall(url, options);
+
+      case 'invalid_grant':
+        // Código de autorização expirado/usado, ou refresh token inválido.
+        // Redirecione o usuário pelo fluxo OAuth completo novamente.
+        throw new Error('Authorization expired. User must re-authorize.');
+
+      case 'invalid_client':
+        // client_id ou client_secret incorreto. Verifique suas credenciais.
+        throw new Error('Invalid client credentials. Check client_id and client_secret.');
 
       case 'rate_limit_exceeded': {
         const retryAfter = parseInt(res.headers.get('Retry-After') ?? '60');

@@ -2865,8 +2865,8 @@
               },
               "avatar_url": {
                 "type": "string",
-                "example": "https://storage.vendaze.com/assets/integrations/meusaas.webp",
-                "description": "URL pública do avatar armazenado. Presente somente se avatar_url foi enviado na requisição."
+                "example": "https://storage.vendaze.com/assets/integrations/meusaas.jpg",
+                "description": "URL pública do avatar armazenado. Sempre JPEG — a Vendaze converte todos os formatos no upload. Presente somente se avatar_url foi enviado na requisição."
               },
               "message": {
                 "type": "string",

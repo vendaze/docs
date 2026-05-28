@@ -360,8 +360,8 @@
               "client_id": { "type": "string", "example": "9a8b7c6d-5e4f-3a2b-1c0d-9e8f7a6b5c4d" },
               "avatar_url": {
                 "type": "string",
-                "example": "https://storage.vendaze.com/assets/integrations/mysaas.webp",
-                "description": "Public URL of the stored avatar. Only present if avatar_url was provided in the request."
+                "example": "https://storage.vendaze.com/assets/integrations/mysaas.jpg",
+                "description": "Public URL of the stored avatar. Always a JPEG — Vendaze converts all formats on upload. Only present if avatar_url was provided in the request."
               },
               "message": { "type": "string", "example": "Credentials sent by email." }
             }

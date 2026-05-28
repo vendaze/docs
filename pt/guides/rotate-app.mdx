@@ -91,9 +91,12 @@ O novo `client_secret` é enviado **somente por e-mail** e nunca retorna na resp
 | `redirect_uris` | string[] | Não         | Nova lista de URIs HTTPS de redirecionamento. Substitui a lista anterior integralmente. Se omitido, a lista atual é mantida.                                                                                                                   |
 
 <Note>
-  Os escopos não podem ser alterados via rotação. Para solicitar escopos diferentes, é necessário
-  registrar um novo aplicativo com um endereço de e-mail diferente, já que cada e-mail só pode estar
-  associado a um aplicativo registrado.
+  Os escopos não podem ser alterados via rotação. Eles são definidos no registro e são permanentes
+  durante toda a vida útil do aplicativo. Para solicitar escopos diferentes, é necessário registrar
+  um novo aplicativo com um endereço de e-mail diferente, já que cada e-mail só pode estar associado
+  a um aplicativo registrado. Registrar um novo aplicativo gera um novo `client_id`, o que invalida
+  todas as autorizações existentes dos usuários — eles precisarão passar pelo fluxo de consentimento
+  novamente.
 </Note>
 
 ## O que muda após a rotação
