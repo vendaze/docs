@@ -355,8 +355,8 @@
           "avatar_url": {
             "type": "string",
             "format": "uri",
-            "example": "https://mysaas.com/assets/vendaze-avatar.webp",
-            "description": "URL of the app avatar shown on the consent screen. Must be a publicly accessible HTTPS URL pointing to a WebP image. Maximum dimensions: 400x400 px."
+            "example": "https://mysaas.com/assets/logo.webp",
+            "description": "HTTPS URL of your app logo. Vendaze fetches the image, validates the format using magic bytes, and stores it. Accepted formats: WebP, JPEG, PNG. Max 2MB."
           },
           "redirect_uris": {
             "type": "array",
@@ -378,8 +378,13 @@
             "type": "object",
             "properties": {
               "app_name": { "type": "string", "example": "My SaaS" },
-              "client_id": { "type": "string", "format": "uuid", "example": "9a8b7c6d-5e4f-3a2b-1c0d-9e8f7a6b5c4d" },
-              "message": { "type": "string", "example": "Credentials sent to dev@mysaas.com" }
+              "client_id": { "type": "string", "example": "9a8b7c6d-5e4f-3a2b-1c0d-9e8f7a6b5c4d" },
+              "avatar_url": {
+                "type": "string",
+                "example": "https://storage.vendaze.com/assets/integrations/mysaas.webp",
+                "description": "Public URL of the stored avatar. Only present if avatar_url was provided in the request."
+              },
+              "message": { "type": "string", "example": "Credentials sent by email." }
             }
           }
         }
@@ -390,7 +395,6 @@
         "properties": {
           "client_id": {
             "type": "string",
-            "format": "uuid",
             "example": "9a8b7c6d-5e4f-3a2b-1c0d-9e8f7a6b5c4d",
             "description": "Current client_id of the app being rotated."
           },
@@ -399,8 +403,8 @@
           "avatar_url": {
             "type": "string",
             "format": "uri",
-            "example": "https://mysaas.com/assets/vendaze-avatar-v2.webp",
-            "description": "URL of the app avatar shown on the consent screen. Must be a publicly accessible HTTPS URL pointing to a WebP image. Maximum dimensions: 400x400 px."
+            "example": "https://mysaas.com/assets/logo-v2.webp",
+            "description": "HTTPS URL of your app logo. Vendaze fetches the image, validates the format using magic bytes, and stores it. Accepted formats: WebP, JPEG, PNG. Max 2MB."
           },
           "redirect_uris": {
             "type": "array",
@@ -425,11 +429,15 @@
               "app_name": { "type": "string", "example": "My SaaS v2" },
               "client_id": {
                 "type": "string",
-                "format": "uuid",
                 "example": "1b2c3d4e-5f6a-7b8c-9d0e-1f2a3b4c5d6e",
                 "description": "New client_id. The previous client_id is now invalid."
               },
-              "message": { "type": "string", "example": "New credentials sent to dev@mysaas.com" }
+              "avatar_url": {
+                "type": "string",
+                "example": "https://storage.vendaze.com/assets/integrations/mysaasv2.webp",
+                "description": "Public URL of the stored avatar. Only present if avatar_url was provided in the request."
+              },
+              "message": { "type": "string", "example": "New credentials sent by email." }
             }
           }
         }

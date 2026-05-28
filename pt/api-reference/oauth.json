@@ -4,17 +4,17 @@
     "title": "OAuth 2.1",
     "description": "Endpoints para registrar aplicativos e gerenciar tokens OAuth 2.1.",
     "version": "1.0.0",
-    "contact": { "name": "Vendaze Support", "email": "suporte@vendaze.com" }
+    "contact": { "name": "Suporte Vendaze", "email": "suporte@vendaze.com" }
   },
-  "servers": [{ "url": "https://api.vendaze.com", "description": "Production" }],
+  "servers": [{ "url": "https://api.vendaze.com", "description": "Produção" }],
   "security": [{ "bearerAuth": [] }],
   "tags": [{ "name": "OAuth" }],
   "paths": {
     "/v1/auth/register-app": {
       "post": {
         "operationId": "registerApp",
-        "summary": "Registrar aplicativo",
-        "description": "Registra um novo aplicativo OAuth. Credenciais enviadas por e-mail. Nao requer autenticacao.",
+        "summary": "Registrar um aplicativo",
+        "description": "Registra um novo aplicativo OAuth. As credenciais são enviadas por e-mail. Não requer autenticação.",
         "security": [],
         "tags": ["OAuth"],
         "requestBody": {
@@ -35,7 +35,7 @@
       "post": {
         "operationId": "rotateApp",
         "summary": "Rotacionar credenciais do aplicativo",
-        "description": "Gera um novo client_secret, invalidando imediatamente o anterior. Os tokens ativos dos usuarios sao revogados somente se os escopos forem alterados. As novas credenciais sao enviadas para o e-mail cadastrado no aplicativo. O e-mail nao pode ser alterado.",
+        "description": "Gera um novo client_secret, invalidando o anterior imediatamente. Os tokens ativos dos usuários são revogados somente se os escopos mudarem. As novas credenciais são enviadas para o e-mail cadastrado no aplicativo. O e-mail não pode ser alterado.",
         "security": [],
         "tags": ["OAuth"],
         "requestBody": {
@@ -48,7 +48,7 @@
             "content": { "application/json": { "schema": { "$ref": "#/components/schemas/RotateAppResponse" } } }
           },
           "401": {
-            "description": "client_id ou e-mail invalidos.",
+            "description": "client_id ou e-mail inválido.",
             "content": { "application/json": { "schema": { "$ref": "#/components/schemas/ErrorResponse" } } }
           },
           "422": { "$ref": "#/components/responses/ValidationError" },
@@ -59,8 +59,8 @@
     "/oauth/authorize": {
       "get": {
         "operationId": "authorize",
-        "summary": "Iniciar autorizacao",
-        "description": "Redireciona o usuario para a pagina de autorizacao da Vendaze.",
+        "summary": "Iniciar autorização",
+        "description": "Redireciona o usuário para a página de autorização da Vendaze.",
         "security": [],
         "tags": ["OAuth"],
         "parameters": [
@@ -68,15 +68,15 @@
             "name": "client_id",
             "in": "query",
             "required": true,
-            "schema": { "type": "string", "format": "uuid" },
-            "description": "UUID do aplicativo OAuth."
+            "schema": { "type": "string" },
+            "description": "ID do aplicativo OAuth."
           },
           {
             "name": "redirect_uri",
             "in": "query",
             "required": true,
             "schema": { "type": "string", "format": "uri" },
-            "description": "URI de redirecionamento registrado no aplicativo."
+            "description": "URI de redirecionamento registrada no aplicativo."
           },
           {
             "name": "response_type",
@@ -90,14 +90,14 @@
             "in": "query",
             "required": true,
             "schema": { "type": "string" },
-            "description": "Escopos separados por espaco. Ex: \"people:read deals:write\"."
+            "description": "Escopos separados por espaço. Exemplo: \"people:read deals:write\"."
           },
           {
             "name": "state",
             "in": "query",
             "required": true,
             "schema": { "type": "string" },
-            "description": "String opaca gerada pelo integrador para prevencao de CSRF."
+            "description": "String opaca gerada pelo cliente para prevenção de CSRF."
           },
           {
             "name": "code_challenge",
@@ -115,9 +115,9 @@
           }
         ],
         "responses": {
-          "302": { "description": "Redirecionamento para a pagina de autorizacao." },
+          "302": { "description": "Redirecionamento para a página de autorização." },
           "400": {
-            "description": "Parametro invalido.",
+            "description": "Parâmetro inválido.",
             "content": { "application/json": { "schema": { "$ref": "#/components/schemas/ErrorResponse" } } }
           },
           "429": { "$ref": "#/components/responses/RateLimitExceeded" }
@@ -128,7 +128,7 @@
       "post": {
         "operationId": "issueToken",
         "summary": "Emitir ou renovar token",
-        "description": "Troca um codigo de autorizacao por tokens, ou renova o access token usando o refresh token.",
+        "description": "Troca um código de autorização por tokens, ou renova um access token usando um refresh token.",
         "security": [],
         "tags": ["OAuth"],
         "requestBody": {
@@ -141,11 +141,11 @@
             "content": { "application/json": { "schema": { "$ref": "#/components/schemas/TokenResponse" } } }
           },
           "400": {
-            "description": "Requisicao invalida.",
+            "description": "Requisição inválida.",
             "content": { "application/json": { "schema": { "$ref": "#/components/schemas/ErrorResponse" } } }
           },
           "401": {
-            "description": "Credenciais invalidas.",
+            "description": "Credenciais inválidas.",
             "content": { "application/json": { "schema": { "$ref": "#/components/schemas/ErrorResponse" } } }
           },
           "429": { "$ref": "#/components/responses/RateLimitExceeded" }
@@ -156,7 +156,7 @@
       "post": {
         "operationId": "revokeToken",
         "summary": "Revogar token",
-        "description": "Revoga um access token ou refresh token. Retorna 200 mesmo que o token ja esteja revogado.",
+        "description": "Revoga um access token ou refresh token. Retorna 200 mesmo que o token já esteja revogado.",
         "security": [],
         "tags": ["OAuth"],
         "requestBody": {
@@ -166,7 +166,7 @@
         "responses": {
           "200": { "description": "Token revogado." },
           "401": {
-            "description": "Credenciais invalidas.",
+            "description": "Credenciais inválidas.",
             "content": { "application/json": { "schema": { "$ref": "#/components/schemas/ErrorResponse" } } }
           },
           "429": { "$ref": "#/components/responses/RateLimitExceeded" }
@@ -176,7 +176,7 @@
   },
   "components": {
     "securitySchemes": {
-      "bearerAuth": { "type": "http", "scheme": "bearer", "description": "OAuth 2.1 access token." }
+      "bearerAuth": { "type": "http", "scheme": "bearer", "description": "Access token OAuth 2.1." }
     },
     "parameters": {
       "id": {
@@ -184,14 +184,14 @@
         "in": "path",
         "required": true,
         "schema": { "type": "string", "format": "uuid" },
-        "description": "UUID of the resource."
+        "description": "UUID do recurso."
       },
       "page": { "name": "page", "in": "query", "schema": { "type": "integer", "default": 1, "minimum": 1 } },
       "per_page": {
         "name": "per_page",
         "in": "query",
         "schema": { "type": "integer", "default": 50, "minimum": 1, "maximum": 100 },
-        "description": "Max 100."
+        "description": "Máx. 100."
       },
       "order_by": { "name": "order_by", "in": "query", "schema": { "type": "string", "default": "created_at" } },
       "order": { "name": "order", "in": "query", "schema": { "type": "string", "enum": ["asc", "desc"], "default": "desc" } },
@@ -202,23 +202,23 @@
     },
     "responses": {
       "Unauthorized": {
-        "description": "Missing or invalid token.",
+        "description": "Token ausente ou inválido.",
         "content": { "application/json": { "schema": { "$ref": "#/components/schemas/ErrorResponse" } } }
       },
       "InsufficientScope": {
-        "description": "Token lacks the required scope.",
+        "description": "Token sem o escopo necessário.",
         "content": { "application/json": { "schema": { "$ref": "#/components/schemas/ErrorResponse" } } }
       },
       "NotFound": {
-        "description": "Resource not found.",
+        "description": "Recurso não encontrado.",
         "content": { "application/json": { "schema": { "$ref": "#/components/schemas/ErrorResponse" } } }
       },
       "ValidationError": {
-        "description": "Input validation failed.",
+        "description": "Validação de entrada falhou.",
         "content": { "application/json": { "schema": { "$ref": "#/components/schemas/ValidationErrorResponse" } } }
       },
       "RateLimitExceeded": {
-        "description": "Rate limit exceeded.",
+        "description": "Limite de taxa excedido.",
         "content": { "application/json": { "schema": { "$ref": "#/components/schemas/ErrorResponse" } } }
       }
     },
@@ -267,7 +267,7 @@
           "reminder": {
             "type": "string",
             "enum": ["personal", "work", "other"],
-            "description": "Type of email. Accepted values: personal, work, other.",
+            "description": "Tipo do e-mail. Valores aceitos: personal, work, other.",
             "example": "work"
           }
         },
@@ -281,7 +281,7 @@
           "reminder": {
             "type": "string",
             "enum": ["mobile", "work", "residential", "other"],
-            "description": "Type of phone. Accepted values: mobile, work, residential, other.",
+            "description": "Tipo do telefone. Valores aceitos: mobile, work, residential, other.",
             "example": "mobile"
           }
         },
@@ -343,7 +343,7 @@
           "custom_fields:read",
           "custom_fields:write"
         ],
-        "description": "Um valor de escopo OAuth."
+        "description": "Um escopo OAuth da Vendaze."
       },
       "RegisterAppRequest": {
         "type": "object",
@@ -351,12 +351,12 @@
         "properties": {
           "app_name": { "type": "string", "maxLength": 100, "example": "Meu SaaS" },
           "email": { "type": "string", "format": "email", "example": "dev@meusaas.com" },
-          "description": { "type": "string", "maxLength": 500, "example": "Integracao com a Vendaze para sincronizar contatos." },
+          "description": { "type": "string", "maxLength": 500, "example": "Integração com a Vendaze para sincronizar contatos." },
           "avatar_url": {
             "type": "string",
             "format": "uri",
-            "example": "https://meusaas.com/assets/vendaze-avatar.webp",
-            "description": "URL do avatar do aplicativo exibido na tela de consentimento. Deve ser uma URL HTTPS publicamente acessivel apontando para uma imagem WebP. Dimensoes maximas: 400x400 px."
+            "example": "https://meusaas.com/assets/logo.webp",
+            "description": "URL HTTPS do logo do seu app. A Vendaze faz o download da imagem, valida o formato pelo magic byte e armazena. Formatos aceitos: WebP, JPEG, PNG. Máx. 2MB."
           },
           "redirect_uris": {
             "type": "array",
@@ -367,7 +367,7 @@
             "type": "array",
             "items": { "$ref": "#/components/schemas/ScopeValue" },
             "example": ["people:read", "deals:write"],
-            "description": "Escopos que seu app precisa. Usuarios aprovam individualmente na tela de consentimento."
+            "description": "Escopos que seu app precisa. Usuários aprovam individualmente na tela de consentimento."
           }
         }
       },
@@ -378,8 +378,13 @@
             "type": "object",
             "properties": {
               "app_name": { "type": "string", "example": "Meu SaaS" },
-              "client_id": { "type": "string", "format": "uuid", "example": "9a8b7c6d-5e4f-3a2b-1c0d-9e8f7a6b5c4d" },
-              "message": { "type": "string", "example": "Credentials sent to dev@meusaas.com" }
+              "client_id": { "type": "string", "example": "9a8b7c6d-5e4f-3a2b-1c0d-9e8f7a6b5c4d" },
+              "avatar_url": {
+                "type": "string",
+                "example": "https://storage.vendaze.com/assets/integrations/meusaas.webp",
+                "description": "URL pública do avatar armazenado. Presente somente se avatar_url foi enviado na requisição."
+              },
+              "message": { "type": "string", "example": "Credentials sent by email." }
             }
           }
         }
@@ -390,17 +395,16 @@
         "properties": {
           "client_id": {
             "type": "string",
-            "format": "uuid",
             "example": "9a8b7c6d-5e4f-3a2b-1c0d-9e8f7a6b5c4d",
             "description": "client_id atual do aplicativo a ser rotacionado."
           },
           "app_name": { "type": "string", "maxLength": 100, "example": "Meu SaaS v2" },
-          "description": { "type": "string", "maxLength": 500, "example": "Integracao atualizada com a Vendaze." },
+          "description": { "type": "string", "maxLength": 500, "example": "Integração atualizada com a Vendaze." },
           "avatar_url": {
             "type": "string",
             "format": "uri",
-            "example": "https://meusaas.com/assets/vendaze-avatar-v2.webp",
-            "description": "URL do avatar do aplicativo exibido na tela de consentimento. Deve ser uma URL HTTPS publicamente acessivel apontando para uma imagem WebP. Dimensoes maximas: 400x400 px."
+            "example": "https://meusaas.com/assets/logo-v2.webp",
+            "description": "URL HTTPS do logo do seu app. A Vendaze faz o download da imagem, valida o formato pelo magic byte e armazena. Formatos aceitos: WebP, JPEG, PNG. Máx. 2MB."
           },
           "redirect_uris": {
             "type": "array",
@@ -425,11 +429,15 @@
               "app_name": { "type": "string", "example": "Meu SaaS v2" },
               "client_id": {
                 "type": "string",
-                "format": "uuid",
                 "example": "1b2c3d4e-5f6a-7b8c-9d0e-1f2a3b4c5d6e",
-                "description": "Novo client_id. O client_id anterior agora e invalido."
+                "description": "Novo client_id. O client_id anterior agora é inválido."
               },
-              "message": { "type": "string", "example": "New credentials sent to dev@meusaas.com" }
+              "avatar_url": {
+                "type": "string",
+                "example": "https://storage.vendaze.com/assets/integrations/meusaasv2.webp",
+                "description": "URL pública do avatar armazenado. Presente somente se avatar_url foi enviado na requisição."
+              },
+              "message": { "type": "string", "example": "New credentials sent by email." }
             }
           }
         }
@@ -438,16 +446,20 @@
         "type": "object",
         "required": ["grant_type", "client_id", "client_secret"],
         "properties": {
-          "grant_type": { "type": "string", "enum": ["authorization_code", "refresh_token"] },
-          "code": { "type": "string", "description": "Obrigatorio para grant_type=authorization_code." },
-          "redirect_uri": { "type": "string", "format": "uri", "description": "Obrigatorio para grant_type=authorization_code." },
-          "client_id": { "type": "string", "format": "uuid" },
+          "grant_type": {
+            "type": "string",
+            "enum": ["authorization_code", "refresh_token"],
+            "description": "Tipo de concessão."
+          },
+          "code": { "type": "string", "description": "Obrigatório para grant_type=authorization_code." },
+          "redirect_uri": { "type": "string", "format": "uri", "description": "Obrigatório para grant_type=authorization_code." },
+          "client_id": { "type": "string" },
           "client_secret": { "type": "string" },
           "code_verifier": {
             "type": "string",
-            "description": "String original antes do hash. Obrigatorio para grant_type=authorization_code."
+            "description": "String original antes do hash. Obrigatório para grant_type=authorization_code."
           },
-          "refresh_token": { "type": "string", "description": "Obrigatorio para grant_type=refresh_token." }
+          "refresh_token": { "type": "string", "description": "Obrigatório para grant_type=refresh_token." }
         }
       },
       "TokenResponse": {
@@ -459,7 +471,7 @@
           "expires_in": { "type": "integer", "example": 3600 },
           "workspace_slug": {
             "type": "string",
-            "description": "Slug do workspace autorizado pelo usuário. Use para identificar qual conta está conectada no seu aplicativo.",
+            "description": "Slug do workspace autorizado pelo usuário. Use para identificar qual conta está conectada no seu app.",
             "example": "acme-corp"
           }
         }
@@ -469,7 +481,7 @@
         "required": ["token", "client_id", "client_secret"],
         "properties": {
           "token": { "type": "string", "description": "Access token ou refresh token a ser revogado." },
-          "client_id": { "type": "string", "format": "uuid" },
+          "client_id": { "type": "string" },
           "client_secret": { "type": "string" }
         }
       }

@@ -38,7 +38,7 @@ curl -X POST https://api.vendaze.com/v1/auth/register-app \
     "app_name": "Minha Integração",
     "email": "dev@meuapp.com",
     "description": "Sincroniza contatos e negócios entre a Vendaze e o MeuApp",
-    "avatar_url": "https://meuapp.com/assets/vendaze-avatar.webp",
+    "avatar_url": "https://meuapp.com/assets/logo.webp",
     "redirect_uris": ["https://meuapp.com/oauth/callback"],
     "scopes": ["people:read", "people:write", "deals:read"]
   }'
@@ -51,7 +51,8 @@ curl -X POST https://api.vendaze.com/v1/auth/register-app \
   "data": {
     "app_name": "Minha Integração",
     "client_id": "9a8b7c6d-5e4f-3a2b-1c0d-9e8f7a6b5c4d",
-    "message": "Credentials sent to dev@meuapp.com"
+    "avatar_url": "https://storage.vendaze.com/assets/integrations/minhaintegração.webp",
+    "message": "Credentials sent by email."
   }
 }
 ```
@@ -60,14 +61,16 @@ Seu `client_secret` é enviado **somente por e-mail** e nunca retorna na respost
 
 ## Parâmetros da requisição
 
-| Parâmetro       | Tipo     | Obrigatório | Descrição                                                                         |
-| --------------- | -------- | ----------- | --------------------------------------------------------------------------------- |
-| `app_name`      | string   | Sim         | Nome da integração exibido aos usuários na tela de consentimento. Máx. 100 chars. |
-| `email`         | string   | Sim         | E-mail para receber as credenciais. Um aplicativo por endereço de e-mail.         |
-| `description`   | string   | Não         | Descrição curta do que seu app faz. Máx. 500 chars.                               |
-| `avatar_url`    | string   | Não         | URL HTTPS de uma imagem WebP exibida na tela de consentimento. Máx. 400×400 px.   |
-| `redirect_uris` | string[] | Sim         | Uma ou mais URIs HTTPS para o callback OAuth. Correspondência exata obrigatória.  |
-| `scopes`        | string[] | Sim         | Escopos que seu app precisa. Usuários aprovam individualmente.                    |
+| Parâmetro       | Tipo     | Obrigatório | Descrição                                                                                                                                   |
+| --------------- | -------- | ----------- | ------------------------------------------------------------------------------------------------------------------------------------------- |
+| `app_name`      | string   | Sim         | Nome da integração exibido aos usuários na tela de consentimento. Máx. 100 chars.                                                           |
+| `email`         | string   | Sim         | E-mail para receber as credenciais.                                                                                                         |
+| `description`   | string   | Não         | Descrição curta do que seu app faz. Máx. 500 chars.                                                                                         |
+| `avatar_url`    | string   | Não         | URL HTTPS do logo do seu app. A Vendaze faz o download da imagem, valida o formato e armazena. Formatos aceitos: WebP, JPEG, PNG. Máx. 2MB. |
+| `redirect_uris` | string[] | Sim         | Uma ou mais URIs HTTPS para o callback OAuth. Correspondência exata obrigatória.                                                            |
+| `scopes`        | string[] | Sim         | Escopos que seu app precisa. Usuários aprovam individualmente.                                                                              |
+
+Quando `avatar_url` é fornecido, a Vendaze faz o download da imagem do seu servidor, valida o formato pelo magic byte do arquivo (não pelo Content-Type declarado) e armazena na infraestrutura da Vendaze. O `avatar_url` na resposta é sempre uma URL `https://storage.vendaze.com`.
 
 ## URIs de redirecionamento
 
@@ -86,16 +89,26 @@ Você pode registrar múltiplas URIs de redirecionamento para diferentes ambient
 
 ## Escopos disponíveis
 
-| Escopo            | Descrição                          |
-| ----------------- | ---------------------------------- |
-| `people:read`     | Ler contatos (pessoas)             |
-| `people:write`    | Criar, atualizar, deletar pessoas  |
-| `companies:read`  | Ler empresas                       |
-| `companies:write` | Criar, atualizar, deletar empresas |
-| `deals:read`      | Ler negócios                       |
-| `deals:write`     | Criar, atualizar, deletar negócios |
-| `tasks:read`      | Ler tarefas                        |
-| `tasks:write`     | Criar, atualizar, deletar tarefas  |
+| Escopo                | Descrição                                     |
+| --------------------- | --------------------------------------------- |
+| `people:read`         | Ler contatos (pessoas)                        |
+| `people:write`        | Criar, atualizar, deletar pessoas             |
+| `companies:read`      | Ler empresas                                  |
+| `companies:write`     | Criar, atualizar, deletar empresas            |
+| `deals:read`          | Ler negócios                                  |
+| `deals:write`         | Criar, atualizar, deletar negócios            |
+| `tasks:read`          | Ler tarefas                                   |
+| `tasks:write`         | Criar, atualizar, deletar tarefas             |
+| `activities:read`     | Ler atividades                                |
+| `activities:write`    | Criar, deletar atividades                     |
+| `products:read`       | Ler produtos                                  |
+| `products:write`      | Criar, atualizar, deletar produtos            |
+| `tags:read`           | Ler tags                                      |
+| `tags:write`          | Criar, atualizar, deletar tags                |
+| `lists:read`          | Ler listas                                    |
+| `lists:write`         | Criar, atualizar, deletar listas              |
+| `custom_fields:read`  | Ler campos customizados e seus valores        |
+| `custom_fields:write` | Criar, atualizar, deletar campos customizados |
 
 Solicitar um escopo durante o registro não garante que o usuário o aprove. Usuários podem aprovar ou recusar cada escopo individualmente durante o fluxo de consentimento.
 

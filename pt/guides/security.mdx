@@ -71,9 +71,9 @@ Registre e solicite apenas os escopos que sua integração realmente precisa. Es
 
 ## Rotacione o client_secret regularmente
 
-Entre em contato com o suporte para solicitar rotação do `client_secret`. Após a rotação:
+Use `POST /v1/auth/rotate-app` para rotacionar suas credenciais a qualquer momento. Após a rotação:
 
-1. O novo `client_secret` é enviado por email
+1. O novo `client_secret` é enviado por email para o endereço cadastrado no aplicativo
 2. Tokens existentes permanecem válidos até expirarem naturalmente
 3. Novas trocas de code e renovações de refresh token exigem o novo `client_secret`
 

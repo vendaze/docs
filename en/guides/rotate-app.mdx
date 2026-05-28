@@ -60,7 +60,7 @@ curl -X POST https://api.vendaze.com/v1/auth/rotate-app \
     "client_id": "9a8b7c6d-5e4f-3a2b-1c0d-9e8f7a6b5c4d",
     "app_name": "My Integration v2",
     "description": "Updated description for My Integration",
-    "avatar_url": "https://yourapp.com/assets/vendaze-avatar-v2.webp",
+    "avatar_url": "https://yourapp.com/assets/logo-v2.webp",
     "redirect_uris": ["https://yourapp.com/oauth/callback"],
     "scopes": ["people:read", "people:write", "deals:read", "deals:write"]
   }'
@@ -73,23 +73,24 @@ curl -X POST https://api.vendaze.com/v1/auth/rotate-app \
   "data": {
     "app_name": "My Integration v2",
     "client_id": "1b2c3d4e-5f6a-7b8c-9d0e-1f2a3b4c5d6e",
-    "message": "New credentials sent to dev@yourapp.com"
+    "avatar_url": "https://storage.vendaze.com/assets/integrations/myintegrationv2.webp",
+    "message": "New credentials sent by email."
   }
 }
 ```
 
-The new `client_secret` is sent **only by email** to the address registered with the app and never returned in the API response. Store it securely as soon as you receive it.
+The new `client_secret` is sent **only by email** and never returned in the API response. Store it securely as soon as you receive it.
 
 ## Request parameters
 
-| Parameter       | Type     | Required | Description                                                            |
-| --------------- | -------- | -------- | ---------------------------------------------------------------------- |
-| `client_id`     | string   | Yes      | Current `client_id` of the app being rotated.                          |
-| `app_name`      | string   | Yes      | New name shown to users on the consent screen. Max 100 chars.          |
-| `description`   | string   | No       | New description of what your app does. Max 500 chars.                  |
-| `avatar_url`    | string   | No       | HTTPS URL of a WebP image shown on the consent screen. Max 400x400 px. |
-| `redirect_uris` | string[] | Yes      | New list of HTTPS redirect URIs. Replaces the previous list entirely.  |
-| `scopes`        | string[] | Yes      | New list of scopes. Replaces the previous list entirely.               |
+| Parameter       | Type     | Required | Description                                                                                                                     |
+| --------------- | -------- | -------- | ------------------------------------------------------------------------------------------------------------------------------- |
+| `client_id`     | string   | Yes      | Current `client_id` of the app being rotated.                                                                                   |
+| `app_name`      | string   | Yes      | New name shown to users on the consent screen. Max 100 chars.                                                                   |
+| `description`   | string   | No       | New description of what your app does. Max 500 chars.                                                                           |
+| `avatar_url`    | string   | No       | HTTPS URL of your app logo. Vendaze fetches the image, validates it, and stores it. Accepted formats: WebP, JPEG, PNG. Max 2MB. |
+| `redirect_uris` | string[] | Yes      | New list of HTTPS redirect URIs. Replaces the previous list entirely.                                                           |
+| `scopes`        | string[] | Yes      | New list of scopes. Replaces the previous list entirely.                                                                        |
 
 <Note>
   The registered email address cannot be changed. New credentials are always sent to the original

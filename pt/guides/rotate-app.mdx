@@ -60,7 +60,7 @@ curl -X POST https://api.vendaze.com/v1/auth/rotate-app \
     "client_id": "9a8b7c6d-5e4f-3a2b-1c0d-9e8f7a6b5c4d",
     "app_name": "Minha Integração v2",
     "description": "Descrição atualizada da Minha Integração",
-    "avatar_url": "https://meuapp.com/assets/vendaze-avatar-v2.webp",
+    "avatar_url": "https://meuapp.com/assets/logo-v2.webp",
     "redirect_uris": ["https://meuapp.com/oauth/callback"],
     "scopes": ["people:read", "people:write", "deals:read", "deals:write"]
   }'
@@ -73,7 +73,8 @@ curl -X POST https://api.vendaze.com/v1/auth/rotate-app \
   "data": {
     "app_name": "Minha Integração v2",
     "client_id": "1b2c3d4e-5f6a-7b8c-9d0e-1f2a3b4c5d6e",
-    "message": "New credentials sent to dev@meuapp.com"
+    "avatar_url": "https://storage.vendaze.com/assets/integrations/minhaintegracaov2.webp",
+    "message": "New credentials sent by email."
   }
 }
 ```
@@ -82,14 +83,14 @@ O novo `client_secret` é enviado **somente por e-mail** para o endereço cadast
 
 ## Parâmetros da requisição
 
-| Parâmetro       | Tipo     | Obrigatório | Descrição                                                                               |
-| --------------- | -------- | ----------- | --------------------------------------------------------------------------------------- |
-| `client_id`     | string   | Sim         | `client_id` atual do aplicativo a ser rotacionado.                                      |
-| `app_name`      | string   | Sim         | Novo nome exibido aos usuários na tela de consentimento. Máx. 100 chars.                |
-| `description`   | string   | Não         | Nova descrição do que seu app faz. Máx. 500 chars.                                      |
-| `avatar_url`    | string   | Não         | URL HTTPS de uma imagem WebP exibida na tela de consentimento. Máx. 400x400 px.         |
-| `redirect_uris` | string[] | Sim         | Nova lista de URIs HTTPS de redirecionamento. Substitui a lista anterior integralmente. |
-| `scopes`        | string[] | Sim         | Nova lista de escopos. Substitui a lista anterior integralmente.                        |
+| Parâmetro       | Tipo     | Obrigatório | Descrição                                                                                                                                   |
+| --------------- | -------- | ----------- | ------------------------------------------------------------------------------------------------------------------------------------------- |
+| `client_id`     | string   | Sim         | `client_id` atual do aplicativo a ser rotacionado.                                                                                          |
+| `app_name`      | string   | Sim         | Novo nome exibido aos usuários na tela de consentimento. Máx. 100 chars.                                                                    |
+| `description`   | string   | Não         | Nova descrição do que seu app faz. Máx. 500 chars.                                                                                          |
+| `avatar_url`    | string   | Não         | URL HTTPS do logo do seu app. A Vendaze faz o download da imagem, valida o formato e armazena. Formatos aceitos: WebP, JPEG, PNG. Máx. 2MB. |
+| `redirect_uris` | string[] | Sim         | Nova lista de URIs HTTPS de redirecionamento. Substitui a lista anterior integralmente.                                                     |
+| `scopes`        | string[] | Sim         | Nova lista de escopos. Substitui a lista anterior integralmente.                                                                            |
 
 <Note>
   O e-mail cadastrado não pode ser alterado. As novas credenciais são sempre enviadas para o

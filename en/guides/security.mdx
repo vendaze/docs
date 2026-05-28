@@ -71,9 +71,9 @@ Register and request only the scopes your integration actually needs. Unnecessar
 
 ## Rotate the client_secret regularly
 
-Contact support to request `client_secret` rotation. After rotation:
+Use `POST /v1/auth/rotate-app` to rotate your credentials at any time. After rotation:
 
-1. The new `client_secret` is sent by email
+1. The new `client_secret` is sent by email to the address registered with the app
 2. Existing tokens remain valid until they expire naturally
 3. New code exchanges and refresh token renewals require the new `client_secret`
 
