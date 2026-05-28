@@ -21,9 +21,15 @@ Before your app can authenticate Vendaze users, you need to register it. Registr
   access from real users.
 </Tip>
 
+<Note>
+  Each email address can only be associated with one registered app. If you need to update your
+  app's name, redirect URIs, or rotate credentials, use the [rotate app](/en/guides/rotate-app)
+  endpoint instead of registering again.
+</Note>
+
 ## What you need
 
-- A valid email address to receive the credentials
+- A valid email address to receive the credentials (one app per email address)
 - At least one HTTPS redirect URI for your OAuth callback
 - A decision on which scopes your integration needs
 
@@ -57,6 +63,22 @@ curl -X POST https://api.vendaze.com/v1/auth/register-app \
 }
 ```
 
+If the email address is already associated with a registered app, the request is rejected:
+
+**Response (409):**
+
+```json
+{
+  "error": {
+    "code": "conflict",
+    "message": "An app is already registered with this email address.",
+    "request_id": "01966b3e-7c2a-7000-8f1e-4d3b2a1c0e9f"
+  }
+}
+```
+
+To update an existing app or rotate its credentials, use the [rotate app](/en/guides/rotate-app) endpoint with your `client_id` and registered email.
+
 Your `client_secret` is sent **only by email** and never returned in the API response. Store it securely as soon as you receive it.
 
 ## Request parameters
@@ -64,7 +86,7 @@ Your `client_secret` is sent **only by email** and never returned in the API res
 | Parameter       | Type     | Required | Description                                                                                                                     |
 | --------------- | -------- | -------- | ------------------------------------------------------------------------------------------------------------------------------- |
 | `app_name`      | string   | Yes      | Integration name shown to users on the consent screen. Max 100 chars.                                                           |
-| `email`         | string   | Yes      | Email where credentials will be sent.                                                                                           |
+| `email`         | string   | Yes      | Email where credentials will be sent. Each address can only be associated with one registered app.                              |
 | `description`   | string   | No       | Short description of what your app does. Max 500 chars.                                                                         |
 | `avatar_url`    | string   | No       | HTTPS URL of your app logo. Vendaze fetches the image, validates it, and stores it. Accepted formats: WebP, JPEG, PNG. Max 2MB. |
 | `redirect_uris` | string[] | Yes      | One or more HTTPS URIs for the OAuth callback. Exact match required.                                                            |

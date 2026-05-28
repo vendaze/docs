@@ -21,9 +21,15 @@ Antes que seu aplicativo possa autenticar usuários da Vendaze, você precisa re
   acesso de usuários reais.
 </Tip>
 
+<Note>
+  Cada endereço de e-mail pode estar associado a apenas um aplicativo registrado. Se você precisar
+  atualizar o nome, as URIs de redirecionamento ou rotacionar as credenciais, use o endpoint de
+  [rotação de credenciais](/pt/guides/rotate-app) em vez de registrar novamente.
+</Note>
+
 ## O que você vai precisar
 
-- Um endereço de e-mail válido para receber as credenciais
+- Um endereço de e-mail válido para receber as credenciais (um aplicativo por e-mail)
 - Pelo menos uma URI de redirecionamento HTTPS para o callback OAuth
 - Uma decisão sobre quais escopos sua integração precisa
 
@@ -57,6 +63,22 @@ curl -X POST https://api.vendaze.com/v1/auth/register-app \
 }
 ```
 
+Se o endereço de e-mail já estiver associado a um aplicativo registrado, a requisição é rejeitada:
+
+**Resposta (409):**
+
+```json
+{
+  "error": {
+    "code": "conflict",
+    "message": "An app is already registered with this email address.",
+    "request_id": "01966b3e-7c2a-7000-8f1e-4d3b2a1c0e9f"
+  }
+}
+```
+
+Para atualizar um aplicativo existente ou rotacionar suas credenciais, use o endpoint de [rotação de credenciais](/pt/guides/rotate-app) com seu `client_id` e e-mail cadastrado.
+
 Seu `client_secret` é enviado **somente por e-mail** e nunca retorna na resposta da API. Guarde-o com segurança assim que receber.
 
 ## Parâmetros da requisição
@@ -64,7 +86,7 @@ Seu `client_secret` é enviado **somente por e-mail** e nunca retorna na respost
 | Parâmetro       | Tipo     | Obrigatório | Descrição                                                                                                                                   |
 | --------------- | -------- | ----------- | ------------------------------------------------------------------------------------------------------------------------------------------- |
 | `app_name`      | string   | Sim         | Nome da integração exibido aos usuários na tela de consentimento. Máx. 100 chars.                                                           |
-| `email`         | string   | Sim         | E-mail para receber as credenciais.                                                                                                         |
+| `email`         | string   | Sim         | E-mail para receber as credenciais. Cada endereço pode estar associado a apenas um aplicativo registrado.                                   |
 | `description`   | string   | Não         | Descrição curta do que seu app faz. Máx. 500 chars.                                                                                         |
 | `avatar_url`    | string   | Não         | URL HTTPS do logo do seu app. A Vendaze faz o download da imagem, valida o formato e armazena. Formatos aceitos: WebP, JPEG, PNG. Máx. 2MB. |
 | `redirect_uris` | string[] | Sim         | Uma ou mais URIs HTTPS para o callback OAuth. Correspondência exata obrigatória.                                                            |
