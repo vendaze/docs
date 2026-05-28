@@ -60,7 +60,7 @@
       "get": {
         "operationId": "authorize",
         "summary": "Iniciar autorização",
-        "description": "Redireciona o browser do usuário para a tela de consent da Vendaze. Os escopos são resolvidos a partir do registro do aplicativo.",
+        "description": "Redireciona o browser do usuário para a tela de consent da Vendaze. **Este endpoint deve ser aberto no browser — não chame com fetch, axios ou qualquer cliente HTTP.** O usuário precisa navegar para esta URL para fazer login e aprovar o acesso. Os escopos são resolvidos a partir do registro do aplicativo.",
         "security": [],
         "tags": ["OAuth"],
         "parameters": [

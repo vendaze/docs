@@ -145,7 +145,7 @@
       "get": {
         "operationId": "authorize",
         "summary": "Start authorization",
-        "description": "Redirects the user's browser to the Vendaze consent screen. Scopes are resolved from the app registration.",
+        "description": "Redirects the user's browser to the Vendaze consent screen. **This endpoint must be opened in a browser — do not call it with fetch, axios, or any HTTP client.** The user must navigate to this URL so they can log in and approve access. Scopes are resolved from the app registration.",
         "security": [],
         "tags": [
           "OAuth"

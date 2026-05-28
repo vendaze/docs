@@ -30,7 +30,7 @@ Antes de continuar, você precisa de um `client_id` e `client_secret`. Veja [Reg
 
 ## Passo 1 - Redirecionar o usuário
 
-Construa a URL de autorização e redirecione o browser do usuário para ela:
+Construa a URL de autorização e redirecione o **browser** do usuário para ela. Isso deve ser uma navegação de browser, não uma requisição HTTP server-side. Não use `fetch`, `axios`, `curl` ou qualquer cliente HTTP para chamar este endpoint. O usuário precisa ser redirecionado para que possa fazer login e aprovar o acesso na tela de consentimento da Vendaze.
 
 ```
 GET https://api.vendaze.com/oauth/authorize
@@ -38,6 +38,23 @@ GET https://api.vendaze.com/oauth/authorize
   &redirect_uri=https://meuapp.com/oauth/callback
   &response_type=code
   &state=TOKEN_CSRF_ALEATORIO
+```
+
+Exemplo: redirecionar em uma aplicação web:
+
+```js
+const params = new URLSearchParams({
+  client_id: 'SEU_CLIENT_ID',
+  redirect_uri: 'https://meuapp.com/oauth/callback',
+  response_type: 'code',
+  state: crypto.randomUUID(),
+});
+
+// Armazene o state para verificação CSRF no callback
+sessionStorage.setItem('oauth_state', params.get('state'));
+
+// Navegue o browser. Nunca use fetch/axios aqui
+window.location.href = `https://api.vendaze.com/oauth/authorize?${params}`;
 ```
 
 | Parâmetro       | Obrigatório | Descrição                                                                                                  |
