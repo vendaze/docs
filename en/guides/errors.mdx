@@ -38,6 +38,7 @@ The Vendaze API uses standard HTTP status codes and returns a consistent error f
 | `401`  | Unauthenticated. Token missing, invalid, or expired.                              |
 | `403`  | Forbidden. Valid token but insufficient scope.                                    |
 | `404`  | Not found. Resource does not exist, was deleted, or belongs to another workspace. |
+| `409`  | Conflict. The request cannot be completed due to a conflict with existing data.   |
 | `422`  | Validation failed. See the `fields` object.                                       |
 | `429`  | Rate limit exceeded.                                                              |
 | `500`  | Internal error. Something went wrong on the server.                               |
@@ -51,6 +52,7 @@ The Vendaze API uses standard HTTP status codes and returns a consistent error f
 | `insufficient_scope`  | 403  | Token lacks the required scope for this endpoint.                      |
 | `forbidden`           | 403  | Authenticated but not allowed to access this resource.                 |
 | `not_found`           | 404  | Resource does not exist, was deleted, or belongs to another workspace. |
+| `conflict`            | 409  | Request conflicts with existing data. See the `message` for details.   |
 | `validation_error`    | 422  | Input failed validation. See `fields` for details.                     |
 | `rate_limit_exceeded` | 429  | Too many requests. Wait the time indicated by `Retry-After`.           |
 | `internal_error`      | 500  | Unexpected error. Use `request_id` when contacting support.            |

@@ -92,7 +92,8 @@ The new `client_secret` is sent **only by email** and never returned in the API 
 | `redirect_uris` | string[] | No       | New list of HTTPS redirect URIs. Replaces the previous list entirely. If omitted, the current list is kept.                                                                                                                              |
 
 <Note>
-  Scopes cannot be changed via rotation. To request different scopes, you need to register a new
+  Scopes cannot be changed via rotation. If you need different scopes, you need to register a new
+  app with a different email address, since each email can only be associated with one registered
   app.
 </Note>
 
