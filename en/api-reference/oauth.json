@@ -439,7 +439,6 @@
         "properties": {
           "grant_type": { "type": "string", "enum": ["authorization_code", "refresh_token"] },
           "code": { "type": "string", "description": "Required for grant_type=authorization_code." },
-          "redirect_uri": { "type": "string", "format": "uri", "description": "Required for grant_type=authorization_code." },
           "client_id": { "type": "string", "format": "uuid" },
           "client_secret": { "type": "string" },
           "refresh_token": { "type": "string", "description": "Required for grant_type=refresh_token." }

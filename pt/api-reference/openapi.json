@@ -2975,11 +2975,6 @@
             "type": "string",
             "description": "Obrigatório para grant_type=authorization_code."
           },
-          "redirect_uri": {
-            "type": "string",
-            "format": "uri",
-            "description": "Obrigatório para grant_type=authorization_code."
-          },
           "client_id": {
             "type": "string"
           },
