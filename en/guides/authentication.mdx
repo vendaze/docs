@@ -166,13 +166,16 @@ To disconnect a workspace from your app:
 curl -X POST https://api.vendaze.com/oauth/revoke \
   -H "Content-Type: application/json" \
   -d '{
-    "token": "ACCESS_OR_REFRESH_TOKEN",
+    "token": "ACCESS_TOKEN",
     "client_id": "YOUR_CLIENT_ID",
     "client_secret": "YOUR_CLIENT_SECRET"
   }'
 ```
 
-Returns `200` regardless of whether the token was already revoked or expired (idempotent).
+<Warning>
+  Always send the `access_token`, not the `refresh_token`. The revoke endpoint requires a JWT to
+  identify the user and remove the authorization grant.
+</Warning>
 
 ---
 

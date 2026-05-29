@@ -3029,7 +3029,7 @@
         "properties": {
           "token": {
             "type": "string",
-            "description": "Access token or refresh token to revoke."
+            "description": "Access token to revoke. Must be the access_token (JWT), not the refresh_token."
           },
           "client_id": {
             "type": "string",

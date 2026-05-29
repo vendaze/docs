@@ -467,7 +467,7 @@
         "type": "object",
         "required": ["token", "client_id", "client_secret"],
         "properties": {
-          "token": { "type": "string", "description": "Access token ou refresh token a ser revogado." },
+          "token": { "type": "string", "description": "Access token a ser revogado. Deve ser o access_token (JWT), não o refresh_token." },
           "client_id": { "type": "string" },
           "client_secret": { "type": "string" }
         }

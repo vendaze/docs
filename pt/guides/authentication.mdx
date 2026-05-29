@@ -166,13 +166,16 @@ Para desconectar um workspace do seu aplicativo:
 curl -X POST https://api.vendaze.com/oauth/revoke \
   -H "Content-Type: application/json" \
   -d '{
-    "token": "ACCESS_OU_REFRESH_TOKEN",
+    "token": "ACCESS_TOKEN",
     "client_id": "SEU_CLIENT_ID",
     "client_secret": "SEU_CLIENT_SECRET"
   }'
 ```
 
-Retorna `200` independentemente de o token já estar revogado ou expirado (idempotente).
+<Warning>
+  Sempre envie o `access_token`, não o `refresh_token`. O endpoint de revogação precisa de um JWT
+  para identificar o usuário e remover o grant de autorização.
+</Warning>
 
 ---
 
