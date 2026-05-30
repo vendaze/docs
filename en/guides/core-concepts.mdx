@@ -35,16 +35,26 @@ Tokens are workspace-scoped. A token issued for Workspace A cannot read data fro
 
 Scopes define what your app can do. You declare the required scopes when registering the app, and users approve them individually on the consent screen.
 
-| Scope             | Access                           |
-| ----------------- | -------------------------------- |
-| `people:read`     | Read contacts (people)           |
-| `people:write`    | Create, update, delete people    |
-| `companies:read`  | Read companies                   |
-| `companies:write` | Create, update, delete companies |
-| `deals:read`      | Read deals                       |
-| `deals:write`     | Create, update, delete deals     |
-| `tasks:read`      | Read tasks                       |
-| `tasks:write`     | Create, update, delete tasks     |
+| Scope                 | Access                               |
+| --------------------- | ------------------------------------ |
+| `people:read`         | Read contacts (people)               |
+| `people:write`        | Create, update, delete people        |
+| `companies:read`      | Read companies                       |
+| `companies:write`     | Create, update, delete companies     |
+| `deals:read`          | Read deals                           |
+| `deals:write`         | Create, update, delete deals         |
+| `tasks:read`          | Read tasks                           |
+| `tasks:write`         | Create, update, delete tasks         |
+| `activities:read`     | Read activities                      |
+| `activities:write`    | Create, delete activities            |
+| `products:read`       | Read products                        |
+| `products:write`      | Create, update, delete products      |
+| `tags:read`           | Read tags                            |
+| `tags:write`          | Create, update, delete tags          |
+| `lists:read`          | Read lists                           |
+| `lists:write`         | Create, update, delete lists         |
+| `custom_fields:read`  | Read custom field definitions        |
+| `custom_fields:write` | Create, update, delete custom fields |
 
 <Tip>
   Request only the scopes your app genuinely needs. Users tend to distrust apps that request broad
