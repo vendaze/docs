@@ -5,17 +5,35 @@ icon: 'calendar'
 noindex: true
 ---
 
+<Update label="v1.0.1" date="2026-04-15">
+  ## Post-launch fixes
+
+**Fix: `activities` listing missing `person_id` filter:** `GET /v1/activities` was not accepting `person_id` as a filter parameter despite it being documented. The parameter is now correctly applied and returns only activities linked to the specified person.
+
+**Fix: `deals` PATCH ignoring `stage_id` when `pipeline_id` is omitted:** when updating a deal's stage via `PATCH /v1/deals/:id`, omitting `pipeline_id` from the body caused `stage_id` to be silently ignored. The endpoint now correctly updates the stage when only `stage_id` is provided, as long as the stage belongs to the deal's current pipeline.
+
+**Fix: `custom-fields` `multi_select` type returning values as a string:** `GET /v1/people/:id` was returning `multi_select` custom field values as a comma-separated string instead of an array. The response now correctly returns an array of strings: `["value1", "value2"]`.
+
+**Fix: `POST /v1/activities` accepting future timestamps:** activities could be created with an `occurred_at` timestamp in the future, which is semantically incorrect for logged activities. The endpoint now returns `422` with `"occurred_at must not be in the future."` for timestamps beyond the current time.
+
+**Improvement: `X-RateLimit-Reset` header now returns Unix timestamp:** previously the header returned seconds remaining until reset. It now returns the Unix timestamp of the reset moment, which is easier to use in client-side countdown logic.
+
+</Update>
+
 <Update label="v1.0.0" date="2026-04-01">
   ## Public API v1 launch
 
-Vendaze API v1 is now available to all developers. This is the initial release with full OAuth 2.1 support and the core CRM resources.
+Vendaze API v1 is now available to all developers. This is the initial release with full OAuth 2.1 support and the complete set of CRM resources.
 
 ### OAuth 2.1 Authorization Code flow
 
-- `GET /oauth/authorize`: starts the authorization flow
-- `POST /oauth/token`: authorization code exchange for tokens and refresh token renewal
-- `POST /oauth/revoke`: revocation of access token or refresh token
-- `POST /v1/auth/register-app`: new integrator app registration (public)
+The authorization system is built on OAuth 2.1 with `client_secret`. All token exchanges happen server-side. The `client_secret` is never returned in any API response: it is delivered once via a secure email link that expires in 15 minutes.
+
+- `GET /oauth/authorize`: initiates the authorization flow, redirecting the user to the Vendaze consent screen
+- `POST /oauth/token`: exchanges an authorization code for an `access_token` and `refresh_token`, or renews an expired `access_token` using a `refresh_token`
+- `POST /oauth/revoke`: immediately invalidates an `access_token` and its associated authorization grant
+- `POST /v1/auth/register-app`: registers a new integrator app and triggers the credential delivery email (public endpoint, no authentication required)
+- `POST /v1/auth/rotate-app`: rotates the `client_secret` for an existing app, invalidating the previous secret immediately and sending a new credential link to the registered email
 
 ### Resources available in v1
 
@@ -29,27 +47,49 @@ Vendaze API v1 is now available to all developers. This is the initial release w
 | Products      | `deals:write` for writes                      | Full CRUD            |
 | Tags          | any write scope                               | Full CRUD            |
 | Lists         | `people:read/write` or `companies:read/write` | Full CRUD            |
-| Custom Fields | corresponding scopes                          | Full CRUD            |
+| Custom Fields | corresponding entity scopes                   | Full CRUD            |
 
-### Pagination and filters
+Activities are linked to a parent entity (person, company, or deal) and inherit the scope of that entity. There is no standalone `activities` scope.
 
-All listing endpoints support pagination with `page`, `per_page` (maximum 100), `order_by`, and `order`. Text, date, tag, and custom field filters available across all resources.
+### Pagination and filtering
+
+All listing endpoints support page-based pagination with `page` and `per_page` (maximum 100 per page). Sorting is available via `order_by` and `order` on all resources.
+
+Filtering is available across all resources:
+
+- **Text filters:** case-insensitive partial match on `full_name`, `name`, and similar fields
+- **Date range filters:** `created_after`, `created_before`, `updated_after`, `updated_before` on all resources; `forecast_after`, `forecast_before` on deals
+- **Tag filters:** filter by one or more tags with AND semantics
+- **Exact match filters:** `company_id`, `owner_user_id`, `completed`, `priority`, `type`, and other enum fields
+- **Custom field filters:** `custom_field[UUID]=value` with type-aware comparison
 
 ### Rate limiting
 
-- GET: 1,000 req/min per `client_id`
-- POST/PATCH: 200 req/min per `client_id`
-- DELETE: 100 req/min per `client_id`
-- OAuth endpoints: 20 req/min per IP
+Rate limits are enforced per `client_id` for authenticated endpoints and per IP for OAuth endpoints.
 
-`X-RateLimit-Limit`, `X-RateLimit-Remaining`, and `X-RateLimit-Reset` headers included in all responses.
+| Endpoint type   | Limit             |
+| --------------- | ----------------- |
+| GET             | 1,000 req/min     |
+| POST / PATCH    | 200 req/min       |
+| DELETE          | 100 req/min       |
+| OAuth endpoints | 20 req/min per IP |
+
+Every response includes `X-RateLimit-Limit`, `X-RateLimit-Remaining`, and `X-RateLimit-Reset` headers. When the limit is exceeded, the API returns `429` with a `Retry-After` header indicating when to retry.
+
+### Idempotency
+
+`POST /v1/deals` and `POST /v1/people` support the `Idempotency-Key` header at launch. Keys are stored for 24 hours. Sending the same key with the same body returns the original response without reprocessing. Sending the same key with a different body returns `422` with code `idempotency_conflict`.
+
+### Webhooks
+
+Workspace owners can configure webhook endpoints in the Vendaze dashboard. Events are signed with HMAC-SHA256 using a per-endpoint secret. Delivery uses at-least-once semantics with 5 retry attempts on failure. Available events at launch: `person.created`, `person.updated`, `company.created`, `company.updated`, `deal.created`, `deal.updated`, `activity.created`, `task.created`, `task.updated`, `product.created`.
 
 ### MCP Server
 
-The Vendaze MCP server is available at `https://api.vendaze.com/mcp` for integration with AI tools such as Claude, Cursor, and GitHub Copilot. See the [AI and Automations](/en/ai/overview) documentation for details.
+The Vendaze MCP server is available at `https://api.vendaze.com/mcp` for integration with AI tools such as Claude, Cursor, and GitHub Copilot. The MCP server uses the same OAuth 2.1 authorization as the REST API. See the [AI and Automations](/en/ai/overview) documentation for setup instructions.
 
 ### SDKs
 
-No official SDKs are available at this time. The API follows standard REST and HTTP conventions, working with any HTTP client.
+No official SDKs are available at this time. The API follows standard REST and HTTP conventions and works with any HTTP client. Community SDKs are welcome.
 
 </Update>

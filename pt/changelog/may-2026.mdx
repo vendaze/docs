@@ -1,14 +1,27 @@
 ---
 title: 'Maio 2026'
-description: 'Melhorias de filtros, suporte a campos adicionais em listagens por ID e novos eventos de webhook.'
+description: 'Melhorias de filtros, campos adicionais em consultas por ID, novos eventos de webhook e correções de performance.'
 icon: 'calendar'
 noindex: true
 ---
 
+<Update label="v1.2.1" date="2026-05-29">
+  ## Melhorias de performance e correções
+
+**Performance em listagens:** redução de ~18% no tempo de resposta mediano em endpoints de listagem para workspaces com mais de 10.000 registros. A melhoria vem de otimizações no plano de query no índice composto `created_at` + `deleted` usado por todas as listagens de recursos.
+
+**Edge case em filtros de data:** corrigido um caso onde filtros `created_before` e `updated_before` com timestamp exatamente no limite de um segundo (ex: `2026-05-01T00:00:00Z`) podiam excluir registros criados naquele milissegundo exato. O filtro agora é inclusivo no valor limite, consistente com o comportamento documentado.
+
+**Mensagens de erro de validação:** melhorada a especificidade das mensagens de erro de validação para campos de data. Anteriormente, qualquer valor de data inválido retornava `"Invalid ISO 8601 date format."` independente do problema real. Agora a mensagem distingue entre strings malformadas, valores fora do intervalo válido e ausência de fuso horário.
+
+**Validação de `order_by`:** passar um valor de `order_by` não suportado agora retorna `422` com uma mensagem clara listando os campos aceitos para aquele recurso, em vez de silenciosamente usar `created_at` como fallback.
+
+</Update>
+
 <Update label="v1.2.0" date="2026-05-26">
   ## Campos adicionais retornados em consultas por ID
 
-Ao buscar qualquer registro por ID (`GET /v1/people/:id`, `GET /v1/companies/:id`, `GET /v1/deals/:id`), o objeto `custom_fields` agora é retornado automaticamente com os valores preenchidos para aquele registro.
+Ao buscar qualquer registro por ID (`GET /v1/people/:id`, `GET /v1/companies/:id`, `GET /v1/deals/:id`), o array `custom_fields` agora é retornado automaticamente com os valores preenchidos para aquele registro. Anteriormente, os valores de campos adicionais só estavam disponíveis via endpoint separado.
 
 ```json
 {
@@ -31,46 +44,45 @@ Ao buscar qualquer registro por ID (`GET /v1/people/:id`, `GET /v1/companies/:id
 }
 ```
 
-Campos adicionais sem valor para o registro aparecem com `value: null`.
+Campos adicionais sem valor para o registro aparecem com `"value": null`. Os campos são retornados na ordem definida nas configurações do workspace.
 
-## Novos eventos de webhook: products
+## Novo evento de webhook: product.created
 
-Dois novos eventos foram adicionados para produtos:
+Um novo evento de webhook foi adicionado para produtos:
 
 - `product.created`: disparado quando um novo produto é criado no workspace
-- `product.updated`: disparado quando um produto é atualizado
 
-Veja a documentação de [Webhooks](/pt/guides/webhooks) para o formato completo do payload.
+Veja a documentação de [Webhooks](/pt/guides/webhooks) para o formato completo do payload e validação de assinatura.
 
 ## Header Idempotency-Key agora aceito em todos os endpoints POST
 
-O header `Idempotency-Key` passou a ser suportado em todos os endpoints de criação (`POST /v1/*`). Anteriormente estava disponível apenas em `/v1/deals` e `/v1/people`.
+O header `Idempotency-Key` passou a ser suportado em todos os endpoints de criação (`POST /v1/*`). Anteriormente estava disponível apenas em `/v1/deals` e `/v1/people`. Esta mudança torna os retries seguros consistentes em todos os tipos de recurso.
 
 </Update>
 
 <Update label="v1.1.1" date="2026-05-12">
-  ## Correção: filtro `tag` com valores especiais
+  ## Correção: filtro `tag` com caracteres especiais
 
-Corrigido bug onde tags contendo caracteres especiais (como `&` e `+`) não eram filtradas corretamente quando passadas via `tag=valor`. O encoding agora é tratado corretamente antes da comparação.
+Corrigido bug onde tags contendo caracteres especiais (como `&` e `+`) não eram filtradas corretamente quando passadas via `tag=valor`. O encoding de URL agora é tratado corretamente antes da comparação. Tags com esses caracteres agora retornam os resultados esperados.
 
 ## Correção: order_by=full_name em companies
 
-O parâmetro `order_by=full_name` em `GET /v1/companies` retornava erro `422` indevidamente. Corrigido: ordenação por `full_name` agora funciona para pessoas e empresas.
+O parâmetro `order_by=full_name` em `GET /v1/companies` retornava erro `422` indevidamente. O campo estava ausente da lista de campos de ordenação permitidos para empresas, apesar de ser uma coluna válida para ordenação. Corrigido: ordenação por `full_name` agora funciona corretamente para pessoas e empresas.
 
 </Update>
 
 <Update label="v1.1.0" date="2026-05-05">
   ## Filtros de preço em negócios
 
-Os parâmetros `price_min_cts`, `price_max_cts` e `currency` foram adicionados ao endpoint `GET /v1/deals`:
+Os parâmetros `price_min_cts`, `price_max_cts` e `currency` foram adicionados ao endpoint `GET /v1/deals`. Todos os valores monetários são em centavos, consistente com o restante da API.
 
 ```bash
 GET /v1/deals?price_min_cts=50000&price_max_cts=500000&currency=BRL
 ```
 
-Valores sempre em centavos. Filtragem por `currency` usa correspondência exata com o código ISO da moeda.
+`currency` usa correspondência exata com o código ISO 4217 da moeda. Combinar `price_min_cts` e `currency` é o padrão recomendado para filtrar negócios em uma moeda específica acima de um valor mínimo.
 
-## Filtros de intervalo de data para deals: forecast_after e forecast_before
+## Filtros de intervalo de data para negócios: forecast_after e forecast_before
 
 Negócios agora podem ser filtrados pela data de previsão de fechamento:
 
@@ -78,8 +90,10 @@ Negócios agora podem ser filtrados pela data de previsão de fechamento:
 GET /v1/deals?forecast_after=2026-06-01T00:00:00Z&forecast_before=2026-06-30T23:59:59Z
 ```
 
+Útil para relatórios de pipeline com escopo em um trimestre ou mês específico. Combine com `price_min_cts` para filtrar negócios de alto valor com fechamento previsto em um período.
+
 ## Melhoria de performance em listagens com custom_field[]
 
-Queries usando `custom_field[UUID]=valor` agora usam índice composto em `custom_fields_associate`, reduzindo o tempo de resposta em até 60% para workspaces com alto volume de campos adicionais.
+Queries usando `custom_field[UUID]=valor` agora usam índice composto na tabela de associação de campos adicionais, reduzindo o tempo de resposta em até 60% para workspaces com alto volume de valores de campos adicionais. A melhoria é mais significativa ao filtrar por campos do tipo `select` ou `cpf`/`cnpj`, que usam correspondência exata.
 
 </Update>

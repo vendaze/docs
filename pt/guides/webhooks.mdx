@@ -16,7 +16,7 @@ Webhooks permitem que a Vendaze notifique seu aplicativo quando eventos ocorrem 
 ## Como funciona
 
 1. O cliente da Vendaze configura um webhook no painel: define a URL de destino e os eventos desejados
-2. O Vendaze gera um `webhook_secret` único para aquele endpoint
+2. A Vendaze gera um `webhook_secret` único para aquele endpoint
 3. Quando um evento ocorre, a Vendaze faz um `POST` para a URL configurada com o payload assinado
 4. Seu servidor valida a assinatura e processa o evento
 
@@ -31,11 +31,9 @@ Webhooks permitem que a Vendaze notifique seu aplicativo quando eventos ocorrem 
 | `deal.created`     | Um novo negócio é criado        |
 | `deal.updated`     | Um negócio é atualizado         |
 | `activity.created` | Uma nova atividade é registrada |
-| `activity.updated` | Uma atividade é atualizada      |
 | `task.created`     | Uma nova tarefa é criada        |
 | `task.updated`     | Uma tarefa é atualizada         |
 | `product.created`  | Um novo produto é criado        |
-| `product.updated`  | Um produto é atualizado         |
 
 ## Formato do payload
 
@@ -47,7 +45,7 @@ Webhooks permitem que a Vendaze notifique seu aplicativo quando eventos ocorrem 
   "data": {
     "id": "550e8400-e29b-41d4-a716-446655440000",
     "full_name": "Ana Costa",
-    "emails": [{ "email": "ana@empresa.com", "reminder": "work" }],
+    "emails": [{ "email": "ana@empresa.com", "type": "work" }],
     "created_at": "2026-05-26T14:00:00Z"
   }
 }
@@ -57,7 +55,7 @@ Webhooks permitem que a Vendaze notifique seu aplicativo quando eventos ocorrem 
 
 Cada entrega é assinada com HMAC-SHA256 usando o `webhook_secret`. Valide antes de processar.
 
-**Headers enviados pelo Vendaze:**
+**Headers enviados pela Vendaze:**
 
 ```
 X-Vendaze-Signature: sha256=abc123...
@@ -98,8 +96,34 @@ Se seu servidor não retornar status `2xx` em 10 segundos, a Vendaze tenta novam
 
 Após 5 falhas consecutivas, o endpoint é marcado como `suspended`. O cliente reativa no painel.
 
+## Garantias de entrega
+
+A Vendaze entrega webhooks com semântica **at-least-once**. O mesmo evento pode ser entregue mais de uma vez nas seguintes situações:
+
+- Seu servidor retornou `2xx` mas a Vendaze não recebeu a confirmação por problema de rede
+- Um reenvio foi disparado antes da entrega anterior ser confirmada
+- Um problema transitório de infraestrutura causou entrega duplicada
+
+**Estratégia de deduplicação:** use o campo `data.id` combinado com o tipo de `event` como chave de deduplicação. Armazene os IDs de eventos processados no banco de dados e ignore qualquer evento que você já tenha tratado.
+
+```javascript
+async function handleWebhook(payload) {
+  const dedupeKey = `${payload.event}:${payload.data.id}`;
+
+  const alreadyProcessed = await db.webhookEvents.findOne({ key: dedupeKey });
+  if (alreadyProcessed) return; // Duplicata, ignorar
+
+  await db.webhookEvents.insert({ key: dedupeKey, processedAt: new Date() });
+
+  // Processar o evento
+  await processEvent(payload);
+}
+```
+
 ## Boas práticas
 
-- **Responda rapidamente:** retorne `200` imediatamente e processe em background.
-- **Seja idempotente:** o mesmo evento pode chegar mais de uma vez. Use o `id` do payload para deduplicar.
-- **Guarde os logs:** armazene os payloads recebidos para facilitar debug e auditoria.
+- **Responda rapidamente:** retorne `200` imediatamente e processe em background. Se seu handler demorar mais de 10 segundos, a Vendaze vai retentar.
+- **Seja idempotente:** o mesmo evento pode chegar mais de uma vez. Use o `data.id` para deduplicar conforme mostrado acima.
+- **Valide toda assinatura:** nunca processe um payload sem verificar a assinatura HMAC. Rejeite assinaturas inválidas com `401`.
+- **Guarde os logs:** armazene os payloads recebidos por pelo menos 30 dias para facilitar debug e auditoria.
+- **Trate eventos desconhecidos com elegância:** retorne `200` para tipos de evento que você não trata. Novos eventos podem ser adicionados em versões futuras.

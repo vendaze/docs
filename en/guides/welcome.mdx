@@ -1,44 +1,65 @@
 ---
 title: 'Welcome'
-description: 'Introduction to the Vendaze public API for developers and integrators.'
+description: 'The Vendaze API gives your application direct access to CRM data across any connected workspace.'
 icon: 'hand-wave'
 keywords: ['Vendaze API', 'CRM API', 'REST API', 'developer documentation', 'API integration']
 ---
 
-<img src="/images/banner-home.png" alt="Vendaze API" />
+<img src="/images/banner-home.png" alt="Vendaze Developers" />
 
-## What is the Vendaze API
+## What you can build
 
-The Vendaze API is a public REST interface that allows external applications to read and write data in Vendaze, the B2B CRM for sales teams.
+The Vendaze API is a REST interface that lets external applications read and write data in Vendaze workspaces. It uses OAuth 2.1 for authorization, meaning your users connect their own workspace to your app and you operate on their data with their explicit consent.
 
-With it, you can build native integrations, automations, custom dashboards, and AI agents that operate directly on your commercial team's data.
+Typical integrations:
 
-## Who this documentation is for
+- **Native CRM sync:** keep contacts, companies, and deals in sync between Vendaze and your product
+- **Sales automation:** create tasks, log activities, and move deals through pipelines based on events in your system
+- **Custom dashboards:** pull workspace data into internal tools, BI platforms, or data warehouses
+- **AI agents:** connect language models to live CRM data via the MCP server
+
+## Who this is for
 
 <CardGroup cols={2}>
   <Card title="SaaS developers" icon="code">
-    You have a product and want to offer native integration with Vendaze for your customers.
+    Build a native Vendaze integration and offer it to your customers directly from your product.
   </Card>
   <Card title="Engineering teams" icon="building">
-    You want to connect internal tools to Vendaze, such as ETL pipelines, data warehouses, or
-    automations.
+    Connect internal tools, ETL pipelines, or data warehouses to Vendaze workspace data.
   </Card>
   <Card title="Agencies and consultants" icon="briefcase">
-    You build custom solutions for clients who use Vendaze.
+    Build custom automations and integrations for clients who run their sales on Vendaze.
   </Card>
-  <Card title="AI enthusiasts" icon="robot">
-    You want to connect AI agents like Claude or Cursor to the CRM via MCP.
+  <Card title="AI builders" icon="robot">
+    Connect AI assistants like Claude or ChatGPT to live CRM data via the Vendaze MCP server.
   </Card>
 </CardGroup>
 
-## What you need before you start
+## How it works
 
-1. A Vendaze account with at least one active workspace
-2. A server with HTTPS support to receive the OAuth callback
-3. Basic familiarity with REST APIs and the OAuth 2.1 flow
+The API uses **OAuth 2.1 Authorization Code flow**. Your app registers once to get a `client_id` and `client_secret`. When a user wants to connect their workspace, they go through a standard OAuth consent screen. After authorization, you receive an `access_token` scoped to that specific workspace.
 
-There is no approval process to become an integrator. Any developer can register an app and start building immediately.
+Every API call carries that token. The workspace context is resolved automatically. You never send a workspace identifier in requests.
 
-<Card title="Ready to get started?" icon="rocket" href="/en/guides/register-app" horizontal>
-  Register your app and get your credentials now.
-</Card>
+## What you need to start
+
+- A Vendaze account with at least one active workspace ([create one free](https://app.vendaze.com/register))
+- A server with HTTPS support to receive the OAuth callback
+- Familiarity with REST APIs and OAuth 2.1
+
+No approval process. Any developer can register an app and start building immediately.
+
+<CardGroup cols={2}>
+  <Card title="Register your app" icon="plug" href="/en/guides/register-app">
+    Get your `client_id` and `client_secret` in under a minute.
+  </Card>
+  <Card title="Authentication" icon="lock" href="/en/guides/authentication">
+    Implement the OAuth 2.1 flow and get your first access token.
+  </Card>
+  <Card title="First request" icon="terminal" href="/en/guides/first-request">
+    End-to-end walkthrough from registration to your first API call.
+  </Card>
+  <Card title="API Reference" icon="code" href="/en/api-reference">
+    Full endpoint reference with request and response schemas.
+  </Card>
+</CardGroup>

@@ -70,16 +70,56 @@ GET /v1/people?custom_field[FIELD_UUID]=value
 GET /v1/companies?custom_field[FIELD_UUID]=specific-value
 ```
 
-| Field type                             | Comparison                     |
-| -------------------------------------- | ------------------------------ |
-| `text`, `long_text`, `link`, `address` | Case-insensitive partial match |
-| `cpf`, `cnpj`                          | Exact                          |
-| `select`                               | Exact                          |
-| `multi_select`                         | Contains the value             |
-| `number`                               | Exact (numeric)                |
-| `date`                                 | Exact (ISO 8601)               |
+| Field type                             | Comparison                     | Example value      |
+| -------------------------------------- | ------------------------------ | ------------------ |
+| `text`, `long_text`, `link`, `address` | Case-insensitive partial match | `"acme"`           |
+| `cpf`, `cnpj`                          | Exact                          | `"123.456.789-00"` |
+| `select`                               | Exact                          | `"enterprise"`     |
+| `multi_select`                         | Contains the value             | `"vip"`            |
+| `number`                               | Exact (numeric)                | `"42"`             |
+| `date`                                 | Exact (ISO 8601)               | `"2026-06-01"`     |
 
 Use `GET /v1/custom-fields` to list available fields in the workspace and retrieve their UUIDs.
+
+## Combining multiple filters
+
+Filters compose with AND logic. All conditions must be satisfied for a record to appear in the results.
+
+```bash
+# People named "costa" in a specific company, created in 2026, tagged as "vip-client"
+GET /v1/people?full_name=costa&company_id=7c9e6679-7425-40de-944b-e07fc1f90ae7&created_after=2026-01-01T00:00:00Z&tag=vip-client
+
+# Open deals above R$10,000 closing in June 2026
+GET /v1/deals?price_min_cts=1000000&forecast_after=2026-06-01T00:00:00Z&forecast_before=2026-06-30T23:59:59Z
+
+# High-priority incomplete tasks linked to a specific deal
+GET /v1/tasks?priority=high&completed=false&deal_id=b3a8c1d2-f3e4-4a5b-9c6d-7e8f9a0b1c2d
+```
+
+## Performance considerations
+
+Not all filters have the same cost. Understanding which filters use indexes helps you write efficient queries.
+
+**Indexed filters (fast):** these filters resolve against database indexes and scale well regardless of workspace size.
+
+- `company_id`, `owner_user_id`, and other UUID foreign key filters
+- `created_after`, `created_before`, `updated_after`, `updated_before`
+- `tag` filters
+- `completed`, `priority`, `type`, and other enum filters
+- `price_min_cts`, `price_max_cts`, `currency`
+- `forecast_after`, `forecast_before`
+
+**Full-scan filters (slower at scale):** these filters require scanning text values and are slower on workspaces with large record counts.
+
+- `full_name`, `name` text filters (partial match)
+- `custom_field[UUID]` filters on `text`, `long_text`, `link`, and `address` types
+
+For large workspaces, prefer indexed filters when possible. If you need to search by name, combine it with an indexed filter to reduce the scan size:
+
+```bash
+# Faster: scoped to a specific company before applying the text filter
+GET /v1/people?company_id=7c9e6679-7425-40de-944b-e07fc1f90ae7&full_name=costa
+```
 
 ## Invalid filters
 

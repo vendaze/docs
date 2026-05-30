@@ -52,6 +52,15 @@ const idempotencyKey = randomUUID();
 | Repeated request with same key and different body | Returns `422` with code `idempotency_conflict`.     |
 | Repeated request after 24 hours                   | Key expired. Processes as a new request.            |
 
+## Why PATCH and DELETE are naturally idempotent
+
+`PATCH` and `DELETE` endpoints do not require the `Idempotency-Key` header because they are idempotent by definition:
+
+- **PATCH:** applying the same update twice produces the same result. Setting `full_name` to `"Ana Costa"` a second time leaves the record unchanged.
+- **DELETE:** deleting a record that has already been deleted returns `404`. The end state (record does not exist) is the same regardless of how many times you call it.
+
+The `Idempotency-Key` header is only necessary for `POST` operations, where each call without a key would create a new record.
+
 ## Endpoints that support idempotency
 
 The `Idempotency-Key` header is accepted on all write endpoints:
@@ -66,12 +75,13 @@ The `Idempotency-Key` header is accepted on all write endpoints:
 - `POST /v1/lists`
 - `POST /v1/custom-fields`
 
-`PATCH` and `DELETE` endpoints are naturally idempotent by the HTTP protocol itself and do not require the header.
-
 ## Recommended pattern for critical creations
 
 ```javascript
+import { randomUUID } from 'crypto';
+
 async function createDeal(payload, accessToken) {
+  // Generate the key once per logical operation, before the first attempt
   const idempotencyKey = randomUUID();
 
   for (let attempt = 0; attempt < 3; attempt++) {
@@ -88,22 +98,82 @@ async function createDeal(payload, accessToken) {
 
       if (res.ok) return res.json();
 
-      // Do not retry on validation errors
-      if (res.status === 422) throw new Error('Validation failed');
-
-      // Retry on network failures or 5xx
-      if (res.status >= 500 || !res.status) {
-        await new Promise((r) => setTimeout(r, 1000 * (attempt + 1)));
-        continue;
+      // Do not retry on validation errors or client errors
+      if (res.status >= 400 && res.status < 500) {
+        const { error } = await res.json();
+        throw new Error(`${error.code}: ${error.message}`);
       }
 
-      throw new Error(`Unexpected status: ${res.status}`);
+      // Retry on network failures or 5xx
+      if (res.status >= 500) {
+        await new Promise((r) => setTimeout(r, 1000 * Math.pow(2, attempt)));
+        continue;
+      }
     } catch (err) {
       if (attempt === 2) throw err;
+      await new Promise((r) => setTimeout(r, 1000 * Math.pow(2, attempt)));
     }
   }
 }
 ```
+
+## Tracking idempotency keys in your database
+
+For operations where you need an audit trail or want to correlate your internal records with API responses, store the idempotency key alongside the created resource:
+
+```sql
+CREATE TABLE deal_creations (
+  id              UUID PRIMARY KEY DEFAULT gen_random_uuid(),
+  idempotency_key UUID NOT NULL UNIQUE,
+  vendaze_deal_id UUID,
+  payload         JSONB NOT NULL,
+  status          TEXT NOT NULL DEFAULT 'pending',
+  created_at      TIMESTAMPTZ NOT NULL DEFAULT now(),
+  resolved_at     TIMESTAMPTZ
+);
+```
+
+```javascript
+async function createDealWithTracking(payload, accessToken) {
+  const idempotencyKey = randomUUID();
+
+  // Record the attempt before sending
+  await db.dealCreations.insert({
+    idempotency_key: idempotencyKey,
+    payload,
+    status: 'pending',
+  });
+
+  try {
+    const res = await fetch('https://api.vendaze.com/v1/deals', {
+      method: 'POST',
+      headers: {
+        Authorization: `Bearer ${accessToken}`,
+        'Content-Type': 'application/json',
+        'Idempotency-Key': idempotencyKey,
+      },
+      body: JSON.stringify(payload),
+    });
+
+    const deal = await res.json();
+
+    await db.dealCreations.update(
+      { idempotency_key: idempotencyKey },
+      { status: 'success', vendaze_deal_id: deal.data.id, resolved_at: new Date() },
+    );
+
+    return deal;
+  } catch (err) {
+    await db.dealCreations.update(
+      { idempotency_key: idempotencyKey },
+      { status: 'failed', resolved_at: new Date() },
+    );
+    throw err;
+  }
+}
+```
+
+This pattern lets you recover from failures by looking up the `idempotency_key` in your database and checking whether the operation succeeded before retrying.
 
 <Note>
   Idempotency keys persist for 24 hours. Always use a UUID v4 generated at the time of the

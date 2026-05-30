@@ -39,7 +39,6 @@ A chave deve ser:
 ```javascript
 import { randomUUID } from 'crypto';
 
-// Gere uma chave única por tentativa de operação
 const idempotencyKey = randomUUID();
 ```
 
@@ -51,6 +50,15 @@ const idempotencyKey = randomUUID();
 | Requisição repetida com mesma chave e mesmo body     | Retorna a resposta original sem reprocessar.     |
 | Requisição repetida com mesma chave e body diferente | Retorna `422` com código `idempotency_conflict`. |
 | Requisição repetida após 24 horas                    | Chave expirada. Processa como nova requisição.   |
+
+## Por que PATCH e DELETE são naturalmente idempotentes
+
+Endpoints `PATCH` e `DELETE` não precisam do header `Idempotency-Key` porque são idempotentes por definição:
+
+- **PATCH:** aplicar a mesma atualização duas vezes produz o mesmo resultado. Definir `full_name` como `"Ana Costa"` uma segunda vez não altera o registro.
+- **DELETE:** deletar um registro que já foi deletado retorna `404`. O estado final (registro não existe) é o mesmo independente de quantas vezes você chame.
+
+O header `Idempotency-Key` só é necessário para operações `POST`, onde cada chamada sem chave criaria um novo registro.
 
 ## Endpoints que suportam idempotência
 
@@ -66,12 +74,13 @@ O header `Idempotency-Key` é aceito em todos os endpoints de escrita:
 - `POST /v1/lists`
 - `POST /v1/custom-fields`
 
-Endpoints `PATCH` e `DELETE` são naturalmente idempotentes pelo próprio protocolo HTTP e não necessitam do header.
-
 ## Padrão recomendado para criações críticas
 
 ```javascript
+import { randomUUID } from 'crypto';
+
 async function createDeal(payload, accessToken) {
+  // Gere a chave uma vez por operação lógica, antes da primeira tentativa
   const idempotencyKey = randomUUID();
 
   for (let attempt = 0; attempt < 3; attempt++) {
@@ -88,19 +97,76 @@ async function createDeal(payload, accessToken) {
 
       if (res.ok) return res.json();
 
-      // Não retentar em erros de validação
-      if (res.status === 422) throw new Error('Validation failed');
-
-      // Retentar em falhas de rede ou 5xx
-      if (res.status >= 500 || !res.status) {
-        await new Promise((r) => setTimeout(r, 1000 * (attempt + 1)));
-        continue;
+      // Não retentar em erros de validação ou erros de cliente
+      if (res.status >= 400 && res.status < 500) {
+        const { error } = await res.json();
+        throw new Error(`${error.code}: ${error.message}`);
       }
 
-      throw new Error(`Unexpected status: ${res.status}`);
+      // Retentar em falhas de rede ou 5xx
+      if (res.status >= 500) {
+        await new Promise((r) => setTimeout(r, 1000 * Math.pow(2, attempt)));
+        continue;
+      }
     } catch (err) {
       if (attempt === 2) throw err;
+      await new Promise((r) => setTimeout(r, 1000 * Math.pow(2, attempt)));
     }
+  }
+}
+```
+
+## Rastreando chaves de idempotência no banco de dados
+
+Para operações onde você precisa de trilha de auditoria ou quer correlacionar seus registros internos com respostas da API, armazene a chave de idempotência junto ao recurso criado:
+
+```sql
+CREATE TABLE deal_creations (
+  id              UUID PRIMARY KEY DEFAULT gen_random_uuid(),
+  idempotency_key UUID NOT NULL UNIQUE,
+  vendaze_deal_id UUID,
+  payload         JSONB NOT NULL,
+  status          TEXT NOT NULL DEFAULT 'pending',
+  created_at      TIMESTAMPTZ NOT NULL DEFAULT now(),
+  resolved_at     TIMESTAMPTZ
+);
+```
+
+```javascript
+async function createDealWithTracking(payload, accessToken) {
+  const idempotencyKey = randomUUID();
+
+  await db.dealCreations.insert({
+    idempotency_key: idempotencyKey,
+    payload,
+    status: 'pending',
+  });
+
+  try {
+    const res = await fetch('https://api.vendaze.com/v1/deals', {
+      method: 'POST',
+      headers: {
+        Authorization: `Bearer ${accessToken}`,
+        'Content-Type': 'application/json',
+        'Idempotency-Key': idempotencyKey,
+      },
+      body: JSON.stringify(payload),
+    });
+
+    const deal = await res.json();
+
+    await db.dealCreations.update(
+      { idempotency_key: idempotencyKey },
+      { status: 'success', vendaze_deal_id: deal.data.id, resolved_at: new Date() },
+    );
+
+    return deal;
+  } catch (err) {
+    await db.dealCreations.update(
+      { idempotency_key: idempotencyKey },
+      { status: 'failed', resolved_at: new Date() },
+    );
+    throw err;
   }
 }
 ```

@@ -40,14 +40,16 @@ Every listing response includes a `meta` object:
 | `per_page` | Records per page.                                     |
 | `has_more` | `true` if there are more pages after this one.        |
 
+To calculate the total number of pages: `Math.ceil(meta.total / meta.per_page)`.
+
 ## Available parameters
 
-| Parameter  | Type    | Default      | Max   | Description                                   |
-| ---------- | ------- | ------------ | ----- | --------------------------------------------- |
-| `page`     | integer | `1`          | -     | Page number to retrieve.                      |
-| `per_page` | integer | `50`         | `100` | Records per page. Returns `422` if above 100. |
-| `order_by` | string  | `created_at` | -     | Field to sort by.                             |
-| `order`    | string  | `desc`       | -     | `asc` or `desc`.                              |
+| Parameter  | Type    | Default      | Max   | Description                                                                              |
+| ---------- | ------- | ------------ | ----- | ---------------------------------------------------------------------------------------- |
+| `page`     | integer | `1`          | -     | Page number to retrieve.                                                                 |
+| `per_page` | integer | `50`         | `100` | Records per page. Returns `422` if above 100.                                            |
+| `order_by` | string  | `created_at` | -     | Field to sort by. Accepted values vary by resource. See the sortable fields table below. |
+| `order`    | string  | `desc`       | -     | `asc` or `desc`.                                                                         |
 
 ## Fetching all records
 
@@ -62,23 +64,65 @@ async function fetchAll(endpoint, accessToken) {
     const res = await fetch(`https://api.vendaze.com${endpoint}?page=${page}&per_page=100`, {
       headers: { Authorization: `Bearer ${accessToken}` },
     });
+
+    if (!res.ok) {
+      const { error } = await res.json();
+      throw new Error(`${error.code}: ${error.message}`);
+    }
+
     const { data, meta } = await res.json();
     results.push(...data);
+
     if (!meta.has_more) break;
     page++;
   }
 
   return results;
 }
+```
+
+## Calculating total pages
+
+```javascript
+const totalPages = Math.ceil(meta.total / meta.per_page);
+console.log(`Page ${meta.page} of ${totalPages}`);
+```
+
+## Performance considerations
+
+The `per_page` value affects both latency and throughput. Choose based on your use case:
+
+**Use a smaller `per_page` (10-25) when:**
+
+- Rendering results in a UI where the user sees the first page immediately
+- You need low latency on the first response
+- You are paginating interactively and most users never go past page 2
+
+**Use a larger `per_page` (50-100) when:**
+
+- Fetching all records for a sync or export
+- Running a background job that processes records in bulk
+- Minimizing the number of API calls matters more than individual response time
+
+The maximum is `per_page=100`. For full exports, use `per_page=100` and iterate until `has_more` is `false`. This minimizes the number of requests while staying within the limit.
+
+<Note>
+  Filters are applied before pagination. `meta.total` always reflects the count of records matching
+  your filters, not the total records in the workspace.
+</Note>
 
 ## Sortable fields by resource
 
-| Resource   | Sortable fields                                 |
-| ---------- | ----------------------------------------------- |
-| People     | `created_at`, `updated_at`, `full_name`         |
-| Companies  | `created_at`, `updated_at`, `full_name`         |
-| Deals      | `created_at`, `updated_at`, `name`, `price_cts` |
-| Tasks      | `created_at`, `updated_at`, `due_date`          |
-| Activities | `created_at`                                    |
-| Products   | `created_at`, `name`                            |
-```
+| Resource      | Sortable fields                                 |
+| ------------- | ----------------------------------------------- |
+| People        | `created_at`, `updated_at`, `full_name`         |
+| Companies     | `created_at`, `updated_at`, `full_name`         |
+| Deals         | `created_at`, `updated_at`, `name`, `price_cts` |
+| Tasks         | `created_at`, `updated_at`, `due_date`          |
+| Activities    | `created_at`                                    |
+| Products      | `created_at`, `name`                            |
+| Tags          | `created_at`                                    |
+| Lists         | `created_at`                                    |
+| Custom Fields | `created_at`                                    |
+
+Passing an unsupported `order_by` value returns `422` with a message listing the accepted fields for that resource.

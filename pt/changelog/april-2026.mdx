@@ -5,17 +5,35 @@ icon: 'calendar'
 noindex: true
 ---
 
+<Update label="v1.0.1" date="2026-04-15">
+  ## Correções pós-lançamento
+
+**Correção: filtro `person_id` ausente em listagem de atividades:** `GET /v1/activities` não aceitava `person_id` como parâmetro de filtro apesar de estar documentado. O parâmetro agora é aplicado corretamente e retorna apenas atividades vinculadas à pessoa especificada.
+
+**Correção: PATCH em negócios ignorando `stage_id` quando `pipeline_id` é omitido:** ao atualizar o stage de um negócio via `PATCH /v1/deals/:id`, omitir `pipeline_id` do body fazia o `stage_id` ser silenciosamente ignorado. O endpoint agora atualiza corretamente o stage quando apenas `stage_id` é fornecido, desde que o stage pertença ao pipeline atual do negócio.
+
+**Correção: campos adicionais do tipo `multi_select` retornando valores como string:** `GET /v1/people/:id` retornava valores de campos adicionais do tipo `multi_select` como string separada por vírgulas em vez de array. A resposta agora retorna corretamente um array de strings: `["valor1", "valor2"]`.
+
+**Correção: `POST /v1/activities` aceitando timestamps futuros:** atividades podiam ser criadas com timestamp `occurred_at` no futuro, o que é semanticamente incorreto para atividades registradas. O endpoint agora retorna `422` com `"occurred_at must not be in the future."` para timestamps além do momento atual.
+
+**Melhoria: header `X-RateLimit-Reset` agora retorna Unix timestamp:** anteriormente o header retornava os segundos restantes até o reset. Agora retorna o Unix timestamp do momento do reset, mais fácil de usar em lógica de countdown no cliente.
+
+</Update>
+
 <Update label="v1.0.0" date="2026-04-01">
   ## Lançamento da API pública v1
 
-A Vendaze API v1 está disponível para todos os desenvolvedores. Este é o lançamento inicial com suporte completo a OAuth 2.1 e os principais recursos do CRM.
+A Vendaze API v1 está disponível para todos os desenvolvedores. Este é o lançamento inicial com suporte completo a OAuth 2.1 e o conjunto completo de recursos do CRM.
 
 ### OAuth 2.1 Authorization Code flow
 
-- `GET /oauth/authorize`: inicia o fluxo de autorização
-- `POST /oauth/token`: troca de authorization code por tokens e renovação via refresh token
-- `POST /oauth/revoke`: revogação de access token ou refresh token
-- `POST /v1/auth/register-app`: registro de novo app integrador (público)
+O sistema de autorização é construído sobre OAuth 2.1 com `client_secret`. Todas as trocas de token acontecem server-side. O `client_secret` nunca é retornado em nenhuma resposta da API: ele é entregue uma única vez via link seguro por e-mail que expira em 15 minutos.
+
+- `GET /oauth/authorize`: inicia o fluxo de autorização, redirecionando o usuário para a tela de consentimento da Vendaze
+- `POST /oauth/token`: troca um authorization code por `access_token` e `refresh_token`, ou renova um `access_token` expirado usando um `refresh_token`
+- `POST /oauth/revoke`: invalida imediatamente um `access_token` e seu grant de autorização associado
+- `POST /v1/auth/register-app`: registra um novo app integrador e dispara o e-mail de entrega de credenciais (endpoint público, sem autenticação)
+- `POST /v1/auth/rotate-app`: rotaciona o `client_secret` de um app existente, invalidando o secret anterior imediatamente e enviando um novo link de credenciais para o e-mail cadastrado
 
 ### Recursos disponíveis na v1
 
@@ -29,27 +47,49 @@ A Vendaze API v1 está disponível para todos os desenvolvedores. Este é o lan�
 | Products      | `deals:write` para escrita                    | CRUD completo        |
 | Tags          | qualquer escopo de escrita                    | CRUD completo        |
 | Lists         | `people:read/write` ou `companies:read/write` | CRUD completo        |
-| Custom Fields | escopos correspondentes                       | CRUD completo        |
+| Custom Fields | escopos da entidade correspondente            | CRUD completo        |
+
+Atividades são vinculadas a uma entidade pai (pessoa, empresa ou negócio) e herdam o escopo dessa entidade. Não existe escopo standalone de `activities`.
 
 ### Paginação e filtros
 
-Todos os endpoints de listagem suportam paginação com `page`, `per_page` (máximo 100), `order_by` e `order`. Filtros de texto, data, tag e campos adicionais disponíveis em todos os recursos.
+Todos os endpoints de listagem suportam paginação baseada em páginas com `page` e `per_page` (máximo 100 por página). Ordenação disponível via `order_by` e `order` em todos os recursos.
+
+Filtros disponíveis em todos os recursos:
+
+- **Filtros de texto:** correspondência parcial sem distinção de maiúsculas em `full_name`, `name` e campos similares
+- **Filtros de intervalo de data:** `created_after`, `created_before`, `updated_after`, `updated_before` em todos os recursos; `forecast_after`, `forecast_before` em negócios
+- **Filtros por tag:** filtre por uma ou mais tags com semântica AND
+- **Filtros de correspondência exata:** `company_id`, `owner_user_id`, `completed`, `priority`, `type` e outros campos de enum
+- **Filtros por campo adicional:** `custom_field[UUID]=valor` com comparação baseada no tipo do campo
 
 ### Rate limiting
 
-- GET: 1.000 req/min por `client_id`
-- POST/PATCH: 200 req/min por `client_id`
-- DELETE: 100 req/min por `client_id`
-- Endpoints OAuth: 20 req/min por IP
+Limites de taxa aplicados por `client_id` para endpoints autenticados e por IP para endpoints OAuth.
 
-Headers `X-RateLimit-Limit`, `X-RateLimit-Remaining` e `X-RateLimit-Reset` incluídos em todas as respostas.
+| Tipo de endpoint | Limite            |
+| ---------------- | ----------------- |
+| GET              | 1.000 req/min     |
+| POST / PATCH     | 200 req/min       |
+| DELETE           | 100 req/min       |
+| Endpoints OAuth  | 20 req/min por IP |
+
+Toda resposta inclui os headers `X-RateLimit-Limit`, `X-RateLimit-Remaining` e `X-RateLimit-Reset`. Quando o limite é excedido, a API retorna `429` com header `Retry-After` indicando quando retentar.
+
+### Idempotência
+
+`POST /v1/deals` e `POST /v1/people` suportam o header `Idempotency-Key` no lançamento. Chaves são armazenadas por 24 horas. Enviar a mesma chave com o mesmo body retorna a resposta original sem reprocessar. Enviar a mesma chave com body diferente retorna `422` com código `idempotency_conflict`.
+
+### Webhooks
+
+Proprietários de workspace podem configurar endpoints de webhook no painel da Vendaze. Eventos são assinados com HMAC-SHA256 usando um secret por endpoint. A entrega usa semântica at-least-once com 5 tentativas em caso de falha. Eventos disponíveis no lançamento: `person.created`, `person.updated`, `company.created`, `company.updated`, `deal.created`, `deal.updated`, `activity.created`, `task.created`, `task.updated`, `product.created`.
 
 ### MCP Server
 
-O servidor MCP da Vendaze está disponível em `https://api.vendaze.com/mcp` para integração com ferramentas de IA como Claude, Cursor e GitHub Copilot. Veja a documentação de [IA e Automações](/pt/ai/overview) para detalhes.
+O servidor MCP da Vendaze está disponível em `https://api.vendaze.com/mcp` para integração com ferramentas de IA como Claude, Cursor e GitHub Copilot. O MCP server usa a mesma autorização OAuth 2.1 da API REST. Veja a documentação de [IA e Automações](/pt/ai/overview) para instruções de configuração.
 
 ### SDKs
 
-Nenhum SDK oficial está disponível neste momento. A API segue padrões REST e HTTP convencionais, funcionando com qualquer cliente HTTP.
+Nenhum SDK oficial está disponível neste momento. A API segue padrões REST e HTTP convencionais e funciona com qualquer cliente HTTP. SDKs da comunidade são bem-vindos.
 
 </Update>

@@ -1,14 +1,27 @@
 ---
 title: 'May 2026'
-description: 'Filter improvements, custom fields in ID lookups, and new webhook events.'
+description: 'Filter improvements, custom fields in ID lookups, new webhook events, and performance fixes.'
 icon: 'calendar'
 noindex: true
 ---
 
+<Update label="v1.2.1" date="2026-05-29">
+  ## Performance improvements and bug fixes
+
+**Listing performance:** reduced median response time on listing endpoints by ~18% for workspaces with more than 10,000 records. The improvement comes from query plan optimizations on the `created_at` + `deleted` composite index used by all resource listings.
+
+**Date filter edge case:** fixed an edge case where `created_before` and `updated_before` filters with a timestamp exactly on a second boundary (e.g., `2026-05-01T00:00:00Z`) could exclude records created at that exact millisecond. The filter is now inclusive of the boundary value, consistent with the documented behavior.
+
+**Validation error messages:** improved specificity of validation error messages for date fields. Previously, any invalid date value returned `"Invalid ISO 8601 date format."` regardless of the actual problem. Now the message distinguishes between malformed strings, out-of-range values, and missing timezone offset.
+
+**`order_by` validation:** passing an unsupported `order_by` value now returns a `422` with a clear message listing the accepted fields for that resource, instead of silently falling back to `created_at`.
+
+</Update>
+
 <Update label="v1.2.0" date="2026-05-26">
   ## Custom fields returned in ID lookups
 
-When fetching any record by ID (`GET /v1/people/:id`, `GET /v1/companies/:id`, `GET /v1/deals/:id`), the `custom_fields` object is now returned automatically with the values filled in for that record.
+When fetching any record by ID (`GET /v1/people/:id`, `GET /v1/companies/:id`, `GET /v1/deals/:id`), the `custom_fields` array is now returned automatically with the values filled in for that record. Previously, custom field values were only available via a separate endpoint.
 
 ```json
 {
@@ -31,44 +44,43 @@ When fetching any record by ID (`GET /v1/people/:id`, `GET /v1/companies/:id`, `
 }
 ```
 
-Custom fields with no value for the record appear with `value: null`.
+Custom fields with no value for the record appear with `"value": null`. Fields are returned in the order defined in the workspace settings.
 
-## New webhook events: products
+## New webhook event: product.created
 
-Two new events were added for products:
+A new webhook event was added for products:
 
 - `product.created`: fired when a new product is created in the workspace
-- `product.updated`: fired when a product is updated
 
-See the [Webhooks](/en/guides/webhooks) documentation for the full payload format.
+See the [Webhooks](/en/guides/webhooks) documentation for the full payload format and signature validation.
 
 ## Idempotency-Key header now accepted on all POST endpoints
 
-The `Idempotency-Key` header is now supported on all creation endpoints (`POST /v1/*`). Previously it was available only on `/v1/deals` and `/v1/people`.
+The `Idempotency-Key` header is now supported on all creation endpoints (`POST /v1/*`). Previously it was available only on `/v1/deals` and `/v1/people`. This change makes safe retries consistent across all resource types.
 
 </Update>
 
 <Update label="v1.1.1" date="2026-05-12">
   ## Fix: `tag` filter with special characters
 
-Fixed a bug where tags containing special characters (such as `&` and `+`) were not filtered correctly when passed via `tag=value`. Encoding is now handled correctly before comparison.
+Fixed a bug where tags containing special characters (such as `&` and `+`) were not filtered correctly when passed via `tag=value`. URL encoding is now handled correctly before comparison. Tags with these characters now return the expected results.
 
 ## Fix: order_by=full_name on companies
 
-The `order_by=full_name` parameter on `GET /v1/companies` was incorrectly returning a `422` error. Fixed: sorting by `full_name` now works for both people and companies.
+The `order_by=full_name` parameter on `GET /v1/companies` was incorrectly returning a `422` validation error. The field was missing from the allowed sort fields list for companies despite being a valid sortable column. Fixed: sorting by `full_name` now works correctly for both people and companies.
 
 </Update>
 
 <Update label="v1.1.0" date="2026-05-05">
   ## Price filters on deals
 
-The `price_min_cts`, `price_max_cts`, and `currency` parameters were added to `GET /v1/deals`:
+The `price_min_cts`, `price_max_cts`, and `currency` parameters were added to `GET /v1/deals`. All monetary values are in cents, consistent with the rest of the API.
 
 ```bash
 GET /v1/deals?price_min_cts=50000&price_max_cts=500000&currency=USD
 ```
 
-Values are always in cents. Filtering by `currency` uses exact matching with the ISO currency code.
+`currency` uses exact matching with the ISO 4217 currency code. Combining `price_min_cts` and `currency` is the recommended pattern for filtering deals in a specific currency above a threshold.
 
 ## Date range filters for deals: forecast_after and forecast_before
 
@@ -78,8 +90,10 @@ Deals can now be filtered by expected closing date:
 GET /v1/deals?forecast_after=2026-06-01T00:00:00Z&forecast_before=2026-06-30T23:59:59Z
 ```
 
+This is useful for pipeline reports scoped to a specific quarter or month. Combine with `price_min_cts` to filter high-value deals closing in a given period.
+
 ## Performance improvement on listings with custom_field[]
 
-Queries using `custom_field[UUID]=value` now use a composite index on `custom_fields_associate`, reducing response time by up to 60% for workspaces with a high volume of custom fields.
+Queries using `custom_field[UUID]=value` now use a composite index on the custom fields association table, reducing response time by up to 60% for workspaces with a high volume of custom field values. The improvement is most significant when filtering by `select` or `cpf`/`cnpj` field types, which use exact matching.
 
 </Update>

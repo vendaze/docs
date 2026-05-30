@@ -126,7 +126,12 @@
         "schema": { "type": "integer", "default": 50, "minimum": 1, "maximum": 100 },
         "description": "Max 100."
       },
-      "order_by": { "name": "order_by", "in": "query", "schema": { "type": "string", "default": "created_at" } },
+      "order_by": {
+        "name": "order_by",
+        "in": "query",
+        "schema": { "type": "string", "enum": ["created_at"], "default": "created_at" },
+        "description": "Field to sort by."
+      },
       "order": { "name": "order", "in": "query", "schema": { "type": "string", "enum": ["asc", "desc"], "default": "desc" } },
       "created_after": { "name": "created_after", "in": "query", "schema": { "type": "string", "format": "date-time" } },
       "created_before": { "name": "created_before", "in": "query", "schema": { "type": "string", "format": "date-time" } },
@@ -197,28 +202,28 @@
         "required": ["email"],
         "properties": {
           "email": { "type": "string", "format": "email", "example": "nome@empresa.com" },
-          "reminder": {
+          "type": {
             "type": "string",
             "enum": ["personal", "work", "other"],
-            "description": "Type of email. Accepted values: personal, work, other.",
+            "description": "Email type. Accepted values: personal, work, other.",
             "example": "work"
           }
         },
-        "example": { "email": "nome@empresa.com", "reminder": "work" }
+        "example": { "email": "nome@empresa.com", "type": "work" }
       },
       "ContactPhone": {
         "type": "object",
         "required": ["phone"],
         "properties": {
           "phone": { "type": "string", "example": "+5511999990001" },
-          "reminder": {
+          "type": {
             "type": "string",
             "enum": ["mobile", "work", "residential", "other"],
-            "description": "Type of phone. Accepted values: mobile, work, residential, other.",
+            "description": "Phone type. Accepted values: mobile, work, residential, other.",
             "example": "mobile"
           }
         },
-        "example": { "phone": "+5511999990001", "reminder": "mobile" }
+        "example": { "phone": "+5511999990001", "type": "mobile" }
       },
       "ContactList": {
         "type": "object",

@@ -1,43 +1,68 @@
 ---
 title: 'Boas-vindas'
-description: 'Introdução à API pública da Vendaze para desenvolvedores e integradores.'
+description: 'A Vendaze API dá ao seu aplicativo acesso direto aos dados do CRM em qualquer workspace conectado.'
 icon: 'hand-wave'
 keywords: ['Vendaze API', 'API CRM', 'documentação desenvolvedor', 'integração REST', 'API pública']
 ---
 
-<img src="/images/banner-home.png" alt="Vendaze API" />
+<img src="/images/banner-home.png" alt="Vendaze Developers" />
 
-## O que é a Vendaze API
+## O que você pode construir
 
-A Vendaze API é uma interface REST pública que permite que aplicativos externos leiam e escrevam dados na Vendaze, o CRM B2B para times de vendas.
+A Vendaze API é uma interface REST que permite que aplicativos externos leiam e escrevam dados em workspaces da Vendaze. Ela usa OAuth 2.1 para autorização: seus usuários conectam o próprio workspace ao seu app e você opera sobre os dados deles com consentimento explícito.
 
-Com ela, você pode criar integrações nativas, automações, painéis customizados e agentes de IA que operam diretamente sobre os dados do seu time comercial.
+Integrações típicas:
 
-## Para quem é esta documentação
+- **Sincronização nativa de CRM:** mantenha contatos, empresas e negócios sincronizados entre a Vendaze e seu produto
+- **Automação de vendas:** crie tarefas, registre atividades e mova negócios no pipeline com base em eventos do seu sistema
+- **Painéis customizados:** extraia dados do workspace para ferramentas internas, plataformas de BI ou data warehouses
+- **Agentes de IA:** conecte modelos de linguagem a dados reais do CRM via MCP server
+
+## Para quem é
 
 <CardGroup cols={2}>
   <Card title="Desenvolvedores SaaS" icon="code">
-    Você tem um produto e quer oferecer integração nativa com a Vendaze para seus clientes.
+    Construa uma integração nativa com a Vendaze e ofereça diretamente aos seus clientes dentro do
+    seu produto.
   </Card>
   <Card title="Times de engenharia" icon="building">
-    Você quer conectar ferramentas internas ao Vendaze, como ETL, data warehouse ou automações.
+    Conecte ferramentas internas, pipelines de ETL ou data warehouses aos dados do workspace da
+    Vendaze.
   </Card>
   <Card title="Agências e consultores" icon="briefcase">
-    Você constrói soluções personalizadas para clientes que usam a Vendaze.
+    Construa automações e integrações personalizadas para clientes que usam a Vendaze como CRM de
+    vendas.
   </Card>
-  <Card title="Entusiastas de IA" icon="robot">
-    Você quer conectar agentes de IA como Claude ou Cursor ao CRM via MCP.
+  <Card title="Builders de IA" icon="robot">
+    Conecte assistentes de IA como Claude ou ChatGPT a dados reais do CRM via MCP server da Vendaze.
   </Card>
 </CardGroup>
 
-## O que você precisa antes de começar
+## Como funciona
 
-1. Uma conta na Vendaze com pelo menos um workspace ativo
-2. Um servidor com suporte a HTTPS para receber o callback OAuth
-3. Familiaridade básica com APIs REST e o fluxo OAuth 2.1
+A API usa **OAuth 2.1 Authorization Code flow**. Seu app se registra uma vez para obter um `client_id` e `client_secret`. Quando um usuário quer conectar o workspace, ele passa por uma tela de consentimento OAuth padrão. Após a autorização, você recebe um `access_token` com escopo para aquele workspace específico.
 
-Não há processo de aprovação para se tornar um integrador. Qualquer desenvolvedor pode registrar um aplicativo e começar a construir imediatamente.
+Toda chamada à API carrega esse token. O contexto do workspace é resolvido automaticamente. Você nunca envia um identificador de workspace nas requisições.
 
-<Card title="Pronto para começar?" icon="rocket" href="/pt/guides/register-app" horizontal>
-  Registre seu aplicativo e obtenha suas credenciais agora.
-</Card>
+## O que você precisa para começar
+
+- Uma conta na Vendaze com pelo menos um workspace ativo ([crie gratuitamente](https://app.vendaze.com/register))
+- Um servidor com suporte a HTTPS para receber o callback OAuth
+- Familiaridade com APIs REST e OAuth 2.1
+
+Não há processo de aprovação. Qualquer desenvolvedor pode registrar um app e começar a construir imediatamente.
+
+<CardGroup cols={2}>
+  <Card title="Registre seu app" icon="plug" href="/pt/guides/register-app">
+    Obtenha seu `client_id` e `client_secret` em menos de um minuto.
+  </Card>
+  <Card title="Autenticação" icon="lock" href="/pt/guides/authentication">
+    Implemente o fluxo OAuth 2.1 e obtenha seu primeiro access token.
+  </Card>
+  <Card title="Primeira requisição" icon="terminal" href="/pt/guides/first-request">
+    Guia completo do registro até a primeira chamada real à API.
+  </Card>
+  <Card title="API Reference" icon="code" href="/pt/api-reference">
+    Referência completa dos endpoints com schemas de request e response.
+  </Card>
+</CardGroup>

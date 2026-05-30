@@ -25,7 +25,11 @@ The Vendaze API uses standard HTTP status codes and returns a consistent error f
 | `message`    | Human-readable description for developers. Do not show to end users. |
 | `request_id` | Unique request ID. Include when contacting support.                  |
 
-<Note>A 2xx response never contains `error`. A non-2xx response always contains `error`.</Note>
+<Note>
+  A 2xx response never contains `error`. A non-2xx response always contains `error`. The
+  `request_id` is also returned in the `X-Request-ID` response header on every request, including
+  successful ones.
+</Note>
 
 ## HTTP status codes
 
@@ -45,19 +49,67 @@ The Vendaze API uses standard HTTP status codes and returns a consistent error f
 
 ## Error code reference
 
-| Code                  | HTTP | When it occurs                                                                          |
-| --------------------- | ---- | --------------------------------------------------------------------------------------- |
-| `unauthorized`        | 401  | Bearer token missing or signature invalid.                                              |
-| `token_expired`       | 401  | Access token expired. Refresh using the refresh token.                                  |
-| `invalid_client`      | 401  | Invalid `client_id` or `client_secret` on OAuth endpoints.                              |
-| `invalid_grant`       | 400  | Authorization code invalid, expired, or already used. Refresh token invalid or expired. |
-| `insufficient_scope`  | 403  | Token lacks the required scope for this endpoint.                                       |
-| `forbidden`           | 403  | Authenticated but not allowed to access this resource.                                  |
-| `not_found`           | 404  | Resource does not exist, was deleted, or belongs to another workspace.                  |
-| `conflict`            | 409  | Request conflicts with existing data. See the `message` for details.                    |
-| `validation_error`    | 422  | Input failed validation. See `fields` for details.                                      |
-| `rate_limit_exceeded` | 429  | Too many requests. Wait the time indicated by `Retry-After`.                            |
-| `internal_error`      | 500  | Unexpected error. Use `request_id` when contacting support.                             |
+<Accordion title="unauthorized (401)">
+  Bearer token is missing from the request or the token signature is invalid. Check that you are
+  sending the `Authorization: Bearer <token>` header and that the token has not been tampered with.
+</Accordion>
+
+<Accordion title="token_expired (401)">
+  The access token has expired. Access tokens are valid for 1 hour. Use your `refresh_token` to
+  obtain a new one via `POST /oauth/token` with `grant_type=refresh_token`. If the refresh token has
+  also expired, the user must re-authorize.
+</Accordion>
+
+<Accordion title="invalid_client (401)">
+  The `client_id` or `client_secret` provided to an OAuth endpoint is incorrect. Verify your
+  credentials. If you suspect the `client_secret` has been compromised, rotate it via `POST
+  /v1/auth/rotate-app`.
+</Accordion>
+
+<Accordion title="invalid_grant (400)">
+  The authorization code is invalid, expired, or has already been used. Authorization codes expire
+  in 10 minutes and are single-use. Also returned when a `refresh_token` is invalid or expired. In
+  either case, the user must go through the full authorization flow again.
+</Accordion>
+
+<Accordion title="insufficient_scope (403)">
+  The token does not have the required scope for this endpoint. The user authorized your app with a
+  set of scopes that does not include what this operation requires. You need to request a new
+  authorization with the correct scopes.
+</Accordion>
+
+<Accordion title="forbidden (403)">
+  The token is valid and has the right scope, but the authenticated workspace is not allowed to
+  access this specific resource. This can happen when trying to access a record that belongs to a
+  different workspace.
+</Accordion>
+
+<Accordion title="not_found (404)">
+  The requested resource does not exist, has been soft-deleted, or belongs to a different workspace.
+  The API does not distinguish between these cases to avoid leaking information about other
+  workspaces.
+</Accordion>
+
+<Accordion title="conflict (409)">
+  The request conflicts with existing data. The `message` field provides details. Common causes:
+  duplicate unique values, or attempting to register an app with an email that is already in use.
+</Accordion>
+
+<Accordion title="validation_error (422)">
+  Input failed validation. The response includes a `fields` object mapping each invalid field to a
+  description of the problem. Fix the fields listed and retry.
+</Accordion>
+
+<Accordion title="rate_limit_exceeded (429)">
+  Too many requests. Check the `Retry-After` response header for the number of seconds to wait
+  before retrying. See [Rate Limits](/en/guides/rate-limits) for the full limits by method and
+  endpoint type.
+</Accordion>
+
+<Accordion title="internal_error (500)">
+  An unexpected error occurred on the server. These are rare. Retry with exponential backoff. If the
+  error persists, contact support with the `request_id`.
+</Accordion>
 
 ## Validation errors
 
@@ -77,7 +129,43 @@ When validation fails, the response includes a `fields` object mapping each fiel
 }
 ```
 
-## Error handling in code
+## The request_id field
+
+Every request, successful or not, gets a unique `request_id`. It appears in:
+
+- The `error.request_id` field on error responses
+- The `X-Request-ID` response header on all responses
+
+When contacting support about an issue, always include the `request_id`. It allows the support team to locate the exact request in the logs and diagnose what happened.
+
+## Handling errors in production
+
+### Recoverable vs non-recoverable errors
+
+Not all errors should be retried. Retrying a non-recoverable error wastes resources and delays surfacing the real problem.
+
+**Recoverable errors** are transient. Retry with backoff:
+
+| Status | Code                  | Strategy                                                               |
+| ------ | --------------------- | ---------------------------------------------------------------------- |
+| `429`  | `rate_limit_exceeded` | Wait the number of seconds in `Retry-After`, then retry.               |
+| `500`  | `internal_error`      | Retry with exponential backoff (1s, 2s, 4s). Give up after 3 attempts. |
+
+**Non-recoverable errors** indicate a problem with the request or credentials. Do not retry automatically:
+
+| Status | Code                 | What to do                                                                      |
+| ------ | -------------------- | ------------------------------------------------------------------------------- |
+| `400`  | any                  | Fix the request. The input is malformed.                                        |
+| `401`  | `token_expired`      | Refresh the access token, then retry the original request.                      |
+| `401`  | `unauthorized`       | Check that the token is present and correctly formatted.                        |
+| `401`  | `invalid_client`     | Check your `client_id` and `client_secret`. Do not retry automatically.         |
+| `400`  | `invalid_grant`      | The code or refresh token is invalid. Redirect the user through the OAuth flow. |
+| `403`  | `insufficient_scope` | Request a new authorization with the required scopes.                           |
+| `404`  | `not_found`          | The resource does not exist. Do not retry.                                      |
+| `409`  | `conflict`           | Resolve the conflict before retrying.                                           |
+| `422`  | `validation_error`   | Fix the fields listed in `fields`. Do not retry with the same payload.          |
+
+### Recommended error handling pattern
 
 ```javascript
 async function apiCall(url, options) {
@@ -88,16 +176,16 @@ async function apiCall(url, options) {
 
     switch (error.code) {
       case 'token_expired':
+        // Refresh the token and retry once
         await refreshAccessToken();
         return apiCall(url, options);
 
       case 'invalid_grant':
-        // Authorization code expired/used, or refresh token invalid.
-        // Redirect the user through the full OAuth flow again.
+        // Refresh token is invalid or expired. User must re-authorize.
         throw new Error('Authorization expired. User must re-authorize.');
 
       case 'invalid_client':
-        // client_id or client_secret is wrong. Check your credentials.
+        // Credentials are wrong. Do not retry.
         throw new Error('Invalid client credentials. Check client_id and client_secret.');
 
       case 'rate_limit_exceeded': {
@@ -108,6 +196,11 @@ async function apiCall(url, options) {
 
       case 'not_found':
         return null;
+
+      case 'internal_error':
+        // Log the request_id for support, then surface to the caller
+        console.error(`Server error. request_id: ${error.request_id}`);
+        throw new Error(`Server error (request_id: ${error.request_id})`);
 
       default:
         throw new Error(`${error.code}: ${error.message} (request_id: ${error.request_id})`);

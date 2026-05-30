@@ -1,19 +1,21 @@
 ---
-title: 'Primeira Solicitação'
+title: 'Primeira Requisição'
 description: 'Guia completo do registro até a sua primeira chamada real à API da Vendaze.'
 icon: 'terminal'
 keywords:
   ['quickstart API', 'primeira chamada API', 'access token', 'GET /v1/people', 'tutorial Vendaze']
 ---
 
-Este guia percorre o fluxo completo de ponta a ponta: registrar o aplicativo, autorizar um usuário e buscar os contatos do workspace.
+Este guia percorre o fluxo completo de ponta a ponta: registrar o aplicativo, autorizar um usuário e buscar os contatos do workspace. Ao final você terá um `access_token` funcionando e uma resposta real da API no terminal.
 
 ## Pré-requisitos
 
-- Conta na Vendaze com pelo menos um workspace ativo ([crie gratuitamente](https://app.vendaze.com/register) se ainda não tiver, 14 dias de teste incluídos)
+- Conta na Vendaze com pelo menos um workspace ativo ([crie gratuitamente](https://app.vendaze.com/register) se ainda não tiver)
 - `curl` disponível no terminal
 
 ## 1. Registrar o aplicativo
+
+Envie uma requisição de registro com o nome do app, e-mail de contato, redirect URIs e os escopos necessários. Este endpoint é público e não requer autenticação.
 
 ```bash
 curl -X POST https://api.vendaze.com/v1/auth/register-app \
@@ -26,23 +28,23 @@ curl -X POST https://api.vendaze.com/v1/auth/register-app \
   }'
 ```
 
-Verifique sua caixa de entrada. Você receberá seu `client_id` e `client_secret`.
+Verifique sua caixa de entrada. Você receberá um e-mail com um link seguro para visualizar seu `client_id` e `client_secret`. Abra o link em até 15 minutos. O link expira e não pode ser reaberto.
+
+Copie os dois valores para um lugar seguro antes de continuar.
 
 ## 2. Construir a URL de autorização
 
-Construa a URL de autorização e abra no browser:
+Construa a URL de autorização e abra no browser. Substitua `SEU_CLIENT_ID` pelo valor recebido.
 
 ```
-https://api.vendaze.com/oauth/authorize
-  ?client_id=SEU_CLIENT_ID
-  &redirect_uri=https://meuapp.com/oauth/callback
-  &response_type=code
-  &state=token-csrf-aleatorio-123
+https://api.vendaze.com/oauth/authorize?client_id=SEU_CLIENT_ID&redirect_uri=https://meuapp.com/oauth/callback&response_type=code&state=token-csrf-aleatorio-123
 ```
+
+O parâmetro `state` deve ser uma string aleatória gerada por você. Em produção, armazene-o na sessão e verifique no callback para prevenir ataques de CSRF.
 
 ## 3. Autorizar e obter o code
 
-Você será redirecionado para a Vendaze, onde vai:
+Após abrir a URL no browser, você vai:
 
 1. Fazer login com sua conta Vendaze
 2. Selecionar um workspace para conectar
@@ -55,38 +57,49 @@ Após autorizar, o browser redireciona para:
 https://meuapp.com/oauth/callback?code=AUTH_CODE_AQUI&state=token-csrf-aleatorio-123
 ```
 
-Copie o valor de `code` da URL.
+Copie o valor de `code` da URL. Ele expira em 10 minutos e só pode ser usado uma vez.
 
 ## 4. Trocar o code pelos tokens
 
+Envie o code pelo seu servidor. Esta requisição nunca deve ser feita pelo browser.
+
 ```bash
 curl -X POST https://api.vendaze.com/oauth/token \
-  -H "Content-Type: application/json" \
-  -d '{
-    "grant_type": "authorization_code",
-    "code": "AUTH_CODE_AQUI",
-    "client_id": "SEU_CLIENT_ID",
-    "client_secret": "SEU_CLIENT_SECRET"
-  }'
+  -H "Content-Type: application/x-www-form-urlencoded" \
+  -d "grant_type=authorization_code&code=AUTH_CODE_AQUI&client_id=SEU_CLIENT_ID&client_secret=SEU_CLIENT_SECRET"
 ```
 
 Resposta:
 
 ```json
 {
-  "access_token": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9...",
-  "refresh_token": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9...",
+  "access_token": "eyJhbGciOiJSUzI1NiIsInR5cCI6IkpXVCJ9...",
+  "refresh_token": "eyJhbGciOiJSUzI1NiIsInR5cCI6IkpXVCJ9...",
   "token_type": "Bearer",
   "expires_in": 3600,
   "workspace_slug": "acme-corp"
 }
 ```
 
+### O que acabou de acontecer
+
+| Campo            | O que significa                                                                                                                                                      |
+| ---------------- | -------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| `access_token`   | JWT assinado que autoriza requisições ao workspace. Inclua como `Authorization: Bearer <token>` em toda chamada à API. Expira em 1 hora.                             |
+| `refresh_token`  | Token de longa duração usado para obter um novo `access_token` sem interação do usuário. Válido por 60 dias a partir do último uso. Armazene criptografado no banco. |
+| `token_type`     | Sempre `Bearer`. Indica como enviar o token no header `Authorization`.                                                                                               |
+| `expires_in`     | Segundos até o `access_token` expirar. Sempre 3600. Use para agendar renovações proativas.                                                                           |
+| `workspace_slug` | Slug do workspace autorizado pelo usuário. Use para identificar a qual workspace este token pertence no seu modelo de dados.                                         |
+
+Armazene os dois tokens com segurança no servidor. Nunca os exponha em código client-side ou em URLs.
+
 ## 5. Buscar contatos
+
+Use o `access_token` para fazer sua primeira chamada real à API:
 
 ```bash
 curl https://api.vendaze.com/v1/people \
-  -H "Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9..."
+  -H "Authorization: Bearer eyJhbGciOiJSUzI1NiIsInR5cCI6IkpXVCJ9..."
 ```
 
 Resposta:
@@ -97,8 +110,8 @@ Resposta:
     {
       "id": "550e8400-e29b-41d4-a716-446655440000",
       "full_name": "Ana Costa",
-      "emails": [{ "email": "ana@company.com", "reminder": "work" }],
-      "phones": [{ "phone": "+5511999990001", "reminder": "mobile" }],
+      "emails": [{ "email": "ana@empresa.com", "type": "work" }],
+      "phones": [{ "phone": "+5511999990001", "type": "mobile" }],
       "company_id": "7c9e6679-7425-40de-944b-e07fc1f90ae7",
       "position": "Head of Sales",
       "ranking": 4.5,
@@ -115,19 +128,21 @@ Resposta:
 }
 ```
 
-## Próximos passos
+O objeto `meta` informa o total de registros e se há mais páginas. Veja [Paginação](/pt/guides/pagination) para detalhes sobre como navegar em grandes conjuntos de resultados.
+
+## O que explorar a seguir
 
 <CardGroup cols={2}>
   <Card title="Paginação" icon="bars-staggered" href="/pt/guides/pagination">
-    `page`, `per_page`, `order_by`, `order`
+    Navegue em grandes conjuntos de resultados com `page`, `per_page`, `order_by` e `order`.
   </Card>
   <Card title="Filtros" icon="filter" href="/pt/guides/filtering">
-    Filtros de texto, data, tag e campos personalizados.
+    Filtre por texto, intervalo de data, tags e campos adicionais.
   </Card>
   <Card title="Erros" icon="triangle-exclamation" href="/pt/guides/errors">
-    Códigos de erro e formato de resposta.
+    Entenda os códigos de erro e construa tratamento de erros robusto.
   </Card>
-  <Card title="API Reference" icon="code" href="/api-reference">
-    Referência completa dos endpoints.
+  <Card title="API Reference" icon="code" href="/pt/api-reference">
+    Referência completa dos endpoints com schemas de request e response.
   </Card>
 </CardGroup>

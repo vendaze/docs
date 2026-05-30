@@ -107,7 +107,7 @@
       "post": {
         "operationId": "issueToken",
         "summary": "Issue or refresh a token",
-        "description": "Exchange an authorization code for tokens, or refresh an access token using a refresh token.",
+        "description": "Exchange an authorization code for tokens, or refresh an access token using a refresh token. Accepts application/x-www-form-urlencoded (recommended) or application/json.",
         "security": [],
         "tags": ["OAuth"],
         "requestBody": {
@@ -243,28 +243,28 @@
         "required": ["email"],
         "properties": {
           "email": { "type": "string", "format": "email", "example": "nome@empresa.com" },
-          "reminder": {
+          "type": {
             "type": "string",
             "enum": ["personal", "work", "other"],
-            "description": "Type of email. Accepted values: personal, work, other.",
+            "description": "Email type. Accepted values: personal, work, other.",
             "example": "work"
           }
         },
-        "example": { "email": "nome@empresa.com", "reminder": "work" }
+        "example": { "email": "nome@empresa.com", "type": "work" }
       },
       "ContactPhone": {
         "type": "object",
         "required": ["phone"],
         "properties": {
           "phone": { "type": "string", "example": "+5511999990001" },
-          "reminder": {
+          "type": {
             "type": "string",
             "enum": ["mobile", "work", "residential", "other"],
-            "description": "Type of phone. Accepted values: mobile, work, residential, other.",
+            "description": "Phone type. Accepted values: mobile, work, residential, other.",
             "example": "mobile"
           }
         },
-        "example": { "phone": "+5511999990001", "reminder": "mobile" }
+        "example": { "phone": "+5511999990001", "type": "mobile" }
       },
       "Tag": {
         "type": "object",
@@ -446,6 +446,7 @@
       },
       "TokenResponse": {
         "type": "object",
+        "required": ["workspace_slug"],
         "properties": {
           "access_token": { "type": "string", "example": "eyJ..." },
           "refresh_token": { "type": "string", "example": "eyJ..." },
@@ -462,7 +463,10 @@
         "type": "object",
         "required": ["token", "client_id", "client_secret"],
         "properties": {
-          "token": { "type": "string", "description": "Access token to revoke. Must be the access_token (JWT), not the refresh_token." },
+          "token": {
+            "type": "string",
+            "description": "The access_token (JWT) to revoke. Must be the access_token, not the refresh_token."
+          },
           "client_id": { "type": "string", "format": "uuid" },
           "client_secret": { "type": "string" }
         }

@@ -20,15 +20,16 @@ A Vendaze API usa códigos de status HTTP padrão e retorna um formato de erro c
 }
 ```
 
-| Campo        | Descrição                                                             |
-| ------------ | --------------------------------------------------------------------- |
-| `code`       | Código de erro legível por máquina. Use em lógica de tratamento.      |
-| `message`    | Descrição em inglês para desenvolvedores. Não exiba ao usuário final. |
-| `request_id` | ID único da requisição. Inclua ao contatar o suporte.                 |
+| Campo        | Descrição                                                        |
+| ------------ | ---------------------------------------------------------------- |
+| `code`       | Código de erro legível por máquina. Use em lógica de tratamento. |
+| `message`    | Descrição para desenvolvedores. Não exiba ao usuário final.      |
+| `request_id` | ID único da requisição. Inclua ao contatar o suporte.            |
 
 <Note>
   Uma resposta com status 2xx nunca contém `error`. Uma resposta com status não-2xx sempre contém
-  `error`.
+  `error`. O `request_id` também é retornado no header `X-Request-ID` em toda resposta, incluindo as
+  bem-sucedidas.
 </Note>
 
 ## Códigos de status HTTP
@@ -49,19 +50,65 @@ A Vendaze API usa códigos de status HTTP padrão e retorna um formato de erro c
 
 ## Referência de códigos de erro
 
-| Código                | HTTP | Quando ocorre                                                                                 |
-| --------------------- | ---- | --------------------------------------------------------------------------------------------- |
-| `unauthorized`        | 401  | Token Bearer ausente ou assinatura inválida.                                                  |
-| `token_expired`       | 401  | Access token expirado. Renove usando o refresh token.                                         |
-| `invalid_client`      | 401  | `client_id` ou `client_secret` inválido nos endpoints OAuth.                                  |
-| `invalid_grant`       | 400  | Código de autorização inválido, expirado ou já utilizado. Refresh token inválido ou expirado. |
-| `insufficient_scope`  | 403  | Token sem o escopo necessário para este endpoint.                                             |
-| `forbidden`           | 403  | Autenticado, mas sem permissão para este recurso.                                             |
-| `not_found`           | 404  | Recurso inexistente, deletado, ou de outro workspace.                                         |
-| `conflict`            | 409  | Conflito com dados existentes. Veja `message` para detalhes.                                  |
-| `validation_error`    | 422  | Input falhou na validação. Veja `fields` para detalhes.                                       |
-| `rate_limit_exceeded` | 429  | Muitas requisições. Aguarde o tempo indicado em `Retry-After`.                                |
-| `internal_error`      | 500  | Erro inesperado. Use o `request_id` ao contatar suporte.                                      |
+<Accordion title="unauthorized (401)">
+  Token Bearer ausente ou assinatura inválida. Verifique se você está enviando o header
+  `Authorization: Bearer <token>` e que o token não foi adulterado.
+</Accordion>
+
+<Accordion title="token_expired (401)">
+  O access token expirou. Access tokens são válidos por 1 hora. Use o `refresh_token` para obter um
+  novo via `POST /oauth/token` com `grant_type=refresh_token`. Se o refresh token também expirou, o
+  usuário precisa re-autorizar.
+</Accordion>
+
+<Accordion title="invalid_client (401)">
+  O `client_id` ou `client_secret` fornecido a um endpoint OAuth está incorreto. Verifique suas
+  credenciais. Se suspeitar que o `client_secret` foi comprometido, rotacione via `POST
+  /v1/auth/rotate-app`.
+</Accordion>
+
+<Accordion title="invalid_grant (400)">
+  O código de autorização é inválido, expirou ou já foi utilizado. Códigos expiram em 10 minutos e
+  são de uso único. Também retornado quando um `refresh_token` é inválido ou expirado. Em ambos os
+  casos, o usuário precisa passar pelo fluxo completo de autorização novamente.
+</Accordion>
+
+<Accordion title="insufficient_scope (403)">
+  O token não tem o escopo necessário para este endpoint. O usuário autorizou seu app com um
+  conjunto de escopos que não inclui o que esta operação requer. Você precisa solicitar uma nova
+  autorização com os escopos corretos.
+</Accordion>
+
+<Accordion title="forbidden (403)">
+  O token é válido e tem o escopo correto, mas o workspace autenticado não tem permissão para
+  acessar este recurso específico.
+</Accordion>
+
+<Accordion title="not_found (404)">
+  O recurso solicitado não existe, foi soft-deletado ou pertence a um workspace diferente. A API não
+  distingue entre esses casos para evitar vazar informações sobre outros workspaces.
+</Accordion>
+
+<Accordion title="conflict (409)">
+  A requisição conflita com dados existentes. O campo `message` fornece detalhes. Causa comum:
+  tentar registrar um app com um e-mail que já está em uso.
+</Accordion>
+
+<Accordion title="validation_error (422)">
+  O input falhou na validação. A resposta inclui o objeto `fields` mapeando cada campo inválido a
+  uma descrição do problema. Corrija os campos listados e tente novamente.
+</Accordion>
+
+<Accordion title="rate_limit_exceeded (429)">
+  Muitas requisições. Verifique o header `Retry-After` para saber quantos segundos aguardar antes de
+  tentar novamente. Veja [Limites de taxa](/pt/guides/rate-limits) para os limites completos por
+  método e tipo de endpoint.
+</Accordion>
+
+<Accordion title="internal_error (500)">
+  Ocorreu um erro inesperado no servidor. São raros. Tente novamente com backoff exponencial. Se o
+  erro persistir, entre em contato com o suporte incluindo o `request_id`.
+</Accordion>
 
 ## Erros de validação
 
@@ -81,7 +128,43 @@ Quando a validação falha, a resposta inclui o objeto `fields` mapeando cada ca
 }
 ```
 
-## Tratamento em código
+## O campo request_id
+
+Toda requisição, bem-sucedida ou não, recebe um `request_id` único. Ele aparece em:
+
+- O campo `error.request_id` nas respostas de erro
+- O header `X-Request-ID` em todas as respostas
+
+Ao contatar o suporte sobre um problema, sempre inclua o `request_id`. Ele permite que o time localize a requisição exata nos logs e diagnostique o que aconteceu.
+
+## Tratamento de erros em produção
+
+### Erros recuperáveis vs não-recuperáveis
+
+Nem todos os erros devem ser retentados. Retentar um erro não-recuperável desperdiça recursos.
+
+**Erros recuperáveis** são transitórios. Retente com backoff:
+
+| Status | Código                | Estratégia                                                               |
+| ------ | --------------------- | ------------------------------------------------------------------------ |
+| `429`  | `rate_limit_exceeded` | Aguarde os segundos indicados em `Retry-After` e retente.                |
+| `500`  | `internal_error`      | Retente com backoff exponencial (1s, 2s, 4s). Desista após 3 tentativas. |
+
+**Erros não-recuperáveis** indicam problema na requisição ou nas credenciais. Não retente automaticamente:
+
+| Status | Código               | O que fazer                                                              |
+| ------ | -------------------- | ------------------------------------------------------------------------ |
+| `400`  | qualquer             | Corrija a requisição. O input está malformado.                           |
+| `401`  | `token_expired`      | Renove o access token e retente a requisição original.                   |
+| `401`  | `unauthorized`       | Verifique se o token está presente e formatado corretamente.             |
+| `401`  | `invalid_client`     | Verifique `client_id` e `client_secret`. Não retente automaticamente.    |
+| `400`  | `invalid_grant`      | Code ou refresh token inválido. Redirecione o usuário pelo fluxo OAuth.  |
+| `403`  | `insufficient_scope` | Solicite nova autorização com os escopos necessários.                    |
+| `404`  | `not_found`          | O recurso não existe. Não retente.                                       |
+| `409`  | `conflict`           | Resolva o conflito antes de retentar.                                    |
+| `422`  | `validation_error`   | Corrija os campos listados em `fields`. Não retente com o mesmo payload. |
+
+### Padrão recomendado de tratamento de erros
 
 ```javascript
 async function apiCall(url, options) {
@@ -96,13 +179,10 @@ async function apiCall(url, options) {
         return apiCall(url, options);
 
       case 'invalid_grant':
-        // Código de autorização expirado/usado, ou refresh token inválido.
-        // Redirecione o usuário pelo fluxo OAuth completo novamente.
-        throw new Error('Authorization expired. User must re-authorize.');
+        throw new Error('Autorização expirada. Usuário precisa re-autorizar.');
 
       case 'invalid_client':
-        // client_id ou client_secret incorreto. Verifique suas credenciais.
-        throw new Error('Invalid client credentials. Check client_id and client_secret.');
+        throw new Error('Credenciais inválidas. Verifique client_id e client_secret.');
 
       case 'rate_limit_exceeded': {
         const retryAfter = parseInt(res.headers.get('Retry-After') ?? '60');
@@ -112,6 +192,10 @@ async function apiCall(url, options) {
 
       case 'not_found':
         return null;
+
+      case 'internal_error':
+        console.error(`Erro no servidor. request_id: ${error.request_id}`);
+        throw new Error(`Erro no servidor (request_id: ${error.request_id})`);
 
       default:
         throw new Error(`${error.code}: ${error.message} (request_id: ${error.request_id})`);

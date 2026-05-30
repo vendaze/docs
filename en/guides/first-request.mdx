@@ -5,14 +5,16 @@ icon: 'terminal'
 keywords: ['API quickstart', 'first API call', 'access token', 'GET /v1/people', 'Vendaze tutorial']
 ---
 
-This guide covers the complete end-to-end flow: registering the app, authorizing a user, and retrieving workspace contacts.
+This guide covers the complete end-to-end flow: registering the app, authorizing a user, and retrieving workspace contacts. By the end you will have a working `access_token` and a real API response in your terminal.
 
 ## Prerequisites
 
-- A Vendaze account with at least one active workspace ([create one free](https://app.vendaze.com/register) if you don't have one, 14-day trial included)
+- A Vendaze account with at least one active workspace ([create one free](https://app.vendaze.com/register) if you don't have one)
 - `curl` available in your terminal
 
 ## 1. Register the app
+
+Send a registration request with your app name, contact email, redirect URIs, and the scopes you need. This endpoint is public and requires no authentication.
 
 ```bash
 curl -X POST https://api.vendaze.com/v1/auth/register-app \
@@ -25,23 +27,23 @@ curl -X POST https://api.vendaze.com/v1/auth/register-app \
   }'
 ```
 
-Check your inbox. You will receive your `client_id` and `client_secret`.
+Check your inbox. You will receive an email with a secure link to view your `client_id` and `client_secret`. Open the link within 15 minutes. The link expires and cannot be reopened.
+
+Copy both values to a safe place before continuing.
 
 ## 2. Build the authorization URL
 
-Build the authorization URL and open it in your browser:
+Build the authorization URL and open it in your browser. Replace `YOUR_CLIENT_ID` with the value you received.
 
 ```
-https://api.vendaze.com/oauth/authorize
-  ?client_id=YOUR_CLIENT_ID
-  &redirect_uri=https://yourapp.com/oauth/callback
-  &response_type=code
-  &state=random-csrf-token-123
+https://api.vendaze.com/oauth/authorize?client_id=YOUR_CLIENT_ID&redirect_uri=https://yourapp.com/oauth/callback&response_type=code&state=random-csrf-token-123
 ```
+
+The `state` parameter should be a random string you generate. In production, store it in the session and verify it on the callback to prevent CSRF attacks.
 
 ## 3. Authorize and get the code
 
-You will be redirected to Vendaze, where you:
+After opening the URL in your browser, you will:
 
 1. Log in with your Vendaze account
 2. Select a workspace to connect
@@ -54,38 +56,49 @@ After authorizing, the browser redirects to:
 https://yourapp.com/oauth/callback?code=AUTH_CODE_HERE&state=random-csrf-token-123
 ```
 
-Copy the `code` value from the URL.
+Copy the `code` value from the URL. It expires in 10 minutes and can only be used once.
 
 ## 4. Exchange the code for tokens
 
+Send the code from your server. This request must never be made from the browser.
+
 ```bash
 curl -X POST https://api.vendaze.com/oauth/token \
-  -H "Content-Type: application/json" \
-  -d '{
-    "grant_type": "authorization_code",
-    "code": "AUTH_CODE_HERE",
-    "client_id": "YOUR_CLIENT_ID",
-    "client_secret": "YOUR_CLIENT_SECRET"
-  }'
+  -H "Content-Type: application/x-www-form-urlencoded" \
+  -d "grant_type=authorization_code&code=AUTH_CODE_HERE&client_id=YOUR_CLIENT_ID&client_secret=YOUR_CLIENT_SECRET"
 ```
 
 Response:
 
 ```json
 {
-  "access_token": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9...",
-  "refresh_token": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9...",
+  "access_token": "eyJhbGciOiJSUzI1NiIsInR5cCI6IkpXVCJ9...",
+  "refresh_token": "eyJhbGciOiJSUzI1NiIsInR5cCI6IkpXVCJ9...",
   "token_type": "Bearer",
   "expires_in": 3600,
   "workspace_slug": "acme-corp"
 }
 ```
 
+### What just happened
+
+| Field            | What it means                                                                                                                                   |
+| ---------------- | ----------------------------------------------------------------------------------------------------------------------------------------------- |
+| `access_token`   | A signed JWT that authorizes requests to the workspace. Include it as `Authorization: Bearer <token>` in every API call. Expires in 1 hour.     |
+| `refresh_token`  | A long-lived token used to get a new `access_token` without user interaction. Valid for 60 days from last use. Store this encrypted in your DB. |
+| `token_type`     | Always `Bearer`. Tells you how to send the token in the `Authorization` header.                                                                 |
+| `expires_in`     | Seconds until the `access_token` expires. Always 3600. Use this to schedule proactive refreshes.                                                |
+| `workspace_slug` | The slug of the workspace the user authorized. Use this to identify which workspace this token belongs to in your own data model.               |
+
+Store both tokens securely on your server. Never expose them in client-side code or URLs.
+
 ## 5. Retrieve contacts
+
+Use the `access_token` to make your first real API call:
 
 ```bash
 curl https://api.vendaze.com/v1/people \
-  -H "Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9..."
+  -H "Authorization: Bearer eyJhbGciOiJSUzI1NiIsInR5cCI6IkpXVCJ9..."
 ```
 
 Response:
@@ -96,8 +109,8 @@ Response:
     {
       "id": "550e8400-e29b-41d4-a716-446655440000",
       "full_name": "Ana Costa",
-      "emails": [{ "email": "ana@company.com", "reminder": "work" }],
-      "phones": [{ "phone": "+5511999990001", "reminder": "mobile" }],
+      "emails": [{ "email": "ana@company.com", "type": "work" }],
+      "phones": [{ "phone": "+5511999990001", "type": "mobile" }],
       "company_id": "7c9e6679-7425-40de-944b-e07fc1f90ae7",
       "position": "Head of Sales",
       "ranking": 4.5,
@@ -114,19 +127,21 @@ Response:
 }
 ```
 
+The `meta` object tells you the total number of records and whether there are more pages. See [Pagination](/en/guides/pagination) for details on navigating large result sets.
+
 ## What to explore next
 
 <CardGroup cols={2}>
   <Card title="Pagination" icon="bars-staggered" href="/en/guides/pagination">
-    `page`, `per_page`, `order_by`, `order`
+    Navigate large result sets with `page`, `per_page`, `order_by`, and `order`.
   </Card>
   <Card title="Filtering" icon="filter" href="/en/guides/filtering">
-    Text, date, tag, and custom field filters.
+    Filter by text, date range, tags, and custom fields.
   </Card>
   <Card title="Errors" icon="triangle-exclamation" href="/en/guides/errors">
-    Error codes and response format.
+    Understand error codes and build resilient error handling.
   </Card>
-  <Card title="API Reference" icon="code" href="/api-reference">
-    Full endpoint reference.
+  <Card title="API Reference" icon="code" href="/en/api-reference">
+    Full endpoint reference with request and response schemas.
   </Card>
 </CardGroup>

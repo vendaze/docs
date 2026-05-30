@@ -1,129 +1,131 @@
 ---
 title: 'Segurança'
-description: 'Boas práticas de segurança para proteger sua integração e os dados dos seus usuários.'
+description: 'Como a Vendaze API foi projetada para ser segura e o que isso significa para sua integração.'
 icon: 'shield-halved'
 keywords:
   [
     'segurança API',
     'OAuth segurança',
+    'PKCE',
+    'validação assimétrica de token',
     'client_secret',
-    'armazenamento de token',
     'integração segura',
     'Vendaze segurança',
-    'integração server-side',
-    'integração back-end',
+    'authorization code flow',
   ]
 ---
 
-A Vendaze API foi projetada com segurança em mente. Este guia descreve as práticas recomendadas para integradores que querem manter uma integração segura e confiável.
+Esta página explica as decisões de segurança incorporadas na própria Vendaze API: por que foram tomadas, o que protegem e o que significam para sua integração. Práticas operacionais como armazenamento de tokens e rotação de credenciais estão em [Autenticação](/pt/guides/authentication) e [Registre seu aplicativo](/pt/guides/register-app).
 
-## Esta integração exige um back-end
+## Modelo de autorização
 
-A Vendaze API usa OAuth 2.1 com `client_secret`. Isso significa que sua integração **precisa ter um componente server-side**: um back-end que você controla, onde os segredos são armazenados e as trocas de token acontecem.
+A Vendaze API usa **OAuth 2.1 Authorization Code flow** com `client_secret`. Isso significa:
 
-Esta não é uma integração para:
+- Seu app é um **cliente confidencial**. Ele tem um `client_secret` que precisa ficar no seu servidor.
+- Todas as trocas de token acontecem server-side. O browser nunca toca em um token diretamente.
+- Usuários autorizam acesso a um workspace específico. Seu token tem escopo apenas para aquele workspace.
 
-- Single-page applications (SPAs) que rodam inteiramente no browser
-- Aplicativos mobile sem um back-end dedicado
-- Sites estáticos ou front-ends serverless
+Esta não é uma integração para SPAs, apps mobile sem back-end, ou qualquer ambiente onde o usuário final possa inspecionar o código em execução. Se seu app não tem componente server-side, você precisa construir um antes de integrar.
 
-Se seu aplicativo não tem back-end hoje, você precisa construir um antes de integrar com a Vendaze. O `client_secret` nunca pode ser enviado para nenhum ambiente que o usuário final possa inspecionar.
+## PKCE é gerenciado internamente
 
-<Warning>
-  Qualquer `client_secret` encontrado no DevTools do browser, em um binário de app mobile ou em um
-  repositório público deve ser tratado como comprometido. Rotacione imediatamente.
-</Warning>
+OAuth 2.1 recomenda PKCE (Proof Key for Code Exchange) para todos os fluxos de autorização. A Vendaze API implementa PKCE, mas o gerencia inteiramente no lado do servidor — sua integração não precisa gerar ou enviar um `code_verifier`.
 
-## Como você recebe o client_secret
+Veja o que acontece quando um usuário autoriza seu app:
 
-O `client_secret` nunca é retornado em nenhuma resposta da API. Ele é entregue exclusivamente por e-mail, via um link seguro que expira em 15 minutos.
+1. Seu servidor redireciona o browser para `/oauth/authorize` com `client_id`, `redirect_uri`, `response_type=code` e `state`
+2. A Vendaze API gera e gerencia os parâmetros PKCE internamente
+3. Após o usuário aprovar, o `authorization_code` é retornado para sua `redirect_uri`
+4. Quando você chama `/oauth/token`, a API completa a troca PKCE de forma transparente
 
-**No registro:** após chamar `POST /v1/auth/register-app`, você recebe um e-mail com um link. Abra-o em até 15 minutos para visualizar seu `client_secret`. Copie-o para seu gerenciador de segredos imediatamente. O link não pode ser reaberto após expirar ou após você visualizá-lo.
+**O que isso protege:** se um atacante interceptar o `authorization_code` em trânsito, ele não consegue trocá-lo por tokens. A verificação PKCE acontece server-side e nunca é exposta. Combinado com a validação do `client_secret`, duas provas de identidade independentes são necessárias para completar a troca.
 
-**Na rotação:** após chamar `POST /v1/auth/rotate-app`, um novo link é enviado para o e-mail cadastrado no aplicativo. A mesma janela de 15 minutos se aplica. O `client_secret` anterior é invalidado no momento em que você envia a requisição de rotação, não quando você abre o link.
+**Por que você não gerencia:** PKCE foi criado para clientes públicos (apps mobile, SPAs) que não conseguem armazenar um `client_secret` com segurança. Para clientes confidenciais como o seu, o `client_secret` já fornece proteção equivalente. Expor parâmetros PKCE aos integradores adicionaria complexidade sem adicionar segurança. A Vendaze API cuida disso internamente para que o fluxo de autorização permaneça limpo e compatível com qualquer biblioteca OAuth padrão.
 
-Se o link expirar antes de você abri-lo, envie uma nova requisição de rotação. Um novo link será enviado.
+## Validação de tokens é assimétrica
 
-<Warning>
-  Se você perder o `client_secret` e o link tiver expirado, você precisa rotacionar suas
-  credenciais. Use `POST /v1/auth/rotate-app` com seu `client_id` e e-mail cadastrado para receber
-  um novo link.
-</Warning>
+Access tokens são assinados usando criptografia assimétrica. A API verifica cada token contra uma chave pública. Não existe segredo compartilhado envolvido na validação de tokens.
 
-## Proteja o client_secret
+Isso significa:
 
-Trate o `client_secret` como uma senha de banco de dados:
+- Não existe chave simétrica que pudesse ser vazada e usada para forjar tokens
+- Apenas o servidor de autorização pode emitir tokens válidos
+- Rotação de chaves no servidor de autorização não requer nenhuma mudança na sua integração
 
-- Armazene em um gerenciador de segredos (AWS Secrets Manager, HashiCorp Vault, Cloudflare Secrets). Nunca em variáveis de ambiente que aparecem em logs ou artefatos de build.
-- Nunca inclua em repositórios de código, mesmo que privados
-- Nunca exponha em frontend, app mobile ou qualquer cliente que rode no dispositivo do usuário
-- Rotacione imediatamente se suspeitar de comprometimento
+Toda requisição para `/v1/*` valida presença, expiração, assinatura e claims de workspace do token antes de qualquer lógica de negócio ser executada. Um token revogado é invalidado imediatamente e não pode ser usado novamente, mesmo que ainda não tenha expirado.
 
-## Armazene tokens com segurança
+## O authorization_code é de uso único e curta duração
 
-Access tokens e refresh tokens concedem acesso aos dados do workspace do seu usuário:
+Códigos de autorização expiram em 10 minutos e só podem ser usados uma vez. Após uma troca bem-sucedida de tokens, o code é consumido e não pode ser reutilizado.
 
-- Armazene refresh tokens criptografados em banco de dados, nunca em cookies ou localStorage
-- Use `httpOnly` e `Secure` para cookies de sessão que referenciem tokens
-- Implemente expiração e rotação de refresh tokens. A Vendaze API invalida o refresh token anterior a cada renovação.
-- Revogue tokens imediatamente quando o usuário desconectar a integração via `POST /oauth/revoke`
+## O client_secret nunca é retornado em nenhuma resposta
 
-## Use HTTPS em todos os redirects
+O `client_secret` é gerado uma vez e entregue exclusivamente via link seguro enviado para o e-mail cadastrado. O link expira em 15 minutos e é invalidado na primeira visualização.
 
-O `redirect_uri` registrado no seu app deve sempre usar `https://`. A única exceção é `localhost` durante desenvolvimento. Em produção, qualquer redirect sem HTTPS é rejeitado com erro `invalid_redirect_uri`.
+Ele nunca é:
 
-## Valide o parâmetro state
+- Retornado em nenhum body de resposta da API
+- Logado pela API
+- Acessível após a janela de entrega inicial
 
-O parâmetro `state` no fluxo OAuth protege contra ataques de CSRF. Seu uso correto:
+Se o link expirar antes de você abri-lo, você precisa rotacionar as credenciais para receber um novo. Veja [Rotacionar credenciais do app](/pt/guides/rotate-app).
 
-```javascript
-// Antes de redirecionar o usuário para /oauth/authorize
-const state = randomUUID();
-sessionStorage.setItem('oauth_state', state);
+## Rotação de credenciais usa e-mail, não client_secret
 
-// Na callback, antes de processar o code
-const receivedState = new URL(window.location).searchParams.get('state');
-const expectedState = sessionStorage.getItem('oauth_state');
+Para rotacionar credenciais, você envia `client_id` e o e-mail cadastrado. O `client_secret` não é necessário.
 
-if (receivedState !== expectedState) {
-  throw new Error('State mismatch: possible CSRF attack');
-}
-```
+Esta é uma decisão de segurança intencional. Se o `client_secret` for comprometido, exigi-lo para rotação daria ao atacante que já tem o secret o poder de rotacionar e tomar controle do app. O e-mail cadastrado nunca é retornado por nenhum endpoint da API — apenas a Vendaze e o dono legítimo sabem qual é. Mesmo que um atacante tenha o `client_id` (que é público) e descubra o e-mail, o novo `client_secret` nunca aparece na resposta: ele é enviado como link de uso único para aquele e-mail. Para completar a rotação, o atacante precisaria de acesso à caixa de entrada do e-mail cadastrado — o que está fora do escopo do que a API pode proteger.
 
-## Solicite apenas os escopos necessários
+## workspace_id vem do token, nunca da requisição
 
-Registre e solicite apenas os escopos que sua integração realmente precisa. Escopos desnecessários ampliam a superfície de ataque e reduzem a confiança dos usuários na hora de autorizar.
+O contexto de workspace de toda chamada à API é extraído dos claims do `access_token`. Sua integração nunca envia um identificador de workspace em parâmetros, headers ou body da requisição.
 
-| Se você precisa de...         | Solicite...                                                                      |
-| ----------------------------- | -------------------------------------------------------------------------------- |
-| Apenas ler contatos           | `people:read`                                                                    |
-| Criar e atualizar negócios    | `deals:write`                                                                    |
-| Sincronização completa de CRM | `people:read people:write companies:read companies:write deals:read deals:write` |
+Isso significa:
 
-## Rotacione o client_secret regularmente
+- Um integrador não consegue acessar dados de um workspace para o qual não foi autorizado, mesmo que conheça o workspace ID
+- Não existe forma de escalar acesso manipulando parâmetros da requisição
+- O isolamento multi-tenant é aplicado no nível do token, não no nível da aplicação
 
-Use `POST /v1/auth/rotate-app` para rotacionar suas credenciais a qualquer momento. Após a rotação:
+## Rate limiting é em camadas
 
-1. Um novo link é enviado por e-mail para o endereço cadastrado no aplicativo. Abra-o em até 15 minutos para visualizar o novo `client_secret`.
-2. O `client_secret` anterior é invalidado imediatamente quando você envia a requisição de rotação.
-3. Tokens existentes permanecem válidos até expirarem naturalmente.
-4. Novas trocas de code e renovações de refresh token exigem o novo `client_secret`.
+Duas camadas independentes de rate limiting se aplicam:
 
-## Monitore o uso da API
+**Por IP (endpoints OAuth):** `/oauth/authorize`, `/oauth/token`, `/oauth/revoke` e `/v1/auth/*` são limitados por endereço IP.
 
-Use os headers `X-RateLimit-Remaining` e `X-Request-ID` para monitorar padrões de uso. Picos inesperados podem indicar que tokens foram comprometidos. Nesse caso, revogue todos os tokens via `POST /oauth/revoke` e notifique seus usuários.
+**Por client_id (endpoints de recursos):** todos os endpoints `/v1/*` são limitados pelo `client_id` extraído do token. Os limites variam por método HTTP: 1.000 req/min para GET, 200 req/min para POST/PATCH, 100 req/min para DELETE.
+
+Esse layering significa que um token comprometido tem um raio de impacto limitado. Um atacante não consegue usar um único token para esgotar a API para outros integradores.
+
+## O que isso significa para sua integração
+
+O modelo de segurança acima define um limite claro de responsabilidade:
+
+**A API cuida de:** PKCE, assinatura e verificação assimétrica de tokens, isolamento de workspace, revogação de tokens, rate limiting, segurança na entrega de credenciais.
+
+**Você cuida de:** armazenar o `client_secret` em um gerenciador de segredos, armazenar tokens criptografados server-side, validar o parâmetro `state` no callback OAuth, revogar tokens quando usuários desconectam, rotacionar credenciais se comprometidas.
+
+<CardGroup cols={2}>
+  <Card title="Autenticação" icon="lock" href="/pt/guides/authentication">
+    Armazenamento de tokens, fluxo de renovação e revogação.
+  </Card>
+  <Card title="Registre seu app" icon="plug" href="/pt/guides/register-app">
+    Entrega de credenciais e a janela de 15 minutos.
+  </Card>
+  <Card title="Rotacionar credenciais" icon="rotate" href="/pt/guides/rotate-app">
+    Quando e como rotacionar o client_secret.
+  </Card>
+  <Card title="Limites de taxa" icon="gauge-high" href="/pt/guides/rate-limits">
+    Limites por método e tipo de endpoint.
+  </Card>
+</CardGroup>
 
 ## Resposta a incidentes
 
 Se suspeitar de comprometimento do `client_secret` ou de tokens:
 
-1. Revogue todos os tokens ativos via `POST /oauth/revoke`
-2. Entre em contato com o suporte em `security@vendaze.com`
-3. Notifique os usuários afetados
-4. Rotacione suas credenciais via `POST /v1/auth/rotate-app`
-5. Solicite nova autorização aos usuários
-
-<Warning>
-  Nunca implemente a troca do authorization code no frontend. O `client_secret` nunca deve ser
-  exposto em código que rode no cliente.
-</Warning>
+- [ ] Revogue todos os tokens ativos via `POST /oauth/revoke` para cada workspace afetado
+- [ ] Rotacione as credenciais imediatamente via `POST /v1/auth/rotate-app`
+- [ ] Atualize seu gerenciador de segredos com o novo `client_secret`
+- [ ] Entre em contato com `security@vendaze.com` com o `request_id` de requisições suspeitas
+- [ ] Notifique os usuários afetados que precisam re-autorizar
+- [ ] Revise seus logs para identificar acesso não autorizado durante a janela de exposição

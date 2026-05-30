@@ -217,7 +217,7 @@
       "post": {
         "operationId": "issueToken",
         "summary": "Issue or refresh a token",
-        "description": "Exchange an authorization code for tokens, or refresh an access token using a refresh token.",
+        "description": "Exchange an authorization code for tokens, or refresh an access token using a refresh token. Accepts application/x-www-form-urlencoded (recommended) or application/json.",
         "security": [],
         "tags": [
           "OAuth"
@@ -2470,8 +2470,12 @@
         "in": "query",
         "schema": {
           "type": "string",
+          "enum": [
+            "created_at"
+          ],
           "default": "created_at"
-        }
+        },
+        "description": "Field to sort by."
       },
       "order": {
         "name": "order",
@@ -2653,20 +2657,20 @@
             "format": "email",
             "example": "nome@empresa.com"
           },
-          "reminder": {
+          "type": {
             "type": "string",
             "enum": [
               "personal",
               "work",
               "other"
             ],
-            "description": "Type of email. Accepted values: personal, work, other.",
+            "description": "Email type. Accepted values: personal, work, other.",
             "example": "work"
           }
         },
         "example": {
           "email": "nome@empresa.com",
-          "reminder": "work"
+          "type": "work"
         }
       },
       "ContactPhone": {
@@ -2679,7 +2683,7 @@
             "type": "string",
             "example": "+5511999990001"
           },
-          "reminder": {
+          "type": {
             "type": "string",
             "enum": [
               "mobile",
@@ -2687,13 +2691,13 @@
               "residential",
               "other"
             ],
-            "description": "Type of phone. Accepted values: mobile, work, residential, other.",
+            "description": "Phone type. Accepted values: mobile, work, residential, other.",
             "example": "mobile"
           }
         },
         "example": {
           "phone": "+5511999990001",
-          "reminder": "mobile"
+          "type": "mobile"
         }
       },
       "Tag": {
@@ -2990,6 +2994,9 @@
       },
       "TokenResponse": {
         "type": "object",
+        "required": [
+          "workspace_slug"
+        ],
         "properties": {
           "access_token": {
             "type": "string",
@@ -3024,7 +3031,7 @@
         "properties": {
           "token": {
             "type": "string",
-            "description": "Access token to revoke. Must be the access_token (JWT), not the refresh_token."
+            "description": "The access_token (JWT) to revoke. Must be the access_token, not the refresh_token."
           },
           "client_id": {
             "type": "string",
@@ -3055,7 +3062,7 @@
             "example": [
               {
                 "email": "maria@company.com",
-                "reminder": "work"
+                "type": "work"
               }
             ]
           },
@@ -3067,7 +3074,7 @@
             "example": [
               {
                 "phone": "+5511999990001",
-                "reminder": "mobile"
+                "type": "mobile"
               }
             ]
           },
@@ -3277,7 +3284,7 @@
             "example": [
               {
                 "email": "contact@acme.com",
-                "reminder": "work"
+                "type": "work"
               }
             ]
           },
@@ -3289,7 +3296,7 @@
             "example": [
               {
                 "phone": "+551130000000",
-                "reminder": "work"
+                "type": "work"
               }
             ]
           },

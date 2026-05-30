@@ -19,14 +19,28 @@ Antes de continuar, você precisa de um `client_id` e `client_secret`. Veja [Reg
 
 ## Como funciona
 
-```
-1. Redirecionar usuário   GET /oauth/authorize
-2. Usuário loga           seleciona workspace, aprova escopos
-3. Receber auth code      sua redirect_uri?code=...&state=...
-4. Trocar pelos tokens    POST /oauth/token
-5. Fazer requisições      Authorization: Bearer {access_token}
-6. Renovar ao expirar     POST /oauth/token (grant_type=refresh_token)
-```
+<Steps>
+  <Step title="Redirecionar o usuário para o endpoint de autorização">
+    Seu servidor constrói a URL de autorização e redireciona o browser do usuário para ela.
+  </Step>
+  <Step title="Usuário faz login e aprova">
+    O usuário seleciona um workspace e aprova os escopos solicitados na tela de consentimento da
+    Vendaze.
+  </Step>
+  <Step title="Receber o código de autorização">
+    A Vendaze redireciona o browser de volta para sua `redirect_uri` com um `code` de curta duração.
+  </Step>
+  <Step title="Trocar o code pelos tokens">
+    Seu servidor troca o code por um `access_token` e `refresh_token` via requisição back-end.
+  </Step>
+  <Step title="Fazer requisições à API">
+    Inclua o `access_token` como Bearer token em toda requisição.
+  </Step>
+  <Step title="Renovar ao expirar">
+    Access tokens expiram em 1 hora. Use o `refresh_token` para obter um novo sem interação do
+    usuário.
+  </Step>
+</Steps>
 
 ## Passo 1 - Redirecionar o usuário
 
@@ -40,7 +54,7 @@ GET https://api.vendaze.com/oauth/authorize
   &state=TOKEN_CSRF_ALEATORIO
 ```
 
-Exemplo: redirecionar em uma aplicação web:
+Exemplo de redirecionamento em uma aplicação web:
 
 ```js
 const params = new URLSearchParams({
@@ -53,7 +67,7 @@ const params = new URLSearchParams({
 // Armazene o state para verificação CSRF no callback
 sessionStorage.setItem('oauth_state', params.get('state'));
 
-// Navegue o browser. Nunca use fetch/axios aqui
+// Navegue o browser. Nunca use fetch/axios aqui.
 window.location.href = `https://api.vendaze.com/oauth/authorize?${params}`;
 ```
 
@@ -65,12 +79,13 @@ window.location.href = `https://api.vendaze.com/oauth/authorize?${params}`;
 | `state`         | Não         | String aleatória que você gera. Retornada sem alteração. Fortemente recomendada para proteção contra CSRF. |
 
 <Warning>
-  Verifique que o `state` no callback é igual ao que você enviou. Rejeite se não bater.
+  Sempre inclua o `state` e verifique-o no callback. Rejeite qualquer callback onde o `state`
+  recebido não bate com o que você enviou. Isso protege contra ataques de CSRF.
 </Warning>
 
 ## Passo 2 - Usuário autoriza
 
-O usuário seleciona o workspace e aprova os escopos na tela de consent da Vendaze.
+O usuário seleciona o workspace e aprova os escopos na tela de consentimento da Vendaze. Nenhuma ação necessária do seu lado durante este passo.
 
 ## Passo 3 - Receber o callback
 
@@ -80,11 +95,13 @@ Após aprovar, o usuário é redirecionado para sua `redirect_uri`:
 https://meuapp.com/oauth/callback?code=AUTH_CODE&state=SEU_STATE
 ```
 
-Verifique que o `state` bate e troque o code pelos tokens. Se o usuário recusar a autorização:
+Verifique que o `state` bate com o que você armazenou e troque o code pelos tokens. Se o usuário recusar a autorização:
 
 ```
 https://meuapp.com/oauth/callback?error=access_denied&state=SEU_STATE
 ```
+
+Trate o parâmetro `error` e exiba uma mensagem adequada ao usuário.
 
 ## Passo 4 - Trocar o code pelos tokens
 
@@ -93,23 +110,20 @@ https://meuapp.com/oauth/callback?error=access_denied&state=SEU_STATE
   após receber o callback.
 </Warning>
 
+Esta requisição deve ser feita pelo seu servidor, nunca pelo browser.
+
 ```bash
 curl -X POST https://api.vendaze.com/oauth/token \
-  -H "Content-Type: application/json" \
-  -d '{
-    "grant_type": "authorization_code",
-    "code": "AUTH_CODE_DO_CALLBACK",
-    "client_id": "SEU_CLIENT_ID",
-    "client_secret": "SEU_CLIENT_SECRET"
-  }'
+  -H "Content-Type: application/x-www-form-urlencoded" \
+  -d "grant_type=authorization_code&code=AUTH_CODE_DO_CALLBACK&client_id=SEU_CLIENT_ID&client_secret=SEU_CLIENT_SECRET"
 ```
 
 **Resposta (200):**
 
 ```json
 {
-  "access_token": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9...",
-  "refresh_token": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9...",
+  "access_token": "eyJhbGciOiJSUzI1NiIsInR5cCI6IkpXVCJ9...",
+  "refresh_token": "eyJhbGciOiJSUzI1NiIsInR5cCI6IkpXVCJ9...",
   "token_type": "Bearer",
   "expires_in": 3600,
   "workspace_slug": "acme-corp"
@@ -118,39 +132,43 @@ curl -X POST https://api.vendaze.com/oauth/token \
 
 | Campo            | Descrição                                                                                             |
 | ---------------- | ----------------------------------------------------------------------------------------------------- |
-| `access_token`   | Use em toda requisição. Expira em 1 hora.                                                             |
+| `access_token`   | Use em toda requisição à API. Expira em 1 hora.                                                       |
 | `refresh_token`  | Usado para renovar o access token. Válido por 60 dias se utilizado regularmente.                      |
 | `token_type`     | Sempre `Bearer`.                                                                                      |
-| `expires_in`     | Segundos até o access token expirar.                                                                  |
+| `expires_in`     | Segundos até o access token expirar. Sempre 3600.                                                     |
 | `workspace_slug` | Slug do workspace autorizado pelo usuário. Use para identificar qual conta está conectada no seu app. |
 
-Armazene os dois tokens com segurança no servidor. Nunca os exponha em código client-side ou em URLs.
+## Armazenamento de tokens
 
-## Passo 5 - Fazer requisições
+Armazene os dois tokens com segurança no servidor. As seguintes práticas se aplicam:
+
+- **`access_token`:** curta duração (1 hora). Armazene em memória ou cache rápido. Nunca em localStorage ou cookies acessíveis ao JavaScript.
+- **`refresh_token`:** longa duração (60 dias). Armazene criptografado no banco de dados, associado ao usuário e workspace. É a credencial que permite manter o acesso sem interação do usuário.
+- Nunca logue nenhum dos tokens. Nunca os inclua em URLs ou query strings.
+- Nunca os exponha em respostas da API para o seu próprio front-end. O front-end deve chamar seu back-end, que chama a Vendaze.
+
+## Passo 5 - Fazer requisições à API
 
 Inclua o `access_token` em toda requisição como Bearer token:
 
 ```bash
 curl https://api.vendaze.com/v1/people \
-  -H "Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9..."
+  -H "Authorization: Bearer eyJhbGciOiJSUzI1NiIsInR5cCI6IkpXVCJ9..."
 ```
+
+O contexto do workspace é resolvido automaticamente a partir do token. Você nunca envia um identificador de workspace nas requisições.
 
 ## Passo 6 - Renovar o access token
 
-Access tokens expiram em 1 hora. Renove usando o refresh token:
+Access tokens expiram em 1 hora. Renove usando o refresh token antes da expiração, ou reativamente quando receber o erro `token_expired`.
 
 ```bash
 curl -X POST https://api.vendaze.com/oauth/token \
-  -H "Content-Type: application/json" \
-  -d '{
-    "grant_type": "refresh_token",
-    "refresh_token": "SEU_REFRESH_TOKEN",
-    "client_id": "SEU_CLIENT_ID",
-    "client_secret": "SEU_CLIENT_SECRET"
-  }'
+  -H "Content-Type: application/x-www-form-urlencoded" \
+  -d "grant_type=refresh_token&refresh_token=SEU_REFRESH_TOKEN&client_id=SEU_CLIENT_ID&client_secret=SEU_CLIENT_SECRET"
 ```
 
-A resposta é idêntica ao Passo 4. Substitua os dois tokens no seu lado. Um novo refresh token é emitido a cada renovação.
+A resposta é idêntica ao Passo 4. Substitua os dois tokens no seu lado. Um novo `refresh_token` é emitido a cada renovação e o anterior é imediatamente invalidado.
 
 <Note>
   Refresh tokens expiram se ficarem sem uso por 60 dias. A cada renovação, a janela de 60 dias é
@@ -159,7 +177,7 @@ A resposta é idêntica ao Passo 4. Substitua os dois tokens no seu lado. Um nov
 
 ## Revogar acesso
 
-Para desconectar um workspace do seu aplicativo:
+Para desconectar um workspace do seu aplicativo, revogue o access token:
 
 ```bash
 curl -X POST https://api.vendaze.com/oauth/revoke \
@@ -175,6 +193,8 @@ curl -X POST https://api.vendaze.com/oauth/revoke \
   Sempre envie o `access_token`, não o `refresh_token`. O endpoint de revogação precisa de um JWT
   para identificar o usuário e remover o grant de autorização.
 </Warning>
+
+Após revogar, delete os dois tokens do seu armazenamento. O usuário precisará re-autorizar se quiser reconectar.
 
 ---
 

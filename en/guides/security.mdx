@@ -1,128 +1,131 @@
 ---
 title: 'Security'
-description: "Security best practices to protect your integration and your users' data."
+description: 'How the Vendaze API is designed to be secure, and what that means for your integration.'
 icon: 'shield-halved'
 keywords:
   [
     'API security',
     'OAuth security',
+    'PKCE',
+    'asymmetric token validation',
     'client_secret',
-    'token storage',
     'secure integration',
     'Vendaze security',
-    'server-side integration',
-    'backend integration',
+    'authorization code flow',
   ]
 ---
 
-The Vendaze API was designed with security in mind. This guide describes the recommended practices for integrators who want to maintain a secure and reliable integration.
+This page explains the security decisions built into the Vendaze API itself: why they were made, what they protect against, and what they mean for your integration. Operational practices like token storage and secret rotation are covered in [Authentication](/en/guides/authentication) and [Register your app](/en/guides/register-app).
 
-## This integration requires a back-end
+## Authorization model
 
-The Vendaze API uses OAuth 2.1 with `client_secret`. This means your integration **must have a server-side component**: a back-end that you control, where secrets are stored and token exchanges happen.
+The Vendaze API uses **OAuth 2.1 Authorization Code flow** with `client_secret`. This means:
 
-This is not an integration for:
+- Your app is a **confidential client**. It has a `client_secret` that must stay on your server.
+- All token exchanges happen server-side. The browser never touches a token directly.
+- Users authorize access to a specific workspace. Your token is scoped to that workspace only.
 
-- Single-page applications (SPAs) that run entirely in the browser
-- Mobile apps without a dedicated back-end
-- Static sites or serverless front-ends
+This is not an integration for SPAs, mobile apps without a back-end, or any environment where the end user can inspect the running code. If your app has no server-side component, you need to build one before integrating.
 
-If your app has no back-end today, you need to build one before integrating with Vendaze. The `client_secret` must never be shipped to any environment the end user can inspect.
+## PKCE is handled internally
 
-<Warning>
-  Any `client_secret` found in browser DevTools, a mobile app binary, or a public repository must be
-  treated as compromised. Rotate it immediately.
-</Warning>
+OAuth 2.1 recommends PKCE (Proof Key for Code Exchange) for all authorization flows. The Vendaze API implements PKCE, but manages it entirely on the server side — your integration does not need to generate or send a `code_verifier`.
 
-## How you receive the client_secret
+Here is what happens when a user authorizes your app:
 
-The `client_secret` is never returned in any API response. It is delivered exclusively by email, via a secure link that expires in 15 minutes.
+1. Your server redirects the browser to `/oauth/authorize` with `client_id`, `redirect_uri`, `response_type=code`, and `state`
+2. The Vendaze API generates and manages the PKCE parameters internally
+3. After the user approves, the `authorization_code` is returned to your `redirect_uri`
+4. When you call `/oauth/token`, the API completes the PKCE exchange transparently
 
-**At registration:** after calling `POST /v1/auth/register-app`, you receive an email with a link. Open it within 15 minutes to view your `client_secret`. Copy it to your secrets manager immediately. The link cannot be reopened after it expires or after you view it.
+**What this protects against:** if an attacker intercepts the `authorization_code` in transit, they cannot exchange it for tokens. The PKCE verification happens server-side and is never exposed. Combined with `client_secret` validation, two independent proofs of identity are required to complete the exchange.
 
-**At rotation:** after calling `POST /v1/auth/rotate-app`, a new link is sent to the email address registered with the app. The same 15-minute window applies. The previous `client_secret` is invalidated the moment you submit the rotation request, not when you open the link.
+**Why you do not manage it:** PKCE was designed for public clients (mobile apps, SPAs) that cannot store a `client_secret`. For confidential clients like yours, the `client_secret` already provides equivalent protection. Exposing PKCE parameters to integrators would add complexity without adding security. The Vendaze API handles it internally so the authorization flow stays clean and compatible with any standard OAuth library.
 
-If the link expires before you open it, submit a new rotation request. A fresh link will be sent.
+## Token validation is asymmetric
 
-<Warning>
-  If you lose your `client_secret` and the link has expired, you must rotate your credentials. Use
-  `POST /v1/auth/rotate-app` with your `client_id` and registered email to receive a new link.
-</Warning>
+Access tokens are signed using asymmetric cryptography. The API verifies every token against a public key. There is no shared secret involved in token validation.
 
-## Protect the client_secret
+This means:
 
-Treat the `client_secret` like a database password:
+- There is no symmetric key that could be leaked and used to forge tokens
+- Only the authorization server can issue valid tokens
+- Key rotation on the authorization server side does not require any changes to your integration
 
-- Store it in a secrets manager (AWS Secrets Manager, HashiCorp Vault, Cloudflare Secrets). Never store it in environment variables that end up in logs or build artifacts.
-- Never include it in code repositories, even private ones
-- Never expose it in a frontend, mobile app, or any client running on the user's device
-- Rotate it immediately if you suspect it has been compromised
+Every request to `/v1/*` validates the token's presence, expiry, signature, and workspace claims before any business logic runs. A revoked token is invalidated immediately and cannot be used again, even if it has not expired yet.
 
-## Store tokens securely
+## The authorization_code is single-use and short-lived
 
-Access tokens and refresh tokens grant access to your user's workspace data:
+Authorization codes expire in 10 minutes and can only be used once. After a successful token exchange, the code is consumed and cannot be reused.
 
-- Store refresh tokens encrypted in a database, never in cookies or localStorage
-- Use `httpOnly` and `Secure` flags for session cookies that reference tokens
-- Implement refresh token expiration and rotation. The Vendaze API invalidates the previous refresh token on each renewal.
-- Revoke tokens immediately when the user disconnects the integration via `POST /oauth/revoke`
+## The client_secret is never returned in any response
 
-## Use HTTPS on all redirects
+The `client_secret` is generated once and delivered exclusively via a secure link sent to the registered email address. The link expires in 15 minutes and is invalidated on first view.
 
-The `redirect_uri` registered for your app must always use `https://`. The only exception is `localhost` during development. In production, any redirect without HTTPS is rejected with an `invalid_redirect_uri` error.
+It is never:
 
-## Validate the state parameter
+- Returned in any API response body
+- Logged by the API
+- Accessible after the initial delivery window
 
-The `state` parameter in the OAuth flow protects against CSRF attacks. Correct usage:
+If the link expires before you open it, you must rotate credentials to receive a new one. See [Rotate app credentials](/en/guides/rotate-app).
 
-```javascript
-// Before redirecting the user to /oauth/authorize
-const state = randomUUID();
-sessionStorage.setItem('oauth_state', state);
+## Credential rotation uses email, not client_secret
 
-// In the callback, before processing the code
-const receivedState = new URL(window.location).searchParams.get('state');
-const expectedState = sessionStorage.getItem('oauth_state');
+To rotate credentials, you send `client_id` and the registered email address. The `client_secret` is not required.
 
-if (receivedState !== expectedState) {
-  throw new Error('State mismatch: possible CSRF attack');
-}
-```
+This is an intentional security decision. If the `client_secret` is compromised, requiring it for rotation would give the attacker who already has the secret the ability to rotate and take over the app. The registered email address is never returned by any API endpoint — only Vendaze and the legitimate owner know what it is. Even if an attacker has the `client_id` (which is public) and discovers the email, the new `client_secret` is never returned in the response: it is sent as a one-time link to that email address. Completing the rotation requires access to the registered inbox, which is outside the scope of what the API can protect.
 
-## Request only the scopes you need
+## workspace_id comes from the token, never from the request
 
-Register and request only the scopes your integration actually needs. Unnecessary scopes expand the attack surface and reduce user trust when authorizing.
+The workspace context for every API call is extracted from the `access_token` claims. Your integration never sends a workspace identifier in request parameters, headers, or body.
 
-| If you need to...       | Request...                                                                       |
-| ----------------------- | -------------------------------------------------------------------------------- |
-| Read contacts only      | `people:read`                                                                    |
-| Create and update deals | `deals:write`                                                                    |
-| Full CRM sync           | `people:read people:write companies:read companies:write deals:read deals:write` |
+This means:
 
-## Rotate the client_secret regularly
+- An integrator cannot access data from a workspace they were not authorized for, even if they know the workspace ID
+- There is no way to escalate access by manipulating request parameters
+- Multi-tenant isolation is enforced at the token level, not at the application level
 
-Use `POST /v1/auth/rotate-app` to rotate your credentials at any time. After rotation:
+## Rate limiting is layered
 
-1. A new link is sent by email to the address registered with the app. Open it within 15 minutes to view the new `client_secret`.
-2. The previous `client_secret` is invalidated immediately when you submit the rotation request.
-3. Existing tokens remain valid until they expire naturally.
-4. New code exchanges and refresh token renewals require the new `client_secret`.
+Two independent rate limiting layers apply:
 
-## Monitor API usage
+**Per IP (OAuth endpoints):** `/oauth/authorize`, `/oauth/token`, `/oauth/revoke`, and `/v1/auth/*` are rate-limited by IP address.
 
-Use the `X-RateLimit-Remaining` and `X-Request-ID` headers to monitor usage patterns. Unexpected spikes may indicate that tokens have been compromised. In that case, revoke all tokens via `POST /oauth/revoke` and notify your users.
+**Per client_id (resource endpoints):** all `/v1/*` endpoints are rate-limited by the `client_id` extracted from the token. Limits vary by HTTP method: 1,000 req/min for GET, 200 req/min for POST/PATCH, 100 req/min for DELETE.
+
+This layering means a compromised token has a bounded blast radius. An attacker cannot use a single token to exhaust the API for other integrators.
+
+## What this means for your integration
+
+The security model above means your integration has a well-defined responsibility boundary:
+
+**The API handles:** PKCE, asymmetric token signing and verification, workspace isolation, token revocation, rate limiting, credential delivery security.
+
+**You handle:** storing the `client_secret` in a secrets manager, storing tokens encrypted server-side, validating the `state` parameter on the OAuth callback, revoking tokens when users disconnect, rotating credentials if compromised.
+
+<CardGroup cols={2}>
+  <Card title="Authentication" icon="lock" href="/en/guides/authentication">
+    Token storage, refresh flow, and revocation.
+  </Card>
+  <Card title="Register your app" icon="plug" href="/en/guides/register-app">
+    Credential delivery and the 15-minute link window.
+  </Card>
+  <Card title="Rotate app credentials" icon="rotate" href="/en/guides/rotate-app">
+    When and how to rotate the client_secret.
+  </Card>
+  <Card title="Rate limits" icon="gauge-high" href="/en/guides/rate-limits">
+    Limits by method and endpoint type.
+  </Card>
+</CardGroup>
 
 ## Incident response
 
 If you suspect your `client_secret` or tokens have been compromised:
 
-1. Revoke all active tokens via `POST /oauth/revoke`
-2. Contact support at `security@vendaze.com`
-3. Notify affected users
-4. Rotate your credentials via `POST /v1/auth/rotate-app`
-5. Request new authorization from users
-
-<Warning>
-  Never implement the authorization code exchange in the frontend. The `client_secret` must never be
-  exposed in code that runs on the client.
-</Warning>
+- [ ] Revoke all active tokens via `POST /oauth/revoke` for each affected workspace
+- [ ] Rotate credentials immediately via `POST /v1/auth/rotate-app`
+- [ ] Update your secrets manager with the new `client_secret`
+- [ ] Contact `security@vendaze.com` with the `request_id` of any suspicious requests
+- [ ] Notify affected users that they need to re-authorize
+- [ ] Review your logs for unauthorized data access during the exposure window

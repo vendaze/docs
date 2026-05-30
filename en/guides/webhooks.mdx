@@ -30,11 +30,9 @@ Webhooks allow Vendaze to notify your application when events occur in the works
 | `deal.created`     | A new deal is created    |
 | `deal.updated`     | A deal is updated        |
 | `activity.created` | A new activity is logged |
-| `activity.updated` | An activity is updated   |
 | `task.created`     | A new task is created    |
 | `task.updated`     | A task is updated        |
 | `product.created`  | A new product is created |
-| `product.updated`  | A product is updated     |
 
 ## Payload format
 
@@ -46,7 +44,7 @@ Webhooks allow Vendaze to notify your application when events occur in the works
   "data": {
     "id": "550e8400-e29b-41d4-a716-446655440000",
     "full_name": "Ana Costa",
-    "emails": [{ "email": "ana@company.com", "reminder": "work" }],
+    "emails": [{ "email": "ana@company.com", "type": "work" }],
     "created_at": "2026-05-26T14:00:00Z"
   }
 }
@@ -97,8 +95,34 @@ If your server does not return a `2xx` status within 10 seconds, Vendaze retries
 
 After 5 consecutive failures, the endpoint is marked as `suspended`. The customer reactivates it in the dashboard.
 
+## Delivery guarantees
+
+Vendaze delivers webhooks with **at-least-once** semantics. The same event may be delivered more than once in the following situations:
+
+- Your server returned a `2xx` but Vendaze did not receive the acknowledgment due to a network issue
+- A retry was triggered before the previous delivery was confirmed
+- A transient infrastructure issue caused a duplicate dispatch
+
+**Deduplication strategy:** use the `data.id` field combined with the `event` type as a deduplication key. Store processed event IDs in your database and skip any event you have already handled.
+
+```javascript
+async function handleWebhook(payload) {
+  const dedupeKey = `${payload.event}:${payload.data.id}`;
+
+  const alreadyProcessed = await db.webhookEvents.findOne({ key: dedupeKey });
+  if (alreadyProcessed) return; // Duplicate, skip
+
+  await db.webhookEvents.insert({ key: dedupeKey, processedAt: new Date() });
+
+  // Process the event
+  await processEvent(payload);
+}
+```
+
 ## Best practices
 
-- **Respond quickly:** return `200` immediately and process in the background.
-- **Be idempotent:** the same event may arrive more than once. Use the payload `id` to deduplicate.
-- **Keep logs:** store received payloads to simplify debugging and auditing.
+- **Respond quickly:** return `200` immediately and process in the background. If your handler takes more than 10 seconds, Vendaze will retry.
+- **Be idempotent:** the same event may arrive more than once. Use the `data.id` to deduplicate as shown above.
+- **Validate every signature:** never process a payload without verifying the HMAC signature. Reject invalid signatures with `401`.
+- **Keep logs:** store received payloads for at least 30 days to simplify debugging and auditing.
+- **Handle unknown events gracefully:** return `200` for event types you do not handle. New events may be added in future versions.

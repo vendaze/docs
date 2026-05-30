@@ -107,7 +107,7 @@
       "post": {
         "operationId": "issueToken",
         "summary": "Emitir ou renovar token",
-        "description": "Troca um código de autorização por tokens, ou renova um access token usando um refresh token.",
+        "description": "Troca um authorization code por tokens, ou renova um access token usando um refresh token. Aceita application/x-www-form-urlencoded (recomendado) ou application/json.",
         "security": [],
         "tags": ["OAuth"],
         "requestBody": {
@@ -243,28 +243,28 @@
         "required": ["email"],
         "properties": {
           "email": { "type": "string", "format": "email", "example": "nome@empresa.com" },
-          "reminder": {
+          "type": {
             "type": "string",
             "enum": ["personal", "work", "other"],
             "description": "Tipo do e-mail. Valores aceitos: personal, work, other.",
             "example": "work"
           }
         },
-        "example": { "email": "nome@empresa.com", "reminder": "work" }
+        "example": { "email": "nome@empresa.com", "type": "work" }
       },
       "ContactPhone": {
         "type": "object",
         "required": ["phone"],
         "properties": {
           "phone": { "type": "string", "example": "+5511999990001" },
-          "reminder": {
+          "type": {
             "type": "string",
             "enum": ["mobile", "work", "residential", "other"],
             "description": "Tipo do telefone. Valores aceitos: mobile, work, residential, other.",
             "example": "mobile"
           }
         },
-        "example": { "phone": "+5511999990001", "reminder": "mobile" }
+        "example": { "phone": "+5511999990001", "type": "mobile" }
       },
       "Tag": {
         "type": "object",
@@ -450,6 +450,7 @@
       },
       "TokenResponse": {
         "type": "object",
+        "required": ["access_token", "refresh_token", "token_type", "expires_in", "workspace_slug"],
         "properties": {
           "access_token": { "type": "string", "example": "eyJ..." },
           "refresh_token": { "type": "string", "example": "eyJ..." },
