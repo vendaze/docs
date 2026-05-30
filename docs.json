@@ -87,6 +87,7 @@
                 "pages": [
                   "pt/guides/register-app",
                   "pt/guides/rotate-app",
+                  "pt/guides/verified-app",
                   "pt/guides/authentication",
                   "pt/guides/first-request",
                   "pt/guides/libraries"
@@ -174,6 +175,7 @@
                 "pages": [
                   "en/guides/register-app",
                   "en/guides/rotate-app",
+                  "en/guides/verified-app",
                   "en/guides/authentication",
                   "en/guides/first-request",
                   "en/guides/libraries"
