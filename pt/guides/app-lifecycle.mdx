@@ -1,0 +1,66 @@
+---
+title: 'Ciclo de Vida do Aplicativo'
+description: 'Como funcionam a dormência, a remoção e a aplicação de políticas de abuso para apps registrados na Vendaze API.'
+icon: 'circle-nodes'
+keywords:
+  [
+    'ciclo de vida do app',
+    'app dormente',
+    'remoção de app',
+    'política de inatividade',
+    'app verificado',
+    'abuso',
+    'termos de uso API',
+  ]
+---
+
+Todo aplicativo registrado na Vendaze API está sujeito a uma política de inatividade e a uma política de abuso. Esta página cobre as duas.
+
+## Política de inatividade
+
+Aplicativos que ficam sem nenhuma atividade são automaticamente marcados como dormentes e eventualmente removidos. O prazo depende de o app ter ou não o [selo Verificado](/pt/guides/verified-app).
+
+| Estágio  | Apps não verificados | Apps verificados |
+| -------- | -------------------- | ---------------- |
+| Dormente | 30 dias              | 90 dias          |
+| Removido | 45 dias              | 180 dias         |
+
+Atividade é definida como qualquer requisição autenticada para `/v1/*` ou uma nova autorização OAuth concluída por um usuário. O prazo começa a contar a partir da última atividade, não a partir do registro.
+
+### Dormente
+
+O app continua funcionando normalmente. Tokens existentes permanecem válidos e novas autorizações OAuth ainda são aceitas. O app fica sinalizado para remoção próxima caso nenhuma atividade seja detectada antes do prazo de remoção.
+
+### Removido
+
+O app é excluído permanentemente. O `client_id` deixa de existir, todos os tokens são revogados e todas as autorizações de usuários são perdidas. Essa ação não pode ser desfeita.
+
+### Notificações por e-mail
+
+A Vendaze envia notificações para o e-mail cadastrado no aplicativo em três momentos:
+
+- Quando o app é marcado como dormente
+- Uma semana antes da data programada de remoção
+- Após o app ser removido
+
+### Reativação
+
+Se o seu app estiver dormente mas ainda não tiver sido removido, qualquer chamada autenticada à API ou nova autorização OAuth o reativa automaticamente. Não é necessária nenhuma ação manual nem rotação de credenciais.
+
+Se o app já foi removido, é necessário registrar um novo aplicativo. Isso gera um novo `client_id`, o que significa que todas as autorizações anteriores de usuários são perdidas e eles precisarão passar pelo fluxo de consentimento novamente.
+
+## Aplicação de políticas de abuso
+
+Aplicativos que receberem um número significativo de denúncias de usuários da Vendaze estão sujeitos a remoção permanente sem aviso prévio. Quando um app é removido por abuso:
+
+- O `client_id` é revogado permanentemente
+- Todos os tokens ativos são invalidados imediatamente
+- Todas as autorizações de usuários são perdidas
+
+O limite de denúncias, os critérios de análise e as decisões de aplicação são tratados internamente pela Vendaze e nunca são divulgados.
+
+Apps removidos por abuso não são elegíveis para reintegração. Além disso, o proprietário de um app removido por abuso não será aceito para o [selo Verificado](/pt/guides/verified-app) em nenhum registro futuro de aplicativo.
+
+## Termos de Uso da API
+
+Para as políticas completas que regem o uso da Vendaze API por integradores, consulte os [Termos de Uso da API](https://vendaze.com/terms/API-terms-of-use).

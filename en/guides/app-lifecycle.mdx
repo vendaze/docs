@@ -1,0 +1,66 @@
+---
+title: 'App Lifecycle'
+description: 'How dormancy, removal, and abuse enforcement work for apps registered on the Vendaze API.'
+icon: 'circle-nodes'
+keywords:
+  [
+    'app lifecycle',
+    'dormant app',
+    'app removal',
+    'inactivity policy',
+    'verified app',
+    'abuse enforcement',
+    'API terms',
+  ]
+---
+
+Every app registered on the Vendaze API is subject to an inactivity policy and an abuse enforcement policy. This page covers both.
+
+## Inactivity policy
+
+Apps that go without any activity are automatically marked as dormant and eventually removed. The timeline depends on whether the app has the [Verified badge](/en/guides/verified-app).
+
+| Stage   | Unverified apps | Verified apps |
+| ------- | --------------- | ------------- |
+| Dormant | 30 days         | 90 days       |
+| Removed | 45 days         | 180 days      |
+
+Activity is defined as any authenticated request to `/v1/*` or a new OAuth authorization completed by a user. The clock starts from the last activity, not from registration.
+
+### Dormant
+
+The app continues to work normally. Existing tokens remain valid and new OAuth authorizations are still accepted. The app is flagged for upcoming removal if no activity is detected before the removal deadline.
+
+### Removed
+
+The app is permanently deleted. The `client_id` is gone, all tokens are revoked, and all user authorizations are lost. This cannot be undone.
+
+### Email notifications
+
+Vendaze sends notifications to the registered email address at three points:
+
+- When the app is marked dormant
+- One week before the app is scheduled for removal
+- After the app is removed
+
+### Reactivation
+
+If your app is dormant but not yet removed, any authenticated API call or new OAuth authorization reactivates it automatically. No manual action or credential rotation is needed.
+
+If your app has been removed, you must register a new app. This generates a new `client_id`, which means all previous user authorizations are gone and users will need to go through the consent flow again.
+
+## Abuse enforcement
+
+Apps that receive a significant number of reports from Vendaze users are subject to permanent removal without prior notice. When an app is removed for abuse:
+
+- The `client_id` is permanently revoked
+- All active tokens are immediately invalidated
+- All user authorizations are lost
+
+The report threshold, review criteria, and enforcement decisions are handled internally by Vendaze and are never disclosed.
+
+Apps removed for abuse are not eligible for reinstatement. Additionally, the owner of a removed app will not be accepted for [Verified badge](/en/guides/verified-app) on any future app registration.
+
+## API Terms of Use
+
+For the full policies governing integrator use of the Vendaze API, see the [API Terms of Use](https://vendaze.com/terms/API-terms-of-use).

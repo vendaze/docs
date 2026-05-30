@@ -106,7 +106,7 @@
               },
               {
                 "group": "Boas Práticas",
-                "pages": ["pt/guides/idempotency", "pt/guides/versioning", "pt/guides/security"]
+                "pages": ["pt/guides/idempotency", "pt/guides/versioning", "pt/guides/security", "pt/guides/app-lifecycle"]
               }
             ]
           },
@@ -194,7 +194,7 @@
               },
               {
                 "group": "Best Practices",
-                "pages": ["en/guides/idempotency", "en/guides/versioning", "en/guides/security"]
+                "pages": ["en/guides/idempotency", "en/guides/versioning", "en/guides/security", "en/guides/app-lifecycle"]
               }
             ]
           },
