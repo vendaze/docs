@@ -441,7 +441,7 @@
       "post": {
         "operationId": "createPerson",
         "summary": "Criar pessoa",
-        "description": "Cria uma nova pessoa no workspace.",
+        "description": "Cria uma nova pessoa no workspace. Retorna a pessoa criada com `company`, `tags`, `lists` e `custom_fields` embutidos.",
         "tags": [
           "Pessoas"
         ],
@@ -461,7 +461,7 @@
             "content": {
               "application/json": {
                 "schema": {
-                  "$ref": "#/components/schemas/PersonResponse"
+                  "$ref": "#/components/schemas/PersonWithEmbeddedResponse"
                 }
               }
             }
@@ -522,7 +522,7 @@
       "patch": {
         "operationId": "updatePerson",
         "summary": "Atualizar pessoa",
-        "description": "Atualiza uma pessoa. Apenas os campos enviados sao modificados.",
+        "description": "Atualiza uma pessoa. Apenas os campos enviados são modificados. Retorna a pessoa atualizada com `company`, `tags`, `lists` e `custom_fields` embutidos.",
         "tags": [
           "Pessoas"
         ],
@@ -547,7 +547,7 @@
             "content": {
               "application/json": {
                 "schema": {
-                  "$ref": "#/components/schemas/PersonResponse"
+                  "$ref": "#/components/schemas/PersonWithEmbeddedResponse"
                 }
               }
             }
@@ -601,7 +601,7 @@
       "get": {
         "operationId": "listCompanies",
         "summary": "Listar empresas",
-        "description": "Retorna uma lista paginada de empresas no workspace autorizado.",
+        "description": "Retorna uma lista paginada de empresas no workspace autorizado. Apenas campos da entidade são retornados, sem relações embutidas.",
         "tags": [
           "Empresas"
         ],
@@ -624,7 +624,7 @@
             "schema": {
               "type": "string"
             },
-            "description": "Correspondencia parcial pelo nome da empresa."
+            "description": "Correspondência parcial pelo nome da empresa."
           },
           {
             "name": "email",
@@ -632,7 +632,7 @@
             "schema": {
               "type": "string"
             },
-            "description": "Filtrar por endereco de e-mail."
+            "description": "Correspondência exata por endereço de e-mail."
           },
           {
             "name": "phone",
@@ -640,7 +640,7 @@
             "schema": {
               "type": "string"
             },
-            "description": "Filtrar por numero de telefone."
+            "description": "Correspondência exata por número de telefone."
           },
           {
             "name": "owner_user_id",
@@ -649,20 +649,29 @@
               "type": "string",
               "format": "uuid"
             },
-            "description": "Filtrar por responsavel."
+            "description": "Filtrar por responsável."
           },
           {
-            "name": "tag",
+            "name": "tag[]",
             "in": "query",
             "schema": {
               "type": "array",
               "items": {
-                "type": "string"
+                "type": "string",
+                "format": "uuid"
               }
             },
             "style": "form",
             "explode": true,
-            "description": "Filtrar por tags. Logica AND."
+            "description": "Filtrar por IDs de tags. Lógica AND: a empresa deve ter todas as tags especificadas. Exemplo: `?tag[]=uuid1&tag[]=uuid2`."
+          },
+          {
+            "name": "custom_field[key]",
+            "in": "query",
+            "schema": {
+              "type": "string"
+            },
+            "description": "Filtrar por valor de campo adicional. Substitua `key` pela chave do campo. Exemplo: `?custom_field[setor]=SaaS`."
           },
           {
             "$ref": "#/components/parameters/created_after"
@@ -705,7 +714,7 @@
       "post": {
         "operationId": "createCompany",
         "summary": "Criar empresa",
-        "description": "Cria uma nova empresa no workspace.",
+        "description": "Cria uma nova empresa no workspace. Retorna a empresa criada com `tags`, `lists` e `custom_fields` embutidos.",
         "tags": [
           "Empresas"
         ],
@@ -725,10 +734,13 @@
             "content": {
               "application/json": {
                 "schema": {
-                  "$ref": "#/components/schemas/CompanyResponse"
+                  "$ref": "#/components/schemas/CompanyWithEmbeddedResponse"
                 }
               }
             }
+          },
+          "400": {
+            "$ref": "#/components/responses/BadRequest"
           },
           "401": {
             "$ref": "#/components/responses/Unauthorized"
@@ -749,7 +761,7 @@
       "get": {
         "operationId": "getCompany",
         "summary": "Buscar empresa",
-        "description": "Retorna uma empresa por ID com tags, listas e campos adicionais embutidos.",
+        "description": "Retorna uma empresa por ID com `tags`, `lists` e `custom_fields` embutidos.",
         "tags": [
           "Empresas"
         ],
@@ -783,7 +795,7 @@
       "patch": {
         "operationId": "updateCompany",
         "summary": "Atualizar empresa",
-        "description": "Atualiza uma empresa. Apenas campos enviados sao modificados.",
+        "description": "Atualiza uma empresa. Apenas os campos enviados no body são modificados. Retorna a empresa atualizada com `tags`, `lists` e `custom_fields` embutidos.",
         "tags": [
           "Empresas"
         ],
@@ -808,10 +820,13 @@
             "content": {
               "application/json": {
                 "schema": {
-                  "$ref": "#/components/schemas/CompanyResponse"
+                  "$ref": "#/components/schemas/CompanyWithEmbeddedResponse"
                 }
               }
             }
+          },
+          "400": {
+            "$ref": "#/components/responses/BadRequest"
           },
           "401": {
             "$ref": "#/components/responses/Unauthorized"
@@ -830,7 +845,7 @@
       "delete": {
         "operationId": "deleteCompany",
         "summary": "Deletar empresa",
-        "description": "Soft-delete: o registro não e mais acessível pela API.",
+        "description": "Soft-delete: o registro não é mais acessível pela API.",
         "tags": [
           "Empresas"
         ],
@@ -2588,7 +2603,7 @@
         }
       },
       "BadRequest": {
-        "description": "Requisicao malformada.",
+        "description": "Requisição malformada.",
         "content": {
           "application/json": {
             "schema": {
@@ -3390,14 +3405,6 @@
           }
         }
       },
-      "PersonResponse": {
-        "type": "object",
-        "properties": {
-          "data": {
-            "$ref": "#/components/schemas/Person"
-          }
-        }
-      },
       "PersonWithEmbeddedResponse": {
         "type": "object",
         "properties": {
@@ -3415,10 +3422,12 @@
           },
           "full_name": {
             "type": "string",
+            "maxLength": 70,
             "example": "Acme Corp"
           },
           "emails": {
             "type": "array",
+            "nullable": true,
             "items": {
               "$ref": "#/components/schemas/ContactEmail"
             },
@@ -3431,6 +3440,7 @@
           },
           "phones": {
             "type": "array",
+            "nullable": true,
             "items": {
               "$ref": "#/components/schemas/ContactPhone"
             },
@@ -3446,13 +3456,15 @@
             "format": "uuid",
             "nullable": true
           },
-          "permission": {
+          "avatar_url": {
             "type": "string",
-            "enum": [
-              "all_users",
-              "owners"
-            ],
-            "example": "all_users"
+            "format": "uri",
+            "nullable": true,
+            "example": "https://storage.vendaze.com/client/workspaces/abc/companies/xyz/avatar/avatar_WWT1BGs9ma.webp"
+          },
+          "entity_id": {
+            "type": "string",
+            "example": "g7wwkh0"
           },
           "created_at": {
             "type": "string",
@@ -3502,6 +3514,7 @@
         "properties": {
           "full_name": {
             "type": "string",
+            "maxLength": 70,
             "example": "Acme Corp"
           },
           "emails": {
@@ -3520,20 +3533,63 @@
             "type": "string",
             "format": "uuid"
           },
-          "permission": {
+          "avatar_image": {
             "type": "string",
-            "enum": [
-              "all_users",
-              "owners"
-            ]
+            "description": "Imagem em base64 puro (sem prefixo data URI). Formatos aceitos: JPEG, PNG, WebP, GIF, BMP, TIFF. Convertida para WebP 500x500."
+          },
+          "tag_ids": {
+            "type": "array",
+            "items": {
+              "type": "string",
+              "format": "uuid"
+            },
+            "description": "IDs de tags para associar à empresa."
+          },
+          "list_ids": {
+            "type": "array",
+            "items": {
+              "type": "string",
+              "format": "uuid"
+            },
+            "description": "IDs de listas para associar à empresa."
+          },
+          "deal_ids": {
+            "type": "array",
+            "items": {
+              "type": "string",
+              "format": "uuid"
+            },
+            "description": "IDs de negócios para associar à empresa."
+          },
+          "custom_fields": {
+            "type": "array",
+            "items": {
+              "type": "object",
+              "required": [
+                "field_id",
+                "value"
+              ],
+              "properties": {
+                "field_id": {
+                  "type": "string",
+                  "format": "uuid"
+                },
+                "value": {
+                  "description": "Valor do campo. O tipo depende da definição do campo adicional."
+                }
+              }
+            },
+            "description": "Valores de campos adicionais para definir na empresa."
           }
         }
       },
       "UpdateCompanyRequest": {
         "type": "object",
+        "description": "Todos os campos são opcionais. Apenas os campos enviados no body são modificados.",
         "properties": {
           "full_name": {
-            "type": "string"
+            "type": "string",
+            "maxLength": 70
           },
           "emails": {
             "type": "array",
@@ -3550,14 +3606,65 @@
           "owner_user_id": {
             "type": "string",
             "format": "uuid",
-            "nullable": true
+            "nullable": true,
+            "description": "Envie `null` para remover o responsável."
           },
-          "permission": {
+          "avatar_image": {
+            "type": "string",
+            "description": "Imagem em base64 puro (sem prefixo data URI). Substitui o avatar atual. Formatos aceitos: JPEG, PNG, WebP, GIF, BMP, TIFF. Convertida para WebP 500x500."
+          },
+          "tag_ids": {
+            "type": "array",
+            "items": {
+              "type": "string",
+              "format": "uuid"
+            },
+            "description": "IDs de tags para associar. O comportamento depende de `association_mode`."
+          },
+          "list_ids": {
+            "type": "array",
+            "items": {
+              "type": "string",
+              "format": "uuid"
+            },
+            "description": "IDs de listas para associar. O comportamento depende de `association_mode`."
+          },
+          "deal_ids": {
+            "type": "array",
+            "items": {
+              "type": "string",
+              "format": "uuid"
+            },
+            "description": "IDs de negócios para associar. O comportamento depende de `association_mode`."
+          },
+          "custom_fields": {
+            "type": "array",
+            "items": {
+              "type": "object",
+              "required": [
+                "field_id",
+                "value"
+              ],
+              "properties": {
+                "field_id": {
+                  "type": "string",
+                  "format": "uuid"
+                },
+                "value": {
+                  "description": "Valor do campo. O tipo depende da definição do campo adicional."
+                }
+              }
+            },
+            "description": "Valores de campos adicionais. O comportamento depende de `association_mode`. No modo `append`, substitui o valor de cada `field_id` enviado sem alterar os demais."
+          },
+          "association_mode": {
             "type": "string",
             "enum": [
-              "all_users",
-              "owners"
-            ]
+              "append",
+              "replace"
+            ],
+            "default": "append",
+            "description": "Controla como as associações (`tag_ids`, `list_ids`, `deal_ids`, `custom_fields`) são aplicadas. `append`: adiciona novas associações sem remover as existentes. `replace`: remove todas as associações atuais de cada tipo enviado e insere as novas. Enviar um array vazio com `replace` remove todas as associações daquele tipo."
           }
         }
       },
@@ -3572,14 +3679,6 @@
           },
           "meta": {
             "$ref": "#/components/schemas/PaginationMeta"
-          }
-        }
-      },
-      "CompanyResponse": {
-        "type": "object",
-        "properties": {
-          "data": {
-            "$ref": "#/components/schemas/Company"
           }
         }
       },

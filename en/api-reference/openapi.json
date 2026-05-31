@@ -442,7 +442,7 @@
       "post": {
         "operationId": "createPerson",
         "summary": "Create a person",
-        "description": "Creates a new person in the workspace.",
+        "description": "Creates a new person in the workspace. Returns the created person with embedded `company`, `tags`, `lists`, and `custom_fields`.",
         "tags": [
           "People"
         ],
@@ -462,7 +462,7 @@
             "content": {
               "application/json": {
                 "schema": {
-                  "$ref": "#/components/schemas/PersonResponse"
+                  "$ref": "#/components/schemas/PersonWithEmbeddedResponse"
                 }
               }
             }
@@ -523,7 +523,7 @@
       "patch": {
         "operationId": "updatePerson",
         "summary": "Update a person",
-        "description": "Updates a person. Only fields included in the body are modified.",
+        "description": "Updates a person. Only fields included in the body are modified. Returns the updated person with embedded `company`, `tags`, `lists`, and `custom_fields`.",
         "tags": [
           "People"
         ],
@@ -548,7 +548,7 @@
             "content": {
               "application/json": {
                 "schema": {
-                  "$ref": "#/components/schemas/PersonResponse"
+                  "$ref": "#/components/schemas/PersonWithEmbeddedResponse"
                 }
               }
             }
@@ -602,7 +602,7 @@
       "get": {
         "operationId": "listCompanies",
         "summary": "List companies",
-        "description": "Returns a paginated list of companies in the authorized workspace.",
+        "description": "Returns a paginated list of companies in the authorized workspace. Only fields of the entity are returned — no embedded relations.",
         "tags": [
           "Companies"
         ],
@@ -633,7 +633,7 @@
             "schema": {
               "type": "string"
             },
-            "description": "Filter by email address."
+            "description": "Exact match on email address."
           },
           {
             "name": "phone",
@@ -641,7 +641,7 @@
             "schema": {
               "type": "string"
             },
-            "description": "Filter by phone number."
+            "description": "Exact match on phone number."
           },
           {
             "name": "owner_user_id",
@@ -653,17 +653,26 @@
             "description": "Filter by owner."
           },
           {
-            "name": "tag",
+            "name": "tag[]",
             "in": "query",
             "schema": {
               "type": "array",
               "items": {
-                "type": "string"
+                "type": "string",
+                "format": "uuid"
               }
             },
             "style": "form",
             "explode": true,
-            "description": "Filter by tags. AND logic."
+            "description": "Filter by tag IDs. AND logic — company must have all specified tags. Example: `?tag[]=uuid1&tag[]=uuid2`."
+          },
+          {
+            "name": "custom_field[key]",
+            "in": "query",
+            "schema": {
+              "type": "string"
+            },
+            "description": "Filter by custom field value. Replace `key` with the field key. Example: `?custom_field[industry]=SaaS`."
           },
           {
             "$ref": "#/components/parameters/created_after"
@@ -706,7 +715,7 @@
       "post": {
         "operationId": "createCompany",
         "summary": "Create a company",
-        "description": "Creates a new company in the workspace.",
+        "description": "Creates a new company in the workspace. Returns the created company with embedded `tags`, `lists`, and `custom_fields`.",
         "tags": [
           "Companies"
         ],
@@ -726,10 +735,13 @@
             "content": {
               "application/json": {
                 "schema": {
-                  "$ref": "#/components/schemas/CompanyResponse"
+                  "$ref": "#/components/schemas/CompanyWithEmbeddedResponse"
                 }
               }
             }
+          },
+          "400": {
+            "$ref": "#/components/responses/BadRequest"
           },
           "401": {
             "$ref": "#/components/responses/Unauthorized"
@@ -750,7 +762,7 @@
       "get": {
         "operationId": "getCompany",
         "summary": "Get a company",
-        "description": "Returns a company by ID with embedded tags, lists, and custom fields.",
+        "description": "Returns a company by ID with embedded `tags`, `lists`, and `custom_fields`.",
         "tags": [
           "Companies"
         ],
@@ -784,7 +796,7 @@
       "patch": {
         "operationId": "updateCompany",
         "summary": "Update a company",
-        "description": "Updates a company. Only fields included in the body are modified.",
+        "description": "Updates a company. Only fields included in the body are modified. Returns the updated company with embedded `tags`, `lists`, and `custom_fields`.",
         "tags": [
           "Companies"
         ],
@@ -809,10 +821,13 @@
             "content": {
               "application/json": {
                 "schema": {
-                  "$ref": "#/components/schemas/CompanyResponse"
+                  "$ref": "#/components/schemas/CompanyWithEmbeddedResponse"
                 }
               }
             }
+          },
+          "400": {
+            "$ref": "#/components/responses/BadRequest"
           },
           "401": {
             "$ref": "#/components/responses/Unauthorized"
@@ -831,7 +846,7 @@
       "delete": {
         "operationId": "deleteCompany",
         "summary": "Delete a company",
-        "description": "Soft-delete: the record is no longer accessible via the API.",
+        "description": "Soft-deletes a company. The record is no longer accessible via the API.",
         "tags": [
           "Companies"
         ],
@@ -3388,14 +3403,6 @@
           }
         }
       },
-      "PersonResponse": {
-        "type": "object",
-        "properties": {
-          "data": {
-            "$ref": "#/components/schemas/Person"
-          }
-        }
-      },
       "PersonWithEmbeddedResponse": {
         "type": "object",
         "properties": {
@@ -3413,10 +3420,12 @@
           },
           "full_name": {
             "type": "string",
+            "maxLength": 70,
             "example": "Acme Corp"
           },
           "emails": {
             "type": "array",
+            "nullable": true,
             "items": {
               "$ref": "#/components/schemas/ContactEmail"
             },
@@ -3429,6 +3438,7 @@
           },
           "phones": {
             "type": "array",
+            "nullable": true,
             "items": {
               "$ref": "#/components/schemas/ContactPhone"
             },
@@ -3444,13 +3454,15 @@
             "format": "uuid",
             "nullable": true
           },
-          "permission": {
+          "avatar_url": {
             "type": "string",
-            "enum": [
-              "all_users",
-              "owners"
-            ],
-            "example": "all_users"
+            "format": "uri",
+            "nullable": true,
+            "example": "https://storage.vendaze.com/client/workspaces/abc/companies/xyz/avatar/avatar_WWT1BGs9ma.webp"
+          },
+          "entity_id": {
+            "type": "string",
+            "example": "g7wwkh0"
           },
           "created_at": {
             "type": "string",
@@ -3500,6 +3512,7 @@
         "properties": {
           "full_name": {
             "type": "string",
+            "maxLength": 70,
             "example": "Acme Corp"
           },
           "emails": {
@@ -3518,20 +3531,63 @@
             "type": "string",
             "format": "uuid"
           },
-          "permission": {
+          "avatar_image": {
             "type": "string",
-            "enum": [
-              "all_users",
-              "owners"
-            ]
+            "description": "Base64-encoded image (no data URI prefix). Accepted formats: JPEG, PNG, WebP, GIF, BMP, TIFF. Converted to WebP 500x500."
+          },
+          "tag_ids": {
+            "type": "array",
+            "items": {
+              "type": "string",
+              "format": "uuid"
+            },
+            "description": "Tag IDs to associate with the company."
+          },
+          "list_ids": {
+            "type": "array",
+            "items": {
+              "type": "string",
+              "format": "uuid"
+            },
+            "description": "List IDs to associate with the company."
+          },
+          "deal_ids": {
+            "type": "array",
+            "items": {
+              "type": "string",
+              "format": "uuid"
+            },
+            "description": "Deal IDs to associate with the company."
+          },
+          "custom_fields": {
+            "type": "array",
+            "items": {
+              "type": "object",
+              "required": [
+                "field_id",
+                "value"
+              ],
+              "properties": {
+                "field_id": {
+                  "type": "string",
+                  "format": "uuid"
+                },
+                "value": {
+                  "description": "Field value. Type depends on the custom field definition."
+                }
+              }
+            },
+            "description": "Custom field values to set for the company."
           }
         }
       },
       "UpdateCompanyRequest": {
         "type": "object",
+        "description": "All fields are optional. Only fields included in the body are modified.",
         "properties": {
           "full_name": {
-            "type": "string"
+            "type": "string",
+            "maxLength": 70
           },
           "emails": {
             "type": "array",
@@ -3548,14 +3604,65 @@
           "owner_user_id": {
             "type": "string",
             "format": "uuid",
-            "nullable": true
+            "nullable": true,
+            "description": "Pass `null` to remove the owner."
           },
-          "permission": {
+          "avatar_image": {
+            "type": "string",
+            "description": "Base64-encoded image (no data URI prefix). Replaces the current avatar. Accepted formats: JPEG, PNG, WebP, GIF, BMP, TIFF. Converted to WebP 500x500."
+          },
+          "tag_ids": {
+            "type": "array",
+            "items": {
+              "type": "string",
+              "format": "uuid"
+            },
+            "description": "Tag IDs to associate. Behavior depends on `association_mode`."
+          },
+          "list_ids": {
+            "type": "array",
+            "items": {
+              "type": "string",
+              "format": "uuid"
+            },
+            "description": "List IDs to associate. Behavior depends on `association_mode`."
+          },
+          "deal_ids": {
+            "type": "array",
+            "items": {
+              "type": "string",
+              "format": "uuid"
+            },
+            "description": "Deal IDs to associate. Behavior depends on `association_mode`."
+          },
+          "custom_fields": {
+            "type": "array",
+            "items": {
+              "type": "object",
+              "required": [
+                "field_id",
+                "value"
+              ],
+              "properties": {
+                "field_id": {
+                  "type": "string",
+                  "format": "uuid"
+                },
+                "value": {
+                  "description": "Field value. Type depends on the custom field definition."
+                }
+              }
+            },
+            "description": "Custom field values. Behavior depends on `association_mode`. In `append` mode, replaces the value for each `field_id` sent without touching others."
+          },
+          "association_mode": {
             "type": "string",
             "enum": [
-              "all_users",
-              "owners"
-            ]
+              "append",
+              "replace"
+            ],
+            "default": "append",
+            "description": "Controls how associations (`tag_ids`, `list_ids`, `deal_ids`, `custom_fields`) are applied. `append`: adds new associations without removing existing ones. `replace`: removes all current associations of each sent type and inserts the new ones. Sending an empty array with `replace` removes all associations of that type."
           }
         }
       },
@@ -3570,14 +3677,6 @@
           },
           "meta": {
             "$ref": "#/components/schemas/PaginationMeta"
-          }
-        }
-      },
-      "CompanyResponse": {
-        "type": "object",
-        "properties": {
-          "data": {
-            "$ref": "#/components/schemas/Company"
           }
         }
       },

@@ -90,7 +90,7 @@
       "post": {
         "operationId": "createPerson",
         "summary": "Criar pessoa",
-        "description": "Cria uma nova pessoa no workspace.",
+        "description": "Cria uma nova pessoa no workspace. Retorna a pessoa criada com `company`, `tags`, `lists` e `custom_fields` embutidos.",
         "tags": ["Pessoas"],
         "requestBody": {
           "required": true,
@@ -99,7 +99,7 @@
         "responses": {
           "201": {
             "description": "Pessoa criada com sucesso.",
-            "content": { "application/json": { "schema": { "$ref": "#/components/schemas/PersonResponse" } } }
+            "content": { "application/json": { "schema": { "$ref": "#/components/schemas/PersonWithEmbeddedResponse" } } }
           },
           "400": { "$ref": "#/components/responses/BadRequest" },
           "401": { "$ref": "#/components/responses/Unauthorized" },
@@ -129,7 +129,7 @@
       "patch": {
         "operationId": "updatePerson",
         "summary": "Atualizar pessoa",
-        "description": "Atualiza uma pessoa. Apenas os campos enviados sao modificados.",
+        "description": "Atualiza uma pessoa. Apenas os campos enviados são modificados. Retorna a pessoa atualizada com `company`, `tags`, `lists` e `custom_fields` embutidos.",
         "tags": ["Pessoas"],
         "parameters": [{ "$ref": "#/components/parameters/id" }],
         "requestBody": {
@@ -139,7 +139,7 @@
         "responses": {
           "200": {
             "description": "Pessoa atualizada com sucesso.",
-            "content": { "application/json": { "schema": { "$ref": "#/components/schemas/PersonResponse" } } }
+            "content": { "application/json": { "schema": { "$ref": "#/components/schemas/PersonWithEmbeddedResponse" } } }
           },
           "400": { "$ref": "#/components/responses/BadRequest" },
           "401": { "$ref": "#/components/responses/Unauthorized" },
@@ -523,12 +523,6 @@
         "properties": {
           "data": { "type": "array", "items": { "$ref": "#/components/schemas/Person" } },
           "meta": { "$ref": "#/components/schemas/PaginationMeta" }
-        }
-      },
-      "PersonResponse": {
-        "type": "object",
-        "properties": {
-          "data": { "$ref": "#/components/schemas/Person" }
         }
       },
       "PersonWithEmbeddedResponse": {
