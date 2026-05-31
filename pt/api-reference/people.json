@@ -27,8 +27,18 @@
             "schema": { "type": "string" },
             "description": "Correspondencia parcial pelo nome completo."
           },
-          { "name": "email", "in": "query", "schema": { "type": "string" }, "description": "Filtrar por endereco de e-mail." },
-          { "name": "phone", "in": "query", "schema": { "type": "string" }, "description": "Filtrar por numero de telefone." },
+          {
+            "name": "email",
+            "in": "query",
+            "schema": { "type": "string" },
+            "description": "Filtrar por endereco de e-mail."
+          },
+          {
+            "name": "phone",
+            "in": "query",
+            "schema": { "type": "string" },
+            "description": "Filtrar por numero de telefone."
+          },
           {
             "name": "company_id",
             "in": "query",
@@ -41,19 +51,30 @@
             "schema": { "type": "string", "format": "uuid" },
             "description": "Filtrar por responsavel."
           },
-          { "name": "position", "in": "query", "schema": { "type": "string" }, "description": "Correspondencia parcial pelo cargo." },
           {
-            "name": "tag",
+            "name": "position",
             "in": "query",
-            "schema": { "type": "array", "items": { "type": "string" } },
-            "style": "form",
-            "explode": true,
-            "description": "Filtrar por tags. Logica AND."
+            "schema": { "type": "string" },
+            "description": "Correspondencia parcial pelo cargo."
           },
           { "$ref": "#/components/parameters/created_after" },
           { "$ref": "#/components/parameters/created_before" },
           { "$ref": "#/components/parameters/updated_after" },
-          { "$ref": "#/components/parameters/updated_before" }
+          { "$ref": "#/components/parameters/updated_before" },
+          {
+            "name": "tag[]",
+            "in": "query",
+            "schema": { "type": "array", "items": { "type": "string", "format": "uuid" } },
+            "style": "form",
+            "explode": true,
+            "description": "Filtrar por IDs de tags. Logica AND — a pessoa deve ter todas as tags informadas. Exemplo: `?tag[]=uuid1&tag[]=uuid2`."
+          },
+          {
+            "name": "custom_field[key]",
+            "in": "query",
+            "schema": { "type": "string" },
+            "description": "Filtrar por valor de campo adicional. Substitua `key` pela chave do campo. Exemplo: `?custom_field[setor]=SaaS`."
+          }
         ],
         "responses": {
           "200": {
@@ -69,7 +90,7 @@
       "post": {
         "operationId": "createPerson",
         "summary": "Criar pessoa",
-        "description": "Cria uma nova pessoa no workspace.",
+        "description": "Cria uma nova pessoa no workspace. `ranking` e somente leitura e sempre definido como `0` na criacao.",
         "tags": ["Pessoas"],
         "requestBody": {
           "required": true,
@@ -80,6 +101,7 @@
             "description": "Pessoa criada com sucesso.",
             "content": { "application/json": { "schema": { "$ref": "#/components/schemas/PersonResponse" } } }
           },
+          "400": { "$ref": "#/components/responses/BadRequest" },
           "401": { "$ref": "#/components/responses/Unauthorized" },
           "403": { "$ref": "#/components/responses/InsufficientScope" },
           "422": { "$ref": "#/components/responses/ValidationError" },
@@ -91,7 +113,7 @@
       "get": {
         "operationId": "getPerson",
         "summary": "Buscar pessoa",
-        "description": "Retorna uma pessoa por ID com empresa, tags, listas e campos adicionais embutidos.",
+        "description": "Retorna uma pessoa por ID com `company`, `tags`, `lists` e `custom_fields` embutidos.",
         "tags": ["Pessoas"],
         "parameters": [{ "$ref": "#/components/parameters/id" }],
         "responses": {
@@ -107,7 +129,7 @@
       "patch": {
         "operationId": "updatePerson",
         "summary": "Atualizar pessoa",
-        "description": "Atualiza uma pessoa. Apenas campos enviados sao modificados.",
+        "description": "Atualiza uma pessoa. Apenas os campos enviados sao modificados. `ranking` e somente leitura e nao pode ser enviado.",
         "tags": ["Pessoas"],
         "parameters": [{ "$ref": "#/components/parameters/id" }],
         "requestBody": {
@@ -119,6 +141,7 @@
             "description": "Pessoa atualizada com sucesso.",
             "content": { "application/json": { "schema": { "$ref": "#/components/schemas/PersonResponse" } } }
           },
+          "400": { "$ref": "#/components/responses/BadRequest" },
           "401": { "$ref": "#/components/responses/Unauthorized" },
           "403": { "$ref": "#/components/responses/InsufficientScope" },
           "404": { "$ref": "#/components/responses/NotFound" },
@@ -150,9 +173,13 @@
         "in": "path",
         "required": true,
         "schema": { "type": "string", "format": "uuid" },
-        "description": "UUID of the resource."
+        "description": "UUID do recurso."
       },
-      "page": { "name": "page", "in": "query", "schema": { "type": "integer", "default": 1, "minimum": 1 } },
+      "page": {
+        "name": "page",
+        "in": "query",
+        "schema": { "type": "integer", "default": 1, "minimum": 1 }
+      },
       "per_page": {
         "name": "per_page",
         "in": "query",
@@ -163,33 +190,61 @@
         "name": "order_by",
         "in": "query",
         "schema": { "type": "string", "enum": ["created_at", "updated_at", "full_name"], "default": "created_at" },
-        "description": "Campo de ordenação."
+        "description": "Campo de ordenacao."
       },
-      "order": { "name": "order", "in": "query", "schema": { "type": "string", "enum": ["asc", "desc"], "default": "desc" } },
-      "created_after": { "name": "created_after", "in": "query", "schema": { "type": "string", "format": "date-time" } },
-      "created_before": { "name": "created_before", "in": "query", "schema": { "type": "string", "format": "date-time" } },
-      "updated_after": { "name": "updated_after", "in": "query", "schema": { "type": "string", "format": "date-time" } },
-      "updated_before": { "name": "updated_before", "in": "query", "schema": { "type": "string", "format": "date-time" } }
+      "order": {
+        "name": "order",
+        "in": "query",
+        "schema": { "type": "string", "enum": ["asc", "desc"], "default": "desc" }
+      },
+      "created_after": {
+        "name": "created_after",
+        "in": "query",
+        "schema": { "type": "string", "format": "date-time" },
+        "description": "ISO 8601 UTC. Retorna registros criados apos este timestamp."
+      },
+      "created_before": {
+        "name": "created_before",
+        "in": "query",
+        "schema": { "type": "string", "format": "date-time" },
+        "description": "ISO 8601 UTC. Retorna registros criados antes deste timestamp."
+      },
+      "updated_after": {
+        "name": "updated_after",
+        "in": "query",
+        "schema": { "type": "string", "format": "date-time" },
+        "description": "ISO 8601 UTC. Retorna registros atualizados apos este timestamp."
+      },
+      "updated_before": {
+        "name": "updated_before",
+        "in": "query",
+        "schema": { "type": "string", "format": "date-time" },
+        "description": "ISO 8601 UTC. Retorna registros atualizados antes deste timestamp."
+      }
     },
     "responses": {
+      "BadRequest": {
+        "description": "Requisicao malformada.",
+        "content": { "application/json": { "schema": { "$ref": "#/components/schemas/ErrorResponse" } } }
+      },
       "Unauthorized": {
-        "description": "Missing or invalid token.",
+        "description": "Token ausente ou invalido.",
         "content": { "application/json": { "schema": { "$ref": "#/components/schemas/ErrorResponse" } } }
       },
       "InsufficientScope": {
-        "description": "Token lacks the required scope.",
+        "description": "Token sem o escopo necessario.",
         "content": { "application/json": { "schema": { "$ref": "#/components/schemas/ErrorResponse" } } }
       },
       "NotFound": {
-        "description": "Resource not found.",
+        "description": "Recurso nao encontrado.",
         "content": { "application/json": { "schema": { "$ref": "#/components/schemas/ErrorResponse" } } }
       },
       "ValidationError": {
-        "description": "Input validation failed.",
+        "description": "Validacao de entrada falhou.",
         "content": { "application/json": { "schema": { "$ref": "#/components/schemas/ValidationErrorResponse" } } }
       },
       "RateLimitExceeded": {
-        "description": "Rate limit exceeded.",
+        "description": "Limite de requisicoes excedido.",
         "content": { "application/json": { "schema": { "$ref": "#/components/schemas/ErrorResponse" } } }
       }
     },
@@ -215,7 +270,11 @@
             "properties": {
               "code": { "type": "string", "example": "validation_error" },
               "message": { "type": "string", "example": "Validation failed." },
-              "fields": { "type": "object", "additionalProperties": { "type": "string" } },
+              "fields": {
+                "type": "object",
+                "additionalProperties": { "type": "string" },
+                "example": { "full_name": "String must contain at most 70 character(s)." }
+              },
               "request_id": { "type": "string", "format": "uuid" }
             }
           }
@@ -238,7 +297,7 @@
           "type": {
             "type": "string",
             "enum": ["personal", "work", "other"],
-            "description": "Tipo do e-mail. Valores aceitos: personal, work, other.",
+            "description": "Tipo do e-mail.",
             "example": "work"
           }
         },
@@ -252,7 +311,7 @@
           "type": {
             "type": "string",
             "enum": ["mobile", "work", "residential", "other"],
-            "description": "Tipo do telefone. Valores aceitos: mobile, work, residential, other.",
+            "description": "Tipo do telefone.",
             "example": "mobile"
           }
         },
@@ -280,7 +339,7 @@
         "type": "object",
         "properties": {
           "id": { "type": "string", "format": "uuid" },
-          "value": { "type": "string", "nullable": true },
+          "value": {},
           "field": {
             "type": "object",
             "properties": {
@@ -299,18 +358,34 @@
           "full_name": { "type": "string", "maxLength": 70, "example": "Maria Silva" },
           "emails": {
             "type": "array",
+            "nullable": true,
             "items": { "$ref": "#/components/schemas/ContactEmail" },
             "example": [{ "email": "maria@empresa.com", "type": "work" }]
           },
           "phones": {
             "type": "array",
+            "nullable": true,
             "items": { "$ref": "#/components/schemas/ContactPhone" },
             "example": [{ "phone": "+5511999990001", "type": "mobile" }]
           },
           "company_id": { "type": "string", "format": "uuid", "nullable": true },
           "owner_user_id": { "type": "string", "format": "uuid", "nullable": true },
           "position": { "type": "string", "nullable": true, "example": "Head of Sales" },
-          "ranking": { "type": "number", "minimum": 0, "maximum": 5, "example": 4 },
+          "ranking": {
+            "type": "number",
+            "minimum": 0,
+            "maximum": 5,
+            "example": 0,
+            "readOnly": true,
+            "description": "Somente leitura. Gerenciado internamente pela Vendaze."
+          },
+          "avatar_url": {
+            "type": "string",
+            "format": "uri",
+            "nullable": true,
+            "example": "https://storage.vendaze.com/client/workspaces/abc/people/xyz/avatar/avatar_WWT1BGs9ma.webp"
+          },
+          "entity_id": { "type": "string", "example": "g7wwkh0" },
           "created_at": { "type": "string", "format": "date-time" },
           "updated_at": { "type": "string", "format": "date-time" }
         }
@@ -344,21 +419,103 @@
           "emails": { "type": "array", "items": { "$ref": "#/components/schemas/ContactEmail" } },
           "phones": { "type": "array", "items": { "$ref": "#/components/schemas/ContactPhone" } },
           "company_id": { "type": "string", "format": "uuid" },
-          "position": { "type": "string", "maxLength": 100 },
+          "position": { "type": "string", "maxLength": 100, "example": "Head of Sales" },
           "owner_user_id": { "type": "string", "format": "uuid" },
-          "ranking": { "type": "number", "minimum": 0, "maximum": 5 }
+          "avatar_image": {
+            "type": "string",
+            "description": "Imagem em base64 puro (sem prefixo data URI). Formatos aceitos: JPEG, PNG, WebP, GIF, BMP, TIFF. Convertida para WebP 500x500."
+          },
+          "tag_ids": {
+            "type": "array",
+            "items": { "type": "string", "format": "uuid" },
+            "description": "IDs de tags a associar com a pessoa."
+          },
+          "list_ids": {
+            "type": "array",
+            "items": { "type": "string", "format": "uuid" },
+            "description": "IDs de listas a associar com a pessoa."
+          },
+          "deal_ids": {
+            "type": "array",
+            "items": { "type": "string", "format": "uuid" },
+            "description": "IDs de negócios a associar com a pessoa."
+          },
+          "custom_fields": {
+            "type": "array",
+            "items": {
+              "type": "object",
+              "required": ["field_id", "value"],
+              "properties": {
+                "field_id": { "type": "string", "format": "uuid" },
+                "value": { "description": "Valor do campo. O tipo depende da definição do campo adicional." }
+              }
+            },
+            "description": "Valores de campos adicionais a definir para a pessoa."
+          }
         }
       },
       "UpdatePersonRequest": {
         "type": "object",
+        "description": "Todos os campos sao opcionais. Apenas os campos enviados sao modificados. `ranking` e somente leitura e nao pode ser enviado.",
         "properties": {
           "full_name": { "type": "string", "maxLength": 70 },
           "emails": { "type": "array", "items": { "$ref": "#/components/schemas/ContactEmail" } },
           "phones": { "type": "array", "items": { "$ref": "#/components/schemas/ContactPhone" } },
-          "company_id": { "type": "string", "format": "uuid", "nullable": true },
-          "position": { "type": "string", "maxLength": 100, "nullable": true },
-          "owner_user_id": { "type": "string", "format": "uuid", "nullable": true },
-          "ranking": { "type": "number", "minimum": 0, "maximum": 5 }
+          "company_id": {
+            "type": "string",
+            "format": "uuid",
+            "nullable": true,
+            "description": "Envie `null` para remover a associacao com empresa."
+          },
+          "position": {
+            "type": "string",
+            "maxLength": 100,
+            "nullable": true,
+            "description": "Envie `null` para limpar o cargo."
+          },
+          "owner_user_id": {
+            "type": "string",
+            "format": "uuid",
+            "nullable": true,
+            "description": "Envie `null` para remover o responsavel."
+          },
+          "avatar_image": {
+            "type": "string",
+            "description": "Imagem em base64 puro (sem prefixo data URI). Substitui o avatar atual. Formatos aceitos: JPEG, PNG, WebP, GIF, BMP, TIFF. Convertida para WebP 500x500."
+          },
+          "tag_ids": {
+            "type": "array",
+            "items": { "type": "string", "format": "uuid" },
+            "description": "IDs de tags a associar. Comportamento depende de `association_mode`."
+          },
+          "list_ids": {
+            "type": "array",
+            "items": { "type": "string", "format": "uuid" },
+            "description": "IDs de listas a associar. Comportamento depende de `association_mode`."
+          },
+          "deal_ids": {
+            "type": "array",
+            "items": { "type": "string", "format": "uuid" },
+            "description": "IDs de negócios a associar. Comportamento depende de `association_mode`."
+          },
+          "custom_fields": {
+            "type": "array",
+            "items": {
+              "type": "object",
+              "required": ["field_id", "value"],
+              "properties": {
+                "field_id": { "type": "string", "format": "uuid" },
+                "value": { "description": "Valor do campo. O tipo depende da definição do campo adicional." }
+              }
+            },
+            "description": "Valores de campos adicionais. Comportamento depende de `association_mode`. No modo `append`, substitui o valor de cada `field_id` enviado sem alterar os demais."
+          },
+          "association_mode": {
+            "type": "string",
+            "enum": ["append", "replace"],
+            "default": "append",
+            "description": "Controla como as associacoes (`tag_ids`, `list_ids`, `deal_ids`, `custom_fields`) sao aplicadas. `append`: adiciona sem remover as existentes. `replace`: remove todas as associacoes atuais dos tipos enviados e insere as novas. Enviar array vazio com `replace` remove todas as associacoes daquele tipo."
+          }
         }
       },
       "PeopleListResponse": {

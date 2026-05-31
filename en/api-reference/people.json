@@ -21,29 +21,60 @@
           { "$ref": "#/components/parameters/per_page" },
           { "$ref": "#/components/parameters/order_by" },
           { "$ref": "#/components/parameters/order" },
-          { "name": "full_name", "in": "query", "schema": { "type": "string" }, "description": "Partial match on full name." },
-          { "name": "email", "in": "query", "schema": { "type": "string" }, "description": "Filter by email address." },
-          { "name": "phone", "in": "query", "schema": { "type": "string" }, "description": "Filter by phone number." },
+          {
+            "name": "full_name",
+            "in": "query",
+            "schema": { "type": "string" },
+            "description": "Partial match on full name."
+          },
+          {
+            "name": "email",
+            "in": "query",
+            "schema": { "type": "string" },
+            "description": "Filter by email address."
+          },
+          {
+            "name": "phone",
+            "in": "query",
+            "schema": { "type": "string" },
+            "description": "Filter by phone number."
+          },
           {
             "name": "company_id",
             "in": "query",
             "schema": { "type": "string", "format": "uuid" },
             "description": "Filter by linked company."
           },
-          { "name": "owner_user_id", "in": "query", "schema": { "type": "string", "format": "uuid" }, "description": "Filter by owner." },
-          { "name": "position", "in": "query", "schema": { "type": "string" }, "description": "Partial match on job title." },
           {
-            "name": "tag",
+            "name": "owner_user_id",
             "in": "query",
-            "schema": { "type": "array", "items": { "type": "string" } },
-            "style": "form",
-            "explode": true,
-            "description": "Filter by tags. AND logic."
+            "schema": { "type": "string", "format": "uuid" },
+            "description": "Filter by owner."
+          },
+          {
+            "name": "position",
+            "in": "query",
+            "schema": { "type": "string" },
+            "description": "Partial match on job title."
           },
           { "$ref": "#/components/parameters/created_after" },
           { "$ref": "#/components/parameters/created_before" },
           { "$ref": "#/components/parameters/updated_after" },
-          { "$ref": "#/components/parameters/updated_before" }
+          { "$ref": "#/components/parameters/updated_before" },
+          {
+            "name": "tag[]",
+            "in": "query",
+            "schema": { "type": "array", "items": { "type": "string", "format": "uuid" } },
+            "style": "form",
+            "explode": true,
+            "description": "Filter by tag IDs. AND logic — person must have all specified tags. Example: `?tag[]=uuid1&tag[]=uuid2`."
+          },
+          {
+            "name": "custom_field[key]",
+            "in": "query",
+            "schema": { "type": "string" },
+            "description": "Filter by custom field value. Replace `key` with the field key. Example: `?custom_field[industry]=SaaS`."
+          }
         ],
         "responses": {
           "200": {
@@ -59,7 +90,7 @@
       "post": {
         "operationId": "createPerson",
         "summary": "Create a person",
-        "description": "Creates a new person in the workspace.",
+        "description": "Creates a new person in the workspace. `ranking` is read-only and always set to `0` on creation.",
         "tags": ["People"],
         "requestBody": {
           "required": true,
@@ -70,6 +101,7 @@
             "description": "Person created successfully.",
             "content": { "application/json": { "schema": { "$ref": "#/components/schemas/PersonResponse" } } }
           },
+          "400": { "$ref": "#/components/responses/BadRequest" },
           "401": { "$ref": "#/components/responses/Unauthorized" },
           "403": { "$ref": "#/components/responses/InsufficientScope" },
           "422": { "$ref": "#/components/responses/ValidationError" },
@@ -81,7 +113,7 @@
       "get": {
         "operationId": "getPerson",
         "summary": "Get a person",
-        "description": "Returns a person by ID with embedded company, tags, lists, and custom fields.",
+        "description": "Returns a person by ID with embedded `company`, `tags`, `lists`, and `custom_fields`.",
         "tags": ["People"],
         "parameters": [{ "$ref": "#/components/parameters/id" }],
         "responses": {
@@ -97,7 +129,7 @@
       "patch": {
         "operationId": "updatePerson",
         "summary": "Update a person",
-        "description": "Updates a person. Only fields included in the body are modified.",
+        "description": "Updates a person. Only fields included in the body are modified. `ranking` is read-only and cannot be updated.",
         "tags": ["People"],
         "parameters": [{ "$ref": "#/components/parameters/id" }],
         "requestBody": {
@@ -109,6 +141,7 @@
             "description": "Person updated successfully.",
             "content": { "application/json": { "schema": { "$ref": "#/components/schemas/PersonResponse" } } }
           },
+          "400": { "$ref": "#/components/responses/BadRequest" },
           "401": { "$ref": "#/components/responses/Unauthorized" },
           "403": { "$ref": "#/components/responses/InsufficientScope" },
           "404": { "$ref": "#/components/responses/NotFound" },
@@ -118,7 +151,7 @@
       "delete": {
         "operationId": "deletePerson",
         "summary": "Delete a person",
-        "description": "Soft-delete: the record is no longer accessible via the API.",
+        "description": "Soft-deletes a person. The record is no longer accessible via the API.",
         "tags": ["People"],
         "parameters": [{ "$ref": "#/components/parameters/id" }],
         "responses": {
@@ -142,7 +175,11 @@
         "schema": { "type": "string", "format": "uuid" },
         "description": "UUID of the resource."
       },
-      "page": { "name": "page", "in": "query", "schema": { "type": "integer", "default": 1, "minimum": 1 } },
+      "page": {
+        "name": "page",
+        "in": "query",
+        "schema": { "type": "integer", "default": 1, "minimum": 1 }
+      },
       "per_page": {
         "name": "per_page",
         "in": "query",
@@ -155,13 +192,41 @@
         "schema": { "type": "string", "enum": ["created_at", "updated_at", "full_name"], "default": "created_at" },
         "description": "Field to sort by."
       },
-      "order": { "name": "order", "in": "query", "schema": { "type": "string", "enum": ["asc", "desc"], "default": "desc" } },
-      "created_after": { "name": "created_after", "in": "query", "schema": { "type": "string", "format": "date-time" } },
-      "created_before": { "name": "created_before", "in": "query", "schema": { "type": "string", "format": "date-time" } },
-      "updated_after": { "name": "updated_after", "in": "query", "schema": { "type": "string", "format": "date-time" } },
-      "updated_before": { "name": "updated_before", "in": "query", "schema": { "type": "string", "format": "date-time" } }
+      "order": {
+        "name": "order",
+        "in": "query",
+        "schema": { "type": "string", "enum": ["asc", "desc"], "default": "desc" }
+      },
+      "created_after": {
+        "name": "created_after",
+        "in": "query",
+        "schema": { "type": "string", "format": "date-time" },
+        "description": "ISO 8601 UTC. Returns records created after this timestamp."
+      },
+      "created_before": {
+        "name": "created_before",
+        "in": "query",
+        "schema": { "type": "string", "format": "date-time" },
+        "description": "ISO 8601 UTC. Returns records created before this timestamp."
+      },
+      "updated_after": {
+        "name": "updated_after",
+        "in": "query",
+        "schema": { "type": "string", "format": "date-time" },
+        "description": "ISO 8601 UTC. Returns records updated after this timestamp."
+      },
+      "updated_before": {
+        "name": "updated_before",
+        "in": "query",
+        "schema": { "type": "string", "format": "date-time" },
+        "description": "ISO 8601 UTC. Returns records updated before this timestamp."
+      }
     },
     "responses": {
+      "BadRequest": {
+        "description": "Malformed request.",
+        "content": { "application/json": { "schema": { "$ref": "#/components/schemas/ErrorResponse" } } }
+      },
       "Unauthorized": {
         "description": "Missing or invalid token.",
         "content": { "application/json": { "schema": { "$ref": "#/components/schemas/ErrorResponse" } } }
@@ -205,7 +270,11 @@
             "properties": {
               "code": { "type": "string", "example": "validation_error" },
               "message": { "type": "string", "example": "Validation failed." },
-              "fields": { "type": "object", "additionalProperties": { "type": "string" } },
+              "fields": {
+                "type": "object",
+                "additionalProperties": { "type": "string" },
+                "example": { "full_name": "String must contain at most 70 character(s)." }
+              },
               "request_id": { "type": "string", "format": "uuid" }
             }
           }
@@ -228,7 +297,7 @@
           "type": {
             "type": "string",
             "enum": ["personal", "work", "other"],
-            "description": "Email type. Accepted values: personal, work, other.",
+            "description": "Email type.",
             "example": "work"
           }
         },
@@ -242,7 +311,7 @@
           "type": {
             "type": "string",
             "enum": ["mobile", "work", "residential", "other"],
-            "description": "Phone type. Accepted values: mobile, work, residential, other.",
+            "description": "Phone type.",
             "example": "mobile"
           }
         },
@@ -270,7 +339,7 @@
         "type": "object",
         "properties": {
           "id": { "type": "string", "format": "uuid" },
-          "value": { "type": "string", "nullable": true },
+          "value": {},
           "field": {
             "type": "object",
             "properties": {
@@ -289,18 +358,34 @@
           "full_name": { "type": "string", "maxLength": 70, "example": "Maria Silva" },
           "emails": {
             "type": "array",
+            "nullable": true,
             "items": { "$ref": "#/components/schemas/ContactEmail" },
             "example": [{ "email": "maria@company.com", "type": "work" }]
           },
           "phones": {
             "type": "array",
+            "nullable": true,
             "items": { "$ref": "#/components/schemas/ContactPhone" },
             "example": [{ "phone": "+5511999990001", "type": "mobile" }]
           },
           "company_id": { "type": "string", "format": "uuid", "nullable": true },
           "owner_user_id": { "type": "string", "format": "uuid", "nullable": true },
           "position": { "type": "string", "nullable": true, "example": "Sales Director" },
-          "ranking": { "type": "number", "minimum": 0, "maximum": 5, "example": 4 },
+          "ranking": {
+            "type": "number",
+            "minimum": 0,
+            "maximum": 5,
+            "example": 0,
+            "readOnly": true,
+            "description": "Read-only. Managed internally by Vendaze."
+          },
+          "avatar_url": {
+            "type": "string",
+            "format": "uri",
+            "nullable": true,
+            "example": "https://storage.vendaze.com/client/workspaces/abc/people/xyz/avatar/avatar_WWT1BGs9ma.webp"
+          },
+          "entity_id": { "type": "string", "example": "g7wwkh0" },
           "created_at": { "type": "string", "format": "date-time" },
           "updated_at": { "type": "string", "format": "date-time" }
         }
@@ -334,21 +419,103 @@
           "emails": { "type": "array", "items": { "$ref": "#/components/schemas/ContactEmail" } },
           "phones": { "type": "array", "items": { "$ref": "#/components/schemas/ContactPhone" } },
           "company_id": { "type": "string", "format": "uuid" },
-          "position": { "type": "string", "maxLength": 100 },
+          "position": { "type": "string", "maxLength": 100, "example": "Sales Director" },
           "owner_user_id": { "type": "string", "format": "uuid" },
-          "ranking": { "type": "number", "minimum": 0, "maximum": 5 }
+          "avatar_image": {
+            "type": "string",
+            "description": "Base64-encoded image (no data URI prefix). Accepted formats: JPEG, PNG, WebP, GIF, BMP, TIFF. Converted to WebP 500x500."
+          },
+          "tag_ids": {
+            "type": "array",
+            "items": { "type": "string", "format": "uuid" },
+            "description": "Tag IDs to associate with the person."
+          },
+          "list_ids": {
+            "type": "array",
+            "items": { "type": "string", "format": "uuid" },
+            "description": "List IDs to associate with the person."
+          },
+          "deal_ids": {
+            "type": "array",
+            "items": { "type": "string", "format": "uuid" },
+            "description": "Deal IDs to associate with the person."
+          },
+          "custom_fields": {
+            "type": "array",
+            "items": {
+              "type": "object",
+              "required": ["field_id", "value"],
+              "properties": {
+                "field_id": { "type": "string", "format": "uuid" },
+                "value": { "description": "Field value. Type depends on the custom field definition." }
+              }
+            },
+            "description": "Custom field values to set for the person."
+          }
         }
       },
       "UpdatePersonRequest": {
         "type": "object",
+        "description": "All fields are optional. Only fields included in the body are modified. `ranking` is read-only and cannot be sent.",
         "properties": {
           "full_name": { "type": "string", "maxLength": 70 },
           "emails": { "type": "array", "items": { "$ref": "#/components/schemas/ContactEmail" } },
           "phones": { "type": "array", "items": { "$ref": "#/components/schemas/ContactPhone" } },
-          "company_id": { "type": "string", "format": "uuid", "nullable": true },
-          "position": { "type": "string", "maxLength": 100, "nullable": true },
-          "owner_user_id": { "type": "string", "format": "uuid", "nullable": true },
-          "ranking": { "type": "number", "minimum": 0, "maximum": 5 }
+          "company_id": {
+            "type": "string",
+            "format": "uuid",
+            "nullable": true,
+            "description": "Pass `null` to remove the company association."
+          },
+          "position": {
+            "type": "string",
+            "maxLength": 100,
+            "nullable": true,
+            "description": "Pass `null` to clear the job title."
+          },
+          "owner_user_id": {
+            "type": "string",
+            "format": "uuid",
+            "nullable": true,
+            "description": "Pass `null` to remove the owner."
+          },
+          "avatar_image": {
+            "type": "string",
+            "description": "Base64-encoded image (no data URI prefix). Replaces the current avatar. Accepted formats: JPEG, PNG, WebP, GIF, BMP, TIFF. Converted to WebP 500x500."
+          },
+          "tag_ids": {
+            "type": "array",
+            "items": { "type": "string", "format": "uuid" },
+            "description": "Tag IDs to associate. Behavior depends on `association_mode`."
+          },
+          "list_ids": {
+            "type": "array",
+            "items": { "type": "string", "format": "uuid" },
+            "description": "List IDs to associate. Behavior depends on `association_mode`."
+          },
+          "deal_ids": {
+            "type": "array",
+            "items": { "type": "string", "format": "uuid" },
+            "description": "Deal IDs to associate. Behavior depends on `association_mode`."
+          },
+          "custom_fields": {
+            "type": "array",
+            "items": {
+              "type": "object",
+              "required": ["field_id", "value"],
+              "properties": {
+                "field_id": { "type": "string", "format": "uuid" },
+                "value": { "description": "Field value. Type depends on the custom field definition." }
+              }
+            },
+            "description": "Custom field values. Behavior depends on `association_mode`. In `append` mode, replaces the value for each `field_id` sent without touching others."
+          },
+          "association_mode": {
+            "type": "string",
+            "enum": ["append", "replace"],
+            "default": "append",
+            "description": "Controls how associations (`tag_ids`, `list_ids`, `deal_ids`, `custom_fields`) are applied. `append`: adds new associations without removing existing ones. `replace`: removes all current associations of each sent type and inserts the new ones. Sending an empty array with `replace` removes all associations of that type."
+          }
         }
       },
       "PeopleListResponse": {

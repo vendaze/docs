@@ -80,8 +80,10 @@ A Vendaze API usa códigos de status HTTP padrão e retorna um formato de erro c
 </Accordion>
 
 <Accordion title="forbidden (403)">
-  O token é válido e tem o escopo correto, mas o workspace autenticado não tem permissão para
-  acessar este recurso específico.
+  O token é válido e tem o escopo correto, mas a operação foi negada. Ocorre ao acessar um recurso
+  de outro workspace, ou quando uma operação de escrita inclui valores de campos fora do seu nível
+  de acesso — por exemplo, definir `owner_user_id` como outro usuário quando seu papel não permite.
+  O campo `message` descreve o contexto específico.
 </Accordion>
 
 <Accordion title="not_found (404)">
@@ -152,17 +154,18 @@ Nem todos os erros devem ser retentados. Retentar um erro não-recuperável desp
 
 **Erros não-recuperáveis** indicam problema na requisição ou nas credenciais. Não retente automaticamente:
 
-| Status | Código               | O que fazer                                                              |
-| ------ | -------------------- | ------------------------------------------------------------------------ |
-| `400`  | qualquer             | Corrija a requisição. O input está malformado.                           |
-| `401`  | `token_expired`      | Renove o access token e retente a requisição original.                   |
-| `401`  | `unauthorized`       | Verifique se o token está presente e formatado corretamente.             |
-| `401`  | `invalid_client`     | Verifique `client_id` e `client_secret`. Não retente automaticamente.    |
-| `400`  | `invalid_grant`      | Code ou refresh token inválido. Redirecione o usuário pelo fluxo OAuth.  |
-| `403`  | `insufficient_scope` | Solicite nova autorização com os escopos necessários.                    |
-| `404`  | `not_found`          | O recurso não existe. Não retente.                                       |
-| `409`  | `conflict`           | Resolva o conflito antes de retentar.                                    |
-| `422`  | `validation_error`   | Corrija os campos listados em `fields`. Não retente com o mesmo payload. |
+| Status | Código               | O que fazer                                                                                            |
+| ------ | -------------------- | ------------------------------------------------------------------------------------------------------ |
+| `400`  | qualquer             | Corrija a requisição. O input está malformado.                                                         |
+| `401`  | `token_expired`      | Renove o access token e retente a requisição original.                                                 |
+| `401`  | `unauthorized`       | Verifique se o token está presente e formatado corretamente.                                           |
+| `401`  | `invalid_client`     | Verifique `client_id` e `client_secret`. Não retente automaticamente.                                  |
+| `400`  | `invalid_grant`      | Code ou refresh token inválido. Redirecione o usuário pelo fluxo OAuth.                                |
+| `403`  | `insufficient_scope` | Solicite nova autorização com os escopos necessários.                                                  |
+| `403`  | `forbidden`          | Corrija a requisição. A operação ou os valores dos campos não são permitidos para seu nível de acesso. |
+| `404`  | `not_found`          | O recurso não existe. Não retente.                                                                     |
+| `409`  | `conflict`           | Resolva o conflito antes de retentar.                                                                  |
+| `422`  | `validation_error`   | Corrija os campos listados em `fields`. Não retente com o mesmo payload.                               |
 
 ### Padrão recomendado de tratamento de erros
 

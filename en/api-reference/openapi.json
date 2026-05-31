@@ -380,19 +380,6 @@
             "description": "Partial match on job title."
           },
           {
-            "name": "tag",
-            "in": "query",
-            "schema": {
-              "type": "array",
-              "items": {
-                "type": "string"
-              }
-            },
-            "style": "form",
-            "explode": true,
-            "description": "Filter by tags. AND logic."
-          },
-          {
             "$ref": "#/components/parameters/created_after"
           },
           {
@@ -403,6 +390,28 @@
           },
           {
             "$ref": "#/components/parameters/updated_before"
+          },
+          {
+            "name": "tag[]",
+            "in": "query",
+            "schema": {
+              "type": "array",
+              "items": {
+                "type": "string",
+                "format": "uuid"
+              }
+            },
+            "style": "form",
+            "explode": true,
+            "description": "Filter by tag IDs. AND logic — person must have all specified tags. Example: `?tag[]=uuid1&tag[]=uuid2`."
+          },
+          {
+            "name": "custom_field[key]",
+            "in": "query",
+            "schema": {
+              "type": "string"
+            },
+            "description": "Filter by custom field value. Replace `key` with the field key. Example: `?custom_field[industry]=SaaS`."
           }
         ],
         "responses": {
@@ -433,7 +442,7 @@
       "post": {
         "operationId": "createPerson",
         "summary": "Create a person",
-        "description": "Creates a new person in the workspace.",
+        "description": "Creates a new person in the workspace. `ranking` is read-only and always set to `0` on creation.",
         "tags": [
           "People"
         ],
@@ -458,6 +467,9 @@
               }
             }
           },
+          "400": {
+            "$ref": "#/components/responses/BadRequest"
+          },
           "401": {
             "$ref": "#/components/responses/Unauthorized"
           },
@@ -477,7 +489,7 @@
       "get": {
         "operationId": "getPerson",
         "summary": "Get a person",
-        "description": "Returns a person by ID with embedded company, tags, lists, and custom fields.",
+        "description": "Returns a person by ID with embedded `company`, `tags`, `lists`, and `custom_fields`.",
         "tags": [
           "People"
         ],
@@ -511,7 +523,7 @@
       "patch": {
         "operationId": "updatePerson",
         "summary": "Update a person",
-        "description": "Updates a person. Only fields included in the body are modified.",
+        "description": "Updates a person. Only fields included in the body are modified. `ranking` is read-only and cannot be updated.",
         "tags": [
           "People"
         ],
@@ -541,6 +553,9 @@
               }
             }
           },
+          "400": {
+            "$ref": "#/components/responses/BadRequest"
+          },
           "401": {
             "$ref": "#/components/responses/Unauthorized"
           },
@@ -558,7 +573,7 @@
       "delete": {
         "operationId": "deletePerson",
         "summary": "Delete a person",
-        "description": "Soft-delete: the record is no longer accessible via the API.",
+        "description": "Soft-deletes a person. The record is no longer accessible via the API.",
         "tags": [
           "People"
         ],
@@ -2572,6 +2587,16 @@
             }
           }
         }
+      },
+      "BadRequest": {
+        "description": "Malformed request.",
+        "content": {
+          "application/json": {
+            "schema": {
+              "$ref": "#/components/schemas/ErrorResponse"
+            }
+          }
+        }
       }
     },
     "schemas": {
@@ -3056,6 +3081,7 @@
           },
           "emails": {
             "type": "array",
+            "nullable": true,
             "items": {
               "$ref": "#/components/schemas/ContactEmail"
             },
@@ -3068,6 +3094,7 @@
           },
           "phones": {
             "type": "array",
+            "nullable": true,
             "items": {
               "$ref": "#/components/schemas/ContactPhone"
             },
@@ -3097,7 +3124,19 @@
             "type": "number",
             "minimum": 0,
             "maximum": 5,
-            "example": 4
+            "example": 0,
+            "readOnly": true,
+            "description": "Read-only. Managed internally by Vendaze."
+          },
+          "avatar_url": {
+            "type": "string",
+            "format": "uri",
+            "nullable": true,
+            "example": "https://storage.vendaze.com/client/workspaces/abc/people/xyz/avatar/avatar_WWT1BGs9ma.webp"
+          },
+          "entity_id": {
+            "type": "string",
+            "example": "g7wwkh0"
           },
           "created_at": {
             "type": "string",
@@ -3181,21 +3220,66 @@
           },
           "position": {
             "type": "string",
-            "maxLength": 100
+            "maxLength": 100,
+            "example": "Sales Director"
           },
           "owner_user_id": {
             "type": "string",
             "format": "uuid"
           },
-          "ranking": {
-            "type": "number",
-            "minimum": 0,
-            "maximum": 5
+          "avatar_image": {
+            "type": "string",
+            "description": "Base64-encoded image (no data URI prefix). Accepted formats: JPEG, PNG, WebP, GIF, BMP, TIFF. Converted to WebP 500x500."
+          },
+          "tag_ids": {
+            "type": "array",
+            "items": {
+              "type": "string",
+              "format": "uuid"
+            },
+            "description": "Tag IDs to associate with the person."
+          },
+          "list_ids": {
+            "type": "array",
+            "items": {
+              "type": "string",
+              "format": "uuid"
+            },
+            "description": "List IDs to associate with the person."
+          },
+          "deal_ids": {
+            "type": "array",
+            "items": {
+              "type": "string",
+              "format": "uuid"
+            },
+            "description": "Deal IDs to associate with the person."
+          },
+          "custom_fields": {
+            "type": "array",
+            "items": {
+              "type": "object",
+              "required": [
+                "field_id",
+                "value"
+              ],
+              "properties": {
+                "field_id": {
+                  "type": "string",
+                  "format": "uuid"
+                },
+                "value": {
+                  "description": "Field value. Type depends on the custom field definition."
+                }
+              }
+            },
+            "description": "Custom field values to set for the person."
           }
         }
       },
       "UpdatePersonRequest": {
         "type": "object",
+        "description": "All fields are optional. Only fields included in the body are modified. `ranking` is read-only and cannot be sent.",
         "properties": {
           "full_name": {
             "type": "string",
@@ -3216,22 +3300,77 @@
           "company_id": {
             "type": "string",
             "format": "uuid",
-            "nullable": true
+            "nullable": true,
+            "description": "Pass `null` to remove the company association."
           },
           "position": {
             "type": "string",
             "maxLength": 100,
-            "nullable": true
+            "nullable": true,
+            "description": "Pass `null` to clear the job title."
           },
           "owner_user_id": {
             "type": "string",
             "format": "uuid",
-            "nullable": true
+            "nullable": true,
+            "description": "Pass `null` to remove the owner."
           },
-          "ranking": {
-            "type": "number",
-            "minimum": 0,
-            "maximum": 5
+          "avatar_image": {
+            "type": "string",
+            "description": "Base64-encoded image (no data URI prefix). Replaces the current avatar. Accepted formats: JPEG, PNG, WebP, GIF, BMP, TIFF. Converted to WebP 500x500."
+          },
+          "tag_ids": {
+            "type": "array",
+            "items": {
+              "type": "string",
+              "format": "uuid"
+            },
+            "description": "Tag IDs to associate. Behavior depends on `association_mode`."
+          },
+          "list_ids": {
+            "type": "array",
+            "items": {
+              "type": "string",
+              "format": "uuid"
+            },
+            "description": "List IDs to associate. Behavior depends on `association_mode`."
+          },
+          "deal_ids": {
+            "type": "array",
+            "items": {
+              "type": "string",
+              "format": "uuid"
+            },
+            "description": "Deal IDs to associate. Behavior depends on `association_mode`."
+          },
+          "custom_fields": {
+            "type": "array",
+            "items": {
+              "type": "object",
+              "required": [
+                "field_id",
+                "value"
+              ],
+              "properties": {
+                "field_id": {
+                  "type": "string",
+                  "format": "uuid"
+                },
+                "value": {
+                  "description": "Field value. Type depends on the custom field definition."
+                }
+              }
+            },
+            "description": "Custom field values. Behavior depends on `association_mode`. In `append` mode, replaces the value for each `field_id` sent without touching others."
+          },
+          "association_mode": {
+            "type": "string",
+            "enum": [
+              "append",
+              "replace"
+            ],
+            "default": "append",
+            "description": "Controls how associations (`tag_ids`, `list_ids`, `deal_ids`, `custom_fields`) are applied. `append`: adds new associations without removing existing ones. `replace`: removes all current associations of each sent type and inserts the new ones. Sending an empty array with `replace` removes all associations of that type."
           }
         }
       },
