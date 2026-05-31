@@ -95,7 +95,7 @@
       "delete": {
         "operationId": "deleteList",
         "summary": "Deletar lista",
-        "description": "Soft-delete: o registro nao e mais acessivel pela API.",
+        "description": "Soft-delete: o registro não e mais acessível pela API.",
         "tags": ["Listas"],
         "parameters": [{ "$ref": "#/components/parameters/id" }],
         "responses": {

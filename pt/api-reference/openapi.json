@@ -441,7 +441,7 @@
       "post": {
         "operationId": "createPerson",
         "summary": "Criar pessoa",
-        "description": "Cria uma nova pessoa no workspace. `ranking` e somente leitura e sempre definido como `0` na criacao.",
+        "description": "Cria uma nova pessoa no workspace.",
         "tags": [
           "Pessoas"
         ],
@@ -522,7 +522,7 @@
       "patch": {
         "operationId": "updatePerson",
         "summary": "Atualizar pessoa",
-        "description": "Atualiza uma pessoa. Apenas os campos enviados sao modificados. `ranking` e somente leitura e nao pode ser enviado.",
+        "description": "Atualiza uma pessoa. Apenas os campos enviados sao modificados.",
         "tags": [
           "Pessoas"
         ],
@@ -572,7 +572,7 @@
       "delete": {
         "operationId": "deletePerson",
         "summary": "Deletar pessoa",
-        "description": "Soft-delete: o registro nao e mais acessivel pela API.",
+        "description": "Soft-delete: o registro não e mais acessível pela API.",
         "tags": [
           "Pessoas"
         ],
@@ -830,7 +830,7 @@
       "delete": {
         "operationId": "deleteCompany",
         "summary": "Deletar empresa",
-        "description": "Soft-delete: o registro nao e mais acessivel pela API.",
+        "description": "Soft-delete: o registro não e mais acessível pela API.",
         "tags": [
           "Empresas"
         ],
@@ -1127,7 +1127,7 @@
       "delete": {
         "operationId": "deleteDeal",
         "summary": "Deletar negocio",
-        "description": "Soft-delete: o registro nao e mais acessivel pela API.",
+        "description": "Soft-delete: o registro não e mais acessível pela API.",
         "tags": [
           "Negocios"
         ],
@@ -1790,7 +1790,7 @@
       "delete": {
         "operationId": "deleteProduct",
         "summary": "Deletar produto",
-        "description": "Soft-delete: o registro nao e mais acessivel pela API.",
+        "description": "Soft-delete: o registro não e mais acessível pela API.",
         "tags": [
           "Produtos"
         ],
@@ -1990,7 +1990,7 @@
       "delete": {
         "operationId": "deleteTag",
         "summary": "Deletar tag",
-        "description": "Soft-delete: o registro nao e mais acessivel pela API.",
+        "description": "Soft-delete: o registro não e mais acessível pela API.",
         "tags": [
           "Tags"
         ],
@@ -2190,7 +2190,7 @@
       "delete": {
         "operationId": "deleteList",
         "summary": "Deletar lista",
-        "description": "Soft-delete: o registro nao e mais acessivel pela API.",
+        "description": "Soft-delete: o registro não e mais acessível pela API.",
         "tags": [
           "Listas"
         ],
@@ -2414,7 +2414,7 @@
       "delete": {
         "operationId": "deleteCustomField",
         "summary": "Deletar campo adicional",
-        "description": "Soft-delete: o registro nao e mais acessivel pela API.",
+        "description": "Soft-delete: o registro não e mais acessível pela API.",
         "tags": [
           "Campos Adicionais"
         ],
@@ -3281,7 +3281,7 @@
       },
       "UpdatePersonRequest": {
         "type": "object",
-        "description": "Todos os campos sao opcionais. Apenas os campos enviados sao modificados. `ranking` e somente leitura e nao pode ser enviado.",
+        "description": "Todos os campos sao opcionais. Apenas os campos enviados sao modificados.",
         "properties": {
           "full_name": {
             "type": "string",

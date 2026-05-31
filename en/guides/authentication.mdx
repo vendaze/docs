@@ -24,7 +24,8 @@ Before continuing, you need a `client_id` and `client_secret`. See [Register you
     Your server builds the authorization URL and redirects the user's browser to it.
   </Step>
   <Step title="User logs in and approves">
-    The user selects a workspace and approves the requested scopes on the Vendaze consent screen.
+    The user selects a workspace and reviews the requested scopes on the Vendaze consent screen.
+    They can only approve or deny access in full, with no option to select individual scopes.
   </Step>
   <Step title="Receive the authorization code">
     Vendaze redirects the browser back to your `redirect_uri` with a short-lived `code`.
@@ -82,7 +83,7 @@ window.location.href = `https://api.vendaze.com/oauth/authorize?${params}`;
 
 ## Step 2 - User authorizes
 
-The user selects a workspace and approves the requested scopes on the Vendaze consent screen. No action required on your side during this step.
+The user selects a workspace and reviews the requested scopes on the Vendaze consent screen. They can only approve or deny access in full, with no option to select individual scopes. No action required on your side during this step.
 
 ## Step 3 - Handle the callback
 

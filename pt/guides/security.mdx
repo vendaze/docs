@@ -29,7 +29,7 @@ Esta não é uma integração para SPAs, apps mobile sem back-end, ou qualquer a
 
 ## PKCE é gerenciado internamente
 
-OAuth 2.1 recomenda PKCE (Proof Key for Code Exchange) para todos os fluxos de autorização. A Vendaze API implementa PKCE, mas o gerencia inteiramente no lado do servidor — sua integração não precisa gerar ou enviar um `code_verifier`.
+OAuth 2.1 recomenda PKCE (Proof Key for Code Exchange) para todos os fluxos de autorização. A Vendaze API implementa PKCE, mas o gerencia inteiramente no lado do servidor. Sua integração não precisa gerar ou enviar um `code_verifier`.
 
 Veja o que acontece quando um usuário autoriza seu app:
 
@@ -74,7 +74,7 @@ Se o link expirar antes de você abri-lo, você precisa rotacionar as credenciai
 
 Para rotacionar credenciais, você envia `client_id` e o e-mail cadastrado. O `client_secret` não é necessário.
 
-Esta é uma decisão de segurança intencional. Se o `client_secret` for comprometido, exigi-lo para rotação daria ao atacante que já tem o secret o poder de rotacionar e tomar controle do app. O e-mail cadastrado nunca é retornado por nenhum endpoint da API — apenas a Vendaze e o dono legítimo sabem qual é. Mesmo que um atacante tenha o `client_id` (que é público) e descubra o e-mail, o novo `client_secret` nunca aparece na resposta: ele é enviado como link de uso único para aquele e-mail. Para completar a rotação, o atacante precisaria de acesso à caixa de entrada do e-mail cadastrado — o que está fora do escopo do que a API pode proteger.
+Esta é uma decisão de segurança intencional. Se o `client_secret` for comprometido, exigi-lo para rotação daria ao atacante que já tem o secret o poder de rotacionar e tomar controle do app. O e-mail cadastrado nunca é retornado por nenhum endpoint da API. Apenas a Vendaze e o dono legítimo sabem qual é. Mesmo que um atacante tenha o `client_id` (que é público) e descubra o e-mail, o novo `client_secret` nunca aparece na resposta: ele é enviado como link de uso único para aquele e-mail. Para completar a rotação, o atacante precisaria de acesso à caixa de entrada do e-mail cadastrado, o que está fora do escopo do que a API pode proteger.
 
 ## workspace_id vem do token, nunca da requisição
 

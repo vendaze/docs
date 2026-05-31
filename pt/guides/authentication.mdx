@@ -24,8 +24,9 @@ Antes de continuar, você precisa de um `client_id` e `client_secret`. Veja [Reg
     Seu servidor constrói a URL de autorização e redireciona o browser do usuário para ela.
   </Step>
   <Step title="Usuário faz login e aprova">
-    O usuário seleciona um workspace e aprova os escopos solicitados na tela de consentimento da
-    Vendaze.
+    O usuário seleciona um workspace e visualiza os escopos solicitados na tela de consentimento da
+    Vendaze. Ele pode apenas aprovar ou negar o acesso completo, sem opção de selecionar escopos
+    individualmente.
   </Step>
   <Step title="Receber o código de autorização">
     A Vendaze redireciona o browser de volta para sua `redirect_uri` com um `code` de curta duração.
@@ -85,7 +86,7 @@ window.location.href = `https://api.vendaze.com/oauth/authorize?${params}`;
 
 ## Passo 2 - Usuário autoriza
 
-O usuário seleciona o workspace e aprova os escopos na tela de consentimento da Vendaze. Nenhuma ação necessária do seu lado durante este passo.
+O usuário seleciona o workspace e visualiza os escopos solicitados na tela de consentimento da Vendaze. Ele pode apenas aprovar ou negar o acesso completo, sem opção de selecionar escopos individualmente. Nenhuma ação necessária do seu lado durante este passo.
 
 ## Passo 3 - Receber o callback
 

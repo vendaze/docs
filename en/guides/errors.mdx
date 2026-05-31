@@ -81,8 +81,8 @@ The Vendaze API uses standard HTTP status codes and returns a consistent error f
 <Accordion title="forbidden (403)">
   The token is valid and has the right scope, but the operation was denied. This happens when
   accessing a record that belongs to a different workspace, or when a write operation includes field
-  values outside your access level — for example, setting `owner_user_id` to a user other than
-  yourself when your role does not allow it. The `message` field describes the specific context.
+  values outside your access level (for example, setting `owner_user_id` to a user other than
+  yourself when your role does not allow it). The `message` field describes the specific context.
 </Accordion>
 
 <Accordion title="not_found (404)">

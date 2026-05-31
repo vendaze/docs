@@ -82,7 +82,7 @@ A Vendaze API usa códigos de status HTTP padrão e retorna um formato de erro c
 <Accordion title="forbidden (403)">
   O token é válido e tem o escopo correto, mas a operação foi negada. Ocorre ao acessar um recurso
   de outro workspace, ou quando uma operação de escrita inclui valores de campos fora do seu nível
-  de acesso — por exemplo, definir `owner_user_id` como outro usuário quando seu papel não permite.
+  de acesso (por exemplo, definir `owner_user_id` como outro usuário quando seu papel não permite).
   O campo `message` descreve o contexto específico.
 </Accordion>
 

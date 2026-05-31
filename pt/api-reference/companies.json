@@ -121,7 +121,7 @@
       "delete": {
         "operationId": "deleteCompany",
         "summary": "Deletar empresa",
-        "description": "Soft-delete: o registro nao e mais acessivel pela API.",
+        "description": "Soft-delete: o registro não e mais acessível pela API.",
         "tags": ["Empresas"],
         "parameters": [{ "$ref": "#/components/parameters/id" }],
         "responses": {

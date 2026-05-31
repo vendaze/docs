@@ -103,7 +103,7 @@
       "delete": {
         "operationId": "deleteCustomField",
         "summary": "Deletar campo adicional",
-        "description": "Soft-delete: o registro nao e mais acessivel pela API.",
+        "description": "Soft-delete: o registro não e mais acessível pela API.",
         "tags": ["Campos Adicionais"],
         "parameters": [{ "$ref": "#/components/parameters/id" }],
         "responses": {

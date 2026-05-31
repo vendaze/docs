@@ -95,7 +95,7 @@
       "delete": {
         "operationId": "deleteProduct",
         "summary": "Deletar produto",
-        "description": "Soft-delete: o registro nao e mais acessivel pela API.",
+        "description": "Soft-delete: o registro não e mais acessível pela API.",
         "tags": ["Produtos"],
         "parameters": [{ "$ref": "#/components/parameters/id" }],
         "responses": {

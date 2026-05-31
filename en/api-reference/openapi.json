@@ -442,7 +442,7 @@
       "post": {
         "operationId": "createPerson",
         "summary": "Create a person",
-        "description": "Creates a new person in the workspace. `ranking` is read-only and always set to `0` on creation.",
+        "description": "Creates a new person in the workspace.",
         "tags": [
           "People"
         ],
@@ -523,7 +523,7 @@
       "patch": {
         "operationId": "updatePerson",
         "summary": "Update a person",
-        "description": "Updates a person. Only fields included in the body are modified. `ranking` is read-only and cannot be updated.",
+        "description": "Updates a person. Only fields included in the body are modified.",
         "tags": [
           "People"
         ],
@@ -3279,7 +3279,7 @@
       },
       "UpdatePersonRequest": {
         "type": "object",
-        "description": "All fields are optional. Only fields included in the body are modified. `ranking` is read-only and cannot be sent.",
+        "description": "All fields are optional. Only fields included in the body are modified.",
         "properties": {
           "full_name": {
             "type": "string",

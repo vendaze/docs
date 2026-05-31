@@ -129,7 +129,7 @@
       "delete": {
         "operationId": "deleteDeal",
         "summary": "Deletar negocio",
-        "description": "Soft-delete: o registro nao e mais acessivel pela API.",
+        "description": "Soft-delete: o registro não e mais acessível pela API.",
         "tags": ["Negocios"],
         "parameters": [{ "$ref": "#/components/parameters/id" }],
         "responses": {

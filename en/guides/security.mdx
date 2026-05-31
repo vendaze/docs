@@ -29,7 +29,7 @@ This is not an integration for SPAs, mobile apps without a back-end, or any envi
 
 ## PKCE is handled internally
 
-OAuth 2.1 recommends PKCE (Proof Key for Code Exchange) for all authorization flows. The Vendaze API implements PKCE, but manages it entirely on the server side — your integration does not need to generate or send a `code_verifier`.
+OAuth 2.1 recommends PKCE (Proof Key for Code Exchange) for all authorization flows. The Vendaze API implements PKCE, but manages it entirely on the server side. Your integration does not need to generate or send a `code_verifier`.
 
 Here is what happens when a user authorizes your app:
 
@@ -74,7 +74,7 @@ If the link expires before you open it, you must rotate credentials to receive a
 
 To rotate credentials, you send `client_id` and the registered email address. The `client_secret` is not required.
 
-This is an intentional security decision. If the `client_secret` is compromised, requiring it for rotation would give the attacker who already has the secret the ability to rotate and take over the app. The registered email address is never returned by any API endpoint — only Vendaze and the legitimate owner know what it is. Even if an attacker has the `client_id` (which is public) and discovers the email, the new `client_secret` is never returned in the response: it is sent as a one-time link to that email address. Completing the rotation requires access to the registered inbox, which is outside the scope of what the API can protect.
+This is an intentional security decision. If the `client_secret` is compromised, requiring it for rotation would give the attacker who already has the secret the ability to rotate and take over the app. The registered email address is never returned by any API endpoint. Only Vendaze and the legitimate owner know what it is. Even if an attacker has the `client_id` (which is public) and discovers the email, the new `client_secret` is never returned in the response: it is sent as a one-time link to that email address. Completing the rotation requires access to the registered inbox, which is outside the scope of what the API can protect.
 
 ## workspace_id comes from the token, never from the request
 

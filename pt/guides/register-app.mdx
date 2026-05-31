@@ -90,7 +90,7 @@ Seu `client_secret` é enviado **somente por e-mail** e nunca retorna na respost
 | `description`   | string   | Não         | Descrição curta do que seu app faz. Máx. 500 chars.                                                                                                                           |
 | `avatar_url`    | string   | Não         | URL HTTPS do logo do seu app. A Vendaze faz o download da imagem, valida o formato e armazena. Formatos aceitos: JPEG, PNG, WebP, GIF, BMP, TIFF. SVG não é aceito. Máx. 2MB. |
 | `redirect_uris` | string[] | Sim         | Uma ou mais URIs HTTPS para o callback OAuth. Correspondência exata obrigatória.                                                                                              |
-| `scopes`        | string[] | Sim         | Escopos que seu app precisa. Usuários aprovam individualmente.                                                                                                                |
+| `scopes`        | string[] | Sim         | Escopos que seu app precisa. O usuário vê a lista completa na tela de consentimento e aprova ou nega tudo de uma vez.                                                         |
 
 Quando `avatar_url` é fornecido, a Vendaze faz o download da imagem do seu servidor, valida o formato pelo magic byte do arquivo (não pelo Content-Type declarado) e armazena na infraestrutura da Vendaze. O `avatar_url` na resposta é sempre uma URL `https://storage.vendaze.com`.
 
@@ -132,7 +132,7 @@ Você pode registrar múltiplas URIs de redirecionamento para diferentes ambient
 | `custom_fields:read`  | Ler campos customizados e seus valores        |
 | `custom_fields:write` | Criar, atualizar, deletar campos customizados |
 
-Solicitar um escopo durante o registro não garante que o usuário o aprove. Usuários podem aprovar ou recusar cada escopo individualmente durante o fluxo de consentimento.
+Solicitar um escopo durante o registro não garante que o usuário aprove o acesso. Na tela de consentimento, o usuário vê todos os escopos solicitados e pode apenas aprovar ou negar o acesso completo. Não é possível selecionar escopos individualmente.
 
 <Warning>
   Seu `client_secret` aparece apenas uma vez, no e-mail que você recebe após o registro. Se

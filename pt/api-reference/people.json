@@ -90,7 +90,7 @@
       "post": {
         "operationId": "createPerson",
         "summary": "Criar pessoa",
-        "description": "Cria uma nova pessoa no workspace. `ranking` e somente leitura e sempre definido como `0` na criacao.",
+        "description": "Cria uma nova pessoa no workspace.",
         "tags": ["Pessoas"],
         "requestBody": {
           "required": true,
@@ -129,7 +129,7 @@
       "patch": {
         "operationId": "updatePerson",
         "summary": "Atualizar pessoa",
-        "description": "Atualiza uma pessoa. Apenas os campos enviados sao modificados. `ranking` e somente leitura e nao pode ser enviado.",
+        "description": "Atualiza uma pessoa. Apenas os campos enviados sao modificados.",
         "tags": ["Pessoas"],
         "parameters": [{ "$ref": "#/components/parameters/id" }],
         "requestBody": {
@@ -151,7 +151,7 @@
       "delete": {
         "operationId": "deletePerson",
         "summary": "Deletar pessoa",
-        "description": "Soft-delete: o registro nao e mais acessivel pela API.",
+        "description": "Soft-delete: o registro não e mais acessível pela API.",
         "tags": ["Pessoas"],
         "parameters": [{ "$ref": "#/components/parameters/id" }],
         "responses": {
@@ -236,7 +236,7 @@
         "content": { "application/json": { "schema": { "$ref": "#/components/schemas/ErrorResponse" } } }
       },
       "NotFound": {
-        "description": "Recurso nao encontrado.",
+        "description": "Recurso não encontrado.",
         "content": { "application/json": { "schema": { "$ref": "#/components/schemas/ErrorResponse" } } }
       },
       "ValidationError": {
@@ -456,7 +456,7 @@
       },
       "UpdatePersonRequest": {
         "type": "object",
-        "description": "Todos os campos sao opcionais. Apenas os campos enviados sao modificados. `ranking` e somente leitura e nao pode ser enviado.",
+        "description": "Todos os campos sao opcionais. Apenas os campos enviados sao modificados.",
         "properties": {
           "full_name": { "type": "string", "maxLength": 70 },
           "emails": { "type": "array", "items": { "$ref": "#/components/schemas/ContactEmail" } },
