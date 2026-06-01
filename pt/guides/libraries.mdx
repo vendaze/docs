@@ -78,32 +78,22 @@ Usa a API `fetch` nativa (Node.js 18+). Sem dependências externas.
     ```
 
   </Tab>
-  <Tab title="Listar pessoas (paginado)">
+  <Tab title="Buscar pessoa por ID">
     ```javascript
-    // Buscar todas as pessoas de um workspace, tratando paginação automaticamente
-    async function listAllPeople(accessToken) {
-      const results = [];
-      let page = 1;
+    // Buscar uma pessoa por ID
+    async function getPerson(accessToken, personId) {
+      const res = await fetch(
+        `https://api.vendaze.com/v1/people/${personId}`,
+        { headers: { Authorization: `Bearer ${accessToken}` } }
+      );
 
-      while (true) {
-        const res = await fetch(
-          `https://api.vendaze.com/v1/people?page=${page}&per_page=100&order_by=created_at&order=desc`,
-          { headers: { Authorization: `Bearer ${accessToken}` } }
-        );
-
-        if (!res.ok) {
-          const { error } = await res.json();
-          throw new Error(`${error.code}: ${error.message}`);
-        }
-
-        const { data, meta } = await res.json();
-        results.push(...data);
-
-        if (!meta.has_more) break;
-        page++;
+      if (!res.ok) {
+        const { error } = await res.json();
+        throw new Error(`${error.code}: ${error.message}`);
       }
 
-      return results;
+      const { data } = await res.json();
+      return data;
     }
     ```
 
@@ -219,7 +209,7 @@ Usa a API `fetch` nativa (Node.js 18+). Sem dependências externas.
       },
     });
 
-    const { data: people } = await client.request('/v1/people?per_page=50');
+    const { data: people } = await client.request('/v1/people/PERSON_UUID');
     ```
 
   </Tab>
@@ -254,31 +244,20 @@ Usa a biblioteca `httpx` (async). Instale com `pip install httpx`.
     ```
 
   </Tab>
-  <Tab title="Listar pessoas (paginado)">
+  <Tab title="Buscar pessoa por ID">
     ```python
     import httpx
 
-    async def list_all_people(access_token: str) -> list[dict]:
-        results = []
-        page = 1
+    async def get_person(access_token: str, person_id: str) -> dict:
         headers = {"Authorization": f"Bearer {access_token}"}
 
         async with httpx.AsyncClient() as client:
-            while True:
-                res = await client.get(
-                    "https://api.vendaze.com/v1/people",
-                    params={"page": page, "per_page": 100, "order_by": "created_at", "order": "desc"},
-                    headers=headers,
-                )
-                res.raise_for_status()
-                body = res.json()
-                results.extend(body["data"])
-
-                if not body["meta"]["has_more"]:
-                    break
-                page += 1
-
-        return results
+            res = await client.get(
+                f"https://api.vendaze.com/v1/people/{person_id}",
+                headers=headers,
+            )
+            res.raise_for_status()
+            return res.json()["data"]
     ```
 
   </Tab>
@@ -449,7 +428,7 @@ Usa apenas a biblioteca padrão. Sem dependências externas.
     ```
 
   </Tab>
-  <Tab title="Listar pessoas (paginado)">
+  <Tab title="Buscar pessoa por ID">
     ```go
     package vendaze
 
@@ -465,51 +444,33 @@ Usa apenas a biblioteca padrão. Sem dependências externas.
         CreatedAt string `json:"created_at"`
     }
 
-    type PaginationMeta struct {
-        Total   int  `json:"total"`
-        Page    int  `json:"page"`
-        PerPage int  `json:"per_page"`
-        HasMore bool `json:"has_more"`
-    }
-
-    func ListAllPeople(accessToken string) ([]Person, error) {
-        var results []Person
-        page := 1
+    func GetPerson(accessToken string, personID string) (*Person, error) {
         client := &http.Client{}
 
-        for {
-            req, _ := http.NewRequest("GET",
-                fmt.Sprintf("https://api.vendaze.com/v1/people?page=%d&per_page=100", page),
-                nil,
-            )
-            req.Header.Set("Authorization", "Bearer "+accessToken)
+        req, _ := http.NewRequest("GET",
+            fmt.Sprintf("https://api.vendaze.com/v1/people/%s", personID),
+            nil,
+        )
+        req.Header.Set("Authorization", "Bearer "+accessToken)
 
-            res, err := client.Do(req)
-            if err != nil {
-                return nil, err
-            }
-            defer res.Body.Close()
+        res, err := client.Do(req)
+        if err != nil {
+            return nil, err
+        }
+        defer res.Body.Close()
 
-            if res.StatusCode != http.StatusOK {
-                return nil, fmt.Errorf("status inesperado: %d", res.StatusCode)
-            }
-
-            var body struct {
-                Data []Person       `json:"data"`
-                Meta PaginationMeta `json:"meta"`
-            }
-            if err := json.NewDecoder(res.Body).Decode(&body); err != nil {
-                return nil, err
-            }
-
-            results = append(results, body.Data...)
-            if !body.Meta.HasMore {
-                break
-            }
-            page++
+        if res.StatusCode != http.StatusOK {
+            return nil, fmt.Errorf("status inesperado: %d", res.StatusCode)
         }
 
-        return results, nil
+        var body struct {
+            Data Person `json:"data"`
+        }
+        if err := json.NewDecoder(res.Body).Decode(&body); err != nil {
+            return nil, err
+        }
+
+        return &body.Data, nil
     }
     ```
 

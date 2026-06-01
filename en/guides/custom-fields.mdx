@@ -1,6 +1,6 @@
 ---
 title: 'Custom Fields'
-description: 'Read and filter workspace-defined custom fields on people, companies, and deals.'
+description: 'Read and write workspace-defined custom fields on people, companies, and deals.'
 icon: 'sliders'
 keywords:
   ['custom fields', 'custom properties', 'CRM fields', 'workspace fields', 'Vendaze custom data']
@@ -32,44 +32,9 @@ Custom fields are defined per workspace and associated with individual records. 
 | `link`         | URL                               | `"https://linkedin.com/in/ana"` |
 | `address`      | Physical address                  | `"123 Main St"`                 |
 
-## List workspace fields
-
-```bash
-GET /v1/custom-fields
-```
-
-Filter by entity type:
-
-```bash
-GET /v1/custom-fields?show_people=true
-GET /v1/custom-fields?show_deals=true
-```
-
-Response:
-
-```json
-{
-  "data": [
-    {
-      "id": "a1b2c3d4-e5f6-7890-abcd-ef1234567890",
-      "label": "Lead Source",
-      "key": "lead_source",
-      "type": "select",
-      "value": ["organic", "paid", "referral", "outbound"],
-      "required": false,
-      "show_people": true,
-      "show_companies": false,
-      "show_deals": true,
-      "created_at": "2026-01-10T09:00:00Z"
-    }
-  ],
-  "meta": { "total": 5, "page": 1, "per_page": 50, "has_more": false }
-}
-```
-
 ## Read values on a record
 
-When retrieving a record by ID, custom field values are returned in the `custom_fields` object:
+When retrieving a record by ID, custom field values are returned in the `custom_fields` array:
 
 ```json
 {
@@ -91,8 +56,6 @@ When retrieving a record by ID, custom field values are returned in the `custom_
   }
 }
 ```
-
-Custom fields do **not** appear in listing responses, only in individual record lookups.
 
 ## Set values on create or update
 
@@ -120,21 +83,3 @@ The `custom_fields` array follows the same `association_mode` as tags and lists:
 
 - `append` (default): sets or replaces the value for each `field_key` sent, leaving other fields untouched.
 - `replace`: removes all custom field values from the record and inserts only the ones sent.
-
-## Filter by custom field
-
-```bash
-GET /v1/people?custom_field[lead_source]=referral
-GET /v1/companies?custom_field[cnpj]=00.000.000/0001-00
-```
-
-Comparison depends on the field type:
-
-| Type                                   | Comparison                     |
-| -------------------------------------- | ------------------------------ |
-| `text`, `long_text`, `link`, `address` | Case-insensitive partial match |
-| `cpf`, `cnpj`                          | Exact                          |
-| `select`                               | Exact                          |
-| `multi_select`                         | Contains the value             |
-| `number`                               | Exact                          |
-| `date`                                 | Exact                          |

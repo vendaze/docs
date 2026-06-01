@@ -95,14 +95,7 @@
               },
               {
                 "group": "Utilizando a API",
-                "pages": [
-                  "pt/guides/pagination",
-                  "pt/guides/filtering",
-                  "pt/guides/custom-fields",
-                  "pt/guides/webhooks",
-                  "pt/guides/errors",
-                  "pt/guides/rate-limits"
-                ]
+                "pages": ["pt/guides/custom-fields", "pt/guides/webhooks", "pt/guides/errors", "pt/guides/rate-limits"]
               },
               {
                 "group": "Boas Práticas",
@@ -183,14 +176,7 @@
               },
               {
                 "group": "Using the API",
-                "pages": [
-                  "en/guides/pagination",
-                  "en/guides/filtering",
-                  "en/guides/custom-fields",
-                  "en/guides/webhooks",
-                  "en/guides/errors",
-                  "en/guides/rate-limits"
-                ]
+                "pages": ["en/guides/custom-fields", "en/guides/webhooks", "en/guides/errors", "en/guides/rate-limits"]
               },
               {
                 "group": "Best Practices",

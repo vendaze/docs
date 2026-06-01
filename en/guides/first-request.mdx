@@ -92,12 +92,12 @@ Response:
 
 Store both tokens securely on your server. Never expose them in client-side code or URLs.
 
-## 5. Retrieve contacts
+## 5. Retrieve a contact
 
-Use the `access_token` to make your first real API call:
+Use the `access_token` to make your first real API call. Fetch a specific person by their UUID:
 
 ```bash
-curl https://api.vendaze.com/v1/people \
+curl https://api.vendaze.com/v1/people/550e8400-e29b-41d4-a716-446655440000 \
   -H "Authorization: Bearer eyJhbGciOiJSUzI1NiIsInR5cCI6IkpXVCJ9..."
 ```
 
@@ -105,41 +105,37 @@ Response:
 
 ```json
 {
-  "data": [
-    {
-      "id": "550e8400-e29b-41d4-a716-446655440000",
-      "full_name": "Ana Costa",
-      "emails": [{ "email": "ana@company.com", "type": "work" }],
-      "phones": [{ "phone": "+5511999990001", "type": "mobile" }],
-      "company_id": "7c9e6679-7425-40de-944b-e07fc1f90ae7",
-      "position": "Head of Sales",
-      "ranking": 0,
-      "created_at": "2026-01-15T10:30:00Z",
-      "updated_at": "2026-05-20T14:22:00Z"
-    }
-  ],
-  "meta": {
-    "total": 42,
-    "page": 1,
-    "per_page": 50,
-    "has_more": false
+  "data": {
+    "id": "550e8400-e29b-41d4-a716-446655440000",
+    "full_name": "Ana Costa",
+    "emails": [{ "email": "ana@company.com", "type": "work" }],
+    "phones": [{ "phone": "+5511999990001", "type": "mobile" }],
+    "company_id": "7c9e6679-7425-40de-944b-e07fc1f90ae7",
+    "company": { "id": "7c9e6679-7425-40de-944b-e07fc1f90ae7", "full_name": "Acme Corp" },
+    "position": "Head of Sales",
+    "ranking": 0,
+    "tags": [],
+    "lists": [],
+    "custom_fields": [],
+    "created_at": "2026-01-15T10:30:00Z",
+    "updated_at": "2026-05-20T14:22:00Z"
   }
 }
 ```
 
-The `meta` object tells you the total number of records and whether there are more pages. See [Pagination](/en/guides/pagination) for details on navigating large result sets.
+The response includes the person's data with embedded `company`, `tags`, `lists`, and `custom_fields`.
 
 ## What to explore next
 
 <CardGroup cols={2}>
-  <Card title="Pagination" icon="bars-staggered" href="/en/guides/pagination">
-    Navigate large result sets with `page`, `per_page`, `order_by`, and `order`.
-  </Card>
-  <Card title="Filtering" icon="filter" href="/en/guides/filtering">
-    Filter by text, date range, tags, and custom fields.
+  <Card title="Custom Fields" icon="sliders" href="/en/guides/custom-fields">
+    Read and write workspace-defined custom fields on people, companies, and deals.
   </Card>
   <Card title="Errors" icon="triangle-exclamation" href="/en/guides/errors">
     Understand error codes and build resilient error handling.
+  </Card>
+  <Card title="Webhooks" icon="webhook" href="/en/guides/webhooks">
+    Receive real-time notifications when events occur in workspace data.
   </Card>
   <Card title="API Reference" icon="code" href="/en/api-reference">
     Full endpoint reference with request and response schemas.

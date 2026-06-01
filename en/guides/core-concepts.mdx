@@ -93,13 +93,12 @@ The value `19900` represents $199.00 (or R$ 199,00 in BRL). Your app is responsi
 
 ## Soft delete
 
-Resources like people, companies, deals, and products support **soft delete**. When deleted via the API, the record is marked as deleted internally but not permanently removed from the database.
+Resources like people, companies, and deals support **soft delete**. When deleted via the API, the record is marked as deleted internally but not permanently removed from the database.
 
 From your integration's perspective, the behavior is transparent:
 
-- `DELETE /v1/tasks/:id` returns `204` and the record becomes inaccessible
-- `GET /v1/tasks/:id` for a deleted record returns `404`
-- Listing endpoints never return deleted records
+- `DELETE /v1/people/:id` returns `204` and the record becomes inaccessible
+- `GET /v1/people/:id` for a deleted record returns `404`
 
 ## Response envelope
 
@@ -108,17 +107,6 @@ Every Vendaze API response follows the same format:
 ```json
 // Single object
 { "data": { ... } }
-
-// Paginated list
-{
-  "data": [ ... ],
-  "meta": {
-    "total": 150,
-    "page": 1,
-    "per_page": 50,
-    "has_more": true
-  }
-}
 
 // Error
 {

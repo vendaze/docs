@@ -95,13 +95,12 @@ O valor `19900` representa R$ 199,00. Seu aplicativo é responsável pela conver
 
 ## Soft delete
 
-Recursos como pessoas, empresas, negócios e produtos suportam **soft delete**. Ao deletar via API, o registro é marcado internamente como deletado, mas não é removido permanentemente do banco.
+Recursos como pessoas, empresas e negócios suportam **soft delete**. Ao deletar via API, o registro é marcado internamente como deletado, mas não é removido permanentemente do banco.
 
 Da perspectiva da sua integração, o comportamento é transparente:
 
-- `DELETE /v1/tasks/:id` retorna `204` e o registro deixa de ser acessível
-- `GET /v1/tasks/:id` para um registro deletado retorna `404`
-- Endpoints de listagem nunca retornam registros deletados
+- `DELETE /v1/people/:id` retorna `204` e o registro deixa de ser acessível
+- `GET /v1/people/:id` para um registro deletado retorna `404`
 
 ## Envelope de resposta
 
@@ -110,17 +109,6 @@ Toda resposta da Vendaze API segue o mesmo formato:
 ```json
 // Objeto único
 { "data": { ... } }
-
-// Lista paginada
-{
-  "data": [ ... ],
-  "meta": {
-    "total": 150,
-    "page": 1,
-    "per_page": 50,
-    "has_more": true
-  }
-}
 
 // Erro
 {

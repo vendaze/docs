@@ -8,13 +8,7 @@ noindex: true
 <Update label="v1.0.1" date="2026-04-15">
   ## Correções pós-lançamento
 
-**Correção: filtro `person_id` ausente em listagem de atividades:** `GET /v1/activities` não aceitava `person_id` como parâmetro de filtro apesar de estar documentado. O parâmetro agora é aplicado corretamente e retorna apenas atividades vinculadas à pessoa especificada.
-
 **Correção: PATCH em negócios ignorando `stage_id` quando `pipeline_id` é omitido:** ao atualizar o stage de um negócio via `PATCH /v1/deals/:id`, omitir `pipeline_id` do body fazia o `stage_id` ser silenciosamente ignorado. O endpoint agora atualiza corretamente o stage quando apenas `stage_id` é fornecido, desde que o stage pertença ao pipeline atual do negócio.
-
-**Correção: campos adicionais do tipo `multi_select` retornando valores como string:** `GET /v1/people/:id` retornava valores de campos adicionais do tipo `multi_select` como string separada por vírgulas em vez de array. A resposta agora retorna corretamente um array de strings: `["valor1", "valor2"]`.
-
-**Correção: `POST /v1/activities` aceitando timestamps futuros:** atividades podiam ser criadas com timestamp `occurred_at` no futuro, o que é semanticamente incorreto para atividades registradas. O endpoint agora retorna `422` com `"occurred_at must not be in the future."` para timestamps além do momento atual.
 
 **Melhoria: header `X-RateLimit-Reset` agora retorna Unix timestamp:** anteriormente o header retornava os segundos restantes até o reset. Agora retorna o Unix timestamp do momento do reset, mais fácil de usar em lógica de countdown no cliente.
 
@@ -37,48 +31,17 @@ O sistema de autorização é construído sobre OAuth 2.1 com `client_secret`. T
 
 ### Recursos disponíveis na v1
 
-| Recurso       | Escopos                                       | Operações            |
-| ------------- | --------------------------------------------- | -------------------- |
-| People        | `people:read`, `people:write`                 | CRUD completo        |
-| Companies     | `companies:read`, `companies:write`           | CRUD completo        |
-| Deals         | `deals:read`, `deals:write`                   | CRUD completo        |
-| Tasks         | `tasks:read`, `tasks:write`                   | CRUD completo        |
-| Activities    | escopos da entidade vinculada                 | Create, Read, Delete |
-| Products      | `deals:write` para escrita                    | CRUD completo        |
-| Tags          | qualquer escopo de escrita                    | CRUD completo        |
-| Lists         | `people:read/write` ou `companies:read/write` | CRUD completo        |
-| Custom Fields | escopos da entidade correspondente            | CRUD completo        |
+| Recurso   | Escopos                             | Operações     |
+| --------- | ----------------------------------- | ------------- |
+| People    | `people:read`, `people:write`       | CRUD completo |
+| Companies | `companies:read`, `companies:write` | CRUD completo |
+| Deals     | `deals:read`, `deals:write`         | CRUD completo |
 
-Atividades são vinculadas a uma entidade pai (pessoa, empresa ou negócio) e herdam o escopo dessa entidade. Não existe escopo standalone de `activities`.
-
-### Paginação e filtros
-
-Todos os endpoints de listagem suportam paginação baseada em páginas com `page` e `per_page` (máximo 100 por página). Ordenação disponível via `order_by` e `order` em todos os recursos.
-
-Filtros disponíveis em todos os recursos:
-
-- **Filtros de texto:** correspondência parcial sem distinção de maiúsculas em `full_name`, `name` e campos similares
-- **Filtros de intervalo de data:** `created_after`, `created_before`, `updated_after`, `updated_before` em todos os recursos; `forecast_after`, `forecast_before` em negócios
-- **Filtros por tag:** filtre por uma ou mais tags com semântica AND
-- **Filtros de correspondência exata:** `company_id`, `owner_user_id`, `completed`, `priority`, `type` e outros campos de enum
-- **Filtros por campo adicional:** `custom_field[UUID]=valor` com comparação baseada no tipo do campo
-
-### Rate limiting
-
-Limites de taxa aplicados por `client_id` para endpoints autenticados e por IP para endpoints OAuth.
-
-| Tipo de endpoint | Limite            |
-| ---------------- | ----------------- |
-| GET              | 1.000 req/min     |
-| POST / PATCH     | 200 req/min       |
-| DELETE           | 100 req/min       |
-| Endpoints OAuth  | 20 req/min por IP |
-
-Toda resposta inclui os headers `X-RateLimit-Limit`, `X-RateLimit-Remaining` e `X-RateLimit-Reset`. Quando o limite é excedido, a API retorna `429` com header `Retry-After` indicando quando retentar.
+Cada recurso suporta `POST` (criar), `GET /:id` (ler por ID), `PATCH /:id` (atualizar) e `DELETE /:id` (soft delete). Não há endpoints de listagem na v1.
 
 ### Idempotência
 
-`POST /v1/deals` e `POST /v1/people` suportam o header `Idempotency-Key` no lançamento. Chaves são armazenadas por 24 horas. Enviar a mesma chave com o mesmo body retorna a resposta original sem reprocessar. Enviar a mesma chave com body diferente retorna `422` com código `idempotency_conflict`.
+`POST /v1/people`, `POST /v1/companies` e `POST /v1/deals` suportam o header `Idempotency-Key`. Chaves são armazenadas por 24 horas. Enviar a mesma chave com o mesmo body retorna a resposta original sem reprocessar. Enviar a mesma chave com body diferente retorna `422` com código `idempotency_conflict`.
 
 ### Webhooks
 

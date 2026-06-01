@@ -93,12 +93,12 @@ Resposta:
 
 Armazene os dois tokens com segurança no servidor. Nunca os exponha em código client-side ou em URLs.
 
-## 5. Buscar contatos
+## 5. Buscar um contato
 
-Use o `access_token` para fazer sua primeira chamada real à API:
+Use o `access_token` para fazer sua primeira chamada real à API. Busque uma pessoa específica pelo UUID:
 
 ```bash
-curl https://api.vendaze.com/v1/people \
+curl https://api.vendaze.com/v1/people/550e8400-e29b-41d4-a716-446655440000 \
   -H "Authorization: Bearer eyJhbGciOiJSUzI1NiIsInR5cCI6IkpXVCJ9..."
 ```
 
@@ -106,41 +106,37 @@ Resposta:
 
 ```json
 {
-  "data": [
-    {
-      "id": "550e8400-e29b-41d4-a716-446655440000",
-      "full_name": "Ana Costa",
-      "emails": [{ "email": "ana@empresa.com", "type": "work" }],
-      "phones": [{ "phone": "+5511999990001", "type": "mobile" }],
-      "company_id": "7c9e6679-7425-40de-944b-e07fc1f90ae7",
-      "position": "Head of Sales",
-      "ranking": 0,
-      "created_at": "2026-01-15T10:30:00Z",
-      "updated_at": "2026-05-20T14:22:00Z"
-    }
-  ],
-  "meta": {
-    "total": 42,
-    "page": 1,
-    "per_page": 50,
-    "has_more": false
+  "data": {
+    "id": "550e8400-e29b-41d4-a716-446655440000",
+    "full_name": "Ana Costa",
+    "emails": [{ "email": "ana@empresa.com", "type": "work" }],
+    "phones": [{ "phone": "+5511999990001", "type": "mobile" }],
+    "company_id": "7c9e6679-7425-40de-944b-e07fc1f90ae7",
+    "company": { "id": "7c9e6679-7425-40de-944b-e07fc1f90ae7", "full_name": "Acme Corp" },
+    "position": "Head of Sales",
+    "ranking": 0,
+    "tags": [],
+    "lists": [],
+    "custom_fields": [],
+    "created_at": "2026-01-15T10:30:00Z",
+    "updated_at": "2026-05-20T14:22:00Z"
   }
 }
 ```
 
-O objeto `meta` informa o total de registros e se há mais páginas. Veja [Paginação](/pt/guides/pagination) para detalhes sobre como navegar em grandes conjuntos de resultados.
+A resposta inclui os dados da pessoa com `company`, `tags`, `lists` e `custom_fields` embutidos.
 
 ## O que explorar a seguir
 
 <CardGroup cols={2}>
-  <Card title="Paginação" icon="bars-staggered" href="/pt/guides/pagination">
-    Navegue em grandes conjuntos de resultados com `page`, `per_page`, `order_by` e `order`.
-  </Card>
-  <Card title="Filtros" icon="filter" href="/pt/guides/filtering">
-    Filtre por texto, intervalo de data, tags e campos adicionais.
+  <Card title="Campos Adicionais" icon="sliders" href="/pt/guides/custom-fields">
+    Leia e escreva campos personalizados definidos pelo workspace em pessoas, empresas e negócios.
   </Card>
   <Card title="Erros" icon="triangle-exclamation" href="/pt/guides/errors">
     Entenda os códigos de erro e construa tratamento de erros robusto.
+  </Card>
+  <Card title="Webhooks" icon="webhook" href="/pt/guides/webhooks">
+    Receba notificações em tempo real quando eventos ocorrem nos dados do workspace.
   </Card>
   <Card title="API Reference" icon="code" href="/pt/api-reference">
     Referência completa dos endpoints com schemas de request e response.

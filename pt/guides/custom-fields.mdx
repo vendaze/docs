@@ -1,6 +1,6 @@
 ---
 title: 'Campos Adicionais'
-description: 'Leia e filtre campos personalizados definidos pelo workspace em pessoas, empresas e negócios.'
+description: 'Leia e escreva campos personalizados definidos pelo workspace em pessoas, empresas e negócios.'
 icon: 'sliders'
 keywords:
   [
@@ -38,44 +38,9 @@ Campos adicionais são definidos por workspace e associados a registros individu
 | `link`         | URL                            | `"https://linkedin.com/in/ana"`    |
 | `address`      | Endereço físico                | `"Rua das Flores, 123"`            |
 
-## Listar campos do workspace
-
-```bash
-GET /v1/custom-fields
-```
-
-Filtre por tipo de entidade:
-
-```bash
-GET /v1/custom-fields?show_people=true
-GET /v1/custom-fields?show_deals=true
-```
-
-Resposta:
-
-```json
-{
-  "data": [
-    {
-      "id": "a1b2c3d4-e5f6-7890-abcd-ef1234567890",
-      "label": "Lead Source",
-      "key": "lead_source",
-      "type": "select",
-      "value": ["organic", "paid", "referral", "outbound"],
-      "required": false,
-      "show_people": true,
-      "show_companies": false,
-      "show_deals": true,
-      "created_at": "2026-01-10T09:00:00Z"
-    }
-  ],
-  "meta": { "total": 5, "page": 1, "per_page": 50, "has_more": false }
-}
-```
-
 ## Ler valores em um registro
 
-Ao buscar um registro por ID, os valores dos campos adicionais são retornados no objeto `custom_fields`:
+Ao buscar um registro por ID, os valores dos campos adicionais são retornados no array `custom_fields`:
 
 ```json
 {
@@ -85,11 +50,11 @@ Ao buscar um registro por ID, os valores dos campos adicionais são retornados n
     "custom_fields": [
       {
         "id": "assoc-uuid",
-        "value": "referral",
+        "value": "indicacao",
         "field": {
           "id": "a1b2c3d4-e5f6-7890-abcd-ef1234567890",
-          "label": "Lead Source",
-          "key": "lead_source",
+          "label": "Origem do Lead",
+          "key": "origem_lead",
           "type": "select"
         }
       }
@@ -97,8 +62,6 @@ Ao buscar um registro por ID, os valores dos campos adicionais são retornados n
   }
 }
 ```
-
-Campos adicionais **não** aparecem em respostas de listagem, apenas em consultas por ID.
 
 ## Definir valores ao criar ou atualizar
 
@@ -126,21 +89,3 @@ O array `custom_fields` segue o mesmo `association_mode` de tags e listas:
 
 - `append` (padrão): define ou substitui o valor de cada `field_key` enviado, sem alterar os demais campos.
 - `replace`: remove todos os valores de campos adicionais do registro e insere apenas os enviados.
-
-## Filtrar por campo adicional
-
-```bash
-GET /v1/people?custom_field[origem_lead]=indicacao
-GET /v1/companies?custom_field[cnpj]=00.000.000/0001-00
-```
-
-A comparação depende do tipo do campo:
-
-| Tipo                                   | Comparação                           |
-| -------------------------------------- | ------------------------------------ |
-| `text`, `long_text`, `link`, `address` | Parcial, sem distinção de maiúsculas |
-| `cpf`, `cnpj`                          | Exata                                |
-| `select`                               | Exata                                |
-| `multi_select`                         | Contém o valor                       |
-| `number`                               | Exata                                |
-| `date`                                 | Exata                                |
