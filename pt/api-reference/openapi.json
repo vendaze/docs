@@ -1154,11 +1154,10 @@
             "maxLength": 500,
             "example": "Integração com a Vendaze para sincronizar contatos."
           },
-          "avatar_url": {
+          "avatar_image": {
             "type": "string",
-            "format": "uri",
-            "example": "https://meusaas.com/assets/logo.webp",
-            "description": "URL HTTPS do logo do seu app. A Vendaze faz o download da imagem, valida o formato pelo magic byte, converte para JPEG (máx. 400x400px) e armazena. Formatos aceitos: JPEG, PNG, WebP, GIF, BMP, TIFF. SVG não é aceito. Máx. 2MB."
+            "example": "data:image/png;base64,iVBORw0KGgo...",
+            "description": "Data URI base64 completo do logo do seu app (ex: `data:image/png;base64,...`). A Vendaze decodifica a imagem, valida o formato pelo magic byte, converte para JPEG (máx. 400x400px) e armazena. Formatos aceitos: JPEG, PNG, WebP, GIF, BMP, TIFF. SVG não é aceito. Máx. 2MB."
           },
           "redirect_uris": {
             "type": "array",
@@ -1200,7 +1199,7 @@
               "avatar_url": {
                 "type": "string",
                 "example": "https://storage.vendaze.com/assets/integrations/meusaas.jpg",
-                "description": "URL pública do avatar armazenado. Sempre JPEG — a Vendaze converte todos os formatos no upload. Presente somente se avatar_url foi enviado na requisição."
+                "description": "URL pública do avatar armazenado. Sempre JPEG — a Vendaze converte todos os formatos no upload. Presente somente se avatar_image foi enviado na requisição."
               },
               "message": {
                 "type": "string",
@@ -1241,11 +1240,10 @@
             "example": "Integração atualizada com a Vendaze.",
             "description": "Nova descrição do que seu app faz. Máx. 500 chars. Se omitido, a descrição atual é mantida."
           },
-          "avatar_url": {
+          "avatar_image": {
             "type": "string",
-            "format": "uri",
-            "example": "https://meusaas.com/assets/logo-v2.webp",
-            "description": "URL HTTPS do logo do seu app. A Vendaze faz o download da imagem, valida o formato, converte para JPEG (máx. 400x400px) e armazena. Formatos aceitos: JPEG, PNG, WebP, GIF, BMP, TIFF. SVG não é aceito. Se omitido, o avatar atual é mantido."
+            "example": "data:image/png;base64,iVBORw0KGgo...",
+            "description": "Data URI base64 completo do logo do seu app (ex: `data:image/png;base64,...`). A Vendaze decodifica a imagem, valida o formato, converte para JPEG (máx. 400x400px) e armazena. Formatos aceitos: JPEG, PNG, WebP, GIF, BMP, TIFF. SVG não é aceito. Se omitido, o avatar atual é mantido."
           },
           "redirect_uris": {
             "type": "array",
@@ -1279,7 +1277,7 @@
               "avatar_url": {
                 "type": "string",
                 "example": "https://storage.vendaze.com/assets/integrations/meusaasv2.jpg",
-                "description": "URL pública do avatar armazenado. Presente somente se avatar_url foi enviado na requisição."
+                "description": "URL pública do avatar armazenado. Presente somente se avatar_image foi enviado na requisição."
               },
               "message": {
                 "type": "string",
@@ -1536,7 +1534,8 @@
           },
           "avatar_image": {
             "type": "string",
-            "description": "Imagem em base64 puro (sem prefixo data URI). Formatos aceitos: JPEG, PNG, WebP, GIF, BMP, TIFF. Convertida para WebP 500x500."
+            "description": "Data URI base64 completo da imagem (ex: `data:image/png;base64,...`). Formatos aceitos: JPEG, PNG, WebP, GIF, BMP, TIFF. Convertida para WebP 500x500.",
+            "example": "data:image/png;base64,iVBORw0KGgo..."
           },
           "tag_ids": {
             "type": "array",
@@ -1626,7 +1625,8 @@
           },
           "avatar_image": {
             "type": "string",
-            "description": "Imagem em base64 puro (sem prefixo data URI). Substitui o avatar atual. Formatos aceitos: JPEG, PNG, WebP, GIF, BMP, TIFF. Convertida para WebP 500x500."
+            "description": "Data URI base64 completo da imagem (ex: `data:image/png;base64,...`). Substitui o avatar atual. Formatos aceitos: JPEG, PNG, WebP, GIF, BMP, TIFF. Convertida para WebP 500x500.",
+            "example": "data:image/png;base64,iVBORw0KGgo..."
           },
           "tag_ids": {
             "type": "array",
@@ -1815,7 +1815,8 @@
           },
           "avatar_image": {
             "type": "string",
-            "description": "Imagem em base64 puro (sem prefixo data URI). Formatos aceitos: JPEG, PNG, WebP, GIF, BMP, TIFF. Convertida para WebP 500x500."
+            "description": "Data URI base64 completo da imagem (ex: `data:image/png;base64,...`). Formatos aceitos: JPEG, PNG, WebP, GIF, BMP, TIFF. Convertida para WebP 500x500.",
+            "example": "data:image/png;base64,iVBORw0KGgo..."
           },
           "tag_ids": {
             "type": "array",
@@ -1893,7 +1894,8 @@
           },
           "avatar_image": {
             "type": "string",
-            "description": "Imagem em base64 puro (sem prefixo data URI). Substitui o avatar atual. Formatos aceitos: JPEG, PNG, WebP, GIF, BMP, TIFF. Convertida para WebP 500x500."
+            "description": "Data URI base64 completo da imagem (ex: `data:image/png;base64,...`). Substitui o avatar atual. Formatos aceitos: JPEG, PNG, WebP, GIF, BMP, TIFF. Convertida para WebP 500x500.",
+            "example": "data:image/png;base64,iVBORw0KGgo..."
           },
           "tag_ids": {
             "type": "array",
