@@ -25,10 +25,26 @@
             "description": "Negócio criado com sucesso.",
             "content": { "application/json": { "schema": { "$ref": "#/components/schemas/DealWithEmbeddedResponse" } } }
           },
+          "400": {
+            "description": "Body JSON inválido ou não parseável. Código de erro: `bad_request`. Mensagem: `\"Request body must be valid JSON.\"`",
+            "content": {
+              "application/json": {
+                "schema": { "$ref": "#/components/schemas/ErrorResponse" },
+                "example": {
+                  "error": {
+                    "code": "bad_request",
+                    "message": "Request body must be valid JSON.",
+                    "request_id": "550e8400-e29b-41d4-a716-446655440000"
+                  }
+                }
+              }
+            }
+          },
           "401": { "$ref": "#/components/responses/Unauthorized" },
           "403": { "$ref": "#/components/responses/InsufficientScope" },
           "422": { "$ref": "#/components/responses/ValidationError" },
-          "429": { "$ref": "#/components/responses/RateLimitExceeded" }
+          "429": { "$ref": "#/components/responses/RateLimitExceeded" },
+          "500": { "$ref": "#/components/responses/InternalError" }
         }
       }
     },
@@ -46,7 +62,8 @@
           },
           "401": { "$ref": "#/components/responses/Unauthorized" },
           "403": { "$ref": "#/components/responses/InsufficientScope" },
-          "404": { "$ref": "#/components/responses/NotFound" }
+          "404": { "$ref": "#/components/responses/NotFound" },
+          "500": { "$ref": "#/components/responses/InternalError" }
         }
       },
       "patch": {
@@ -64,10 +81,26 @@
             "description": "Negócio atualizado com sucesso.",
             "content": { "application/json": { "schema": { "$ref": "#/components/schemas/DealWithEmbeddedResponse" } } }
           },
+          "400": {
+            "description": "Body JSON inválido ou não parseável. Código de erro: `bad_request`. Mensagem: `\"Request body must be valid JSON.\"` Para PATCH sem campos: código `bad_request`, mensagem `\"No fields provided for update.\"`",
+            "content": {
+              "application/json": {
+                "schema": { "$ref": "#/components/schemas/ErrorResponse" },
+                "example": {
+                  "error": {
+                    "code": "bad_request",
+                    "message": "No fields provided for update.",
+                    "request_id": "550e8400-e29b-41d4-a716-446655440000"
+                  }
+                }
+              }
+            }
+          },
           "401": { "$ref": "#/components/responses/Unauthorized" },
           "403": { "$ref": "#/components/responses/InsufficientScope" },
           "404": { "$ref": "#/components/responses/NotFound" },
-          "422": { "$ref": "#/components/responses/ValidationError" }
+          "422": { "$ref": "#/components/responses/ValidationError" },
+          "500": { "$ref": "#/components/responses/InternalError" }
         }
       },
       "delete": {
@@ -80,7 +113,8 @@
           "204": { "description": "Negócio deletado com sucesso." },
           "401": { "$ref": "#/components/responses/Unauthorized" },
           "403": { "$ref": "#/components/responses/InsufficientScope" },
-          "404": { "$ref": "#/components/responses/NotFound" }
+          "404": { "$ref": "#/components/responses/NotFound" },
+          "500": { "$ref": "#/components/responses/InternalError" }
         }
       }
     }
@@ -100,24 +134,91 @@
     },
     "responses": {
       "Unauthorized": {
-        "description": "Token ausente ou inválido.",
-        "content": { "application/json": { "schema": { "$ref": "#/components/schemas/ErrorResponse" } } }
+        "description": "Token ausente, inválido ou expirado. Códigos de erro e mensagens possíveis: `unauthorized` — `\"Missing or invalid Authorization header.\"`, `\"Invalid or malformed token.\"` ou `\"Token is missing required claims.\"`; `token_expired` — `\"Access token expired. Refresh using the refresh token.\"`",
+        "content": {
+          "application/json": {
+            "schema": { "$ref": "#/components/schemas/ErrorResponse" },
+            "example": {
+              "error": {
+                "code": "unauthorized",
+                "message": "Missing or invalid Authorization header.",
+                "request_id": "550e8400-e29b-41d4-a716-446655440000"
+              }
+            }
+          }
+        }
       },
       "InsufficientScope": {
-        "description": "Token sem o escopo necessário.",
-        "content": { "application/json": { "schema": { "$ref": "#/components/schemas/ErrorResponse" } } }
+        "description": "Token sem o escopo necessário. Código de erro: `insufficient_scope`. Mensagem: `\"This endpoint requires the '{scope}' scope.\"` onde `{scope}` é o escopo exato que está faltando (ex: `\"This endpoint requires the 'deals:write' scope.\"`).",
+        "content": {
+          "application/json": {
+            "schema": { "$ref": "#/components/schemas/ErrorResponse" },
+            "example": {
+              "error": {
+                "code": "insufficient_scope",
+                "message": "This endpoint requires the 'deals:write' scope.",
+                "request_id": "550e8400-e29b-41d4-a716-446655440000"
+              }
+            }
+          }
+        }
       },
       "NotFound": {
-        "description": "Recurso não encontrado.",
-        "content": { "application/json": { "schema": { "$ref": "#/components/schemas/ErrorResponse" } } }
+        "description": "Recurso não encontrado, soft-deletado ou pertencente a outro workspace. Código de erro: `not_found`. Mensagem: `\"Deal not found.\"`",
+        "content": {
+          "application/json": {
+            "schema": { "$ref": "#/components/schemas/ErrorResponse" },
+            "example": {
+              "error": { "code": "not_found", "message": "Deal not found.", "request_id": "550e8400-e29b-41d4-a716-446655440000" }
+            }
+          }
+        }
       },
       "ValidationError": {
-        "description": "Validação de entrada falhou.",
-        "content": { "application/json": { "schema": { "$ref": "#/components/schemas/ValidationErrorResponse" } } }
+        "description": "Validação de entrada falhou. Código de erro: `validation_error`. Mensagem: `\"Validation failed.\"` O objeto `fields` mapeia cada campo inválido a uma descrição do problema.",
+        "content": {
+          "application/json": {
+            "schema": { "$ref": "#/components/schemas/ValidationErrorResponse" },
+            "example": {
+              "error": {
+                "code": "validation_error",
+                "message": "Validation failed.",
+                "fields": { "currency": "Invalid enum value." },
+                "request_id": "550e8400-e29b-41d4-a716-446655440000"
+              }
+            }
+          }
+        }
       },
       "RateLimitExceeded": {
-        "description": "Limite de requisições excedido.",
-        "content": { "application/json": { "schema": { "$ref": "#/components/schemas/ErrorResponse" } } }
+        "description": "Limite de taxa excedido. Código de erro: `rate_limit_exceeded`. Mensagem: `\"Rate limit exceeded. Try again in {N} seconds.\"` O header `Retry-After` contém o mesmo valor.",
+        "content": {
+          "application/json": {
+            "schema": { "$ref": "#/components/schemas/ErrorResponse" },
+            "example": {
+              "error": {
+                "code": "rate_limit_exceeded",
+                "message": "Rate limit exceeded. Try again in 60 seconds.",
+                "request_id": "550e8400-e29b-41d4-a716-446655440000"
+              }
+            }
+          }
+        }
+      },
+      "InternalError": {
+        "description": "Erro inesperado no servidor. Código de erro: `internal_error`. Mensagens possíveis: `\"An unexpected error occurred.\"` (falha genérica) ou `\"Deal updated but associations failed. Retry the associations.\"` (registro salvo mas atualização de associações falhou). Use o `request_id` para correlacionar com os logs do servidor.",
+        "content": {
+          "application/json": {
+            "schema": { "$ref": "#/components/schemas/ErrorResponse" },
+            "example": {
+              "error": {
+                "code": "internal_error",
+                "message": "An unexpected error occurred.",
+                "request_id": "550e8400-e29b-41d4-a716-446655440000"
+              }
+            }
+          }
+        }
       }
     },
     "schemas": {
@@ -128,7 +229,7 @@
             "type": "object",
             "properties": {
               "code": { "type": "string", "example": "not_found" },
-              "message": { "type": "string", "example": "Resource not found." },
+              "message": { "type": "string", "example": "Deal not found." },
               "request_id": { "type": "string", "format": "uuid" }
             }
           }

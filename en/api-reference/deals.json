@@ -25,10 +25,26 @@
             "description": "Deal created successfully.",
             "content": { "application/json": { "schema": { "$ref": "#/components/schemas/DealWithEmbeddedResponse" } } }
           },
+          "400": {
+            "description": "Invalid or unparseable JSON body. Error code: `bad_request`. Message: `\"Request body must be valid JSON.\"`",
+            "content": {
+              "application/json": {
+                "schema": { "$ref": "#/components/schemas/ErrorResponse" },
+                "example": {
+                  "error": {
+                    "code": "bad_request",
+                    "message": "Request body must be valid JSON.",
+                    "request_id": "550e8400-e29b-41d4-a716-446655440000"
+                  }
+                }
+              }
+            }
+          },
           "401": { "$ref": "#/components/responses/Unauthorized" },
           "403": { "$ref": "#/components/responses/InsufficientScope" },
           "422": { "$ref": "#/components/responses/ValidationError" },
-          "429": { "$ref": "#/components/responses/RateLimitExceeded" }
+          "429": { "$ref": "#/components/responses/RateLimitExceeded" },
+          "500": { "$ref": "#/components/responses/InternalError" }
         }
       }
     },
@@ -46,7 +62,8 @@
           },
           "401": { "$ref": "#/components/responses/Unauthorized" },
           "403": { "$ref": "#/components/responses/InsufficientScope" },
-          "404": { "$ref": "#/components/responses/NotFound" }
+          "404": { "$ref": "#/components/responses/NotFound" },
+          "500": { "$ref": "#/components/responses/InternalError" }
         }
       },
       "patch": {
@@ -64,10 +81,26 @@
             "description": "Deal updated successfully.",
             "content": { "application/json": { "schema": { "$ref": "#/components/schemas/DealWithEmbeddedResponse" } } }
           },
+          "400": {
+            "description": "Invalid or unparseable JSON body. Error code: `bad_request`. Message: `\"Request body must be valid JSON.\"` For PATCH with no fields: code `bad_request`, message `\"No fields provided for update.\"`",
+            "content": {
+              "application/json": {
+                "schema": { "$ref": "#/components/schemas/ErrorResponse" },
+                "example": {
+                  "error": {
+                    "code": "bad_request",
+                    "message": "No fields provided for update.",
+                    "request_id": "550e8400-e29b-41d4-a716-446655440000"
+                  }
+                }
+              }
+            }
+          },
           "401": { "$ref": "#/components/responses/Unauthorized" },
           "403": { "$ref": "#/components/responses/InsufficientScope" },
           "404": { "$ref": "#/components/responses/NotFound" },
-          "422": { "$ref": "#/components/responses/ValidationError" }
+          "422": { "$ref": "#/components/responses/ValidationError" },
+          "500": { "$ref": "#/components/responses/InternalError" }
         }
       },
       "delete": {
@@ -80,7 +113,8 @@
           "204": { "description": "Deal deleted successfully." },
           "401": { "$ref": "#/components/responses/Unauthorized" },
           "403": { "$ref": "#/components/responses/InsufficientScope" },
-          "404": { "$ref": "#/components/responses/NotFound" }
+          "404": { "$ref": "#/components/responses/NotFound" },
+          "500": { "$ref": "#/components/responses/InternalError" }
         }
       }
     }
@@ -100,24 +134,91 @@
     },
     "responses": {
       "Unauthorized": {
-        "description": "Missing or invalid token.",
-        "content": { "application/json": { "schema": { "$ref": "#/components/schemas/ErrorResponse" } } }
+        "description": "Token missing, invalid, or expired. Possible error codes and messages: `unauthorized` — `\"Missing or invalid Authorization header.\"`, `\"Invalid or malformed token.\"`, or `\"Token is missing required claims.\"`; `token_expired` — `\"Access token expired. Refresh using the refresh token.\"`",
+        "content": {
+          "application/json": {
+            "schema": { "$ref": "#/components/schemas/ErrorResponse" },
+            "example": {
+              "error": {
+                "code": "unauthorized",
+                "message": "Missing or invalid Authorization header.",
+                "request_id": "550e8400-e29b-41d4-a716-446655440000"
+              }
+            }
+          }
+        }
       },
       "InsufficientScope": {
-        "description": "Token lacks the required scope.",
-        "content": { "application/json": { "schema": { "$ref": "#/components/schemas/ErrorResponse" } } }
+        "description": "Token lacks the required scope. Error code: `insufficient_scope`. Message: `\"This endpoint requires the '{scope}' scope.\"` where `{scope}` is the exact missing scope (e.g. `\"This endpoint requires the 'deals:write' scope.\"`).",
+        "content": {
+          "application/json": {
+            "schema": { "$ref": "#/components/schemas/ErrorResponse" },
+            "example": {
+              "error": {
+                "code": "insufficient_scope",
+                "message": "This endpoint requires the 'deals:write' scope.",
+                "request_id": "550e8400-e29b-41d4-a716-446655440000"
+              }
+            }
+          }
+        }
       },
       "NotFound": {
-        "description": "Resource not found.",
-        "content": { "application/json": { "schema": { "$ref": "#/components/schemas/ErrorResponse" } } }
+        "description": "Resource not found, soft-deleted, or belongs to another workspace. Error code: `not_found`. Message: `\"Deal not found.\"`",
+        "content": {
+          "application/json": {
+            "schema": { "$ref": "#/components/schemas/ErrorResponse" },
+            "example": {
+              "error": { "code": "not_found", "message": "Deal not found.", "request_id": "550e8400-e29b-41d4-a716-446655440000" }
+            }
+          }
+        }
       },
       "ValidationError": {
-        "description": "Input validation failed.",
-        "content": { "application/json": { "schema": { "$ref": "#/components/schemas/ValidationErrorResponse" } } }
+        "description": "Input validation failed. Error code: `validation_error`. Message: `\"Validation failed.\"` The `fields` object maps each invalid field to a description of the problem.",
+        "content": {
+          "application/json": {
+            "schema": { "$ref": "#/components/schemas/ValidationErrorResponse" },
+            "example": {
+              "error": {
+                "code": "validation_error",
+                "message": "Validation failed.",
+                "fields": { "currency": "Invalid enum value." },
+                "request_id": "550e8400-e29b-41d4-a716-446655440000"
+              }
+            }
+          }
+        }
       },
       "RateLimitExceeded": {
-        "description": "Rate limit exceeded.",
-        "content": { "application/json": { "schema": { "$ref": "#/components/schemas/ErrorResponse" } } }
+        "description": "Rate limit exceeded. Error code: `rate_limit_exceeded`. Message: `\"Rate limit exceeded. Try again in {N} seconds.\"` The `Retry-After` response header contains the same value.",
+        "content": {
+          "application/json": {
+            "schema": { "$ref": "#/components/schemas/ErrorResponse" },
+            "example": {
+              "error": {
+                "code": "rate_limit_exceeded",
+                "message": "Rate limit exceeded. Try again in 60 seconds.",
+                "request_id": "550e8400-e29b-41d4-a716-446655440000"
+              }
+            }
+          }
+        }
+      },
+      "InternalError": {
+        "description": "Unexpected server error. Error code: `internal_error`. Possible messages: `\"An unexpected error occurred.\"` (generic failure) or `\"Deal updated but associations failed. Retry the associations.\"` (main record saved but association update failed). Use the `request_id` to correlate with server-side logs.",
+        "content": {
+          "application/json": {
+            "schema": { "$ref": "#/components/schemas/ErrorResponse" },
+            "example": {
+              "error": {
+                "code": "internal_error",
+                "message": "An unexpected error occurred.",
+                "request_id": "550e8400-e29b-41d4-a716-446655440000"
+              }
+            }
+          }
+        }
       }
     },
     "schemas": {
@@ -128,7 +229,7 @@
             "type": "object",
             "properties": {
               "code": { "type": "string", "example": "not_found" },
-              "message": { "type": "string", "example": "Resource not found." },
+              "message": { "type": "string", "example": "Deal not found." },
               "request_id": { "type": "string", "format": "uuid" }
             }
           }

@@ -26,8 +26,53 @@
             "description": "Aplicativo registrado com sucesso.",
             "content": { "application/json": { "schema": { "$ref": "#/components/schemas/RegisterAppResponse" } } }
           },
+          "400": {
+            "description": "Body JSON inválido ou não parseável. Código de erro: `bad_request`. Mensagem: `\"Request body must be valid JSON.\"`",
+            "content": {
+              "application/json": {
+                "schema": { "$ref": "#/components/schemas/ErrorResponse" },
+                "example": {
+                  "error": {
+                    "code": "bad_request",
+                    "message": "Request body must be valid JSON.",
+                    "request_id": "550e8400-e29b-41d4-a716-446655440000"
+                  }
+                }
+              }
+            }
+          },
+          "409": {
+            "description": "E-mail já cadastrado em outro aplicativo. Código de erro: `conflict`. Mensagem: `\"An app is already registered with this email address.\"`",
+            "content": {
+              "application/json": {
+                "schema": { "$ref": "#/components/schemas/ErrorResponse" },
+                "example": {
+                  "error": {
+                    "code": "conflict",
+                    "message": "An app is already registered with this email address.",
+                    "request_id": "550e8400-e29b-41d4-a716-446655440000"
+                  }
+                }
+              }
+            }
+          },
           "422": { "$ref": "#/components/responses/ValidationError" },
-          "429": { "$ref": "#/components/responses/RateLimitExceeded" }
+          "429": { "$ref": "#/components/responses/RateLimitExceeded" },
+          "500": {
+            "description": "Falha ao criar ou persistir o aplicativo. Código de erro: `internal_error`. Mensagem: `\"An unexpected error occurred.\"` Use o `request_id` para correlacionar com os logs.",
+            "content": {
+              "application/json": {
+                "schema": { "$ref": "#/components/schemas/ErrorResponse" },
+                "example": {
+                  "error": {
+                    "code": "internal_error",
+                    "message": "An unexpected error occurred.",
+                    "request_id": "550e8400-e29b-41d4-a716-446655440000"
+                  }
+                }
+              }
+            }
+          }
         }
       }
     },
@@ -47,12 +92,64 @@
             "description": "Credenciais rotacionadas com sucesso. Novas credenciais enviadas por e-mail.",
             "content": { "application/json": { "schema": { "$ref": "#/components/schemas/RotateAppResponse" } } }
           },
+          "400": {
+            "description": "Body JSON inválido ou não parseável. Código de erro: `bad_request`. Mensagem: `\"Request body must be valid JSON.\"`",
+            "content": {
+              "application/json": {
+                "schema": { "$ref": "#/components/schemas/ErrorResponse" },
+                "example": {
+                  "error": {
+                    "code": "bad_request",
+                    "message": "Request body must be valid JSON.",
+                    "request_id": "550e8400-e29b-41d4-a716-446655440000"
+                  }
+                }
+              }
+            }
+          },
           "401": {
-            "description": "client_id ou e-mail inválido.",
-            "content": { "application/json": { "schema": { "$ref": "#/components/schemas/ErrorResponse" } } }
+            "description": "E-mail não corresponde ao cadastrado no aplicativo. Código de erro: `invalid_client`. Mensagem: `\"Invalid client credentials.\"`",
+            "content": {
+              "application/json": {
+                "schema": { "$ref": "#/components/schemas/ErrorResponse" },
+                "example": {
+                  "error": {
+                    "code": "invalid_client",
+                    "message": "Invalid client credentials.",
+                    "request_id": "550e8400-e29b-41d4-a716-446655440000"
+                  }
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "Aplicativo não encontrado ou revogado. Código de erro: `not_found`. Mensagem: `\"App not found.\"`",
+            "content": {
+              "application/json": {
+                "schema": { "$ref": "#/components/schemas/ErrorResponse" },
+                "example": {
+                  "error": { "code": "not_found", "message": "App not found.", "request_id": "550e8400-e29b-41d4-a716-446655440000" }
+                }
+              }
+            }
           },
           "422": { "$ref": "#/components/responses/ValidationError" },
-          "429": { "$ref": "#/components/responses/RateLimitExceeded" }
+          "429": { "$ref": "#/components/responses/RateLimitExceeded" },
+          "500": {
+            "description": "Falha ao rotacionar ou persistir as credenciais. Código de erro: `internal_error`. Mensagem: `\"An unexpected error occurred.\"` Use o `request_id` para correlacionar com os logs.",
+            "content": {
+              "application/json": {
+                "schema": { "$ref": "#/components/schemas/ErrorResponse" },
+                "example": {
+                  "error": {
+                    "code": "internal_error",
+                    "message": "An unexpected error occurred.",
+                    "request_id": "550e8400-e29b-41d4-a716-446655440000"
+                  }
+                }
+              }
+            }
+          }
         }
       }
     },
@@ -96,10 +193,51 @@
         "responses": {
           "302": { "description": "Redirecionamento para a tela de consent da Vendaze." },
           "400": {
-            "description": "Parâmetro inválido.",
-            "content": { "application/json": { "schema": { "$ref": "#/components/schemas/ErrorResponse" } } }
+            "description": "Parâmetro ausente ou inválido. Códigos de erro possíveis: `invalid_request` (parâmetro `client_id`, `redirect_uri` ou `response_type` ausente — mensagem identifica o parâmetro específico, ex: `\"Missing required parameter: redirect_uri.\"`), `unsupported_response_type` (`response_type` diferente de `code` — mensagem: `\"response_type must be \\\"code\\\".\"`), `invalid_request` (`redirect_uri` não corresponde a nenhuma URI registrada — mensagem: `\"redirect_uri does not match any registered URI.\"`).",
+            "content": {
+              "application/json": {
+                "schema": { "$ref": "#/components/schemas/ErrorResponse" },
+                "example": {
+                  "error": {
+                    "code": "invalid_request",
+                    "message": "Missing required parameter: redirect_uri.",
+                    "request_id": "550e8400-e29b-41d4-a716-446655440000"
+                  }
+                }
+              }
+            }
           },
-          "429": { "$ref": "#/components/responses/RateLimitExceeded" }
+          "401": {
+            "description": "Aplicativo não encontrado ou inativo. Código de erro: `invalid_client`. Mensagem: `\"Invalid client credentials.\"`",
+            "content": {
+              "application/json": {
+                "schema": { "$ref": "#/components/schemas/ErrorResponse" },
+                "example": {
+                  "error": {
+                    "code": "invalid_client",
+                    "message": "Invalid client credentials.",
+                    "request_id": "550e8400-e29b-41d4-a716-446655440000"
+                  }
+                }
+              }
+            }
+          },
+          "429": { "$ref": "#/components/responses/RateLimitExceeded" },
+          "500": {
+            "description": "Serviço de autorização indisponível. Código de erro: `internal_error`. Mensagem: `\"An unexpected error occurred.\"` Tente novamente.",
+            "content": {
+              "application/json": {
+                "schema": { "$ref": "#/components/schemas/ErrorResponse" },
+                "example": {
+                  "error": {
+                    "code": "internal_error",
+                    "message": "An unexpected error occurred.",
+                    "request_id": "550e8400-e29b-41d4-a716-446655440000"
+                  }
+                }
+              }
+            }
+          }
         }
       }
     },
@@ -120,14 +258,51 @@
             "content": { "application/json": { "schema": { "$ref": "#/components/schemas/TokenResponse" } } }
           },
           "400": {
-            "description": "Requisição inválida.",
-            "content": { "application/json": { "schema": { "$ref": "#/components/schemas/ErrorResponse" } } }
+            "description": "Parâmetro ausente ou inválido. Códigos de erro possíveis: `bad_request` (body malformado ou Content-Type não suportado), `unsupported_grant_type` (`grant_type` diferente de `authorization_code` ou `refresh_token`), `invalid_request` (parâmetro obrigatório ausente para o `grant_type` informado), `invalid_grant` (authorization code inválido, expirado, já utilizado ou sem correspondência).",
+            "content": {
+              "application/json": {
+                "schema": { "$ref": "#/components/schemas/ErrorResponse" },
+                "example": {
+                  "error": {
+                    "code": "invalid_grant",
+                    "message": "The provided authorization grant is invalid, expired, or does not match.",
+                    "request_id": "550e8400-e29b-41d4-a716-446655440000"
+                  }
+                }
+              }
+            }
           },
           "401": {
-            "description": "Credenciais inválidas.",
-            "content": { "application/json": { "schema": { "$ref": "#/components/schemas/ErrorResponse" } } }
+            "description": "Credenciais do cliente inválidas (`client_id` ou `client_secret`).",
+            "content": {
+              "application/json": {
+                "schema": { "$ref": "#/components/schemas/ErrorResponse" },
+                "example": {
+                  "error": {
+                    "code": "invalid_client",
+                    "message": "Invalid client credentials.",
+                    "request_id": "550e8400-e29b-41d4-a716-446655440000"
+                  }
+                }
+              }
+            }
           },
-          "429": { "$ref": "#/components/responses/RateLimitExceeded" }
+          "429": { "$ref": "#/components/responses/RateLimitExceeded" },
+          "500": {
+            "description": "Falha na troca de tokens. O servidor de autorização estava indisponível ou retornou uma resposta inesperada. Tente novamente.",
+            "content": {
+              "application/json": {
+                "schema": { "$ref": "#/components/schemas/ErrorResponse" },
+                "example": {
+                  "error": {
+                    "code": "internal_error",
+                    "message": "An unexpected error occurred.",
+                    "request_id": "550e8400-e29b-41d4-a716-446655440000"
+                  }
+                }
+              }
+            }
+          }
         }
       }
     },
@@ -143,12 +318,65 @@
           "content": { "application/json": { "schema": { "$ref": "#/components/schemas/RevokeTokenRequest" } } }
         },
         "responses": {
-          "200": { "description": "Token revogado." },
-          "401": {
-            "description": "Credenciais inválidas.",
-            "content": { "application/json": { "schema": { "$ref": "#/components/schemas/ErrorResponse" } } }
+          "200": {
+            "description": "Token revogado. Também retornado se o token já estava revogado ou expirado.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "revoked": { "type": "boolean", "example": true }
+                  }
+                }
+              }
+            }
           },
-          "429": { "$ref": "#/components/responses/RateLimitExceeded" }
+          "400": {
+            "description": "Parâmetro ausente ou inválido. Códigos de erro possíveis: `bad_request` (body JSON malformado), `invalid_request` (parâmetro `token`, `client_id` ou `client_secret` ausente; ou `token` não é um access token válido — refresh tokens não são aceitos).",
+            "content": {
+              "application/json": {
+                "schema": { "$ref": "#/components/schemas/ErrorResponse" },
+                "example": {
+                  "error": {
+                    "code": "invalid_request",
+                    "message": "Missing required parameter: token.",
+                    "request_id": "550e8400-e29b-41d4-a716-446655440000"
+                  }
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Credenciais do cliente inválidas (`client_id` ou `client_secret`).",
+            "content": {
+              "application/json": {
+                "schema": { "$ref": "#/components/schemas/ErrorResponse" },
+                "example": {
+                  "error": {
+                    "code": "invalid_client",
+                    "message": "Invalid client credentials.",
+                    "request_id": "550e8400-e29b-41d4-a716-446655440000"
+                  }
+                }
+              }
+            }
+          },
+          "429": { "$ref": "#/components/responses/RateLimitExceeded" },
+          "500": {
+            "description": "Erro inesperado durante a validação das credenciais.",
+            "content": {
+              "application/json": {
+                "schema": { "$ref": "#/components/schemas/ErrorResponse" },
+                "example": {
+                  "error": {
+                    "code": "internal_error",
+                    "message": "An unexpected error occurred.",
+                    "request_id": "550e8400-e29b-41d4-a716-446655440000"
+                  }
+                }
+              }
+            }
+          }
         }
       }
     }
@@ -181,24 +409,76 @@
     },
     "responses": {
       "Unauthorized": {
-        "description": "Token ausente ou inválido.",
-        "content": { "application/json": { "schema": { "$ref": "#/components/schemas/ErrorResponse" } } }
+        "description": "Token ausente, inválido ou expirado. Códigos de erro e mensagens possíveis: `unauthorized` — `\"Missing or invalid Authorization header.\"`, `\"Invalid or malformed token.\"` ou `\"Token is missing required claims.\"`; `token_expired` — `\"Access token expired. Refresh using the refresh token.\"`",
+        "content": {
+          "application/json": {
+            "schema": { "$ref": "#/components/schemas/ErrorResponse" },
+            "example": {
+              "error": {
+                "code": "unauthorized",
+                "message": "Missing or invalid Authorization header.",
+                "request_id": "550e8400-e29b-41d4-a716-446655440000"
+              }
+            }
+          }
+        }
       },
       "InsufficientScope": {
-        "description": "Token sem o escopo necessário.",
-        "content": { "application/json": { "schema": { "$ref": "#/components/schemas/ErrorResponse" } } }
+        "description": "Token sem o escopo necessário. Código de erro: `insufficient_scope`. Mensagem: `\"This endpoint requires the '{scope}' scope.\"` onde `{scope}` é o escopo exato que está faltando.",
+        "content": {
+          "application/json": {
+            "schema": { "$ref": "#/components/schemas/ErrorResponse" },
+            "example": {
+              "error": {
+                "code": "insufficient_scope",
+                "message": "This endpoint requires the 'people:read' scope.",
+                "request_id": "550e8400-e29b-41d4-a716-446655440000"
+              }
+            }
+          }
+        }
       },
       "NotFound": {
-        "description": "Recurso não encontrado.",
-        "content": { "application/json": { "schema": { "$ref": "#/components/schemas/ErrorResponse" } } }
+        "description": "Recurso não encontrado, soft-deletado ou pertencente a outro workspace. Código de erro: `not_found`. Mensagem: `\"{Entity} not found.\"`",
+        "content": {
+          "application/json": {
+            "schema": { "$ref": "#/components/schemas/ErrorResponse" },
+            "example": {
+              "error": { "code": "not_found", "message": "App not found.", "request_id": "550e8400-e29b-41d4-a716-446655440000" }
+            }
+          }
+        }
       },
       "ValidationError": {
-        "description": "Validação de entrada falhou.",
-        "content": { "application/json": { "schema": { "$ref": "#/components/schemas/ValidationErrorResponse" } } }
+        "description": "Validação de entrada falhou. Código de erro: `validation_error`. Mensagem: `\"Validation failed.\"` O objeto `fields` mapeia cada campo inválido a uma descrição do problema.",
+        "content": {
+          "application/json": {
+            "schema": { "$ref": "#/components/schemas/ValidationErrorResponse" },
+            "example": {
+              "error": {
+                "code": "validation_error",
+                "message": "Validation failed.",
+                "fields": { "email": "Invalid email address." },
+                "request_id": "550e8400-e29b-41d4-a716-446655440000"
+              }
+            }
+          }
+        }
       },
       "RateLimitExceeded": {
-        "description": "Limite de taxa excedido.",
-        "content": { "application/json": { "schema": { "$ref": "#/components/schemas/ErrorResponse" } } }
+        "description": "Limite de taxa excedido. Código de erro: `rate_limit_exceeded`. Mensagem: `\"Rate limit exceeded. Try again in {N} seconds.\"` O header `Retry-After` contém o mesmo valor.",
+        "content": {
+          "application/json": {
+            "schema": { "$ref": "#/components/schemas/ErrorResponse" },
+            "example": {
+              "error": {
+                "code": "rate_limit_exceeded",
+                "message": "Rate limit exceeded. Try again in 3600 seconds.",
+                "request_id": "550e8400-e29b-41d4-a716-446655440000"
+              }
+            }
+          }
+        }
       }
     },
     "schemas": {

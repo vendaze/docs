@@ -40,7 +40,7 @@ The Vendaze API uses standard HTTP status codes and returns a consistent error f
 | `204`  | No content. Resource deleted. Empty body.                                         |
 | `400`  | Malformed request or missing required parameter.                                  |
 | `401`  | Unauthenticated. Token missing, invalid, or expired.                              |
-| `403`  | Forbidden. Valid token but insufficient scope.                                    |
+| `403`  | Forbidden. Valid token but insufficient scope or denied operation.                |
 | `404`  | Not found. Resource does not exist, was deleted, or belongs to another workspace. |
 | `409`  | Conflict. The request cannot be completed due to a conflict with existing data.   |
 | `422`  | Validation failed. See the `fields` object.                                       |
@@ -50,66 +50,145 @@ The Vendaze API uses standard HTTP status codes and returns a consistent error f
 ## Error code reference
 
 <Accordion title="unauthorized (401)">
-  Bearer token is missing from the request or the token signature is invalid. Check that you are
-  sending the `Authorization: Bearer <token>` header and that the token has not been tampered with.
+  Returned in three situations:
+
+- **Missing or invalid header:** `"Missing or invalid Authorization header."` — the `Authorization: Bearer <token>` header is absent or malformed.
+- **Invalid token:** `"Invalid or malformed token."` — the token signature failed verification or the token is not a valid JWT.
+- **Missing claims:** `"Token is missing required claims."` — the token is structurally valid but is missing required internal claims (`workspace_id`, `client_id`, or `vendaze_scopes`). This should not happen with tokens issued by the Vendaze OAuth flow.
+
 </Accordion>
 
 <Accordion title="token_expired (401)">
-  The access token has expired. Access tokens are valid for 1 hour. Use your `refresh_token` to
-  obtain a new one via `POST /oauth/token` with `grant_type=refresh_token`. If the refresh token has
-  also expired, the user must re-authorize.
-</Accordion>
+  `"Access token expired. Refresh using the refresh token."`
 
-<Accordion title="invalid_client (401)">
-  The `client_id` or `client_secret` provided to an OAuth endpoint is incorrect. Verify your
-  credentials. If you suspect the `client_secret` has been compromised, rotate it via `POST
-  /v1/auth/rotate-app`.
-</Accordion>
+The access token has expired. Access tokens are valid for 1 hour. Use your `refresh_token` to
+obtain a new one via `POST /oauth/token` with `grant_type=refresh_token`. If the refresh token has
+also expired, the user must re-authorize.
 
-<Accordion title="invalid_grant (400)">
-  The authorization code is invalid, expired, or has already been used. Authorization codes expire
-  in 10 minutes and are single-use. Also returned when a `refresh_token` is invalid or expired. In
-  either case, the user must go through the full authorization flow again.
 </Accordion>
 
 <Accordion title="insufficient_scope (403)">
-  The token does not have the required scope for this endpoint. The user authorized your app with a
-  set of scopes that does not include what this operation requires. You need to request a new
-  authorization with the correct scopes.
+  `"This endpoint requires the '{scope}' scope."`
+
+The token does not have the required scope for this endpoint. The `{scope}` placeholder in the
+message is the exact scope that is missing (for example, `"This endpoint requires the
+  'people:write' scope."`). The user authorized your app with a set of scopes that does not include
+what this operation requires. You need to request a new authorization with the correct scopes.
+
 </Accordion>
 
 <Accordion title="forbidden (403)">
-  The token is valid and has the right scope, but the operation was denied. This happens when
-  accessing a record that belongs to a different workspace, or when a write operation includes field
-  values outside your access level (for example, setting `owner_user_id` to a user other than
-  yourself when your role does not allow it). The `message` field describes the specific context.
+  The token is valid and has the right scope, but the operation was denied by a database-level
+  permission check. The message varies by context:
+
+- **Create:** `"You do not have permission to create this {entity}. Check that all fields are within your access level."`
+- **Update:** `"You do not have permission to update this {entity} or one of the provided values is not allowed for your access level."`
+- **Delete:** `"You do not have permission to delete this {entity}."`
+
+Common cause: setting `owner_user_id` to a user other than yourself when your role does not allow
+it.
+
 </Accordion>
 
 <Accordion title="not_found (404)">
-  The requested resource does not exist, has been soft-deleted, or belongs to a different workspace.
-  The API does not distinguish between these cases to avoid leaking information about other
-  workspaces.
+  `"{Entity} not found."` — for example, `"Person not found."` or `"Deal not found."`
+
+The requested resource does not exist, has been soft-deleted, or belongs to a different workspace.
+The API does not distinguish between these cases to avoid leaking information about other
+workspaces.
+
 </Accordion>
 
 <Accordion title="conflict (409)">
-  The request conflicts with existing data. The `message` field provides details. Common causes:
-  duplicate unique values, or attempting to register an app with an email that is already in use.
+  `"A record with this value already exists."`
+
+The request conflicts with existing data. The response also includes a `fields` object identifying
+the conflicting field. Common cause: attempting to register an app with an email that is already
+in use.
+
 </Accordion>
 
 <Accordion title="validation_error (422)">
-  Input failed validation. The response includes a `fields` object mapping each invalid field to a
-  description of the problem. Fix the fields listed and retry.
+  `"Validation failed."`
+
+Input failed validation. The response includes a `fields` object mapping each invalid field to a
+description of the problem. Fix the fields listed and retry. See [Validation errors](#validation-errors) for the full response shape.
+
+</Accordion>
+
+<Accordion title="bad_request (400)">
+  Returned in two situations:
+
+- **Malformed body:** `"Request body must be valid JSON."` — the request body could not be parsed as JSON.
+- **Empty update:** `"No fields provided for update."` — a `PATCH` request was sent with no fields to modify.
+
 </Accordion>
 
 <Accordion title="rate_limit_exceeded (429)">
-  Too many requests. Check the `Retry-After` response header for the number of seconds to wait
-  before retrying. See [Rate Limits](/en/guides/rate-limits) for the full limits by method and
-  endpoint type.
+  `"Rate limit exceeded. Try again in {N} seconds."`
+
+Too many requests. The `{N}` in the message is the exact number of seconds to wait. The same
+value is also in the `Retry-After` response header. See [Rate Limits](/en/guides/rate-limits) for
+the full limits by method and endpoint type.
+
 </Accordion>
 
 <Accordion title="internal_error (500)">
-  An unexpected error occurred on the server. These are rare. Retry with exponential backoff. If the
-  error persists, contact support with the `request_id`.
+  Returned in two situations:
+
+- **Unexpected server error:** `"An unexpected error occurred."` — something failed on the server. Retry with exponential backoff. If the error persists, contact support with the `request_id`.
+- **Partial update:** `"{Entity} updated but associations failed. Retry the associations."` — the main record was saved but the association update (tags, lists, deals, or custom fields) failed. The record itself is consistent. Retry only the association fields.
+
+</Accordion>
+
+## OAuth error codes
+
+These codes are returned exclusively by the OAuth endpoints (`/oauth/authorize`, `/oauth/token`, `/oauth/revoke`, `/v1/auth/register-app`, `/v1/auth/rotate-app`).
+
+<Accordion title="invalid_client (401)">
+  `"Invalid client credentials."` — the `client_id` or `client_secret` is incorrect. Verify your
+  credentials. If you suspect the `client_secret` has been compromised, rotate it via `POST
+  /v1/auth/rotate-app`.
+
+Also returned as `401` from `/oauth/authorize` when the `client_id` does not exist or the app is
+not active, and from `/v1/auth/rotate-app` when the email sent does not match the one registered
+with the app.
+
+</Accordion>
+
+<Accordion title="invalid_grant (400)">
+  `"The provided authorization grant is invalid, expired, or does not match."`
+
+The authorization code is invalid, expired, or has already been used. Authorization codes expire
+in 10 minutes and are single-use. Also returned when a `refresh_token` is invalid or expired. In
+either case, the user must go through the full authorization flow again.
+
+</Accordion>
+
+<Accordion title="invalid_request (400)">
+  A required OAuth parameter is missing or invalid. The message identifies the specific parameter.
+  Examples:
+
+- `"Missing required parameter: client_id."`
+- `"Missing required parameter: redirect_uri."`
+- `"redirect_uri does not match any registered URI."`
+- `"Missing required parameter: token."` (revoke)
+- `"token must be a valid access_token. refresh_tokens are not accepted."` (revoke)
+
+</Accordion>
+
+<Accordion title="unsupported_grant_type (400)">
+  `"grant_type must be \"authorization_code\" or \"refresh_token\"."`
+
+The `grant_type` field sent to `/oauth/token` is not one of the two supported values.
+
+</Accordion>
+
+<Accordion title="unsupported_response_type (400)">
+  `"response_type must be \"code\"."`
+
+The `response_type` parameter sent to `/oauth/authorize` is not `"code"`.
+
 </Accordion>
 
 ## Validation errors
@@ -154,18 +233,20 @@ Not all errors should be retried. Retrying a non-recoverable error wastes resour
 
 **Non-recoverable errors** indicate a problem with the request or credentials. Do not retry automatically:
 
-| Status | Code                 | What to do                                                                            |
-| ------ | -------------------- | ------------------------------------------------------------------------------------- |
-| `400`  | any                  | Fix the request. The input is malformed.                                              |
-| `401`  | `token_expired`      | Refresh the access token, then retry the original request.                            |
-| `401`  | `unauthorized`       | Check that the token is present and correctly formatted.                              |
-| `401`  | `invalid_client`     | Check your `client_id` and `client_secret`. Do not retry automatically.               |
-| `400`  | `invalid_grant`      | The code or refresh token is invalid. Redirect the user through the OAuth flow.       |
-| `403`  | `insufficient_scope` | Request a new authorization with the required scopes.                                 |
-| `403`  | `forbidden`          | Fix the request. The operation or field values are not allowed for your access level. |
-| `404`  | `not_found`          | The resource does not exist. Do not retry.                                            |
-| `409`  | `conflict`           | Resolve the conflict before retrying.                                                 |
-| `422`  | `validation_error`   | Fix the fields listed in `fields`. Do not retry with the same payload.                |
+| Status | Code                     | What to do                                                                            |
+| ------ | ------------------------ | ------------------------------------------------------------------------------------- |
+| `400`  | `bad_request`            | Fix the request. The body is malformed or the update has no fields.                   |
+| `400`  | `invalid_grant`          | The code or refresh token is invalid. Redirect the user through the OAuth flow.       |
+| `400`  | `invalid_request`        | A required OAuth parameter is missing or invalid. Fix the request.                    |
+| `400`  | `unsupported_grant_type` | Use `authorization_code` or `refresh_token`.                                          |
+| `401`  | `token_expired`          | Refresh the access token, then retry the original request.                            |
+| `401`  | `unauthorized`           | Check that the token is present and correctly formatted.                              |
+| `401`  | `invalid_client`         | Check your `client_id` and `client_secret`. Do not retry automatically.               |
+| `403`  | `insufficient_scope`     | Request a new authorization with the required scopes.                                 |
+| `403`  | `forbidden`              | Fix the request. The operation or field values are not allowed for your access level. |
+| `404`  | `not_found`              | The resource does not exist. Do not retry.                                            |
+| `409`  | `conflict`               | Resolve the conflict before retrying.                                                 |
+| `422`  | `validation_error`       | Fix the fields listed in `fields`. Do not retry with the same payload.                |
 
 ### Recommended error handling pattern
 
