@@ -57,7 +57,7 @@ curl -X POST https://api.vendaze.com/v1/auth/register-app \
   "data": {
     "app_name": "My Integration",
     "client_id": "9a8b7c6d-5e4f-3a2b-1c0d-9e8f7a6b5c4d",
-    "avatar_url": "https://storage.vendaze.com/assets/integrations/myintegration.webp",
+    "avatar_url": "https://storage.vendaze.com/assets/integrations/myintegration.jpg",
     "message": "Credentials sent by email."
   }
 }
@@ -83,16 +83,16 @@ Your `client_secret` is sent **only by email** and never returned in the API res
 
 ## Request parameters
 
-| Parameter       | Type     | Required | Description                                                                                                                                                          |
-| --------------- | -------- | -------- | -------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
-| `app_name`      | string   | Yes      | Integration name shown to users on the consent screen. Max 100 chars.                                                                                                |
-| `email`         | string   | Yes      | Email where credentials will be sent. Each address can only be associated with one registered app.                                                                   |
-| `description`   | string   | No       | Short description of what your app does. Max 500 chars.                                                                                                              |
-| `avatar_url`    | string   | No       | HTTPS URL of your app logo. Vendaze fetches the image, validates it, and stores it. Accepted formats: JPEG, PNG, WebP, GIF, BMP, TIFF. SVG is not accepted. Max 2MB. |
-| `redirect_uris` | string[] | Yes      | One or more HTTPS URIs for the OAuth callback. Exact match required.                                                                                                 |
-| `scopes`        | string[] | Yes      | Scopes your app needs. The user sees the full list on the consent screen and approves or denies everything at once.                                                  |
+| Parameter       | Type     | Required | Description                                                                                                                                                                                               |
+| --------------- | -------- | -------- | --------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| `app_name`      | string   | Yes      | Integration name shown to users on the consent screen. Max 100 chars.                                                                                                                                     |
+| `email`         | string   | Yes      | Email where credentials will be sent. Each address can only be associated with one registered app.                                                                                                        |
+| `description`   | string   | No       | Short description of what your app does. Max 500 chars.                                                                                                                                                   |
+| `avatar_url`    | string   | No       | HTTPS URL of your app logo. Vendaze fetches the image, validates it, converts it to JPEG (max 400x400px), and stores it. Accepted formats: JPEG, PNG, WebP, GIF, BMP, TIFF. SVG is not accepted. Max 2MB. |
+| `redirect_uris` | string[] | Yes      | One or more HTTPS URIs for the OAuth callback. Exact match required.                                                                                                                                      |
+| `scopes`        | string[] | Yes      | Scopes your app needs. The user sees the full list on the consent screen and approves or denies everything at once.                                                                                       |
 
-When `avatar_url` is provided, Vendaze fetches the image from your server, validates the file format using magic bytes (not the declared Content-Type), and stores it on Vendaze infrastructure. The `avatar_url` in the response is always a `https://storage.vendaze.com` URL.
+When `avatar_url` is provided, Vendaze fetches the image from your server, validates the file format using magic bytes (not the declared Content-Type), converts it to JPEG (max 400x400px), and stores it on Vendaze infrastructure. The `avatar_url` in the response is always a `https://storage.vendaze.com` URL.
 
 ## Redirect URIs
 

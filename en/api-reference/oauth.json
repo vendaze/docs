@@ -43,7 +43,7 @@
           "content": { "application/json": { "schema": { "$ref": "#/components/schemas/RotateAppRequest" } } }
         },
         "responses": {
-          "201": {
+          "200": {
             "description": "Credentials rotated successfully. New credentials sent by email.",
             "content": { "application/json": { "schema": { "$ref": "#/components/schemas/RotateAppResponse" } } }
           },
@@ -335,7 +335,7 @@
             "type": "string",
             "format": "uri",
             "example": "https://mysaas.com/assets/logo.webp",
-            "description": "HTTPS URL of your app logo. Vendaze fetches the image, validates the format using magic bytes, and stores it. Accepted formats: JPEG, PNG, WebP, GIF, BMP, TIFF. SVG is not accepted. Max 2MB."
+            "description": "HTTPS URL of your app logo. Vendaze fetches the image, validates the format using magic bytes, converts it to JPEG (max 400x400px), and stores it. Accepted formats: JPEG, PNG, WebP, GIF, BMP, TIFF. SVG is not accepted. Max 2MB."
           },
           "redirect_uris": {
             "type": "array",
