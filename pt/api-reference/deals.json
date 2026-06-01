@@ -1,55 +1,75 @@
 {
   "openapi": "3.1.0",
   "info": {
-    "title": "Negocios",
-    "description": "Gerencie negocios no pipeline de vendas.",
+    "title": "Negócios",
+    "description": "Gerencie negócios no pipeline de vendas.",
     "version": "1.0.0",
     "contact": { "name": "Vendaze Support", "email": "suporte@vendaze.com" }
   },
   "servers": [{ "url": "https://api.vendaze.com", "description": "Production" }],
   "security": [{ "bearerAuth": [] }],
-  "tags": [{ "name": "Negocios" }],
+  "tags": [{ "name": "Negócios" }],
   "paths": {
     "/v1/deals": {
       "get": {
         "operationId": "listDeals",
-        "summary": "Listar negocios",
-        "description": "Retorna uma lista paginada de negocios no workspace autorizado.",
-        "tags": ["Negocios"],
+        "summary": "Listar negócios",
+        "description": "Retorna uma lista paginada de negócios no workspace autorizado.",
+        "tags": ["Negócios"],
         "parameters": [
           { "$ref": "#/components/parameters/page" },
           { "$ref": "#/components/parameters/per_page" },
           { "$ref": "#/components/parameters/order_by" },
           { "$ref": "#/components/parameters/order" },
-          { "name": "name", "in": "query", "schema": { "type": "string" }, "description": "Correspondencia parcial pelo nome do negocio." },
+          { "name": "name", "in": "query", "schema": { "type": "string" }, "description": "Correspondência parcial pelo nome do negócio." },
           {
             "name": "pipeline_id",
             "in": "query",
             "schema": { "type": "string", "format": "uuid" },
             "description": "Filtrar por pipeline."
           },
-          { "name": "stage_id", "in": "query", "schema": { "type": "string", "format": "uuid" }, "description": "Filtrar por estagio." },
+          { "name": "stage_id", "in": "query", "schema": { "type": "string", "format": "uuid" }, "description": "Filtrar por estágio." },
           {
             "name": "owner_user_id",
             "in": "query",
             "schema": { "type": "string", "format": "uuid" },
-            "description": "Filtrar por responsavel."
+            "description": "Filtrar por responsável."
           },
-          { "name": "source", "in": "query", "schema": { "type": "string" }, "description": "Filtrar por origem do negocio." },
-          { "name": "price_min_cts", "in": "query", "schema": { "type": "integer" }, "description": "Valor minimo em centavos." },
-          { "name": "price_max_cts", "in": "query", "schema": { "type": "integer" }, "description": "Valor maximo em centavos." },
-          { "name": "currency", "in": "query", "schema": { "type": "string" }, "description": "Codigo ISO 4217. Ex: BRL." },
+          {
+            "name": "source",
+            "in": "query",
+            "schema": { "type": "string" },
+            "description": "Filtrar por origem do negócio (nome do app que criou)."
+          },
+          {
+            "name": "price_min_cts",
+            "in": "query",
+            "schema": { "type": "integer", "minimum": 0 },
+            "description": "Valor mínimo em centavos."
+          },
+          {
+            "name": "price_max_cts",
+            "in": "query",
+            "schema": { "type": "integer", "minimum": 0 },
+            "description": "Valor máximo em centavos."
+          },
+          {
+            "name": "currency",
+            "in": "query",
+            "schema": { "$ref": "#/components/schemas/CurrencyCode" },
+            "description": "Filtrar por código ISO 4217 da moeda. Exemplo: BRL."
+          },
           {
             "name": "forecast_after",
             "in": "query",
             "schema": { "type": "string", "format": "date-time" },
-            "description": "Filtrar por data prevista apos."
+            "description": "Filtrar por data prevista após (ISO 8601 UTC)."
           },
           {
             "name": "forecast_before",
             "in": "query",
             "schema": { "type": "string", "format": "date-time" },
-            "description": "Filtrar por data prevista antes."
+            "description": "Filtrar por data prevista antes (ISO 8601 UTC)."
           },
           { "$ref": "#/components/parameters/created_after" },
           { "$ref": "#/components/parameters/created_before" },
@@ -58,7 +78,7 @@
         ],
         "responses": {
           "200": {
-            "description": "Lista de negocios retornada com sucesso.",
+            "description": "Lista de negócios retornada com sucesso.",
             "content": { "application/json": { "schema": { "$ref": "#/components/schemas/DealsListResponse" } } }
           },
           "401": { "$ref": "#/components/responses/Unauthorized" },
@@ -69,17 +89,17 @@
       },
       "post": {
         "operationId": "createDeal",
-        "summary": "Criar negocio",
-        "description": "Cria um novo negocio no workspace.",
-        "tags": ["Negocios"],
+        "summary": "Criar negócio",
+        "description": "Cria um novo negócio no workspace. O campo `source` é preenchido automaticamente com o nome do OAuth app que faz a requisição e não pode ser definido pelo integrador.",
+        "tags": ["Negócios"],
         "requestBody": {
           "required": true,
           "content": { "application/json": { "schema": { "$ref": "#/components/schemas/CreateDealRequest" } } }
         },
         "responses": {
           "201": {
-            "description": "Negocio criado com sucesso.",
-            "content": { "application/json": { "schema": { "$ref": "#/components/schemas/DealResponse" } } }
+            "description": "Negócio criado com sucesso.",
+            "content": { "application/json": { "schema": { "$ref": "#/components/schemas/DealWithEmbeddedResponse" } } }
           },
           "401": { "$ref": "#/components/responses/Unauthorized" },
           "403": { "$ref": "#/components/responses/InsufficientScope" },
@@ -91,13 +111,13 @@
     "/v1/deals/{id}": {
       "get": {
         "operationId": "getDeal",
-        "summary": "Buscar negocio",
-        "description": "Retorna um negocio por ID com pipeline, estagio, produtos e campos adicionais embutidos.",
-        "tags": ["Negocios"],
+        "summary": "Buscar negócio",
+        "description": "Retorna um negócio por ID com pipeline, estágio, produtos, campos adicionais, tags, pessoas e empresas associadas.",
+        "tags": ["Negócios"],
         "parameters": [{ "$ref": "#/components/parameters/id" }],
         "responses": {
           "200": {
-            "description": "Negocio retornado com sucesso.",
+            "description": "Negócio retornado com sucesso.",
             "content": { "application/json": { "schema": { "$ref": "#/components/schemas/DealWithEmbeddedResponse" } } }
           },
           "401": { "$ref": "#/components/responses/Unauthorized" },
@@ -107,9 +127,9 @@
       },
       "patch": {
         "operationId": "updateDeal",
-        "summary": "Atualizar negocio",
-        "description": "Atualiza um negocio. Apenas campos enviados sao modificados.",
-        "tags": ["Negocios"],
+        "summary": "Atualizar negócio",
+        "description": "Atualiza um negócio. Apenas campos enviados são modificados. O campo `source` não pode ser alterado.",
+        "tags": ["Negócios"],
         "parameters": [{ "$ref": "#/components/parameters/id" }],
         "requestBody": {
           "required": true,
@@ -117,8 +137,8 @@
         },
         "responses": {
           "200": {
-            "description": "Negocio atualizado com sucesso.",
-            "content": { "application/json": { "schema": { "$ref": "#/components/schemas/DealResponse" } } }
+            "description": "Negócio atualizado com sucesso.",
+            "content": { "application/json": { "schema": { "$ref": "#/components/schemas/DealWithEmbeddedResponse" } } }
           },
           "401": { "$ref": "#/components/responses/Unauthorized" },
           "403": { "$ref": "#/components/responses/InsufficientScope" },
@@ -128,12 +148,12 @@
       },
       "delete": {
         "operationId": "deleteDeal",
-        "summary": "Deletar negocio",
-        "description": "Soft-delete: o registro não e mais acessível pela API.",
-        "tags": ["Negocios"],
+        "summary": "Deletar negócio",
+        "description": "Soft-delete: o registro não é mais acessível pela API.",
+        "tags": ["Negócios"],
         "parameters": [{ "$ref": "#/components/parameters/id" }],
         "responses": {
-          "204": { "description": "Negocio deletado com sucesso." },
+          "204": { "description": "Negócio deletado com sucesso." },
           "401": { "$ref": "#/components/responses/Unauthorized" },
           "403": { "$ref": "#/components/responses/InsufficientScope" },
           "404": { "$ref": "#/components/responses/NotFound" }
@@ -151,14 +171,14 @@
         "in": "path",
         "required": true,
         "schema": { "type": "string", "format": "uuid" },
-        "description": "UUID of the resource."
+        "description": "UUID do recurso."
       },
       "page": { "name": "page", "in": "query", "schema": { "type": "integer", "default": 1, "minimum": 1 } },
       "per_page": {
         "name": "per_page",
         "in": "query",
         "schema": { "type": "integer", "default": 50, "minimum": 1, "maximum": 100 },
-        "description": "Max 100."
+        "description": "Máximo 100."
       },
       "order_by": {
         "name": "order_by",
@@ -174,23 +194,23 @@
     },
     "responses": {
       "Unauthorized": {
-        "description": "Missing or invalid token.",
+        "description": "Token ausente ou inválido.",
         "content": { "application/json": { "schema": { "$ref": "#/components/schemas/ErrorResponse" } } }
       },
       "InsufficientScope": {
-        "description": "Token lacks the required scope.",
+        "description": "Token sem o escopo necessário.",
         "content": { "application/json": { "schema": { "$ref": "#/components/schemas/ErrorResponse" } } }
       },
       "NotFound": {
-        "description": "Resource not found.",
+        "description": "Recurso não encontrado.",
         "content": { "application/json": { "schema": { "$ref": "#/components/schemas/ErrorResponse" } } }
       },
       "ValidationError": {
-        "description": "Input validation failed.",
+        "description": "Validação de entrada falhou.",
         "content": { "application/json": { "schema": { "$ref": "#/components/schemas/ValidationErrorResponse" } } }
       },
       "RateLimitExceeded": {
-        "description": "Rate limit exceeded.",
+        "description": "Limite de requisições excedido.",
         "content": { "application/json": { "schema": { "$ref": "#/components/schemas/ErrorResponse" } } }
       }
     },
@@ -231,39 +251,51 @@
           "has_more": { "type": "boolean", "example": true }
         }
       },
-      "ContactEmail": {
-        "type": "object",
-        "required": ["email"],
-        "properties": {
-          "email": { "type": "string", "format": "email", "example": "nome@empresa.com" },
-          "type": {
-            "type": "string",
-            "enum": ["personal", "work", "other"],
-            "description": "Tipo do e-mail. Valores aceitos: personal, work, other.",
-            "example": "work"
-          }
-        },
-        "example": { "email": "nome@empresa.com", "type": "work" }
-      },
-      "ContactPhone": {
-        "type": "object",
-        "required": ["phone"],
-        "properties": {
-          "phone": { "type": "string", "example": "+5511999990001" },
-          "type": {
-            "type": "string",
-            "enum": ["mobile", "work", "residential", "other"],
-            "description": "Tipo do telefone. Valores aceitos: mobile, work, residential, other.",
-            "example": "mobile"
-          }
-        },
-        "example": { "phone": "+5511999990001", "type": "mobile" }
+      "CurrencyCode": {
+        "type": "string",
+        "description": "Código ISO 4217 de moeda suportado pela Vendaze.",
+        "enum": [
+          "AED",
+          "ARS",
+          "AUD",
+          "BRL",
+          "CAD",
+          "CHF",
+          "CLP",
+          "CNY",
+          "COP",
+          "DKK",
+          "EGP",
+          "EUR",
+          "GBP",
+          "HKD",
+          "ILS",
+          "INR",
+          "JPY",
+          "KWD",
+          "MAD",
+          "MXN",
+          "MYR",
+          "NGN",
+          "NOK",
+          "NZD",
+          "PEN",
+          "QAR",
+          "SAR",
+          "SEK",
+          "SGD",
+          "TRY",
+          "USD",
+          "UYU",
+          "ZAR"
+        ],
+        "example": "BRL"
       },
       "CustomFieldValue": {
         "type": "object",
         "properties": {
           "id": { "type": "string", "format": "uuid" },
-          "value": { "type": "string", "nullable": true },
+          "value": {},
           "field": {
             "type": "object",
             "properties": {
@@ -275,18 +307,35 @@
           }
         }
       },
+      "DealProduct": {
+        "type": "object",
+        "properties": {
+          "id": { "type": "string", "format": "uuid" },
+          "product_id": { "type": "string", "format": "uuid", "nullable": true },
+          "name": { "type": "string", "nullable": true },
+          "quantity": { "type": "integer", "example": 2 },
+          "billing_cycle": { "type": "string", "enum": ["one_time", "monthly", "quarterly", "annually"] },
+          "unit_price_cts": { "type": "integer", "description": "Preço unitário em centavos.", "example": 50000 },
+          "total_price_cts": { "type": "integer", "description": "Preço total em centavos (unit_price_cts × quantity).", "example": 100000 }
+        }
+      },
       "Deal": {
         "type": "object",
         "properties": {
           "id": { "type": "string", "format": "uuid" },
-          "name": { "type": "string", "example": "Acme Corp Annual Contract" },
+          "name": { "type": "string", "example": "Contrato Anual Acme Corp" },
           "pipeline_id": { "type": "string", "format": "uuid" },
           "stage_id": { "type": "string", "format": "uuid" },
-          "price_cts": { "type": "integer", "description": "Valor em centavos.", "example": 250000 },
-          "currency_id": { "type": "string", "example": "BRL" },
+          "price_cts": { "type": "integer", "description": "Valor em centavos. 250000 = R$ 2.500,00", "example": 250000 },
+          "currency": { "$ref": "#/components/schemas/CurrencyCode" },
           "owner_user_id": { "type": "string", "format": "uuid", "nullable": true },
-          "source": { "type": "string", "nullable": true, "example": "referral" },
-          "forecast_date": { "type": "string", "format": "date", "nullable": true, "example": "2026-12-31" },
+          "source": {
+            "type": "string",
+            "description": "Nome do OAuth app que criou o negócio. Somente leitura.",
+            "example": "Minha Integração"
+          },
+          "forecast_date": { "type": "string", "format": "date-time", "nullable": true, "example": "2026-12-31T00:00:00Z" },
+          "entity_id": { "type": "string", "description": "Identificador único legível.", "example": "NEG-0001" },
           "created_at": { "type": "string", "format": "date-time" },
           "updated_at": { "type": "string", "format": "date-time" }
         }
@@ -299,6 +348,7 @@
             "properties": {
               "pipeline": {
                 "type": "object",
+                "nullable": true,
                 "properties": {
                   "id": { "type": "string", "format": "uuid" },
                   "name": { "type": "string" }
@@ -306,55 +356,131 @@
               },
               "stage": {
                 "type": "object",
+                "nullable": true,
                 "properties": {
                   "id": { "type": "string", "format": "uuid" },
                   "name": { "type": "string" },
                   "type": { "type": "string", "enum": ["open", "win", "lost"] }
                 }
               },
-              "products": {
+              "products": { "type": "array", "items": { "$ref": "#/components/schemas/DealProduct" } },
+              "custom_fields": { "type": "array", "items": { "$ref": "#/components/schemas/CustomFieldValue" } },
+              "tags": {
                 "type": "array",
                 "items": {
                   "type": "object",
                   "properties": {
                     "id": { "type": "string", "format": "uuid" },
                     "name": { "type": "string" },
-                    "quantity": { "type": "integer" },
-                    "unit_price_cts": { "type": "integer" },
-                    "total_price_cts": { "type": "integer" }
+                    "color_text": { "type": "string", "nullable": true },
+                    "color_background": { "type": "string", "nullable": true }
                   }
                 }
               },
-              "custom_fields": { "type": "array", "items": { "$ref": "#/components/schemas/CustomFieldValue" } }
+              "people": {
+                "type": "array",
+                "items": {
+                  "type": "object",
+                  "properties": {
+                    "id": { "type": "string", "format": "uuid" },
+                    "full_name": { "type": "string" }
+                  }
+                }
+              },
+              "companies": {
+                "type": "array",
+                "items": {
+                  "type": "object",
+                  "properties": {
+                    "id": { "type": "string", "format": "uuid" },
+                    "full_name": { "type": "string" }
+                  }
+                }
+              }
             }
           }
         ]
       },
+      "DealProductInput": {
+        "type": "object",
+        "required": ["product_id"],
+        "properties": {
+          "product_id": { "type": "string", "format": "uuid" },
+          "quantity": {
+            "type": "integer",
+            "minimum": 1,
+            "default": 1,
+            "description": "Quantidade de unidades. Aplicável apenas para produtos avulsos (one_time). Produtos recorrentes (monthly, quarterly, annually) sempre usam quantidade 1, independente do valor enviado."
+          },
+          "unit_price_cts": {
+            "type": "integer",
+            "minimum": 0,
+            "description": "Sobrescreve o preço de catálogo do produto. Em centavos. Se omitido, usa o preço padrão do produto.",
+            "example": 50000
+          }
+        }
+      },
       "CreateDealRequest": {
         "type": "object",
-        "required": ["name", "pipeline_id", "stage_id", "currency_id"],
+        "required": ["name", "pipeline_id", "stage_id", "currency"],
         "properties": {
-          "name": { "type": "string", "example": "Acme Corp Annual Contract" },
+          "name": { "type": "string", "maxLength": 70, "example": "Contrato Anual Acme Corp" },
           "pipeline_id": { "type": "string", "format": "uuid" },
           "stage_id": { "type": "string", "format": "uuid" },
-          "currency_id": { "type": "string", "example": "BRL" },
-          "price_cts": { "type": "integer", "minimum": 0, "example": 250000 },
+          "currency": { "$ref": "#/components/schemas/CurrencyCode" },
+          "price_cts": { "type": "integer", "minimum": 0, "default": 0, "description": "Valor em centavos.", "example": 250000 },
           "owner_user_id": { "type": "string", "format": "uuid" },
-          "source": { "type": "string" },
-          "forecast_date": { "type": "string", "format": "date" }
+          "forecast_date": { "type": "string", "format": "date-time", "nullable": true, "example": "2026-12-31T00:00:00Z" },
+          "person_ids": {
+            "type": "array",
+            "items": { "type": "string", "format": "uuid" },
+            "description": "Pessoas a associar ao negócio."
+          },
+          "company_ids": {
+            "type": "array",
+            "items": { "type": "string", "format": "uuid" },
+            "description": "Empresas a associar ao negócio."
+          },
+          "tag_ids": { "type": "array", "items": { "type": "string", "format": "uuid" } },
+          "custom_fields": {
+            "type": "array",
+            "items": {
+              "type": "object",
+              "required": ["field_id", "value"],
+              "properties": { "field_id": { "type": "string", "format": "uuid" }, "value": {} }
+            }
+          },
+          "products": { "type": "array", "items": { "$ref": "#/components/schemas/DealProductInput" } }
         }
       },
       "UpdateDealRequest": {
         "type": "object",
         "properties": {
-          "name": { "type": "string" },
+          "name": { "type": "string", "maxLength": 70 },
           "pipeline_id": { "type": "string", "format": "uuid" },
           "stage_id": { "type": "string", "format": "uuid" },
-          "currency_id": { "type": "string" },
+          "currency": { "$ref": "#/components/schemas/CurrencyCode" },
           "price_cts": { "type": "integer", "minimum": 0 },
           "owner_user_id": { "type": "string", "format": "uuid", "nullable": true },
-          "source": { "type": "string", "nullable": true },
-          "forecast_date": { "type": "string", "format": "date", "nullable": true }
+          "forecast_date": { "type": "string", "format": "date-time", "nullable": true },
+          "person_ids": { "type": "array", "items": { "type": "string", "format": "uuid" } },
+          "company_ids": { "type": "array", "items": { "type": "string", "format": "uuid" } },
+          "tag_ids": { "type": "array", "items": { "type": "string", "format": "uuid" } },
+          "custom_fields": {
+            "type": "array",
+            "items": {
+              "type": "object",
+              "required": ["field_id", "value"],
+              "properties": { "field_id": { "type": "string", "format": "uuid" }, "value": {} }
+            }
+          },
+          "products": { "type": "array", "items": { "$ref": "#/components/schemas/DealProductInput" } },
+          "association_mode": {
+            "type": "string",
+            "enum": ["append", "replace"],
+            "default": "append",
+            "description": "append: adiciona sem remover existentes. replace: remove todas as associações dos tipos enviados e insere as novas."
+          }
         }
       },
       "DealsListResponse": {
@@ -362,12 +488,6 @@
         "properties": {
           "data": { "type": "array", "items": { "$ref": "#/components/schemas/Deal" } },
           "meta": { "$ref": "#/components/schemas/PaginationMeta" }
-        }
-      },
-      "DealResponse": {
-        "type": "object",
-        "properties": {
-          "data": { "$ref": "#/components/schemas/Deal" }
         }
       },
       "DealWithEmbeddedResponse": {

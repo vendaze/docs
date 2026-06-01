@@ -31,7 +31,7 @@
       "name": "Empresas"
     },
     {
-      "name": "Negocios"
+      "name": "Negócios"
     },
     {
       "name": "Tarefas"
@@ -873,10 +873,10 @@
     "/v1/deals": {
       "get": {
         "operationId": "listDeals",
-        "summary": "Listar negocios",
-        "description": "Retorna uma lista paginada de negocios no workspace autorizado.",
+        "summary": "Listar negócios",
+        "description": "Retorna uma lista paginada de negócios no workspace autorizado.",
         "tags": [
-          "Negocios"
+          "Negócios"
         ],
         "parameters": [
           {
@@ -897,7 +897,7 @@
             "schema": {
               "type": "string"
             },
-            "description": "Correspondencia parcial pelo nome do negocio."
+            "description": "Correspondência parcial pelo nome do negócio."
           },
           {
             "name": "pipeline_id",
@@ -915,7 +915,7 @@
               "type": "string",
               "format": "uuid"
             },
-            "description": "Filtrar por estagio."
+            "description": "Filtrar por estágio."
           },
           {
             "name": "owner_user_id",
@@ -924,7 +924,7 @@
               "type": "string",
               "format": "uuid"
             },
-            "description": "Filtrar por responsavel."
+            "description": "Filtrar por responsável."
           },
           {
             "name": "source",
@@ -932,31 +932,33 @@
             "schema": {
               "type": "string"
             },
-            "description": "Filtrar por origem do negocio."
+            "description": "Filtrar por origem do negócio (nome do app que criou)."
           },
           {
             "name": "price_min_cts",
             "in": "query",
             "schema": {
-              "type": "integer"
+              "type": "integer",
+              "minimum": 0
             },
-            "description": "Valor minimo em centavos."
+            "description": "Valor mínimo em centavos."
           },
           {
             "name": "price_max_cts",
             "in": "query",
             "schema": {
-              "type": "integer"
+              "type": "integer",
+              "minimum": 0
             },
-            "description": "Valor maximo em centavos."
+            "description": "Valor máximo em centavos."
           },
           {
             "name": "currency",
             "in": "query",
             "schema": {
-              "type": "string"
+              "$ref": "#/components/schemas/CurrencyCode"
             },
-            "description": "Codigo ISO 4217. Ex: BRL."
+            "description": "Filtrar por código ISO 4217 da moeda. Exemplo: BRL."
           },
           {
             "name": "forecast_after",
@@ -965,7 +967,7 @@
               "type": "string",
               "format": "date-time"
             },
-            "description": "Filtrar por data prevista apos."
+            "description": "Filtrar por data prevista após (ISO 8601 UTC)."
           },
           {
             "name": "forecast_before",
@@ -974,7 +976,7 @@
               "type": "string",
               "format": "date-time"
             },
-            "description": "Filtrar por data prevista antes."
+            "description": "Filtrar por data prevista antes (ISO 8601 UTC)."
           },
           {
             "$ref": "#/components/parameters/created_after"
@@ -991,7 +993,7 @@
         ],
         "responses": {
           "200": {
-            "description": "Lista de negocios retornada com sucesso.",
+            "description": "Lista de negócios retornada com sucesso.",
             "content": {
               "application/json": {
                 "schema": {
@@ -1016,10 +1018,10 @@
       },
       "post": {
         "operationId": "createDeal",
-        "summary": "Criar negocio",
-        "description": "Cria um novo negocio no workspace.",
+        "summary": "Criar negócio",
+        "description": "Cria um novo negócio no workspace. O campo `source` é preenchido automaticamente com o nome do OAuth app que faz a requisição e não pode ser definido pelo integrador.",
         "tags": [
-          "Negocios"
+          "Negócios"
         ],
         "requestBody": {
           "required": true,
@@ -1033,11 +1035,11 @@
         },
         "responses": {
           "201": {
-            "description": "Negocio criado com sucesso.",
+            "description": "Negócio criado com sucesso.",
             "content": {
               "application/json": {
                 "schema": {
-                  "$ref": "#/components/schemas/DealResponse"
+                  "$ref": "#/components/schemas/DealWithEmbeddedResponse"
                 }
               }
             }
@@ -1060,10 +1062,10 @@
     "/v1/deals/{id}": {
       "get": {
         "operationId": "getDeal",
-        "summary": "Buscar negocio",
-        "description": "Retorna um negocio por ID com pipeline, estagio, produtos e campos adicionais embutidos.",
+        "summary": "Buscar negócio",
+        "description": "Retorna um negócio por ID com pipeline, estágio, produtos, campos adicionais, tags, pessoas e empresas associadas.",
         "tags": [
-          "Negocios"
+          "Negócios"
         ],
         "parameters": [
           {
@@ -1072,7 +1074,7 @@
         ],
         "responses": {
           "200": {
-            "description": "Negocio retornado com sucesso.",
+            "description": "Negócio retornado com sucesso.",
             "content": {
               "application/json": {
                 "schema": {
@@ -1094,10 +1096,10 @@
       },
       "patch": {
         "operationId": "updateDeal",
-        "summary": "Atualizar negocio",
-        "description": "Atualiza um negocio. Apenas campos enviados sao modificados.",
+        "summary": "Atualizar negócio",
+        "description": "Atualiza um negócio. Apenas campos enviados são modificados. O campo `source` não pode ser alterado.",
         "tags": [
-          "Negocios"
+          "Negócios"
         ],
         "parameters": [
           {
@@ -1116,11 +1118,11 @@
         },
         "responses": {
           "200": {
-            "description": "Negocio atualizado com sucesso.",
+            "description": "Negócio atualizado com sucesso.",
             "content": {
               "application/json": {
                 "schema": {
-                  "$ref": "#/components/schemas/DealResponse"
+                  "$ref": "#/components/schemas/DealWithEmbeddedResponse"
                 }
               }
             }
@@ -1141,10 +1143,10 @@
       },
       "delete": {
         "operationId": "deleteDeal",
-        "summary": "Deletar negocio",
-        "description": "Soft-delete: o registro não e mais acessível pela API.",
+        "summary": "Deletar negócio",
+        "description": "Soft-delete: o registro não é mais acessível pela API.",
         "tags": [
-          "Negocios"
+          "Negócios"
         ],
         "parameters": [
           {
@@ -1153,7 +1155,7 @@
         ],
         "responses": {
           "204": {
-            "description": "Negocio deletado com sucesso."
+            "description": "Negócio deletado com sucesso."
           },
           "401": {
             "$ref": "#/components/responses/Unauthorized"
@@ -2792,10 +2794,7 @@
             "type": "string",
             "format": "uuid"
           },
-          "value": {
-            "type": "string",
-            "nullable": true
-          },
+          "value": {},
           "field": {
             "type": "object",
             "properties": {
@@ -3690,6 +3689,87 @@
           }
         }
       },
+      "CurrencyCode": {
+        "type": "string",
+        "description": "Código ISO 4217 de moeda suportado pela Vendaze.",
+        "enum": [
+          "AED",
+          "ARS",
+          "AUD",
+          "BRL",
+          "CAD",
+          "CHF",
+          "CLP",
+          "CNY",
+          "COP",
+          "DKK",
+          "EGP",
+          "EUR",
+          "GBP",
+          "HKD",
+          "ILS",
+          "INR",
+          "JPY",
+          "KWD",
+          "MAD",
+          "MXN",
+          "MYR",
+          "NGN",
+          "NOK",
+          "NZD",
+          "PEN",
+          "QAR",
+          "SAR",
+          "SEK",
+          "SGD",
+          "TRY",
+          "USD",
+          "UYU",
+          "ZAR"
+        ],
+        "example": "BRL"
+      },
+      "DealProduct": {
+        "type": "object",
+        "properties": {
+          "id": {
+            "type": "string",
+            "format": "uuid"
+          },
+          "product_id": {
+            "type": "string",
+            "format": "uuid",
+            "nullable": true
+          },
+          "name": {
+            "type": "string",
+            "nullable": true
+          },
+          "quantity": {
+            "type": "integer",
+            "example": 2
+          },
+          "billing_cycle": {
+            "type": "string",
+            "enum": [
+              "one_time",
+              "monthly",
+              "quarterly",
+              "annually"
+            ]
+          },
+          "unit_price_cts": {
+            "type": "integer",
+            "description": "Preço unitário em centavos.",
+            "example": 50000
+          },
+          "total_price_cts": {
+            "type": "integer",
+            "description": "Preço total em centavos (unit_price_cts × quantity).",
+            "example": 100000
+          }
+        }
+      },
       "Deal": {
         "type": "object",
         "properties": {
@@ -3699,7 +3779,7 @@
           },
           "name": {
             "type": "string",
-            "example": "Acme Corp Annual Contract"
+            "example": "Contrato Anual Acme Corp"
           },
           "pipeline_id": {
             "type": "string",
@@ -3711,12 +3791,11 @@
           },
           "price_cts": {
             "type": "integer",
-            "description": "Valor em centavos.",
+            "description": "Valor em centavos. 250000 = R$ 2.500,00",
             "example": 250000
           },
-          "currency_id": {
-            "type": "string",
-            "example": "BRL"
+          "currency": {
+            "$ref": "#/components/schemas/CurrencyCode"
           },
           "owner_user_id": {
             "type": "string",
@@ -3725,14 +3804,19 @@
           },
           "source": {
             "type": "string",
-            "nullable": true,
-            "example": "referral"
+            "description": "Nome do OAuth app que criou o negócio. Somente leitura.",
+            "example": "Minha Integração"
           },
           "forecast_date": {
             "type": "string",
-            "format": "date",
+            "format": "date-time",
             "nullable": true,
-            "example": "2026-12-31"
+            "example": "2026-12-31T00:00:00Z"
+          },
+          "entity_id": {
+            "type": "string",
+            "description": "Identificador único legível.",
+            "example": "NEG-0001"
           },
           "created_at": {
             "type": "string",
@@ -3754,6 +3838,7 @@
             "properties": {
               "pipeline": {
                 "type": "object",
+                "nullable": true,
                 "properties": {
                   "id": {
                     "type": "string",
@@ -3766,6 +3851,7 @@
               },
               "stage": {
                 "type": "object",
+                "nullable": true,
                 "properties": {
                   "id": {
                     "type": "string",
@@ -3787,6 +3873,18 @@
               "products": {
                 "type": "array",
                 "items": {
+                  "$ref": "#/components/schemas/DealProduct"
+                }
+              },
+              "custom_fields": {
+                "type": "array",
+                "items": {
+                  "$ref": "#/components/schemas/CustomFieldValue"
+                }
+              },
+              "tags": {
+                "type": "array",
+                "items": {
                   "type": "object",
                   "properties": {
                     "id": {
@@ -3796,27 +3894,74 @@
                     "name": {
                       "type": "string"
                     },
-                    "quantity": {
-                      "type": "integer"
+                    "color_text": {
+                      "type": "string",
+                      "nullable": true
                     },
-                    "unit_price_cts": {
-                      "type": "integer"
-                    },
-                    "total_price_cts": {
-                      "type": "integer"
+                    "color_background": {
+                      "type": "string",
+                      "nullable": true
                     }
                   }
                 }
               },
-              "custom_fields": {
+              "people": {
                 "type": "array",
                 "items": {
-                  "$ref": "#/components/schemas/CustomFieldValue"
+                  "type": "object",
+                  "properties": {
+                    "id": {
+                      "type": "string",
+                      "format": "uuid"
+                    },
+                    "full_name": {
+                      "type": "string"
+                    }
+                  }
+                }
+              },
+              "companies": {
+                "type": "array",
+                "items": {
+                  "type": "object",
+                  "properties": {
+                    "id": {
+                      "type": "string",
+                      "format": "uuid"
+                    },
+                    "full_name": {
+                      "type": "string"
+                    }
+                  }
                 }
               }
             }
           }
         ]
+      },
+      "DealProductInput": {
+        "type": "object",
+        "required": [
+          "product_id"
+        ],
+        "properties": {
+          "product_id": {
+            "type": "string",
+            "format": "uuid"
+          },
+          "quantity": {
+            "type": "integer",
+            "minimum": 1,
+            "default": 1,
+            "description": "Quantidade de unidades. Aplicável apenas para produtos avulsos (one_time). Produtos recorrentes (monthly, quarterly, annually) sempre usam quantidade 1, independente do valor enviado."
+          },
+          "unit_price_cts": {
+            "type": "integer",
+            "minimum": 0,
+            "description": "Sobrescreve o preço de catálogo do produto. Em centavos. Se omitido, usa o preço padrão do produto.",
+            "example": 50000
+          }
+        }
       },
       "CreateDealRequest": {
         "type": "object",
@@ -3824,12 +3969,13 @@
           "name",
           "pipeline_id",
           "stage_id",
-          "currency_id"
+          "currency"
         ],
         "properties": {
           "name": {
             "type": "string",
-            "example": "Acme Corp Annual Contract"
+            "maxLength": 70,
+            "example": "Contrato Anual Acme Corp"
           },
           "pipeline_id": {
             "type": "string",
@@ -3839,25 +3985,71 @@
             "type": "string",
             "format": "uuid"
           },
-          "currency_id": {
-            "type": "string",
-            "example": "BRL"
+          "currency": {
+            "$ref": "#/components/schemas/CurrencyCode"
           },
           "price_cts": {
             "type": "integer",
             "minimum": 0,
+            "default": 0,
+            "description": "Valor em centavos.",
             "example": 250000
           },
           "owner_user_id": {
             "type": "string",
             "format": "uuid"
           },
-          "source": {
-            "type": "string"
-          },
           "forecast_date": {
             "type": "string",
-            "format": "date"
+            "format": "date-time",
+            "nullable": true,
+            "example": "2026-12-31T00:00:00Z"
+          },
+          "person_ids": {
+            "type": "array",
+            "items": {
+              "type": "string",
+              "format": "uuid"
+            },
+            "description": "Pessoas a associar ao negócio."
+          },
+          "company_ids": {
+            "type": "array",
+            "items": {
+              "type": "string",
+              "format": "uuid"
+            },
+            "description": "Empresas a associar ao negócio."
+          },
+          "tag_ids": {
+            "type": "array",
+            "items": {
+              "type": "string",
+              "format": "uuid"
+            }
+          },
+          "custom_fields": {
+            "type": "array",
+            "items": {
+              "type": "object",
+              "required": [
+                "field_id",
+                "value"
+              ],
+              "properties": {
+                "field_id": {
+                  "type": "string",
+                  "format": "uuid"
+                },
+                "value": {}
+              }
+            }
+          },
+          "products": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/DealProductInput"
+            }
           }
         }
       },
@@ -3865,7 +4057,8 @@
         "type": "object",
         "properties": {
           "name": {
-            "type": "string"
+            "type": "string",
+            "maxLength": 70
           },
           "pipeline_id": {
             "type": "string",
@@ -3875,8 +4068,8 @@
             "type": "string",
             "format": "uuid"
           },
-          "currency_id": {
-            "type": "string"
+          "currency": {
+            "$ref": "#/components/schemas/CurrencyCode"
           },
           "price_cts": {
             "type": "integer",
@@ -3887,14 +4080,63 @@
             "format": "uuid",
             "nullable": true
           },
-          "source": {
-            "type": "string",
-            "nullable": true
-          },
           "forecast_date": {
             "type": "string",
-            "format": "date",
+            "format": "date-time",
             "nullable": true
+          },
+          "person_ids": {
+            "type": "array",
+            "items": {
+              "type": "string",
+              "format": "uuid"
+            }
+          },
+          "company_ids": {
+            "type": "array",
+            "items": {
+              "type": "string",
+              "format": "uuid"
+            }
+          },
+          "tag_ids": {
+            "type": "array",
+            "items": {
+              "type": "string",
+              "format": "uuid"
+            }
+          },
+          "custom_fields": {
+            "type": "array",
+            "items": {
+              "type": "object",
+              "required": [
+                "field_id",
+                "value"
+              ],
+              "properties": {
+                "field_id": {
+                  "type": "string",
+                  "format": "uuid"
+                },
+                "value": {}
+              }
+            }
+          },
+          "products": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/DealProductInput"
+            }
+          },
+          "association_mode": {
+            "type": "string",
+            "enum": [
+              "append",
+              "replace"
+            ],
+            "default": "append",
+            "description": "append: adiciona sem remover existentes. replace: remove todas as associações dos tipos enviados e insere as novas."
           }
         }
       },
@@ -3909,14 +4151,6 @@
           },
           "meta": {
             "$ref": "#/components/schemas/PaginationMeta"
-          }
-        }
-      },
-      "DealResponse": {
-        "type": "object",
-        "properties": {
-          "data": {
-            "$ref": "#/components/schemas/Deal"
           }
         }
       },

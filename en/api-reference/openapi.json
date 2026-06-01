@@ -933,13 +933,14 @@
             "schema": {
               "type": "string"
             },
-            "description": "Filter by deal source."
+            "description": "Filter by deal source (app name that created the deal)."
           },
           {
             "name": "price_min_cts",
             "in": "query",
             "schema": {
-              "type": "integer"
+              "type": "integer",
+              "minimum": 0
             },
             "description": "Minimum value in cents."
           },
@@ -947,7 +948,8 @@
             "name": "price_max_cts",
             "in": "query",
             "schema": {
-              "type": "integer"
+              "type": "integer",
+              "minimum": 0
             },
             "description": "Maximum value in cents."
           },
@@ -955,9 +957,9 @@
             "name": "currency",
             "in": "query",
             "schema": {
-              "type": "string"
+              "$ref": "#/components/schemas/CurrencyCode"
             },
-            "description": "ISO 4217 currency code. Example: BRL."
+            "description": "Filter by ISO 4217 currency code. Example: BRL."
           },
           {
             "name": "forecast_after",
@@ -966,7 +968,7 @@
               "type": "string",
               "format": "date-time"
             },
-            "description": "Filter by forecast date after."
+            "description": "Filter by forecast date after (ISO 8601 UTC)."
           },
           {
             "name": "forecast_before",
@@ -975,7 +977,7 @@
               "type": "string",
               "format": "date-time"
             },
-            "description": "Filter by forecast date before."
+            "description": "Filter by forecast date before (ISO 8601 UTC)."
           },
           {
             "$ref": "#/components/parameters/created_after"
@@ -1018,7 +1020,7 @@
       "post": {
         "operationId": "createDeal",
         "summary": "Create a deal",
-        "description": "Creates a new deal in the workspace.",
+        "description": "Creates a new deal in the workspace. The `source` field is automatically set to the name of the OAuth app making the request and cannot be set by the caller.",
         "tags": [
           "Deals"
         ],
@@ -1038,7 +1040,7 @@
             "content": {
               "application/json": {
                 "schema": {
-                  "$ref": "#/components/schemas/DealResponse"
+                  "$ref": "#/components/schemas/DealWithEmbeddedResponse"
                 }
               }
             }
@@ -1062,7 +1064,7 @@
       "get": {
         "operationId": "getDeal",
         "summary": "Get a deal",
-        "description": "Returns a deal by ID with embedded pipeline, stage, products, and custom fields.",
+        "description": "Returns a deal by ID with embedded pipeline, stage, products, custom fields, tags, people, and companies.",
         "tags": [
           "Deals"
         ],
@@ -1096,7 +1098,7 @@
       "patch": {
         "operationId": "updateDeal",
         "summary": "Update a deal",
-        "description": "Updates a deal. Only fields included in the body are modified.",
+        "description": "Updates a deal. Only fields included in the body are modified. `source` cannot be changed.",
         "tags": [
           "Deals"
         ],
@@ -1121,7 +1123,7 @@
             "content": {
               "application/json": {
                 "schema": {
-                  "$ref": "#/components/schemas/DealResponse"
+                  "$ref": "#/components/schemas/DealWithEmbeddedResponse"
                 }
               }
             }
@@ -2793,10 +2795,7 @@
             "type": "string",
             "format": "uuid"
           },
-          "value": {
-            "type": "string",
-            "nullable": true
-          },
+          "value": {},
           "field": {
             "type": "object",
             "properties": {
@@ -3688,6 +3687,87 @@
           }
         }
       },
+      "CurrencyCode": {
+        "type": "string",
+        "description": "ISO 4217 currency code supported by Vendaze.",
+        "enum": [
+          "AED",
+          "ARS",
+          "AUD",
+          "BRL",
+          "CAD",
+          "CHF",
+          "CLP",
+          "CNY",
+          "COP",
+          "DKK",
+          "EGP",
+          "EUR",
+          "GBP",
+          "HKD",
+          "ILS",
+          "INR",
+          "JPY",
+          "KWD",
+          "MAD",
+          "MXN",
+          "MYR",
+          "NGN",
+          "NOK",
+          "NZD",
+          "PEN",
+          "QAR",
+          "SAR",
+          "SEK",
+          "SGD",
+          "TRY",
+          "USD",
+          "UYU",
+          "ZAR"
+        ],
+        "example": "BRL"
+      },
+      "DealProduct": {
+        "type": "object",
+        "properties": {
+          "id": {
+            "type": "string",
+            "format": "uuid"
+          },
+          "product_id": {
+            "type": "string",
+            "format": "uuid",
+            "nullable": true
+          },
+          "name": {
+            "type": "string",
+            "nullable": true
+          },
+          "quantity": {
+            "type": "integer",
+            "example": 2
+          },
+          "billing_cycle": {
+            "type": "string",
+            "enum": [
+              "one_time",
+              "monthly",
+              "quarterly",
+              "annually"
+            ]
+          },
+          "unit_price_cts": {
+            "type": "integer",
+            "description": "Unit price in cents.",
+            "example": 50000
+          },
+          "total_price_cts": {
+            "type": "integer",
+            "description": "Total price in cents (unit_price_cts x quantity).",
+            "example": 100000
+          }
+        }
+      },
       "Deal": {
         "type": "object",
         "properties": {
@@ -3712,9 +3792,8 @@
             "description": "Deal value in cents. 250000 = R$ 2,500.00",
             "example": 250000
           },
-          "currency_id": {
-            "type": "string",
-            "example": "BRL"
+          "currency": {
+            "$ref": "#/components/schemas/CurrencyCode"
           },
           "owner_user_id": {
             "type": "string",
@@ -3723,14 +3802,19 @@
           },
           "source": {
             "type": "string",
-            "nullable": true,
-            "example": "referral"
+            "description": "Name of the OAuth app that created the deal. Read-only.",
+            "example": "My Integration App"
           },
           "forecast_date": {
             "type": "string",
-            "format": "date",
+            "format": "date-time",
             "nullable": true,
-            "example": "2026-12-31"
+            "example": "2026-12-31T00:00:00Z"
+          },
+          "entity_id": {
+            "type": "string",
+            "description": "Human-readable unique identifier.",
+            "example": "NEG-0001"
           },
           "created_at": {
             "type": "string",
@@ -3752,6 +3836,7 @@
             "properties": {
               "pipeline": {
                 "type": "object",
+                "nullable": true,
                 "properties": {
                   "id": {
                     "type": "string",
@@ -3764,6 +3849,7 @@
               },
               "stage": {
                 "type": "object",
+                "nullable": true,
                 "properties": {
                   "id": {
                     "type": "string",
@@ -3785,6 +3871,18 @@
               "products": {
                 "type": "array",
                 "items": {
+                  "$ref": "#/components/schemas/DealProduct"
+                }
+              },
+              "custom_fields": {
+                "type": "array",
+                "items": {
+                  "$ref": "#/components/schemas/CustomFieldValue"
+                }
+              },
+              "tags": {
+                "type": "array",
+                "items": {
                   "type": "object",
                   "properties": {
                     "id": {
@@ -3794,27 +3892,74 @@
                     "name": {
                       "type": "string"
                     },
-                    "quantity": {
-                      "type": "integer"
+                    "color_text": {
+                      "type": "string",
+                      "nullable": true
                     },
-                    "unit_price_cts": {
-                      "type": "integer"
-                    },
-                    "total_price_cts": {
-                      "type": "integer"
+                    "color_background": {
+                      "type": "string",
+                      "nullable": true
                     }
                   }
                 }
               },
-              "custom_fields": {
+              "people": {
                 "type": "array",
                 "items": {
-                  "$ref": "#/components/schemas/CustomFieldValue"
+                  "type": "object",
+                  "properties": {
+                    "id": {
+                      "type": "string",
+                      "format": "uuid"
+                    },
+                    "full_name": {
+                      "type": "string"
+                    }
+                  }
+                }
+              },
+              "companies": {
+                "type": "array",
+                "items": {
+                  "type": "object",
+                  "properties": {
+                    "id": {
+                      "type": "string",
+                      "format": "uuid"
+                    },
+                    "full_name": {
+                      "type": "string"
+                    }
+                  }
                 }
               }
             }
           }
         ]
+      },
+      "DealProductInput": {
+        "type": "object",
+        "required": [
+          "product_id"
+        ],
+        "properties": {
+          "product_id": {
+            "type": "string",
+            "format": "uuid"
+          },
+          "quantity": {
+            "type": "integer",
+            "minimum": 1,
+            "default": 1,
+            "description": "Number of units. Only applicable for one-time products. Recurring products (monthly, quarterly, annually) always use quantity 1 regardless of the value sent."
+          },
+          "unit_price_cts": {
+            "type": "integer",
+            "minimum": 0,
+            "description": "Overrides the product's catalog price. In cents. If omitted, the product's default price is used.",
+            "example": 50000
+          }
+        }
       },
       "CreateDealRequest": {
         "type": "object",
@@ -3822,11 +3967,12 @@
           "name",
           "pipeline_id",
           "stage_id",
-          "currency_id"
+          "currency"
         ],
         "properties": {
           "name": {
             "type": "string",
+            "maxLength": 70,
             "example": "Acme Corp Annual Contract"
           },
           "pipeline_id": {
@@ -3837,25 +3983,71 @@
             "type": "string",
             "format": "uuid"
           },
-          "currency_id": {
-            "type": "string",
-            "example": "BRL"
+          "currency": {
+            "$ref": "#/components/schemas/CurrencyCode"
           },
           "price_cts": {
             "type": "integer",
             "minimum": 0,
+            "default": 0,
+            "description": "Deal value in cents.",
             "example": 250000
           },
           "owner_user_id": {
             "type": "string",
             "format": "uuid"
           },
-          "source": {
-            "type": "string"
-          },
           "forecast_date": {
             "type": "string",
-            "format": "date"
+            "format": "date-time",
+            "nullable": true,
+            "example": "2026-12-31T00:00:00Z"
+          },
+          "person_ids": {
+            "type": "array",
+            "items": {
+              "type": "string",
+              "format": "uuid"
+            },
+            "description": "People to associate with this deal."
+          },
+          "company_ids": {
+            "type": "array",
+            "items": {
+              "type": "string",
+              "format": "uuid"
+            },
+            "description": "Companies to associate with this deal."
+          },
+          "tag_ids": {
+            "type": "array",
+            "items": {
+              "type": "string",
+              "format": "uuid"
+            }
+          },
+          "custom_fields": {
+            "type": "array",
+            "items": {
+              "type": "object",
+              "required": [
+                "field_id",
+                "value"
+              ],
+              "properties": {
+                "field_id": {
+                  "type": "string",
+                  "format": "uuid"
+                },
+                "value": {}
+              }
+            }
+          },
+          "products": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/DealProductInput"
+            }
           }
         }
       },
@@ -3863,7 +4055,8 @@
         "type": "object",
         "properties": {
           "name": {
-            "type": "string"
+            "type": "string",
+            "maxLength": 70
           },
           "pipeline_id": {
             "type": "string",
@@ -3873,8 +4066,8 @@
             "type": "string",
             "format": "uuid"
           },
-          "currency_id": {
-            "type": "string"
+          "currency": {
+            "$ref": "#/components/schemas/CurrencyCode"
           },
           "price_cts": {
             "type": "integer",
@@ -3885,14 +4078,63 @@
             "format": "uuid",
             "nullable": true
           },
-          "source": {
-            "type": "string",
-            "nullable": true
-          },
           "forecast_date": {
             "type": "string",
-            "format": "date",
+            "format": "date-time",
             "nullable": true
+          },
+          "person_ids": {
+            "type": "array",
+            "items": {
+              "type": "string",
+              "format": "uuid"
+            }
+          },
+          "company_ids": {
+            "type": "array",
+            "items": {
+              "type": "string",
+              "format": "uuid"
+            }
+          },
+          "tag_ids": {
+            "type": "array",
+            "items": {
+              "type": "string",
+              "format": "uuid"
+            }
+          },
+          "custom_fields": {
+            "type": "array",
+            "items": {
+              "type": "object",
+              "required": [
+                "field_id",
+                "value"
+              ],
+              "properties": {
+                "field_id": {
+                  "type": "string",
+                  "format": "uuid"
+                },
+                "value": {}
+              }
+            }
+          },
+          "products": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/DealProductInput"
+            }
+          },
+          "association_mode": {
+            "type": "string",
+            "enum": [
+              "append",
+              "replace"
+            ],
+            "default": "append",
+            "description": "append: adds without removing existing. replace: removes all associations of the sent types and inserts the new ones."
           }
         }
       },
@@ -3907,14 +4149,6 @@
           },
           "meta": {
             "$ref": "#/components/schemas/PaginationMeta"
-          }
-        }
-      },
-      "DealResponse": {
-        "type": "object",
-        "properties": {
-          "data": {
-            "$ref": "#/components/schemas/Deal"
           }
         }
       },
