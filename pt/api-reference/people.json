@@ -11,82 +11,6 @@
   "tags": [{ "name": "Pessoas" }],
   "paths": {
     "/v1/people": {
-      "get": {
-        "operationId": "listPeople",
-        "summary": "Listar pessoas",
-        "description": "Retorna uma lista paginada de pessoas no workspace autorizado.",
-        "tags": ["Pessoas"],
-        "parameters": [
-          { "$ref": "#/components/parameters/page" },
-          { "$ref": "#/components/parameters/per_page" },
-          { "$ref": "#/components/parameters/order_by" },
-          { "$ref": "#/components/parameters/order" },
-          {
-            "name": "full_name",
-            "in": "query",
-            "schema": { "type": "string" },
-            "description": "Correspondencia parcial pelo nome completo."
-          },
-          {
-            "name": "email",
-            "in": "query",
-            "schema": { "type": "string" },
-            "description": "Filtrar por endereco de e-mail."
-          },
-          {
-            "name": "phone",
-            "in": "query",
-            "schema": { "type": "string" },
-            "description": "Filtrar por numero de telefone."
-          },
-          {
-            "name": "company_id",
-            "in": "query",
-            "schema": { "type": "string", "format": "uuid" },
-            "description": "Filtrar por empresa vinculada."
-          },
-          {
-            "name": "owner_user_id",
-            "in": "query",
-            "schema": { "type": "string", "format": "uuid" },
-            "description": "Filtrar por responsavel."
-          },
-          {
-            "name": "position",
-            "in": "query",
-            "schema": { "type": "string" },
-            "description": "Correspondencia parcial pelo cargo."
-          },
-          { "$ref": "#/components/parameters/created_after" },
-          { "$ref": "#/components/parameters/created_before" },
-          { "$ref": "#/components/parameters/updated_after" },
-          { "$ref": "#/components/parameters/updated_before" },
-          {
-            "name": "tag[]",
-            "in": "query",
-            "schema": { "type": "array", "items": { "type": "string", "format": "uuid" } },
-            "style": "form",
-            "explode": true,
-            "description": "Filtrar por IDs de tags. Logica AND — a pessoa deve ter todas as tags informadas. Exemplo: `?tag[]=uuid1&tag[]=uuid2`."
-          },
-          {
-            "name": "custom_field[key]",
-            "in": "query",
-            "schema": { "type": "string" },
-            "description": "Filtrar por valor de campo adicional. Substitua `key` pela chave do campo. Exemplo: `?custom_field[setor]=SaaS`."
-          }
-        ],
-        "responses": {
-          "200": {
-            "description": "Lista de pessoas retornada com sucesso.",
-            "content": { "application/json": { "schema": { "$ref": "#/components/schemas/PeopleListResponse" } } }
-          },
-          "401": { "$ref": "#/components/responses/Unauthorized" },
-          "403": { "$ref": "#/components/responses/InsufficientScope" },
-          "422": { "$ref": "#/components/responses/ValidationError" },
-          "429": { "$ref": "#/components/responses/RateLimitExceeded" }
-        }
-      },
       "post": {
         "operationId": "createPerson",
         "summary": "Criar pessoa",
@@ -174,52 +98,6 @@
         "required": true,
         "schema": { "type": "string", "format": "uuid" },
         "description": "UUID do recurso."
-      },
-      "page": {
-        "name": "page",
-        "in": "query",
-        "schema": { "type": "integer", "default": 1, "minimum": 1 }
-      },
-      "per_page": {
-        "name": "per_page",
-        "in": "query",
-        "schema": { "type": "integer", "default": 50, "minimum": 1, "maximum": 100 },
-        "description": "Max 100."
-      },
-      "order_by": {
-        "name": "order_by",
-        "in": "query",
-        "schema": { "type": "string", "enum": ["created_at", "updated_at", "full_name"], "default": "created_at" },
-        "description": "Campo de ordenacao."
-      },
-      "order": {
-        "name": "order",
-        "in": "query",
-        "schema": { "type": "string", "enum": ["asc", "desc"], "default": "desc" }
-      },
-      "created_after": {
-        "name": "created_after",
-        "in": "query",
-        "schema": { "type": "string", "format": "date-time" },
-        "description": "ISO 8601 UTC. Retorna registros criados apos este timestamp."
-      },
-      "created_before": {
-        "name": "created_before",
-        "in": "query",
-        "schema": { "type": "string", "format": "date-time" },
-        "description": "ISO 8601 UTC. Retorna registros criados antes deste timestamp."
-      },
-      "updated_after": {
-        "name": "updated_after",
-        "in": "query",
-        "schema": { "type": "string", "format": "date-time" },
-        "description": "ISO 8601 UTC. Retorna registros atualizados apos este timestamp."
-      },
-      "updated_before": {
-        "name": "updated_before",
-        "in": "query",
-        "schema": { "type": "string", "format": "date-time" },
-        "description": "ISO 8601 UTC. Retorna registros atualizados antes deste timestamp."
       }
     },
     "responses": {
@@ -278,15 +156,6 @@
               "request_id": { "type": "string", "format": "uuid" }
             }
           }
-        }
-      },
-      "PaginationMeta": {
-        "type": "object",
-        "properties": {
-          "total": { "type": "integer", "example": 150 },
-          "page": { "type": "integer", "example": 1 },
-          "per_page": { "type": "integer", "example": 50 },
-          "has_more": { "type": "boolean", "example": true }
         }
       },
       "ContactEmail": {
@@ -526,13 +395,6 @@
             "default": "append",
             "description": "Controla como as associacoes (`tag_ids`, `list_ids`, `deal_ids`, `custom_fields`) sao aplicadas. `append`: adiciona sem remover as existentes. `replace`: remove todas as associacoes atuais dos tipos enviados e insere as novas. Enviar array vazio com `replace` remove todas as associacoes daquele tipo."
           }
-        }
-      },
-      "PeopleListResponse": {
-        "type": "object",
-        "properties": {
-          "data": { "type": "array", "items": { "$ref": "#/components/schemas/Person" } },
-          "meta": { "$ref": "#/components/schemas/PaginationMeta" }
         }
       },
       "PersonWithEmbeddedResponse": {

@@ -11,50 +11,6 @@
   "tags": [{ "name": "Companies" }],
   "paths": {
     "/v1/companies": {
-      "get": {
-        "operationId": "listCompanies",
-        "summary": "List companies",
-        "description": "Returns a paginated list of companies in the authorized workspace. Only fields of the entity are returned — no embedded relations.",
-        "tags": ["Companies"],
-        "parameters": [
-          { "$ref": "#/components/parameters/page" },
-          { "$ref": "#/components/parameters/per_page" },
-          { "$ref": "#/components/parameters/order_by" },
-          { "$ref": "#/components/parameters/order" },
-          { "name": "full_name", "in": "query", "schema": { "type": "string" }, "description": "Partial match on company name." },
-          { "name": "email", "in": "query", "schema": { "type": "string" }, "description": "Exact match on email address." },
-          { "name": "phone", "in": "query", "schema": { "type": "string" }, "description": "Exact match on phone number." },
-          { "name": "owner_user_id", "in": "query", "schema": { "type": "string", "format": "uuid" }, "description": "Filter by owner." },
-          {
-            "name": "tag[]",
-            "in": "query",
-            "schema": { "type": "array", "items": { "type": "string", "format": "uuid" } },
-            "style": "form",
-            "explode": true,
-            "description": "Filter by tag IDs. AND logic — company must have all specified tags. Example: `?tag[]=uuid1&tag[]=uuid2`."
-          },
-          {
-            "name": "custom_field[key]",
-            "in": "query",
-            "schema": { "type": "string" },
-            "description": "Filter by custom field value. Replace `key` with the field key. Example: `?custom_field[industry]=SaaS`."
-          },
-          { "$ref": "#/components/parameters/created_after" },
-          { "$ref": "#/components/parameters/created_before" },
-          { "$ref": "#/components/parameters/updated_after" },
-          { "$ref": "#/components/parameters/updated_before" }
-        ],
-        "responses": {
-          "200": {
-            "description": "List of companies returned successfully.",
-            "content": { "application/json": { "schema": { "$ref": "#/components/schemas/CompaniesListResponse" } } }
-          },
-          "401": { "$ref": "#/components/responses/Unauthorized" },
-          "403": { "$ref": "#/components/responses/InsufficientScope" },
-          "422": { "$ref": "#/components/responses/ValidationError" },
-          "429": { "$ref": "#/components/responses/RateLimitExceeded" }
-        }
-      },
       "post": {
         "operationId": "createCompany",
         "summary": "Create a company",
@@ -142,44 +98,6 @@
         "required": true,
         "schema": { "type": "string", "format": "uuid" },
         "description": "UUID of the resource."
-      },
-      "page": { "name": "page", "in": "query", "schema": { "type": "integer", "default": 1, "minimum": 1 } },
-      "per_page": {
-        "name": "per_page",
-        "in": "query",
-        "schema": { "type": "integer", "default": 50, "minimum": 1, "maximum": 100 },
-        "description": "Max 100."
-      },
-      "order_by": {
-        "name": "order_by",
-        "in": "query",
-        "schema": { "type": "string", "enum": ["created_at", "updated_at", "full_name"], "default": "created_at" },
-        "description": "Field to sort by."
-      },
-      "order": { "name": "order", "in": "query", "schema": { "type": "string", "enum": ["asc", "desc"], "default": "desc" } },
-      "created_after": {
-        "name": "created_after",
-        "in": "query",
-        "schema": { "type": "string", "format": "date-time" },
-        "description": "ISO 8601 UTC. Returns records created after this timestamp."
-      },
-      "created_before": {
-        "name": "created_before",
-        "in": "query",
-        "schema": { "type": "string", "format": "date-time" },
-        "description": "ISO 8601 UTC. Returns records created before this timestamp."
-      },
-      "updated_after": {
-        "name": "updated_after",
-        "in": "query",
-        "schema": { "type": "string", "format": "date-time" },
-        "description": "ISO 8601 UTC. Returns records updated after this timestamp."
-      },
-      "updated_before": {
-        "name": "updated_before",
-        "in": "query",
-        "schema": { "type": "string", "format": "date-time" },
-        "description": "ISO 8601 UTC. Returns records updated before this timestamp."
       }
     },
     "responses": {
@@ -238,15 +156,6 @@
               "request_id": { "type": "string", "format": "uuid" }
             }
           }
-        }
-      },
-      "PaginationMeta": {
-        "type": "object",
-        "properties": {
-          "total": { "type": "integer", "example": 150 },
-          "page": { "type": "integer", "example": 1 },
-          "per_page": { "type": "integer", "example": 50 },
-          "has_more": { "type": "boolean", "example": true }
         }
       },
       "ContactEmail": {
@@ -452,13 +361,6 @@
             "default": "append",
             "description": "Controls how associations (`tag_ids`, `list_ids`, `deal_ids`, `custom_fields`) are applied. `append`: adds new associations without removing existing ones. `replace`: removes all current associations of each sent type and inserts the new ones. Sending an empty array with `replace` removes all associations of that type."
           }
-        }
-      },
-      "CompaniesListResponse": {
-        "type": "object",
-        "properties": {
-          "data": { "type": "array", "items": { "$ref": "#/components/schemas/Company" } },
-          "meta": { "$ref": "#/components/schemas/PaginationMeta" }
         }
       },
       "CompanyWithEmbeddedResponse": {

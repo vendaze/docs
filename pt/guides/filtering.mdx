@@ -3,26 +3,14 @@ title: 'Filtros'
 description: 'Use parâmetros de query para filtrar e buscar registros nos endpoints de listagem.'
 icon: 'filter'
 keywords:
-  ['filtros API', 'query parameters', 'buscar registros', 'filtrar contatos', 'Vendaze filtros']
+  ['filtros API', 'query parameters', 'buscar registros', 'filtrar tarefas', 'Vendaze filtros']
 ---
 
 Endpoints de listagem suportam filtros via parâmetros de query. Múltiplos filtros são combinados com lógica AND: todos os critérios precisam ser atendidos.
 
-## Filtros de texto
-
-Campos de texto usam correspondência parcial sem distinção de maiúsculas (equivalente a `ILIKE '%valor%'`):
-
-```bash
-GET /v1/people?full_name=silva
-GET /v1/companies?full_name=tech
-GET /v1/deals?name=contrato
-```
-
 ## Filtros de correspondência exata
 
 ```bash
-GET /v1/people?company_id=7c9e6679-7425-40de-944b-e07fc1f90ae7
-GET /v1/people?owner_user_id=b3a8c1d2-f3e4-4a5b-9c6d-7e8f9a0b1c2d
 GET /v1/tasks?completed=true
 GET /v1/tasks?priority=high
 GET /v1/activities?type=call
@@ -33,92 +21,24 @@ GET /v1/activities?type=call
 Sempre em ISO 8601 UTC:
 
 ```bash
-GET /v1/people?created_after=2026-01-01T00:00:00Z&created_before=2026-12-31T23:59:59Z
-GET /v1/deals?updated_after=2026-05-01T00:00:00Z
-GET /v1/deals?forecast_after=2026-06-01T00:00:00Z&forecast_before=2026-06-30T23:59:59Z
+GET /v1/tasks?created_after=2026-01-01T00:00:00Z&created_before=2026-12-31T23:59:59Z
+GET /v1/activities?created_after=2026-05-01T00:00:00Z
 ```
 
-| Filtro                              | Aplica-se a                                      |
-| ----------------------------------- | ------------------------------------------------ |
-| `created_after`, `created_before`   | Pessoas, Empresas, Negócios, Tarefas, Atividades |
-| `updated_after`, `updated_before`   | Pessoas, Empresas, Negócios                      |
-| `forecast_after`, `forecast_before` | Negócios                                         |
-
-## Filtros por tag
-
-```bash
-GET /v1/people?tag=cliente-vip
-GET /v1/people?tag=cliente-vip&tag=lead
-```
-
-Quando múltiplas tags são fornecidas, todos os registros retornados terão todas elas (AND).
-
-## Filtros de preço (negócios)
-
-Valores em centavos:
-
-```bash
-GET /v1/deals?price_min_cts=100000
-GET /v1/deals?price_min_cts=50000&price_max_cts=500000
-GET /v1/deals?currency=BRL
-```
-
-## Filtros por campo adicional
-
-```bash
-GET /v1/people?custom_field[UUID_DO_CAMPO]=valor
-GET /v1/companies?custom_field[UUID_DO_CAMPO]=12.345.678/0001-99
-```
-
-| Tipo do campo                          | Comparação                          | Exemplo de valor   |
-| -------------------------------------- | ----------------------------------- | ------------------ |
-| `text`, `long_text`, `link`, `address` | Parcial sem distinção de maiúsculas | `"acme"`           |
-| `cpf`, `cnpj`                          | Exata                               | `"123.456.789-00"` |
-| `select`                               | Exata                               | `"enterprise"`     |
-| `multi_select`                         | Contém o valor                      | `"vip"`            |
-| `number`                               | Exata (numérico)                    | `"42"`             |
-| `date`                                 | Exata (ISO 8601)                    | `"2026-06-01"`     |
-
-Use `GET /v1/custom-fields` para listar os campos disponíveis no workspace e obter os UUIDs.
+| Filtro                            | Aplica-se a         |
+| --------------------------------- | ------------------- |
+| `created_after`, `created_before` | Tarefas, Atividades |
 
 ## Combinando múltiplos filtros
 
 Filtros se compõem com lógica AND. Todas as condições precisam ser satisfeitas para um registro aparecer nos resultados.
 
 ```bash
-# Pessoas com nome "silva" em uma empresa específica, criadas em 2026, com tag "cliente-vip"
-GET /v1/people?full_name=silva&company_id=7c9e6679-7425-40de-944b-e07fc1f90ae7&created_after=2026-01-01T00:00:00Z&tag=cliente-vip
-
-# Negócios acima de R$10.000 com fechamento previsto em junho de 2026
-GET /v1/deals?price_min_cts=1000000&forecast_after=2026-06-01T00:00:00Z&forecast_before=2026-06-30T23:59:59Z
-
 # Tarefas de alta prioridade não concluídas vinculadas a um negócio específico
 GET /v1/tasks?priority=high&completed=false&deal_id=b3a8c1d2-f3e4-4a5b-9c6d-7e8f9a0b1c2d
-```
 
-## Considerações de performance
-
-Nem todos os filtros têm o mesmo custo. Entender quais filtros usam índices ajuda a escrever queries eficientes.
-
-**Filtros indexados (rápidos):** resolvem contra índices do banco e escalam bem independente do tamanho do workspace.
-
-- `company_id`, `owner_user_id` e outros filtros de chave estrangeira UUID
-- `created_after`, `created_before`, `updated_after`, `updated_before`
-- Filtros por `tag`
-- `completed`, `priority`, `type` e outros filtros de enum
-- `price_min_cts`, `price_max_cts`, `currency`
-- `forecast_after`, `forecast_before`
-
-**Filtros de varredura completa (mais lentos em escala):** requerem varredura de valores de texto e são mais lentos em workspaces com grande volume de registros.
-
-- Filtros de texto `full_name`, `name` (correspondência parcial)
-- Filtros `custom_field[UUID]` em campos do tipo `text`, `long_text`, `link` e `address`
-
-Para workspaces grandes, prefira filtros indexados quando possível. Se precisar buscar por nome, combine com um filtro indexado para reduzir o escopo da varredura:
-
-```bash
-# Mais rápido: escopo limitado a uma empresa antes de aplicar o filtro de texto
-GET /v1/people?company_id=7c9e6679-7425-40de-944b-e07fc1f90ae7&full_name=silva
+# Atividades do tipo ligação criadas em maio de 2026
+GET /v1/activities?type=call&created_after=2026-05-01T00:00:00Z&created_before=2026-05-31T23:59:59Z
 ```
 
 ## Filtros inválidos

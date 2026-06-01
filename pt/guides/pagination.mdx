@@ -19,8 +19,8 @@ Todos os endpoints de listagem na Vendaze API retornam resultados paginados. Nen
 Use os parâmetros `page` e `per_page` para navegar pelos resultados:
 
 ```bash
-GET /v1/people?page=1&per_page=50
-GET /v1/people?page=2&per_page=50
+GET /v1/tasks?page=1&per_page=50
+GET /v1/tasks?page=2&per_page=50
 ```
 
 ## Metadados de paginação
@@ -119,16 +119,13 @@ O máximo é `per_page=100`. Para exportações completas, use `per_page=100` e 
 
 ## Campos de ordenação por recurso
 
-| Recurso       | Campos de ordenação                             |
-| ------------- | ----------------------------------------------- |
-| People        | `created_at`, `updated_at`, `full_name`         |
-| Companies     | `created_at`, `updated_at`, `full_name`         |
-| Deals         | `created_at`, `updated_at`, `name`, `price_cts` |
-| Tasks         | `created_at`, `updated_at`, `due_date`          |
-| Activities    | `created_at`                                    |
-| Products      | `created_at`, `name`                            |
-| Tags          | `created_at`                                    |
-| Lists         | `created_at`                                    |
-| Custom Fields | `created_at`                                    |
+| Recurso           | Campos de ordenação                    |
+| ----------------- | -------------------------------------- |
+| Tarefas           | `created_at`, `updated_at`, `due_date` |
+| Atividades        | `created_at`                           |
+| Produtos          | `created_at`, `name`                   |
+| Tags              | `created_at`                           |
+| Listas            | `created_at`                           |
+| Campos adicionais | `created_at`                           |
 
 Passar um valor de `order_by` não suportado retorna `422` com uma mensagem listando os campos aceitos para aquele recurso.

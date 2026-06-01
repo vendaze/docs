@@ -13,8 +13,8 @@ All listing endpoints in the Vendaze API return paginated results. No endpoint r
 Use the `page` and `per_page` query parameters to navigate through results:
 
 ```bash
-GET /v1/people?page=1&per_page=50
-GET /v1/people?page=2&per_page=50
+GET /v1/tasks?page=1&per_page=50
+GET /v1/tasks?page=2&per_page=50
 ```
 
 ## Pagination metadata
@@ -113,16 +113,13 @@ The maximum is `per_page=100`. For full exports, use `per_page=100` and iterate 
 
 ## Sortable fields by resource
 
-| Resource      | Sortable fields                                 |
-| ------------- | ----------------------------------------------- |
-| People        | `created_at`, `updated_at`, `full_name`         |
-| Companies     | `created_at`, `updated_at`, `full_name`         |
-| Deals         | `created_at`, `updated_at`, `name`, `price_cts` |
-| Tasks         | `created_at`, `updated_at`, `due_date`          |
-| Activities    | `created_at`                                    |
-| Products      | `created_at`, `name`                            |
-| Tags          | `created_at`                                    |
-| Lists         | `created_at`                                    |
-| Custom Fields | `created_at`                                    |
+| Resource      | Sortable fields                        |
+| ------------- | -------------------------------------- |
+| Tasks         | `created_at`, `updated_at`, `due_date` |
+| Activities    | `created_at`                           |
+| Products      | `created_at`, `name`                   |
+| Tags          | `created_at`                           |
+| Lists         | `created_at`                           |
+| Custom Fields | `created_at`                           |
 
 Passing an unsupported `order_by` value returns `422` with a message listing the accepted fields for that resource.

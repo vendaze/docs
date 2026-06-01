@@ -99,8 +99,8 @@ Recursos como pessoas, empresas, negócios e produtos suportam **soft delete**. 
 
 Da perspectiva da sua integração, o comportamento é transparente:
 
-- `DELETE /v1/people/:id` retorna `204` e o registro deixa de ser acessível
-- `GET /v1/people/:id` para um registro deletado retorna `404`
+- `DELETE /v1/tasks/:id` retorna `204` e o registro deixa de ser acessível
+- `GET /v1/tasks/:id` para um registro deletado retorna `404`
 - Endpoints de listagem nunca retornam registros deletados
 
 ## Envelope de resposta

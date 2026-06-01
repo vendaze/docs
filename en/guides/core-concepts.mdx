@@ -97,8 +97,8 @@ Resources like people, companies, deals, and products support **soft delete**. W
 
 From your integration's perspective, the behavior is transparent:
 
-- `DELETE /v1/people/:id` returns `204` and the record becomes inaccessible
-- `GET /v1/people/:id` for a deleted record returns `404`
+- `DELETE /v1/tasks/:id` returns `204` and the record becomes inaccessible
+- `GET /v1/tasks/:id` for a deleted record returns `404`
 - Listing endpoints never return deleted records
 
 ## Response envelope
