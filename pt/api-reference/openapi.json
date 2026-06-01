@@ -3276,20 +3276,22 @@
             "items": {
               "type": "object",
               "required": [
-                "field_id",
+                "field_key",
                 "value"
               ],
               "properties": {
-                "field_id": {
+                "field_key": {
                   "type": "string",
-                  "format": "uuid"
+                  "maxLength": 35,
+                  "example": "origem_lead",
+                  "description": "Chave do campo adicional (ex: `origem_lead`). Se não existir nenhum campo com essa chave no workspace, ele é criado automaticamente com tipo `text`."
                 },
                 "value": {
                   "description": "Valor do campo. O tipo depende da definição do campo adicional."
                 }
               }
             },
-            "description": "Valores de campos adicionais a definir para a pessoa."
+            "description": "Valores de campos adicionais a definir para a pessoa. Identificados por `field_key`. Se o campo não existir, é criado automaticamente com tipo `text`."
           }
         }
       },
@@ -3364,20 +3366,22 @@
             "items": {
               "type": "object",
               "required": [
-                "field_id",
+                "field_key",
                 "value"
               ],
               "properties": {
-                "field_id": {
+                "field_key": {
                   "type": "string",
-                  "format": "uuid"
+                  "maxLength": 35,
+                  "example": "origem_lead",
+                  "description": "Chave do campo adicional (ex: `origem_lead`). Se não existir nenhum campo com essa chave no workspace, ele é criado automaticamente com tipo `text`."
                 },
                 "value": {
                   "description": "Valor do campo. O tipo depende da definição do campo adicional."
                 }
               }
             },
-            "description": "Valores de campos adicionais. Comportamento depende de `association_mode`. No modo `append`, substitui o valor de cada `field_id` enviado sem alterar os demais."
+            "description": "Valores de campos adicionais. Comportamento depende de `association_mode`. No modo `append`, substitui o valor de cada `field_key` enviado sem alterar os demais."
           },
           "association_mode": {
             "type": "string",
@@ -3565,20 +3569,22 @@
             "items": {
               "type": "object",
               "required": [
-                "field_id",
+                "field_key",
                 "value"
               ],
               "properties": {
-                "field_id": {
+                "field_key": {
                   "type": "string",
-                  "format": "uuid"
+                  "maxLength": 35,
+                  "example": "setor",
+                  "description": "Chave do campo adicional (ex: `setor`). Se não existir nenhum campo com essa chave no workspace, ele é criado automaticamente com tipo `text`."
                 },
                 "value": {
                   "description": "Valor do campo. O tipo depende da definição do campo adicional."
                 }
               }
             },
-            "description": "Valores de campos adicionais para definir na empresa."
+            "description": "Valores de campos adicionais para definir na empresa. Identificados por `field_key`. Se o campo não existir, é criado automaticamente com tipo `text`."
           }
         }
       },
@@ -3641,20 +3647,22 @@
             "items": {
               "type": "object",
               "required": [
-                "field_id",
+                "field_key",
                 "value"
               ],
               "properties": {
-                "field_id": {
+                "field_key": {
                   "type": "string",
-                  "format": "uuid"
+                  "maxLength": 35,
+                  "example": "setor",
+                  "description": "Chave do campo adicional (ex: `setor`). Se não existir nenhum campo com essa chave no workspace, ele é criado automaticamente com tipo `text`."
                 },
                 "value": {
                   "description": "Valor do campo. O tipo depende da definição do campo adicional."
                 }
               }
             },
-            "description": "Valores de campos adicionais. O comportamento depende de `association_mode`. No modo `append`, substitui o valor de cada `field_id` enviado sem alterar os demais."
+            "description": "Valores de campos adicionais. O comportamento depende de `association_mode`. No modo `append`, substitui o valor de cada `field_key` enviado sem alterar os demais."
           },
           "association_mode": {
             "type": "string",
@@ -4033,17 +4041,20 @@
             "items": {
               "type": "object",
               "required": [
-                "field_id",
+                "field_key",
                 "value"
               ],
               "properties": {
-                "field_id": {
+                "field_key": {
                   "type": "string",
-                  "format": "uuid"
+                  "maxLength": 35,
+                  "example": "origem_negocio",
+                  "description": "Chave do campo adicional (ex: `origem_negocio`). Se não existir nenhum campo com essa chave no workspace, ele é criado automaticamente com tipo `text`."
                 },
                 "value": {}
               }
-            }
+            },
+            "description": "Valores de campos adicionais a definir no negócio. Identificados por `field_key`. Se o campo não existir, é criado automaticamente com tipo `text`."
           },
           "products": {
             "type": "array",
@@ -4111,17 +4122,20 @@
             "items": {
               "type": "object",
               "required": [
-                "field_id",
+                "field_key",
                 "value"
               ],
               "properties": {
-                "field_id": {
+                "field_key": {
                   "type": "string",
-                  "format": "uuid"
+                  "maxLength": 35,
+                  "example": "origem_negocio",
+                  "description": "Chave do campo adicional (ex: `origem_negocio`). Se não existir nenhum campo com essa chave no workspace, ele é criado automaticamente com tipo `text`."
                 },
                 "value": {}
               }
-            }
+            },
+            "description": "Valores de campos adicionais. O comportamento depende de `association_mode`. No modo `append`, substitui o valor de cada `field_key` enviado sem alterar os demais."
           },
           "products": {
             "type": "array",

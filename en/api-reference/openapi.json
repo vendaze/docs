@@ -3274,20 +3274,22 @@
             "items": {
               "type": "object",
               "required": [
-                "field_id",
+                "field_key",
                 "value"
               ],
               "properties": {
-                "field_id": {
+                "field_key": {
                   "type": "string",
-                  "format": "uuid"
+                  "maxLength": 35,
+                  "example": "lead_source",
+                  "description": "Key of the custom field (e.g. `lead_source`). If no field with this key exists in the workspace, it is created automatically with type `text`."
                 },
                 "value": {
                   "description": "Field value. Type depends on the custom field definition."
                 }
               }
             },
-            "description": "Custom field values to set for the person."
+            "description": "Custom field values to set for the person. Identified by `field_key`. If the field does not exist, it is created automatically with type `text`."
           }
         }
       },
@@ -3362,20 +3364,22 @@
             "items": {
               "type": "object",
               "required": [
-                "field_id",
+                "field_key",
                 "value"
               ],
               "properties": {
-                "field_id": {
+                "field_key": {
                   "type": "string",
-                  "format": "uuid"
+                  "maxLength": 35,
+                  "example": "lead_source",
+                  "description": "Key of the custom field (e.g. `lead_source`). If no field with this key exists in the workspace, it is created automatically with type `text`."
                 },
                 "value": {
                   "description": "Field value. Type depends on the custom field definition."
                 }
               }
             },
-            "description": "Custom field values. Behavior depends on `association_mode`. In `append` mode, replaces the value for each `field_id` sent without touching others."
+            "description": "Custom field values. Behavior depends on `association_mode`. In `append` mode, replaces the value for each `field_key` sent without touching others."
           },
           "association_mode": {
             "type": "string",
@@ -3563,20 +3567,22 @@
             "items": {
               "type": "object",
               "required": [
-                "field_id",
+                "field_key",
                 "value"
               ],
               "properties": {
-                "field_id": {
+                "field_key": {
                   "type": "string",
-                  "format": "uuid"
+                  "maxLength": 35,
+                  "example": "industry",
+                  "description": "Key of the custom field (e.g. `industry`). If no field with this key exists in the workspace, it is created automatically with type `text`."
                 },
                 "value": {
                   "description": "Field value. Type depends on the custom field definition."
                 }
               }
             },
-            "description": "Custom field values to set for the company."
+            "description": "Custom field values to set for the company. Identified by `field_key`. If the field does not exist, it is created automatically with type `text`."
           }
         }
       },
@@ -3639,20 +3645,22 @@
             "items": {
               "type": "object",
               "required": [
-                "field_id",
+                "field_key",
                 "value"
               ],
               "properties": {
-                "field_id": {
+                "field_key": {
                   "type": "string",
-                  "format": "uuid"
+                  "maxLength": 35,
+                  "example": "industry",
+                  "description": "Key of the custom field (e.g. `industry`). If no field with this key exists in the workspace, it is created automatically with type `text`."
                 },
                 "value": {
                   "description": "Field value. Type depends on the custom field definition."
                 }
               }
             },
-            "description": "Custom field values. Behavior depends on `association_mode`. In `append` mode, replaces the value for each `field_id` sent without touching others."
+            "description": "Custom field values. Behavior depends on `association_mode`. In `append` mode, replaces the value for each `field_key` sent without touching others."
           },
           "association_mode": {
             "type": "string",
@@ -4031,17 +4039,20 @@
             "items": {
               "type": "object",
               "required": [
-                "field_id",
+                "field_key",
                 "value"
               ],
               "properties": {
-                "field_id": {
+                "field_key": {
                   "type": "string",
-                  "format": "uuid"
+                  "maxLength": 35,
+                  "example": "deal_source",
+                  "description": "Key of the custom field (e.g. `deal_source`). If no field with this key exists in the workspace, it is created automatically with type `text`."
                 },
                 "value": {}
               }
-            }
+            },
+            "description": "Custom field values to set for the deal. Identified by `field_key`. If the field does not exist, it is created automatically with type `text`."
           },
           "products": {
             "type": "array",
@@ -4109,17 +4120,20 @@
             "items": {
               "type": "object",
               "required": [
-                "field_id",
+                "field_key",
                 "value"
               ],
               "properties": {
-                "field_id": {
+                "field_key": {
                   "type": "string",
-                  "format": "uuid"
+                  "maxLength": 35,
+                  "example": "deal_source",
+                  "description": "Key of the custom field (e.g. `deal_source`). If no field with this key exists in the workspace, it is created automatically with type `text`."
                 },
                 "value": {}
               }
-            }
+            },
+            "description": "Custom field values. Behavior depends on `association_mode`. In `append` mode, replaces the value for each `field_key` sent without touching others."
           },
           "products": {
             "type": "array",

@@ -402,13 +402,18 @@
             "type": "array",
             "items": {
               "type": "object",
-              "required": ["field_id", "value"],
+              "required": ["field_key", "value"],
               "properties": {
-                "field_id": { "type": "string", "format": "uuid" },
+                "field_key": {
+                  "type": "string",
+                  "maxLength": 35,
+                  "example": "setor",
+                  "description": "Chave do campo adicional (ex: `setor`). Se não existir nenhum campo com essa chave no workspace, ele é criado automaticamente com tipo `text`."
+                },
                 "value": { "description": "Valor do campo. O tipo depende da definição do campo adicional." }
               }
             },
-            "description": "Valores de campos adicionais para definir na empresa."
+            "description": "Valores de campos adicionais para definir na empresa. Identificados por `field_key`. Se o campo não existir, é criado automaticamente com tipo `text`."
           }
         }
       },
@@ -448,13 +453,18 @@
             "type": "array",
             "items": {
               "type": "object",
-              "required": ["field_id", "value"],
+              "required": ["field_key", "value"],
               "properties": {
-                "field_id": { "type": "string", "format": "uuid" },
+                "field_key": {
+                  "type": "string",
+                  "maxLength": 35,
+                  "example": "setor",
+                  "description": "Chave do campo adicional (ex: `setor`). Se não existir nenhum campo com essa chave no workspace, ele é criado automaticamente com tipo `text`."
+                },
                 "value": { "description": "Valor do campo. O tipo depende da definição do campo adicional." }
               }
             },
-            "description": "Valores de campos adicionais. O comportamento depende de `association_mode`. No modo `append`, substitui o valor de cada `field_id` enviado sem alterar os demais."
+            "description": "Valores de campos adicionais. O comportamento depende de `association_mode`. No modo `append`, substitui o valor de cada `field_key` enviado sem alterar os demais."
           },
           "association_mode": {
             "type": "string",

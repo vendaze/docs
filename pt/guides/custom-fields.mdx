@@ -100,11 +100,38 @@ Ao buscar um registro por ID, os valores dos campos adicionais são retornados n
 
 Campos adicionais **não** aparecem em respostas de listagem, apenas em consultas por ID.
 
+## Definir valores ao criar ou atualizar
+
+Passe `custom_fields` ao criar ou atualizar uma pessoa, empresa ou negócio. Cada item requer `field_key` e `value`.
+
+```bash
+POST /v1/people
+```
+
+```json
+{
+  "full_name": "Ana Costa",
+  "custom_fields": [
+    { "field_key": "origem_lead", "value": "indicacao" },
+    { "field_key": "score", "value": 85 }
+  ]
+}
+```
+
+A API resolve `field_key` para o ID interno do campo automaticamente. Se nenhum campo com essa chave existir no workspace, ele é criado com `type: text` e `label` igual à chave. O label pode ser renomeado depois no painel da Vendaze.
+
+Para alterar o tipo de um campo criado automaticamente, use o endpoint de campos adicionais para atualizá-lo antes de gravar valores que exigem um tipo específico (ex: `select`, `date`, `number`).
+
+O array `custom_fields` segue o mesmo `association_mode` de tags e listas:
+
+- `append` (padrão): define ou substitui o valor de cada `field_key` enviado, sem alterar os demais campos.
+- `replace`: remove todos os valores de campos adicionais do registro e insere apenas os enviados.
+
 ## Filtrar por campo adicional
 
 ```bash
-GET /v1/people?custom_field[FIELD_UUID]=indicacao
-GET /v1/companies?custom_field[FIELD_UUID]=00.000.000/0001-00
+GET /v1/people?custom_field[origem_lead]=indicacao
+GET /v1/companies?custom_field[cnpj]=00.000.000/0001-00
 ```
 
 A comparação depende do tipo do campo:

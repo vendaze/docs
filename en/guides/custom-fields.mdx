@@ -94,11 +94,38 @@ When retrieving a record by ID, custom field values are returned in the `custom_
 
 Custom fields do **not** appear in listing responses, only in individual record lookups.
 
+## Set values on create or update
+
+Pass `custom_fields` when creating or updating a person, company, or deal. Each item requires a `field_key` and a `value`.
+
+```bash
+POST /v1/people
+```
+
+```json
+{
+  "full_name": "Ana Costa",
+  "custom_fields": [
+    { "field_key": "lead_source", "value": "referral" },
+    { "field_key": "score", "value": 85 }
+  ]
+}
+```
+
+The API resolves `field_key` to the internal field ID automatically. If no field with that key exists in the workspace, it is created with `type: text` and `label` equal to the key. You can rename the label later in the Vendaze panel.
+
+To change the type of an auto-created field, use the custom fields endpoint to update it before writing values that require a specific type (e.g. `select`, `date`, `number`).
+
+The `custom_fields` array follows the same `association_mode` as tags and lists:
+
+- `append` (default): sets or replaces the value for each `field_key` sent, leaving other fields untouched.
+- `replace`: removes all custom field values from the record and inserts only the ones sent.
+
 ## Filter by custom field
 
 ```bash
-GET /v1/people?custom_field[FIELD_UUID]=referral
-GET /v1/companies?custom_field[FIELD_UUID]=00.000.000/0001-00
+GET /v1/people?custom_field[lead_source]=referral
+GET /v1/companies?custom_field[cnpj]=00.000.000/0001-00
 ```
 
 Comparison depends on the field type:

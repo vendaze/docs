@@ -446,9 +446,18 @@
             "type": "array",
             "items": {
               "type": "object",
-              "required": ["field_id", "value"],
-              "properties": { "field_id": { "type": "string", "format": "uuid" }, "value": {} }
-            }
+              "required": ["field_key", "value"],
+              "properties": {
+                "field_key": {
+                  "type": "string",
+                  "maxLength": 35,
+                  "example": "origem_negocio",
+                  "description": "Chave do campo adicional (ex: `origem_negocio`). Se não existir nenhum campo com essa chave no workspace, ele é criado automaticamente com tipo `text`."
+                },
+                "value": {}
+              }
+            },
+            "description": "Valores de campos adicionais a definir no negócio. Identificados por `field_key`. Se o campo não existir, é criado automaticamente com tipo `text`."
           },
           "products": { "type": "array", "items": { "$ref": "#/components/schemas/DealProductInput" } }
         }
@@ -470,9 +479,18 @@
             "type": "array",
             "items": {
               "type": "object",
-              "required": ["field_id", "value"],
-              "properties": { "field_id": { "type": "string", "format": "uuid" }, "value": {} }
-            }
+              "required": ["field_key", "value"],
+              "properties": {
+                "field_key": {
+                  "type": "string",
+                  "maxLength": 35,
+                  "example": "origem_negocio",
+                  "description": "Chave do campo adicional (ex: `origem_negocio`). Se não existir nenhum campo com essa chave no workspace, ele é criado automaticamente com tipo `text`."
+                },
+                "value": {}
+              }
+            },
+            "description": "Valores de campos adicionais. O comportamento depende de `association_mode`. No modo `append`, substitui o valor de cada `field_key` enviado sem alterar os demais."
           },
           "products": { "type": "array", "items": { "$ref": "#/components/schemas/DealProductInput" } },
           "association_mode": {
