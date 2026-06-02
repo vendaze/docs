@@ -471,7 +471,7 @@
                   "example": "origem_negocio",
                   "description": "Chave do campo adicional (ex: `origem_negocio`). Se não existir nenhum campo com essa chave no workspace, ele é criado automaticamente com tipo `text`."
                 },
-                "value": {}
+                "value": { "type": "string", "description": "Valor do campo como string." }
               }
             },
             "description": "Valores de campos adicionais a definir no negócio. Identificados por `field_key`. Se o campo não existir, é criado automaticamente com tipo `text`."
@@ -510,7 +510,7 @@
                   "example": "origem_negocio",
                   "description": "Chave do campo adicional (ex: `origem_negocio`). Se não existir nenhum campo com essa chave no workspace, ele é criado automaticamente com tipo `text`."
                 },
-                "value": {}
+                "value": { "type": "string", "description": "Valor do campo como string." }
               }
             },
             "description": "Valores de campos adicionais. O comportamento depende de `association_mode`. No modo `append`, substitui o valor de cada `field_key` enviado sem alterar os demais."

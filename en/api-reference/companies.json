@@ -401,7 +401,7 @@
                   "example": "industry",
                   "description": "Key of the custom field (e.g. `industry`). If no field with this key exists in the workspace, it is created automatically with type `text`."
                 },
-                "value": { "description": "Field value. Type depends on the custom field definition." }
+                "value": { "type": "string", "description": "Field value as a string." }
               }
             },
             "description": "Custom field values to set for the company. Identified by `field_key`. If the field does not exist, it is created automatically with type `text`."
@@ -454,7 +454,7 @@
                   "example": "industry",
                   "description": "Key of the custom field (e.g. `industry`). If no field with this key exists in the workspace, it is created automatically with type `text`."
                 },
-                "value": { "description": "Field value. Type depends on the custom field definition." }
+                "value": { "type": "string", "description": "Field value as a string." }
               }
             },
             "description": "Custom field values. Behavior depends on `association_mode`. In `append` mode, replaces the value for each `field_key` sent without touching others."
