@@ -503,6 +503,47 @@
           }
         }
       }
+    },
+    "/v1/me": {
+      "get": {
+        "operationId": "verifyToken",
+        "summary": "Verify authentication",
+        "description": "Verifies if the provided access_token is valid and returns the authentication data of the logged-in app and user. Useful for integrators to check token validity.",
+        "security": [
+          {
+            "bearerAuth": []
+          }
+        ],
+        "tags": ["OAuth"],
+        "responses": {
+          "200": {
+            "description": "Valid authentication.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "status": {
+                      "type": "string",
+                      "example": "ok"
+                    },
+                    "workspace_slug": {
+                      "type": "string",
+                      "example": "my-company"
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "401": {
+            "$ref": "#/components/responses/Unauthorized"
+          },
+          "429": {
+            "$ref": "#/components/responses/RateLimitExceeded"
+          }
+        }
+      }
     }
   },
   "components": {
