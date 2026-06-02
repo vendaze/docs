@@ -4,11 +4,27 @@
     "title": "Negócios",
     "description": "Gerencie negócios no pipeline de vendas.",
     "version": "1.0.0",
-    "contact": { "name": "Vendaze Support", "email": "suporte@vendaze.com" }
+    "contact": {
+      "name": "Vendaze Support",
+      "email": "suporte@vendaze.com"
+    }
   },
-  "servers": [{ "url": "https://api.vendaze.com", "description": "Production" }],
-  "security": [{ "bearerAuth": [] }],
-  "tags": [{ "name": "Negócios" }],
+  "servers": [
+    {
+      "url": "https://api.vendaze.com",
+      "description": "Production"
+    }
+  ],
+  "security": [
+    {
+      "bearerAuth": []
+    }
+  ],
+  "tags": [
+    {
+      "name": "Negócios"
+    }
+  ],
   "paths": {
     "/v1/deals": {
       "post": {
@@ -18,18 +34,32 @@
         "tags": ["Negócios"],
         "requestBody": {
           "required": true,
-          "content": { "application/json": { "schema": { "$ref": "#/components/schemas/CreateDealRequest" } } }
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/CreateDealRequest"
+              }
+            }
+          }
         },
         "responses": {
           "201": {
             "description": "Negócio criado com sucesso.",
-            "content": { "application/json": { "schema": { "$ref": "#/components/schemas/DealWithEmbeddedResponse" } } }
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/DealWithEmbeddedResponse"
+                }
+              }
+            }
           },
           "400": {
             "description": "Body JSON inválido ou não parseável. Código de erro: `bad_request`. Mensagem: `\"Request body must be valid JSON.\"`",
             "content": {
               "application/json": {
-                "schema": { "$ref": "#/components/schemas/ErrorResponse" },
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                },
                 "example": {
                   "error": {
                     "code": "bad_request",
@@ -40,11 +70,21 @@
               }
             }
           },
-          "401": { "$ref": "#/components/responses/Unauthorized" },
-          "403": { "$ref": "#/components/responses/InsufficientScope" },
-          "422": { "$ref": "#/components/responses/ValidationError" },
-          "429": { "$ref": "#/components/responses/RateLimitExceeded" },
-          "500": { "$ref": "#/components/responses/InternalError" }
+          "401": {
+            "$ref": "#/components/responses/Unauthorized"
+          },
+          "403": {
+            "$ref": "#/components/responses/InsufficientScope"
+          },
+          "422": {
+            "$ref": "#/components/responses/ValidationError"
+          },
+          "429": {
+            "$ref": "#/components/responses/RateLimitExceeded"
+          },
+          "500": {
+            "$ref": "#/components/responses/InternalError"
+          }
         }
       }
     },
@@ -54,16 +94,34 @@
         "summary": "Buscar negócio",
         "description": "Retorna um negócio por ID com pipeline, estágio, produtos, campos adicionais, tags, pessoas e empresas associadas.",
         "tags": ["Negócios"],
-        "parameters": [{ "$ref": "#/components/parameters/id" }],
+        "parameters": [
+          {
+            "$ref": "#/components/parameters/id"
+          }
+        ],
         "responses": {
           "200": {
             "description": "Negócio retornado com sucesso.",
-            "content": { "application/json": { "schema": { "$ref": "#/components/schemas/DealWithEmbeddedResponse" } } }
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/DealWithEmbeddedResponse"
+                }
+              }
+            }
           },
-          "401": { "$ref": "#/components/responses/Unauthorized" },
-          "403": { "$ref": "#/components/responses/InsufficientScope" },
-          "404": { "$ref": "#/components/responses/NotFound" },
-          "500": { "$ref": "#/components/responses/InternalError" }
+          "401": {
+            "$ref": "#/components/responses/Unauthorized"
+          },
+          "403": {
+            "$ref": "#/components/responses/InsufficientScope"
+          },
+          "404": {
+            "$ref": "#/components/responses/NotFound"
+          },
+          "500": {
+            "$ref": "#/components/responses/InternalError"
+          }
         }
       },
       "patch": {
@@ -71,21 +129,39 @@
         "summary": "Atualizar negócio",
         "description": "Atualiza um negócio. Apenas campos enviados são modificados. O campo `source` não pode ser alterado.",
         "tags": ["Negócios"],
-        "parameters": [{ "$ref": "#/components/parameters/id" }],
+        "parameters": [
+          {
+            "$ref": "#/components/parameters/id"
+          }
+        ],
         "requestBody": {
           "required": true,
-          "content": { "application/json": { "schema": { "$ref": "#/components/schemas/UpdateDealRequest" } } }
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/UpdateDealRequest"
+              }
+            }
+          }
         },
         "responses": {
           "200": {
             "description": "Negócio atualizado com sucesso.",
-            "content": { "application/json": { "schema": { "$ref": "#/components/schemas/DealWithEmbeddedResponse" } } }
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/DealWithEmbeddedResponse"
+                }
+              }
+            }
           },
           "400": {
             "description": "Body JSON inválido ou não parseável. Código de erro: `bad_request`. Mensagem: `\"Request body must be valid JSON.\"` Para PATCH sem campos: código `bad_request`, mensagem `\"No fields provided for update.\"`",
             "content": {
               "application/json": {
-                "schema": { "$ref": "#/components/schemas/ErrorResponse" },
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                },
                 "example": {
                   "error": {
                     "code": "bad_request",
@@ -96,11 +172,21 @@
               }
             }
           },
-          "401": { "$ref": "#/components/responses/Unauthorized" },
-          "403": { "$ref": "#/components/responses/InsufficientScope" },
-          "404": { "$ref": "#/components/responses/NotFound" },
-          "422": { "$ref": "#/components/responses/ValidationError" },
-          "500": { "$ref": "#/components/responses/InternalError" }
+          "401": {
+            "$ref": "#/components/responses/Unauthorized"
+          },
+          "403": {
+            "$ref": "#/components/responses/InsufficientScope"
+          },
+          "404": {
+            "$ref": "#/components/responses/NotFound"
+          },
+          "422": {
+            "$ref": "#/components/responses/ValidationError"
+          },
+          "500": {
+            "$ref": "#/components/responses/InternalError"
+          }
         }
       },
       "delete": {
@@ -108,40 +194,69 @@
         "summary": "Deletar negócio",
         "description": "Soft-delete: o registro não é mais acessível pela API.",
         "tags": ["Negócios"],
-        "parameters": [{ "$ref": "#/components/parameters/id" }],
+        "parameters": [
+          {
+            "$ref": "#/components/parameters/id"
+          }
+        ],
         "responses": {
           "204": {
             "description": "Negócio deletado com sucesso.",
-            "content": { "application/json": { "schema": { "type": "object" } } }
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object"
+                }
+              }
+            }
           },
-          "401": { "$ref": "#/components/responses/Unauthorized" },
-          "403": { "$ref": "#/components/responses/InsufficientScope" },
-          "404": { "$ref": "#/components/responses/NotFound" },
-          "429": { "$ref": "#/components/responses/RateLimitExceeded" },
-          "500": { "$ref": "#/components/responses/InternalError" }
+          "401": {
+            "$ref": "#/components/responses/Unauthorized"
+          },
+          "403": {
+            "$ref": "#/components/responses/InsufficientScope"
+          },
+          "404": {
+            "$ref": "#/components/responses/NotFound"
+          },
+          "429": {
+            "$ref": "#/components/responses/RateLimitExceeded"
+          },
+          "500": {
+            "$ref": "#/components/responses/InternalError"
+          }
         }
       }
     }
   },
   "components": {
     "securitySchemes": {
-      "bearerAuth": { "type": "http", "scheme": "bearer", "description": "OAuth 2.1 access token." }
+      "bearerAuth": {
+        "type": "http",
+        "scheme": "bearer",
+        "description": "OAuth 2.1 access token."
+      }
     },
     "parameters": {
       "id": {
         "name": "id",
         "in": "path",
         "required": true,
-        "schema": { "type": "string", "format": "uuid" },
+        "schema": {
+          "type": "string",
+          "format": "uuid"
+        },
         "description": "UUID do recurso."
       }
     },
     "responses": {
       "Unauthorized": {
-        "description": "Token ausente, inválido ou expirado. Códigos de erro e mensagens possíveis: `unauthorized` — `\"Missing or invalid Authorization header.\"`, `\"Invalid or malformed token.\"` ou `\"Token is missing required claims.\"`; `token_expired` — `\"Access token expired. Refresh using the refresh token.\"`",
+        "description": "Token ausente, inválido ou expirado. Códigos de erro e mensagens possíveis: `unauthorized`. `\"Missing or invalid Authorization header.\"`, `\"Invalid or malformed token.\"` ou `\"Token is missing required claims.\"`; `token_expired`. `\"Access token expired. Refresh using the refresh token.\"`",
         "content": {
           "application/json": {
-            "schema": { "$ref": "#/components/schemas/ErrorResponse" },
+            "schema": {
+              "$ref": "#/components/schemas/ErrorResponse"
+            },
             "example": {
               "error": {
                 "code": "unauthorized",
@@ -156,7 +271,9 @@
         "description": "Token sem o escopo necessário. Código de erro: `insufficient_scope`. Mensagem: `\"This endpoint requires the '{scope}' scope.\"` onde `{scope}` é o escopo exato que está faltando (ex: `\"This endpoint requires the 'deals:write' scope.\"`).",
         "content": {
           "application/json": {
-            "schema": { "$ref": "#/components/schemas/ErrorResponse" },
+            "schema": {
+              "$ref": "#/components/schemas/ErrorResponse"
+            },
             "example": {
               "error": {
                 "code": "insufficient_scope",
@@ -171,9 +288,15 @@
         "description": "Recurso não encontrado, soft-deletado ou pertencente a outro workspace. Código de erro: `not_found`. Mensagem: `\"Deal not found.\"`",
         "content": {
           "application/json": {
-            "schema": { "$ref": "#/components/schemas/ErrorResponse" },
+            "schema": {
+              "$ref": "#/components/schemas/ErrorResponse"
+            },
             "example": {
-              "error": { "code": "not_found", "message": "Deal not found.", "request_id": "550e8400-e29b-41d4-a716-446655440000" }
+              "error": {
+                "code": "not_found",
+                "message": "Deal not found.",
+                "request_id": "550e8400-e29b-41d4-a716-446655440000"
+              }
             }
           }
         }
@@ -182,12 +305,16 @@
         "description": "Validação de entrada falhou. Código de erro: `validation_error`. Mensagem: `\"Validation failed.\"` O objeto `fields` mapeia cada campo inválido a uma descrição do problema.",
         "content": {
           "application/json": {
-            "schema": { "$ref": "#/components/schemas/ValidationErrorResponse" },
+            "schema": {
+              "$ref": "#/components/schemas/ValidationErrorResponse"
+            },
             "example": {
               "error": {
                 "code": "validation_error",
                 "message": "Validation failed.",
-                "fields": { "currency": "Invalid enum value." },
+                "fields": {
+                  "currency": "Invalid enum value."
+                },
                 "request_id": "550e8400-e29b-41d4-a716-446655440000"
               }
             }
@@ -198,7 +325,9 @@
         "description": "Limite de taxa excedido. Código de erro: `rate_limit_exceeded`. Mensagem: `\"Rate limit exceeded. Try again in {N} seconds.\"` O header `Retry-After` contém o mesmo valor.",
         "content": {
           "application/json": {
-            "schema": { "$ref": "#/components/schemas/ErrorResponse" },
+            "schema": {
+              "$ref": "#/components/schemas/ErrorResponse"
+            },
             "example": {
               "error": {
                 "code": "rate_limit_exceeded",
@@ -213,7 +342,9 @@
         "description": "Erro inesperado no servidor. Código de erro: `internal_error`. Mensagens possíveis: `\"An unexpected error occurred.\"` (falha genérica) ou `\"Deal updated but associations failed. Retry the associations.\"` (registro salvo mas atualização de associações falhou). Use o `request_id` para correlacionar com os logs do servidor.",
         "content": {
           "application/json": {
-            "schema": { "$ref": "#/components/schemas/ErrorResponse" },
+            "schema": {
+              "$ref": "#/components/schemas/ErrorResponse"
+            },
             "example": {
               "error": {
                 "code": "internal_error",
@@ -232,9 +363,18 @@
           "error": {
             "type": "object",
             "properties": {
-              "code": { "type": "string", "example": "not_found" },
-              "message": { "type": "string", "example": "Deal not found." },
-              "request_id": { "type": "string", "format": "uuid" }
+              "code": {
+                "type": "string",
+                "example": "not_found"
+              },
+              "message": {
+                "type": "string",
+                "example": "Deal not found."
+              },
+              "request_id": {
+                "type": "string",
+                "format": "uuid"
+              }
             }
           }
         }
@@ -245,10 +385,24 @@
           "error": {
             "type": "object",
             "properties": {
-              "code": { "type": "string", "example": "validation_error" },
-              "message": { "type": "string", "example": "Validation failed." },
-              "fields": { "type": "object", "additionalProperties": { "type": "string" } },
-              "request_id": { "type": "string", "format": "uuid" }
+              "code": {
+                "type": "string",
+                "example": "validation_error"
+              },
+              "message": {
+                "type": "string",
+                "example": "Validation failed."
+              },
+              "fields": {
+                "type": "object",
+                "additionalProperties": {
+                  "type": "string"
+                }
+              },
+              "request_id": {
+                "type": "string",
+                "format": "uuid"
+              }
             }
           }
         }
@@ -296,15 +450,27 @@
       "CustomFieldValue": {
         "type": "object",
         "properties": {
-          "id": { "type": "string", "format": "uuid" },
+          "id": {
+            "type": "string",
+            "format": "uuid"
+          },
           "value": {},
           "field": {
             "type": "object",
             "properties": {
-              "id": { "type": "string", "format": "uuid" },
-              "label": { "type": "string" },
-              "key": { "type": "string" },
-              "type": { "type": "string" }
+              "id": {
+                "type": "string",
+                "format": "uuid"
+              },
+              "label": {
+                "type": "string"
+              },
+              "key": {
+                "type": "string"
+              },
+              "type": {
+                "type": "string"
+              }
             }
           }
         }
@@ -312,13 +478,37 @@
       "DealProduct": {
         "type": "object",
         "properties": {
-          "id": { "type": "string", "format": "uuid" },
-          "product_id": { "type": "string", "format": "uuid", "nullable": true },
-          "name": { "type": "string", "nullable": true },
-          "quantity": { "type": "integer", "example": 2 },
-          "billing_cycle": { "type": "string", "enum": ["one_time", "monthly", "quarterly", "annually"] },
-          "unit_price_cts": { "type": "integer", "description": "Preço unitário em centavos.", "example": 50000 },
-          "total_price_cts": { "type": "integer", "description": "Preço total em centavos (unit_price_cts × quantity).", "example": 100000 }
+          "id": {
+            "type": "string",
+            "format": "uuid"
+          },
+          "product_id": {
+            "type": "string",
+            "format": "uuid",
+            "nullable": true
+          },
+          "name": {
+            "type": "string",
+            "nullable": true
+          },
+          "quantity": {
+            "type": "integer",
+            "example": 2
+          },
+          "billing_cycle": {
+            "type": "string",
+            "enum": ["one_time", "monthly", "quarterly", "annually"]
+          },
+          "unit_price_cts": {
+            "type": "integer",
+            "description": "Preço unitário em centavos.",
+            "example": 50000
+          },
+          "total_price_cts": {
+            "type": "integer",
+            "description": "Preço total em centavos (unit_price_cts × quantity).",
+            "example": 100000
+          }
         }
       },
       "Owner": {
@@ -326,35 +516,82 @@
         "nullable": true,
         "description": "Membro do workspace responsável pelo registro. `null` quando não há responsável definido.",
         "properties": {
-          "id": { "type": "string", "format": "uuid" },
-          "email": { "type": "string", "format": "email", "example": "joao@empresa.com" },
-          "name": { "type": "string", "example": "João Silva" }
+          "id": {
+            "type": "string",
+            "format": "uuid"
+          },
+          "email": {
+            "type": "string",
+            "format": "email",
+            "example": "joao@empresa.com"
+          },
+          "name": {
+            "type": "string",
+            "example": "João Silva"
+          }
         }
       },
       "Deal": {
         "type": "object",
         "properties": {
-          "id": { "type": "string", "format": "uuid" },
-          "name": { "type": "string", "example": "Contrato Anual Acme Corp" },
-          "pipeline_id": { "type": "string", "format": "uuid" },
-          "stage_id": { "type": "string", "format": "uuid" },
-          "price_cts": { "type": "integer", "description": "Valor em centavos. 250000 = R$ 2.500,00", "example": 250000 },
-          "currency": { "$ref": "#/components/schemas/CurrencyCode" },
-          "owner": { "$ref": "#/components/schemas/Owner" },
+          "id": {
+            "type": "string",
+            "format": "uuid"
+          },
+          "name": {
+            "type": "string",
+            "example": "Contrato Anual Acme Corp"
+          },
+          "pipeline_id": {
+            "type": "string",
+            "format": "uuid"
+          },
+          "stage_id": {
+            "type": "string",
+            "format": "uuid"
+          },
+          "price_cts": {
+            "type": "integer",
+            "description": "Valor em centavos. 250000 = R$ 2.500,00",
+            "example": 250000
+          },
+          "currency": {
+            "$ref": "#/components/schemas/CurrencyCode"
+          },
+          "owner": {
+            "$ref": "#/components/schemas/Owner"
+          },
           "source": {
             "type": "string",
             "description": "Nome do OAuth app que criou o negócio. Somente leitura.",
             "example": "Minha Integração"
           },
-          "forecast_date": { "type": "string", "format": "date-time", "nullable": true, "example": "2026-12-31T00:00:00Z" },
-          "entity_id": { "type": "string", "description": "Identificador único legível.", "example": "NEG-0001" },
-          "created_at": { "type": "string", "format": "date-time" },
-          "updated_at": { "type": "string", "format": "date-time" }
+          "forecast_date": {
+            "type": "string",
+            "format": "date-time",
+            "nullable": true,
+            "example": "2026-12-31T00:00:00Z"
+          },
+          "entity_id": {
+            "type": "string",
+            "description": "Identificador único legível.",
+            "example": "NEG-0001"
+          },
+          "created_at": {
+            "type": "string",
+            "format": "date-time"
+          },
+          "updated_at": {
+            "type": "string",
+            "format": "date-time"
+          }
         }
       },
       "DealWithEmbedded": {
         "allOf": [
-          { "$ref": "#/components/schemas/Deal" },
+          {
+            "$ref": "#/components/schemas/Deal"
+          },
           {
             "type": "object",
             "properties": {
@@ -362,30 +599,64 @@
                 "type": "object",
                 "nullable": true,
                 "properties": {
-                  "id": { "type": "string", "format": "uuid" },
-                  "name": { "type": "string" }
+                  "id": {
+                    "type": "string",
+                    "format": "uuid"
+                  },
+                  "name": {
+                    "type": "string"
+                  }
                 }
               },
               "stage": {
                 "type": "object",
                 "nullable": true,
                 "properties": {
-                  "id": { "type": "string", "format": "uuid" },
-                  "name": { "type": "string" },
-                  "type": { "type": "string", "enum": ["open", "win", "lost"] }
+                  "id": {
+                    "type": "string",
+                    "format": "uuid"
+                  },
+                  "name": {
+                    "type": "string"
+                  },
+                  "type": {
+                    "type": "string",
+                    "enum": ["open", "win", "lost"]
+                  }
                 }
               },
-              "products": { "type": "array", "items": { "$ref": "#/components/schemas/DealProduct" } },
-              "custom_fields": { "type": "array", "items": { "$ref": "#/components/schemas/CustomFieldValue" } },
+              "products": {
+                "type": "array",
+                "items": {
+                  "$ref": "#/components/schemas/DealProduct"
+                }
+              },
+              "custom_fields": {
+                "type": "array",
+                "items": {
+                  "$ref": "#/components/schemas/CustomFieldValue"
+                }
+              },
               "tags": {
                 "type": "array",
                 "items": {
                   "type": "object",
                   "properties": {
-                    "id": { "type": "string", "format": "uuid" },
-                    "name": { "type": "string" },
-                    "color_text": { "type": "string", "nullable": true },
-                    "color_background": { "type": "string", "nullable": true }
+                    "id": {
+                      "type": "string",
+                      "format": "uuid"
+                    },
+                    "name": {
+                      "type": "string"
+                    },
+                    "color_text": {
+                      "type": "string",
+                      "nullable": true
+                    },
+                    "color_background": {
+                      "type": "string",
+                      "nullable": true
+                    }
                   }
                 }
               },
@@ -394,8 +665,13 @@
                 "items": {
                   "type": "object",
                   "properties": {
-                    "id": { "type": "string", "format": "uuid" },
-                    "full_name": { "type": "string" }
+                    "id": {
+                      "type": "string",
+                      "format": "uuid"
+                    },
+                    "full_name": {
+                      "type": "string"
+                    }
                   }
                 }
               },
@@ -404,8 +680,13 @@
                 "items": {
                   "type": "object",
                   "properties": {
-                    "id": { "type": "string", "format": "uuid" },
-                    "full_name": { "type": "string" }
+                    "id": {
+                      "type": "string",
+                      "format": "uuid"
+                    },
+                    "full_name": {
+                      "type": "string"
+                    }
                   }
                 }
               }
@@ -417,7 +698,10 @@
         "type": "object",
         "required": ["product_id"],
         "properties": {
-          "product_id": { "type": "string", "format": "uuid" },
+          "product_id": {
+            "type": "string",
+            "format": "uuid"
+          },
           "quantity": {
             "type": "integer",
             "minimum": 1,
@@ -436,29 +720,64 @@
         "type": "object",
         "required": ["name", "pipeline_id", "stage_id", "currency"],
         "properties": {
-          "name": { "type": "string", "maxLength": 70, "example": "Contrato Anual Acme Corp" },
-          "pipeline_id": { "type": "string", "format": "uuid" },
-          "stage_id": { "type": "string", "format": "uuid" },
-          "currency": { "$ref": "#/components/schemas/CurrencyCode" },
-          "price_cts": { "type": "integer", "minimum": 0, "default": 0, "description": "Valor em centavos.", "example": 250000 },
+          "name": {
+            "type": "string",
+            "maxLength": 70,
+            "example": "Contrato Anual Acme Corp"
+          },
+          "pipeline_id": {
+            "type": "string",
+            "format": "uuid"
+          },
+          "stage_id": {
+            "type": "string",
+            "format": "uuid"
+          },
+          "currency": {
+            "$ref": "#/components/schemas/CurrencyCode"
+          },
+          "price_cts": {
+            "type": "integer",
+            "minimum": 0,
+            "default": 0,
+            "description": "Valor em centavos.",
+            "example": 250000
+          },
           "owner_email": {
             "type": "string",
             "format": "email",
             "description": "E-mail do membro do workspace a definir como responsável. A API resolve internamente para o ID do usuário. Deve ser membro deste workspace.",
             "example": "joao@empresa.com"
           },
-          "forecast_date": { "type": "string", "format": "date-time", "nullable": true, "example": "2026-12-31T00:00:00Z" },
+          "forecast_date": {
+            "type": "string",
+            "format": "date-time",
+            "nullable": true,
+            "example": "2026-12-31T00:00:00Z"
+          },
           "person_ids": {
             "type": "array",
-            "items": { "type": "string", "format": "uuid" },
+            "items": {
+              "type": "string",
+              "format": "uuid"
+            },
             "description": "Pessoas a associar ao negócio."
           },
           "company_ids": {
             "type": "array",
-            "items": { "type": "string", "format": "uuid" },
+            "items": {
+              "type": "string",
+              "format": "uuid"
+            },
             "description": "Empresas a associar ao negócio."
           },
-          "tag_ids": { "type": "array", "items": { "type": "string", "format": "uuid" } },
+          "tag_ids": {
+            "type": "array",
+            "items": {
+              "type": "string",
+              "format": "uuid"
+            }
+          },
           "custom_fields": {
             "type": "array",
             "items": {
@@ -471,22 +790,44 @@
                   "example": "origem_negocio",
                   "description": "Chave do campo adicional (ex: `origem_negocio`). Se não existir nenhum campo com essa chave no workspace, ele é criado automaticamente com tipo `text`."
                 },
-                "value": { "type": "string", "description": "Valor do campo como string." }
+                "value": {
+                  "type": "string",
+                  "description": "Valor do campo como string."
+                }
               }
             },
             "description": "Valores de campos adicionais a definir no negócio. Identificados por `field_key`. Se o campo não existir, é criado automaticamente com tipo `text`."
           },
-          "products": { "type": "array", "items": { "$ref": "#/components/schemas/DealProductInput" } }
+          "products": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/DealProductInput"
+            }
+          }
         }
       },
       "UpdateDealRequest": {
         "type": "object",
         "properties": {
-          "name": { "type": "string", "maxLength": 70 },
-          "pipeline_id": { "type": "string", "format": "uuid" },
-          "stage_id": { "type": "string", "format": "uuid" },
-          "currency": { "$ref": "#/components/schemas/CurrencyCode" },
-          "price_cts": { "type": "integer", "minimum": 0 },
+          "name": {
+            "type": "string",
+            "maxLength": 70
+          },
+          "pipeline_id": {
+            "type": "string",
+            "format": "uuid"
+          },
+          "stage_id": {
+            "type": "string",
+            "format": "uuid"
+          },
+          "currency": {
+            "$ref": "#/components/schemas/CurrencyCode"
+          },
+          "price_cts": {
+            "type": "integer",
+            "minimum": 0
+          },
           "owner_email": {
             "type": "string",
             "format": "email",
@@ -494,10 +835,32 @@
             "description": "E-mail do membro do workspace a definir como responsável. Envie `null` para remover o responsável. Deve ser membro deste workspace.",
             "example": "joao@empresa.com"
           },
-          "forecast_date": { "type": "string", "format": "date-time", "nullable": true },
-          "person_ids": { "type": "array", "items": { "type": "string", "format": "uuid" } },
-          "company_ids": { "type": "array", "items": { "type": "string", "format": "uuid" } },
-          "tag_ids": { "type": "array", "items": { "type": "string", "format": "uuid" } },
+          "forecast_date": {
+            "type": "string",
+            "format": "date-time",
+            "nullable": true
+          },
+          "person_ids": {
+            "type": "array",
+            "items": {
+              "type": "string",
+              "format": "uuid"
+            }
+          },
+          "company_ids": {
+            "type": "array",
+            "items": {
+              "type": "string",
+              "format": "uuid"
+            }
+          },
+          "tag_ids": {
+            "type": "array",
+            "items": {
+              "type": "string",
+              "format": "uuid"
+            }
+          },
           "custom_fields": {
             "type": "array",
             "items": {
@@ -510,12 +873,20 @@
                   "example": "origem_negocio",
                   "description": "Chave do campo adicional (ex: `origem_negocio`). Se não existir nenhum campo com essa chave no workspace, ele é criado automaticamente com tipo `text`."
                 },
-                "value": { "type": "string", "description": "Valor do campo como string." }
+                "value": {
+                  "type": "string",
+                  "description": "Valor do campo como string."
+                }
               }
             },
             "description": "Valores de campos adicionais. O comportamento depende de `association_mode`. No modo `append`, substitui o valor de cada `field_key` enviado sem alterar os demais."
           },
-          "products": { "type": "array", "items": { "$ref": "#/components/schemas/DealProductInput" } },
+          "products": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/DealProductInput"
+            }
+          },
           "association_mode": {
             "type": "string",
             "enum": ["append", "replace"],
@@ -527,7 +898,9 @@
       "DealWithEmbeddedResponse": {
         "type": "object",
         "properties": {
-          "data": { "$ref": "#/components/schemas/DealWithEmbedded" }
+          "data": {
+            "$ref": "#/components/schemas/DealWithEmbedded"
+          }
         }
       }
     }

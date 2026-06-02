@@ -236,7 +236,7 @@
       "get": {
         "operationId": "authorize",
         "summary": "Iniciar autorização",
-        "description": "Redireciona o browser do usuário para a tela de consent da Vendaze. **Este endpoint deve ser aberto no browser — não chame com fetch, axios ou qualquer cliente HTTP.** O usuário precisa navegar para esta URL para fazer login e aprovar o acesso. Os escopos são resolvidos a partir do registro do aplicativo.",
+        "description": "Redireciona o browser do usuário para a tela de consent da Vendaze. **Este endpoint deve ser aberto no browser. não chame com fetch, axios ou qualquer cliente HTTP.** O usuário precisa navegar para esta URL para fazer login e aprovar o acesso. Os escopos são resolvidos a partir do registro do aplicativo.",
         "security": [],
         "tags": [
           "OAuth"
@@ -288,7 +288,7 @@
             "description": "Redirecionamento para a tela de consent da Vendaze."
           },
           "400": {
-            "description": "Parâmetro ausente ou inválido. Códigos de erro possíveis: `invalid_request` (parâmetro `client_id`, `redirect_uri` ou `response_type` ausente — mensagem identifica o parâmetro específico, ex: `\"Missing required parameter: redirect_uri.\"`), `unsupported_response_type` (`response_type` diferente de `code` — mensagem: `\"response_type must be \\\"code\\\".\"`), `invalid_request` (`redirect_uri` não corresponde a nenhuma URI registrada — mensagem: `\"redirect_uri does not match any registered URI.\"`).",
+            "description": "Parâmetro ausente ou inválido. Códigos de erro possíveis: `invalid_request` (parâmetro `client_id`, `redirect_uri` ou `response_type` ausente. mensagem identifica o parâmetro específico, ex: `\"Missing required parameter: redirect_uri.\"`), `unsupported_response_type` (`response_type` diferente de `code`. mensagem: `\"response_type must be \\\"code\\\".\"`), `invalid_request` (`redirect_uri` não corresponde a nenhuma URI registrada. mensagem: `\"redirect_uri does not match any registered URI.\"`).",
             "content": {
               "application/json": {
                 "schema": {
@@ -468,7 +468,7 @@
             }
           },
           "400": {
-            "description": "Parâmetro ausente ou inválido. Códigos de erro possíveis: `bad_request` (body JSON malformado), `invalid_request` (parâmetro `token`, `client_id` ou `client_secret` ausente; ou `token` não é um access token válido — refresh tokens não são aceitos).",
+            "description": "Parâmetro ausente ou inválido. Códigos de erro possíveis: `bad_request` (body JSON malformado), `invalid_request` (parâmetro `token`, `client_id` ou `client_secret` ausente; ou `token` não é um access token válido. refresh tokens não são aceitos).",
             "content": {
               "application/json": {
                 "schema": {
@@ -1193,7 +1193,7 @@
     },
     "responses": {
       "Unauthorized": {
-        "description": "Token ausente, inválido ou expirado. Códigos de erro e mensagens possíveis: `unauthorized` — `\"Missing or invalid Authorization header.\"`, `\"Invalid or malformed token.\"` ou `\"Token is missing required claims.\"`; `token_expired` — `\"Access token expired. Refresh using the refresh token.\"`",
+        "description": "Token ausente, inválido ou expirado. Códigos de erro e mensagens possíveis: `unauthorized`. `\"Missing or invalid Authorization header.\"`, `\"Invalid or malformed token.\"` ou `\"Token is missing required claims.\"`; `token_expired`. `\"Access token expired. Refresh using the refresh token.\"`",
         "content": {
           "application/json": {
             "schema": {
@@ -1596,7 +1596,7 @@
               "avatar_url": {
                 "type": "string",
                 "example": "https://storage.vendaze.com/assets/integrations/meusaas.jpg",
-                "description": "URL pública do avatar armazenado. Sempre JPEG — a Vendaze converte todos os formatos no upload. Presente somente se avatar_image foi enviado na requisição."
+                "description": "URL pública do avatar armazenado. Sempre JPEG. a Vendaze converte todos os formatos no upload. Presente somente se avatar_image foi enviado na requisição."
               },
               "message": {
                 "type": "string",
@@ -1970,14 +1970,6 @@
             },
             "description": "IDs de listas a associar com a pessoa."
           },
-          "deal_ids": {
-            "type": "array",
-            "items": {
-              "type": "string",
-              "format": "uuid"
-            },
-            "description": "IDs de negócios a associar com a pessoa."
-          },
           "custom_fields": {
             "type": "array",
             "items": {
@@ -2063,14 +2055,6 @@
             },
             "description": "IDs de listas a associar. Comportamento depende de `association_mode`."
           },
-          "deal_ids": {
-            "type": "array",
-            "items": {
-              "type": "string",
-              "format": "uuid"
-            },
-            "description": "IDs de negócios a associar. Comportamento depende de `association_mode`."
-          },
           "custom_fields": {
             "type": "array",
             "items": {
@@ -2101,7 +2085,7 @@
               "replace"
             ],
             "default": "append",
-            "description": "Controla como as associacoes (`tag_ids`, `list_ids`, `deal_ids`, `custom_fields`) sao aplicadas. `append`: adiciona sem remover as existentes. `replace`: remove todas as associacoes atuais dos tipos enviados e insere as novas. Enviar array vazio com `replace` remove todas as associacoes daquele tipo."
+            "description": "Controla como as associacoes (`tag_ids`, `list_ids`, `custom_fields`) sao aplicadas. `append`: adiciona sem remover as existentes. `replace`: remove todas as associacoes atuais dos tipos enviados e insere as novas. Enviar array vazio com `replace` remove todas as associacoes daquele tipo."
           }
         }
       },
@@ -2254,14 +2238,6 @@
             },
             "description": "IDs de listas para associar à empresa."
           },
-          "deal_ids": {
-            "type": "array",
-            "items": {
-              "type": "string",
-              "format": "uuid"
-            },
-            "description": "IDs de negócios para associar à empresa."
-          },
           "custom_fields": {
             "type": "array",
             "items": {
@@ -2335,14 +2311,6 @@
             },
             "description": "IDs de listas para associar. O comportamento depende de `association_mode`."
           },
-          "deal_ids": {
-            "type": "array",
-            "items": {
-              "type": "string",
-              "format": "uuid"
-            },
-            "description": "IDs de negócios para associar. O comportamento depende de `association_mode`."
-          },
           "custom_fields": {
             "type": "array",
             "items": {
@@ -2373,7 +2341,7 @@
               "replace"
             ],
             "default": "append",
-            "description": "Controla como as associações (`tag_ids`, `list_ids`, `deal_ids`, `custom_fields`) são aplicadas. `append`: adiciona novas associações sem remover as existentes. `replace`: remove todas as associações atuais de cada tipo enviado e insere as novas. Enviar um array vazio com `replace` remove todas as associações daquele tipo."
+            "description": "Controla como as associações (`tag_ids`, `list_ids`, `custom_fields`) são aplicadas. `append`: adiciona novas associações sem remover as existentes. `replace`: remove todas as associações atuais de cada tipo enviado e insere as novas. Enviar um array vazio com `replace` remove todas as associações daquele tipo."
           }
         }
       },

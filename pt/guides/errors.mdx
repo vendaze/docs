@@ -53,9 +53,9 @@ A Vendaze API usa códigos de status HTTP padrão e retorna um formato de erro c
 <Accordion title="unauthorized (401)">
   Retornado em três situações:
 
-- **Header ausente ou inválido:** `"Missing or invalid Authorization header."` — o header `Authorization: Bearer <token>` está ausente ou malformado.
-- **Token inválido:** `"Invalid or malformed token."` — a assinatura do token falhou na verificação ou o token não é um JWT válido.
-- **Claims ausentes:** `"Token is missing required claims."` — o token é estruturalmente válido mas está faltando claims internos obrigatórios (`workspace_id`, `client_id` ou `vendaze_scopes`). Isso não deve ocorrer com tokens emitidos pelo fluxo OAuth da Vendaze.
+- **Header ausente ou inválido:** `"Missing or invalid Authorization header."` o header `Authorization: Bearer <token>` está ausente ou malformado.
+- **Token inválido:** `"Invalid or malformed token."` a assinatura do token falhou na verificação ou o token não é um JWT válido.
+- **Claims ausentes:** `"Token is missing required claims."` o token é estruturalmente válido mas está faltando claims internos obrigatórios (`workspace_id`, `client_id` ou `vendaze_scopes`). Isso não deve ocorrer com tokens emitidos pelo fluxo OAuth da Vendaze.
 
 </Accordion>
 
@@ -91,7 +91,7 @@ Causa comum: definir `owner_user_id` como outro usuário quando seu papel não p
 </Accordion>
 
 <Accordion title="not_found (404)">
-  `"{Entity} not found."` — por exemplo, `"Person not found."` ou `"Deal not found."`
+  `"{Entity} not found."` por exemplo, `"Person not found."` ou `"Deal not found."`
 
 O recurso solicitado não existe, foi soft-deletado ou pertence a um workspace diferente. A API não
 distingue entre esses casos para evitar vazar informações sobre outros workspaces.
@@ -118,8 +118,8 @@ uma descrição do problema. Corrija os campos listados e tente novamente. Veja 
 <Accordion title="bad_request (400)">
   Retornado em duas situações:
 
-- **Body malformado:** `"Request body must be valid JSON."` — o body da requisição não pôde ser interpretado como JSON.
-- **Atualização vazia:** `"No fields provided for update."` — uma requisição `PATCH` foi enviada sem nenhum campo para modificar.
+- **Body malformado:** `"Request body must be valid JSON."` o body da requisição não pôde ser interpretado como JSON.
+- **Atualização vazia:** `"No fields provided for update."` uma requisição `PATCH` foi enviada sem nenhum campo para modificar.
 
 </Accordion>
 
@@ -135,8 +135,8 @@ limites completos por método e tipo de endpoint.
 <Accordion title="internal_error (500)">
   Retornado em duas situações:
 
-- **Erro inesperado no servidor:** `"An unexpected error occurred."` — algo falhou no servidor. Tente novamente com backoff exponencial. Se o erro persistir, entre em contato com o suporte incluindo o `request_id`.
-- **Atualização parcial:** `"{Entity} updated but associations failed. Retry the associations."` — o registro principal foi salvo mas a atualização de associações (tags, listas, negócios ou campos adicionais) falhou. O registro em si está consistente. Retente apenas os campos de associação.
+- **Erro inesperado no servidor:** `"An unexpected error occurred."` algo falhou no servidor. Tente novamente com backoff exponencial. Se o erro persistir, entre em contato com o suporte incluindo o `request_id`.
+- **Atualização parcial:** `"{Entity} updated but associations failed. Retry the associations."` o registro principal foi salvo mas a atualização de associações (tags, listas, negócios ou campos adicionais) falhou. O registro em si está consistente. Retente apenas os campos de associação.
 
 </Accordion>
 
@@ -145,7 +145,7 @@ limites completos por método e tipo de endpoint.
 Estes códigos são retornados exclusivamente pelos endpoints OAuth (`/oauth/authorize`, `/oauth/token`, `/oauth/revoke`, `/v1/auth/register-app`, `/v1/auth/rotate-app`).
 
 <Accordion title="invalid_client (401)">
-  `"Invalid client credentials."` — o `client_id` ou `client_secret` está incorreto. Verifique suas
+  `"Invalid client credentials."` o `client_id` ou `client_secret` está incorreto. Verifique suas
   credenciais. Se suspeitar que o `client_secret` foi comprometido, rotacione via `POST
   /v1/auth/rotate-app`.
 

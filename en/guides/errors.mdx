@@ -52,9 +52,9 @@ The Vendaze API uses standard HTTP status codes and returns a consistent error f
 <Accordion title="unauthorized (401)">
   Returned in three situations:
 
-- **Missing or invalid header:** `"Missing or invalid Authorization header."` — the `Authorization: Bearer <token>` header is absent or malformed.
-- **Invalid token:** `"Invalid or malformed token."` — the token signature failed verification or the token is not a valid JWT.
-- **Missing claims:** `"Token is missing required claims."` — the token is structurally valid but is missing required internal claims (`workspace_id`, `client_id`, or `vendaze_scopes`). This should not happen with tokens issued by the Vendaze OAuth flow.
+- **Missing or invalid header:** `"Missing or invalid Authorization header."` the `Authorization: Bearer <token>` header is absent or malformed.
+- **Invalid token:** `"Invalid or malformed token."` the token signature failed verification or the token is not a valid JWT.
+- **Missing claims:** `"Token is missing required claims."` the token is structurally valid but is missing required internal claims (`workspace_id`, `client_id`, or `vendaze_scopes`). This should not happen with tokens issued by the Vendaze OAuth flow.
 
 </Accordion>
 
@@ -91,7 +91,7 @@ it.
 </Accordion>
 
 <Accordion title="not_found (404)">
-  `"{Entity} not found."` — for example, `"Person not found."` or `"Deal not found."`
+  `"{Entity} not found."` for example, `"Person not found."` or `"Deal not found."`
 
 The requested resource does not exist, has been soft-deleted, or belongs to a different workspace.
 The API does not distinguish between these cases to avoid leaking information about other
@@ -119,8 +119,8 @@ description of the problem. Fix the fields listed and retry. See [Validation err
 <Accordion title="bad_request (400)">
   Returned in two situations:
 
-- **Malformed body:** `"Request body must be valid JSON."` — the request body could not be parsed as JSON.
-- **Empty update:** `"No fields provided for update."` — a `PATCH` request was sent with no fields to modify.
+- **Malformed body:** `"Request body must be valid JSON."` the request body could not be parsed as JSON.
+- **Empty update:** `"No fields provided for update."` a `PATCH` request was sent with no fields to modify.
 
 </Accordion>
 
@@ -136,8 +136,8 @@ the full limits by method and endpoint type.
 <Accordion title="internal_error (500)">
   Returned in two situations:
 
-- **Unexpected server error:** `"An unexpected error occurred."` — something failed on the server. Retry with exponential backoff. If the error persists, contact support with the `request_id`.
-- **Partial update:** `"{Entity} updated but associations failed. Retry the associations."` — the main record was saved but the association update (tags, lists, deals, or custom fields) failed. The record itself is consistent. Retry only the association fields.
+- **Unexpected server error:** `"An unexpected error occurred."` something failed on the server. Retry with exponential backoff. If the error persists, contact support with the `request_id`.
+- **Partial update:** `"{Entity} updated but associations failed. Retry the associations."` the main record was saved but the association update (tags, lists, deals, or custom fields) failed. The record itself is consistent. Retry only the association fields.
 
 </Accordion>
 
@@ -146,7 +146,7 @@ the full limits by method and endpoint type.
 These codes are returned exclusively by the OAuth endpoints (`/oauth/authorize`, `/oauth/token`, `/oauth/revoke`, `/v1/auth/register-app`, `/v1/auth/rotate-app`).
 
 <Accordion title="invalid_client (401)">
-  `"Invalid client credentials."` — the `client_id` or `client_secret` is incorrect. Verify your
+  `"Invalid client credentials."` the `client_id` or `client_secret` is incorrect. Verify your
   credentials. If you suspect the `client_secret` has been compromised, rotate it via `POST
   /v1/auth/rotate-app`.
 

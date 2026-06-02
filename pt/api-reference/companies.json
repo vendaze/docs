@@ -4,11 +4,27 @@
     "title": "Empresas",
     "description": "Gerencie empresas no workspace.",
     "version": "1.0.0",
-    "contact": { "name": "Vendaze Support", "email": "suporte@vendaze.com" }
+    "contact": {
+      "name": "Vendaze Support",
+      "email": "suporte@vendaze.com"
+    }
   },
-  "servers": [{ "url": "https://api.vendaze.com", "description": "Production" }],
-  "security": [{ "bearerAuth": [] }],
-  "tags": [{ "name": "Empresas" }],
+  "servers": [
+    {
+      "url": "https://api.vendaze.com",
+      "description": "Production"
+    }
+  ],
+  "security": [
+    {
+      "bearerAuth": []
+    }
+  ],
+  "tags": [
+    {
+      "name": "Empresas"
+    }
+  ],
   "paths": {
     "/v1/companies": {
       "post": {
@@ -18,19 +34,43 @@
         "tags": ["Empresas"],
         "requestBody": {
           "required": true,
-          "content": { "application/json": { "schema": { "$ref": "#/components/schemas/CreateCompanyRequest" } } }
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/CreateCompanyRequest"
+              }
+            }
+          }
         },
         "responses": {
           "201": {
             "description": "Empresa criada com sucesso.",
-            "content": { "application/json": { "schema": { "$ref": "#/components/schemas/CompanyWithEmbeddedResponse" } } }
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/CompanyWithEmbeddedResponse"
+                }
+              }
+            }
           },
-          "400": { "$ref": "#/components/responses/BadRequest" },
-          "401": { "$ref": "#/components/responses/Unauthorized" },
-          "403": { "$ref": "#/components/responses/InsufficientScope" },
-          "422": { "$ref": "#/components/responses/ValidationError" },
-          "429": { "$ref": "#/components/responses/RateLimitExceeded" },
-          "500": { "$ref": "#/components/responses/InternalError" }
+          "400": {
+            "$ref": "#/components/responses/BadRequest"
+          },
+          "401": {
+            "$ref": "#/components/responses/Unauthorized"
+          },
+          "403": {
+            "$ref": "#/components/responses/InsufficientScope"
+          },
+          "422": {
+            "$ref": "#/components/responses/ValidationError"
+          },
+          "429": {
+            "$ref": "#/components/responses/RateLimitExceeded"
+          },
+          "500": {
+            "$ref": "#/components/responses/InternalError"
+          }
         }
       }
     },
@@ -40,16 +80,34 @@
         "summary": "Buscar empresa",
         "description": "Retorna uma empresa por ID com `tags`, `lists` e `custom_fields` embutidos.",
         "tags": ["Empresas"],
-        "parameters": [{ "$ref": "#/components/parameters/id" }],
+        "parameters": [
+          {
+            "$ref": "#/components/parameters/id"
+          }
+        ],
         "responses": {
           "200": {
             "description": "Empresa retornada com sucesso.",
-            "content": { "application/json": { "schema": { "$ref": "#/components/schemas/CompanyWithEmbeddedResponse" } } }
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/CompanyWithEmbeddedResponse"
+                }
+              }
+            }
           },
-          "401": { "$ref": "#/components/responses/Unauthorized" },
-          "403": { "$ref": "#/components/responses/InsufficientScope" },
-          "404": { "$ref": "#/components/responses/NotFound" },
-          "500": { "$ref": "#/components/responses/InternalError" }
+          "401": {
+            "$ref": "#/components/responses/Unauthorized"
+          },
+          "403": {
+            "$ref": "#/components/responses/InsufficientScope"
+          },
+          "404": {
+            "$ref": "#/components/responses/NotFound"
+          },
+          "500": {
+            "$ref": "#/components/responses/InternalError"
+          }
         }
       },
       "patch": {
@@ -57,22 +115,50 @@
         "summary": "Atualizar empresa",
         "description": "Atualiza uma empresa. Apenas os campos enviados no body são modificados. Retorna a empresa atualizada com `tags`, `lists` e `custom_fields` embutidos.",
         "tags": ["Empresas"],
-        "parameters": [{ "$ref": "#/components/parameters/id" }],
+        "parameters": [
+          {
+            "$ref": "#/components/parameters/id"
+          }
+        ],
         "requestBody": {
           "required": true,
-          "content": { "application/json": { "schema": { "$ref": "#/components/schemas/UpdateCompanyRequest" } } }
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/UpdateCompanyRequest"
+              }
+            }
+          }
         },
         "responses": {
           "200": {
             "description": "Empresa atualizada com sucesso.",
-            "content": { "application/json": { "schema": { "$ref": "#/components/schemas/CompanyWithEmbeddedResponse" } } }
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/CompanyWithEmbeddedResponse"
+                }
+              }
+            }
           },
-          "400": { "$ref": "#/components/responses/BadRequest" },
-          "401": { "$ref": "#/components/responses/Unauthorized" },
-          "403": { "$ref": "#/components/responses/InsufficientScope" },
-          "404": { "$ref": "#/components/responses/NotFound" },
-          "422": { "$ref": "#/components/responses/ValidationError" },
-          "500": { "$ref": "#/components/responses/InternalError" }
+          "400": {
+            "$ref": "#/components/responses/BadRequest"
+          },
+          "401": {
+            "$ref": "#/components/responses/Unauthorized"
+          },
+          "403": {
+            "$ref": "#/components/responses/InsufficientScope"
+          },
+          "404": {
+            "$ref": "#/components/responses/NotFound"
+          },
+          "422": {
+            "$ref": "#/components/responses/ValidationError"
+          },
+          "500": {
+            "$ref": "#/components/responses/InternalError"
+          }
         }
       },
       "delete": {
@@ -80,31 +166,58 @@
         "summary": "Deletar empresa",
         "description": "Soft-delete: o registro não é mais acessível pela API.",
         "tags": ["Empresas"],
-        "parameters": [{ "$ref": "#/components/parameters/id" }],
+        "parameters": [
+          {
+            "$ref": "#/components/parameters/id"
+          }
+        ],
         "responses": {
           "204": {
             "description": "Empresa deletada com sucesso.",
-            "content": { "application/json": { "schema": { "type": "object" } } }
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object"
+                }
+              }
+            }
           },
-          "401": { "$ref": "#/components/responses/Unauthorized" },
-          "403": { "$ref": "#/components/responses/InsufficientScope" },
-          "404": { "$ref": "#/components/responses/NotFound" },
-          "429": { "$ref": "#/components/responses/RateLimitExceeded" },
-          "500": { "$ref": "#/components/responses/InternalError" }
+          "401": {
+            "$ref": "#/components/responses/Unauthorized"
+          },
+          "403": {
+            "$ref": "#/components/responses/InsufficientScope"
+          },
+          "404": {
+            "$ref": "#/components/responses/NotFound"
+          },
+          "429": {
+            "$ref": "#/components/responses/RateLimitExceeded"
+          },
+          "500": {
+            "$ref": "#/components/responses/InternalError"
+          }
         }
       }
     }
   },
   "components": {
     "securitySchemes": {
-      "bearerAuth": { "type": "http", "scheme": "bearer", "description": "Access token OAuth 2.1." }
+      "bearerAuth": {
+        "type": "http",
+        "scheme": "bearer",
+        "description": "Access token OAuth 2.1."
+      }
     },
     "parameters": {
       "id": {
         "name": "id",
         "in": "path",
         "required": true,
-        "schema": { "type": "string", "format": "uuid" },
+        "schema": {
+          "type": "string",
+          "format": "uuid"
+        },
         "description": "UUID do recurso."
       }
     },
@@ -113,7 +226,9 @@
         "description": "Body malformado ou atualização vazia. Código de erro: `bad_request`. Mensagens possíveis: `\"Request body must be valid JSON.\"` (body não parseável) ou `\"No fields provided for update.\"` (PATCH sem campos).",
         "content": {
           "application/json": {
-            "schema": { "$ref": "#/components/schemas/ErrorResponse" },
+            "schema": {
+              "$ref": "#/components/schemas/ErrorResponse"
+            },
             "example": {
               "error": {
                 "code": "bad_request",
@@ -125,10 +240,12 @@
         }
       },
       "Unauthorized": {
-        "description": "Token ausente, inválido ou expirado. Códigos de erro e mensagens possíveis: `unauthorized` — `\"Missing or invalid Authorization header.\"`, `\"Invalid or malformed token.\"` ou `\"Token is missing required claims.\"`; `token_expired` — `\"Access token expired. Refresh using the refresh token.\"`",
+        "description": "Token ausente, inválido ou expirado. Códigos de erro e mensagens possíveis: `unauthorized`. `\"Missing or invalid Authorization header.\"`, `\"Invalid or malformed token.\"` ou `\"Token is missing required claims.\"`; `token_expired`. `\"Access token expired. Refresh using the refresh token.\"`",
         "content": {
           "application/json": {
-            "schema": { "$ref": "#/components/schemas/ErrorResponse" },
+            "schema": {
+              "$ref": "#/components/schemas/ErrorResponse"
+            },
             "example": {
               "error": {
                 "code": "unauthorized",
@@ -143,7 +260,9 @@
         "description": "Token sem o escopo necessário. Código de erro: `insufficient_scope`. Mensagem: `\"This endpoint requires the '{scope}' scope.\"` onde `{scope}` é o escopo exato que está faltando (ex: `\"This endpoint requires the 'companies:write' scope.\"`).",
         "content": {
           "application/json": {
-            "schema": { "$ref": "#/components/schemas/ErrorResponse" },
+            "schema": {
+              "$ref": "#/components/schemas/ErrorResponse"
+            },
             "example": {
               "error": {
                 "code": "insufficient_scope",
@@ -158,9 +277,15 @@
         "description": "Recurso não encontrado, soft-deletado ou pertencente a outro workspace. Código de erro: `not_found`. Mensagem: `\"Company not found.\"`",
         "content": {
           "application/json": {
-            "schema": { "$ref": "#/components/schemas/ErrorResponse" },
+            "schema": {
+              "$ref": "#/components/schemas/ErrorResponse"
+            },
             "example": {
-              "error": { "code": "not_found", "message": "Company not found.", "request_id": "550e8400-e29b-41d4-a716-446655440000" }
+              "error": {
+                "code": "not_found",
+                "message": "Company not found.",
+                "request_id": "550e8400-e29b-41d4-a716-446655440000"
+              }
             }
           }
         }
@@ -169,12 +294,16 @@
         "description": "Validação de entrada falhou. Código de erro: `validation_error`. Mensagem: `\"Validation failed.\"` O objeto `fields` mapeia cada campo inválido a uma descrição do problema.",
         "content": {
           "application/json": {
-            "schema": { "$ref": "#/components/schemas/ValidationErrorResponse" },
+            "schema": {
+              "$ref": "#/components/schemas/ValidationErrorResponse"
+            },
             "example": {
               "error": {
                 "code": "validation_error",
                 "message": "Validation failed.",
-                "fields": { "full_name": "String must contain at most 70 character(s)." },
+                "fields": {
+                  "full_name": "String must contain at most 70 character(s)."
+                },
                 "request_id": "550e8400-e29b-41d4-a716-446655440000"
               }
             }
@@ -185,7 +314,9 @@
         "description": "Limite de taxa excedido. Código de erro: `rate_limit_exceeded`. Mensagem: `\"Rate limit exceeded. Try again in {N} seconds.\"` O header `Retry-After` contém o mesmo valor.",
         "content": {
           "application/json": {
-            "schema": { "$ref": "#/components/schemas/ErrorResponse" },
+            "schema": {
+              "$ref": "#/components/schemas/ErrorResponse"
+            },
             "example": {
               "error": {
                 "code": "rate_limit_exceeded",
@@ -200,7 +331,9 @@
         "description": "Erro inesperado no servidor. Código de erro: `internal_error`. Mensagens possíveis: `\"An unexpected error occurred.\"` (falha genérica) ou `\"Company updated but associations failed. Retry the associations.\"` (registro salvo mas atualização de associações falhou). Use o `request_id` para correlacionar com os logs do servidor.",
         "content": {
           "application/json": {
-            "schema": { "$ref": "#/components/schemas/ErrorResponse" },
+            "schema": {
+              "$ref": "#/components/schemas/ErrorResponse"
+            },
             "example": {
               "error": {
                 "code": "internal_error",
@@ -219,9 +352,18 @@
           "error": {
             "type": "object",
             "properties": {
-              "code": { "type": "string", "example": "not_found" },
-              "message": { "type": "string", "example": "Company not found." },
-              "request_id": { "type": "string", "format": "uuid" }
+              "code": {
+                "type": "string",
+                "example": "not_found"
+              },
+              "message": {
+                "type": "string",
+                "example": "Company not found."
+              },
+              "request_id": {
+                "type": "string",
+                "format": "uuid"
+              }
             }
           }
         }
@@ -232,14 +374,27 @@
           "error": {
             "type": "object",
             "properties": {
-              "code": { "type": "string", "example": "validation_error" },
-              "message": { "type": "string", "example": "Validation failed." },
+              "code": {
+                "type": "string",
+                "example": "validation_error"
+              },
+              "message": {
+                "type": "string",
+                "example": "Validation failed."
+              },
               "fields": {
                 "type": "object",
-                "additionalProperties": { "type": "string" },
-                "example": { "full_name": "String must contain at most 70 character(s)." }
+                "additionalProperties": {
+                  "type": "string"
+                },
+                "example": {
+                  "full_name": "String must contain at most 70 character(s)."
+                }
               },
-              "request_id": { "type": "string", "format": "uuid" }
+              "request_id": {
+                "type": "string",
+                "format": "uuid"
+              }
             }
           }
         }
@@ -248,7 +403,11 @@
         "type": "object",
         "required": ["email"],
         "properties": {
-          "email": { "type": "string", "format": "email", "example": "contato@acme.com" },
+          "email": {
+            "type": "string",
+            "format": "email",
+            "example": "contato@acme.com"
+          },
           "type": {
             "type": "string",
             "enum": ["personal", "work", "other"],
@@ -261,7 +420,10 @@
         "type": "object",
         "required": ["phone"],
         "properties": {
-          "phone": { "type": "string", "example": "+551130000000" },
+          "phone": {
+            "type": "string",
+            "example": "+551130000000"
+          },
           "type": {
             "type": "string",
             "enum": ["mobile", "work", "residential", "other"],
@@ -273,33 +435,71 @@
       "Tag": {
         "type": "object",
         "properties": {
-          "id": { "type": "string", "format": "uuid" },
-          "name": { "type": "string" },
-          "color_text": { "type": "string", "nullable": true, "example": "#ffffff" },
-          "color_background": { "type": "string", "nullable": true, "example": "#0085c0" },
-          "created_at": { "type": "string", "format": "date-time" }
+          "id": {
+            "type": "string",
+            "format": "uuid"
+          },
+          "name": {
+            "type": "string"
+          },
+          "color_text": {
+            "type": "string",
+            "nullable": true,
+            "example": "#ffffff"
+          },
+          "color_background": {
+            "type": "string",
+            "nullable": true,
+            "example": "#0085c0"
+          },
+          "created_at": {
+            "type": "string",
+            "format": "date-time"
+          }
         }
       },
       "ContactList": {
         "type": "object",
         "properties": {
-          "id": { "type": "string", "format": "uuid" },
-          "name": { "type": "string" },
-          "created_at": { "type": "string", "format": "date-time" }
+          "id": {
+            "type": "string",
+            "format": "uuid"
+          },
+          "name": {
+            "type": "string"
+          },
+          "created_at": {
+            "type": "string",
+            "format": "date-time"
+          }
         }
       },
       "CustomFieldValue": {
         "type": "object",
         "properties": {
-          "id": { "type": "string", "format": "uuid" },
-          "value": { "description": "Valor do campo. O tipo depende da definição do campo adicional." },
+          "id": {
+            "type": "string",
+            "format": "uuid"
+          },
+          "value": {
+            "description": "Valor do campo. O tipo depende da definição do campo adicional."
+          },
           "field": {
             "type": "object",
             "properties": {
-              "id": { "type": "string", "format": "uuid" },
-              "label": { "type": "string" },
-              "key": { "type": "string" },
-              "type": { "type": "string" }
+              "id": {
+                "type": "string",
+                "format": "uuid"
+              },
+              "label": {
+                "type": "string"
+              },
+              "key": {
+                "type": "string"
+              },
+              "type": {
+                "type": "string"
+              }
             }
           }
         }
@@ -309,49 +509,108 @@
         "nullable": true,
         "description": "Membro do workspace responsável pelo registro. `null` quando não há responsável definido.",
         "properties": {
-          "id": { "type": "string", "format": "uuid" },
-          "email": { "type": "string", "format": "email", "example": "joao@empresa.com" },
-          "name": { "type": "string", "example": "João Silva" }
+          "id": {
+            "type": "string",
+            "format": "uuid"
+          },
+          "email": {
+            "type": "string",
+            "format": "email",
+            "example": "joao@empresa.com"
+          },
+          "name": {
+            "type": "string",
+            "example": "João Silva"
+          }
         }
       },
       "Company": {
         "type": "object",
         "properties": {
-          "id": { "type": "string", "format": "uuid" },
-          "full_name": { "type": "string", "maxLength": 70, "example": "Acme Corp" },
+          "id": {
+            "type": "string",
+            "format": "uuid"
+          },
+          "full_name": {
+            "type": "string",
+            "maxLength": 70,
+            "example": "Acme Corp"
+          },
           "emails": {
             "type": "array",
             "nullable": true,
-            "items": { "$ref": "#/components/schemas/ContactEmail" },
-            "example": [{ "email": "contato@acme.com", "type": "work" }]
+            "items": {
+              "$ref": "#/components/schemas/ContactEmail"
+            },
+            "example": [
+              {
+                "email": "contato@acme.com",
+                "type": "work"
+              }
+            ]
           },
           "phones": {
             "type": "array",
             "nullable": true,
-            "items": { "$ref": "#/components/schemas/ContactPhone" },
-            "example": [{ "phone": "+551130000000", "type": "work" }]
+            "items": {
+              "$ref": "#/components/schemas/ContactPhone"
+            },
+            "example": [
+              {
+                "phone": "+551130000000",
+                "type": "work"
+              }
+            ]
           },
-          "owner": { "$ref": "#/components/schemas/Owner" },
+          "owner": {
+            "$ref": "#/components/schemas/Owner"
+          },
           "avatar_url": {
             "type": "string",
             "format": "uri",
             "nullable": true,
             "example": "https://storage.vendaze.com/client/workspaces/abc/companies/xyz/avatar/avatar_WWT1BGs9ma.webp"
           },
-          "entity_id": { "type": "string", "example": "g7wwkh0" },
-          "created_at": { "type": "string", "format": "date-time" },
-          "updated_at": { "type": "string", "format": "date-time" }
+          "entity_id": {
+            "type": "string",
+            "example": "g7wwkh0"
+          },
+          "created_at": {
+            "type": "string",
+            "format": "date-time"
+          },
+          "updated_at": {
+            "type": "string",
+            "format": "date-time"
+          }
         }
       },
       "CompanyWithEmbedded": {
         "allOf": [
-          { "$ref": "#/components/schemas/Company" },
+          {
+            "$ref": "#/components/schemas/Company"
+          },
           {
             "type": "object",
             "properties": {
-              "tags": { "type": "array", "items": { "$ref": "#/components/schemas/Tag" } },
-              "lists": { "type": "array", "items": { "$ref": "#/components/schemas/ContactList" } },
-              "custom_fields": { "type": "array", "items": { "$ref": "#/components/schemas/CustomFieldValue" } }
+              "tags": {
+                "type": "array",
+                "items": {
+                  "$ref": "#/components/schemas/Tag"
+                }
+              },
+              "lists": {
+                "type": "array",
+                "items": {
+                  "$ref": "#/components/schemas/ContactList"
+                }
+              },
+              "custom_fields": {
+                "type": "array",
+                "items": {
+                  "$ref": "#/components/schemas/CustomFieldValue"
+                }
+              }
             }
           }
         ]
@@ -360,9 +619,23 @@
         "type": "object",
         "required": ["full_name"],
         "properties": {
-          "full_name": { "type": "string", "maxLength": 70, "example": "Acme Corp" },
-          "emails": { "type": "array", "items": { "$ref": "#/components/schemas/ContactEmail" } },
-          "phones": { "type": "array", "items": { "$ref": "#/components/schemas/ContactPhone" } },
+          "full_name": {
+            "type": "string",
+            "maxLength": 70,
+            "example": "Acme Corp"
+          },
+          "emails": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/ContactEmail"
+            }
+          },
+          "phones": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/ContactPhone"
+            }
+          },
           "owner_email": {
             "type": "string",
             "format": "email",
@@ -376,18 +649,19 @@
           },
           "tag_ids": {
             "type": "array",
-            "items": { "type": "string", "format": "uuid" },
+            "items": {
+              "type": "string",
+              "format": "uuid"
+            },
             "description": "IDs de tags para associar à empresa."
           },
           "list_ids": {
             "type": "array",
-            "items": { "type": "string", "format": "uuid" },
+            "items": {
+              "type": "string",
+              "format": "uuid"
+            },
             "description": "IDs de listas para associar à empresa."
-          },
-          "deal_ids": {
-            "type": "array",
-            "items": { "type": "string", "format": "uuid" },
-            "description": "IDs de negócios para associar à empresa."
           },
           "custom_fields": {
             "type": "array",
@@ -401,7 +675,10 @@
                   "example": "setor",
                   "description": "Chave do campo adicional (ex: `setor`). Se não existir nenhum campo com essa chave no workspace, ele é criado automaticamente com tipo `text`."
                 },
-                "value": { "type": "string", "description": "Valor do campo como string." }
+                "value": {
+                  "type": "string",
+                  "description": "Valor do campo como string."
+                }
               }
             },
             "description": "Valores de campos adicionais para definir na empresa. Identificados por `field_key`. Se o campo não existir, é criado automaticamente com tipo `text`."
@@ -412,9 +689,22 @@
         "type": "object",
         "description": "Todos os campos são opcionais. Apenas os campos enviados no body são modificados.",
         "properties": {
-          "full_name": { "type": "string", "maxLength": 70 },
-          "emails": { "type": "array", "items": { "$ref": "#/components/schemas/ContactEmail" } },
-          "phones": { "type": "array", "items": { "$ref": "#/components/schemas/ContactPhone" } },
+          "full_name": {
+            "type": "string",
+            "maxLength": 70
+          },
+          "emails": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/ContactEmail"
+            }
+          },
+          "phones": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/ContactPhone"
+            }
+          },
           "owner_email": {
             "type": "string",
             "format": "email",
@@ -429,18 +719,19 @@
           },
           "tag_ids": {
             "type": "array",
-            "items": { "type": "string", "format": "uuid" },
+            "items": {
+              "type": "string",
+              "format": "uuid"
+            },
             "description": "IDs de tags para associar. O comportamento depende de `association_mode`."
           },
           "list_ids": {
             "type": "array",
-            "items": { "type": "string", "format": "uuid" },
+            "items": {
+              "type": "string",
+              "format": "uuid"
+            },
             "description": "IDs de listas para associar. O comportamento depende de `association_mode`."
-          },
-          "deal_ids": {
-            "type": "array",
-            "items": { "type": "string", "format": "uuid" },
-            "description": "IDs de negócios para associar. O comportamento depende de `association_mode`."
           },
           "custom_fields": {
             "type": "array",
@@ -454,7 +745,10 @@
                   "example": "setor",
                   "description": "Chave do campo adicional (ex: `setor`). Se não existir nenhum campo com essa chave no workspace, ele é criado automaticamente com tipo `text`."
                 },
-                "value": { "type": "string", "description": "Valor do campo como string." }
+                "value": {
+                  "type": "string",
+                  "description": "Valor do campo como string."
+                }
               }
             },
             "description": "Valores de campos adicionais. O comportamento depende de `association_mode`. No modo `append`, substitui o valor de cada `field_key` enviado sem alterar os demais."
@@ -463,14 +757,16 @@
             "type": "string",
             "enum": ["append", "replace"],
             "default": "append",
-            "description": "Controla como as associações (`tag_ids`, `list_ids`, `deal_ids`, `custom_fields`) são aplicadas. `append`: adiciona novas associações sem remover as existentes. `replace`: remove todas as associações atuais de cada tipo enviado e insere as novas. Enviar um array vazio com `replace` remove todas as associações daquele tipo."
+            "description": "Controla como as associações (`tag_ids`, `list_ids`, `custom_fields`) são aplicadas. `append`: adiciona novas associações sem remover as existentes. `replace`: remove todas as associações atuais de cada tipo enviado e insere as novas. Enviar um array vazio com `replace` remove todas as associações daquele tipo."
           }
         }
       },
       "CompanyWithEmbeddedResponse": {
         "type": "object",
         "properties": {
-          "data": { "$ref": "#/components/schemas/CompanyWithEmbedded" }
+          "data": {
+            "$ref": "#/components/schemas/CompanyWithEmbedded"
+          }
         }
       }
     }

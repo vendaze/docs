@@ -4,11 +4,27 @@
     "title": "OAuth 2.1",
     "description": "Endpoints para registrar aplicativos e gerenciar tokens OAuth 2.1.",
     "version": "1.0.0",
-    "contact": { "name": "Suporte Vendaze", "email": "suporte@vendaze.com" }
+    "contact": {
+      "name": "Suporte Vendaze",
+      "email": "suporte@vendaze.com"
+    }
   },
-  "servers": [{ "url": "https://api.vendaze.com", "description": "Produção" }],
-  "security": [{ "bearerAuth": [] }],
-  "tags": [{ "name": "OAuth" }],
+  "servers": [
+    {
+      "url": "https://api.vendaze.com",
+      "description": "Produção"
+    }
+  ],
+  "security": [
+    {
+      "bearerAuth": []
+    }
+  ],
+  "tags": [
+    {
+      "name": "OAuth"
+    }
+  ],
   "paths": {
     "/v1/auth/register-app": {
       "post": {
@@ -19,18 +35,32 @@
         "tags": ["OAuth"],
         "requestBody": {
           "required": true,
-          "content": { "application/json": { "schema": { "$ref": "#/components/schemas/RegisterAppRequest" } } }
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/RegisterAppRequest"
+              }
+            }
+          }
         },
         "responses": {
           "201": {
             "description": "Aplicativo registrado com sucesso.",
-            "content": { "application/json": { "schema": { "$ref": "#/components/schemas/RegisterAppResponse" } } }
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/RegisterAppResponse"
+                }
+              }
+            }
           },
           "400": {
             "description": "Body JSON inválido ou não parseável. Código de erro: `bad_request`. Mensagem: `\"Request body must be valid JSON.\"`",
             "content": {
               "application/json": {
-                "schema": { "$ref": "#/components/schemas/ErrorResponse" },
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                },
                 "example": {
                   "error": {
                     "code": "bad_request",
@@ -45,7 +75,9 @@
             "description": "E-mail já cadastrado em outro aplicativo. Código de erro: `conflict`. Mensagem: `\"An app is already registered with this email address.\"`",
             "content": {
               "application/json": {
-                "schema": { "$ref": "#/components/schemas/ErrorResponse" },
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                },
                 "example": {
                   "error": {
                     "code": "conflict",
@@ -56,13 +88,19 @@
               }
             }
           },
-          "422": { "$ref": "#/components/responses/ValidationError" },
-          "429": { "$ref": "#/components/responses/RateLimitExceeded" },
+          "422": {
+            "$ref": "#/components/responses/ValidationError"
+          },
+          "429": {
+            "$ref": "#/components/responses/RateLimitExceeded"
+          },
           "500": {
             "description": "Falha ao criar ou persistir o aplicativo. Código de erro: `internal_error`. Mensagem: `\"An unexpected error occurred.\"` Use o `request_id` para correlacionar com os logs.",
             "content": {
               "application/json": {
-                "schema": { "$ref": "#/components/schemas/ErrorResponse" },
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                },
                 "example": {
                   "error": {
                     "code": "internal_error",
@@ -85,18 +123,32 @@
         "tags": ["OAuth"],
         "requestBody": {
           "required": true,
-          "content": { "application/json": { "schema": { "$ref": "#/components/schemas/RotateAppRequest" } } }
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/RotateAppRequest"
+              }
+            }
+          }
         },
         "responses": {
           "200": {
             "description": "Credenciais rotacionadas com sucesso. Novas credenciais enviadas por e-mail.",
-            "content": { "application/json": { "schema": { "$ref": "#/components/schemas/RotateAppResponse" } } }
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/RotateAppResponse"
+                }
+              }
+            }
           },
           "400": {
             "description": "Body JSON inválido ou não parseável. Código de erro: `bad_request`. Mensagem: `\"Request body must be valid JSON.\"`",
             "content": {
               "application/json": {
-                "schema": { "$ref": "#/components/schemas/ErrorResponse" },
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                },
                 "example": {
                   "error": {
                     "code": "bad_request",
@@ -111,7 +163,9 @@
             "description": "E-mail não corresponde ao cadastrado no aplicativo. Código de erro: `invalid_client`. Mensagem: `\"Invalid client credentials.\"`",
             "content": {
               "application/json": {
-                "schema": { "$ref": "#/components/schemas/ErrorResponse" },
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                },
                 "example": {
                   "error": {
                     "code": "invalid_client",
@@ -126,20 +180,32 @@
             "description": "Aplicativo não encontrado ou revogado. Código de erro: `not_found`. Mensagem: `\"App not found.\"`",
             "content": {
               "application/json": {
-                "schema": { "$ref": "#/components/schemas/ErrorResponse" },
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                },
                 "example": {
-                  "error": { "code": "not_found", "message": "App not found.", "request_id": "550e8400-e29b-41d4-a716-446655440000" }
+                  "error": {
+                    "code": "not_found",
+                    "message": "App not found.",
+                    "request_id": "550e8400-e29b-41d4-a716-446655440000"
+                  }
                 }
               }
             }
           },
-          "422": { "$ref": "#/components/responses/ValidationError" },
-          "429": { "$ref": "#/components/responses/RateLimitExceeded" },
+          "422": {
+            "$ref": "#/components/responses/ValidationError"
+          },
+          "429": {
+            "$ref": "#/components/responses/RateLimitExceeded"
+          },
           "500": {
             "description": "Falha ao rotacionar ou persistir as credenciais. Código de erro: `internal_error`. Mensagem: `\"An unexpected error occurred.\"` Use o `request_id` para correlacionar com os logs.",
             "content": {
               "application/json": {
-                "schema": { "$ref": "#/components/schemas/ErrorResponse" },
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                },
                 "example": {
                   "error": {
                     "code": "internal_error",
@@ -157,7 +223,7 @@
       "get": {
         "operationId": "authorize",
         "summary": "Iniciar autorização",
-        "description": "Redireciona o browser do usuário para a tela de consent da Vendaze. **Este endpoint deve ser aberto no browser — não chame com fetch, axios ou qualquer cliente HTTP.** O usuário precisa navegar para esta URL para fazer login e aprovar o acesso. Os escopos são resolvidos a partir do registro do aplicativo.",
+        "description": "Redireciona o browser do usuário para a tela de consent da Vendaze. **Este endpoint deve ser aberto no browser. não chame com fetch, axios ou qualquer cliente HTTP.** O usuário precisa navegar para esta URL para fazer login e aprovar o acesso. Os escopos são resolvidos a partir do registro do aplicativo.",
         "security": [],
         "tags": ["OAuth"],
         "parameters": [
@@ -165,38 +231,52 @@
             "name": "client_id",
             "in": "query",
             "required": true,
-            "schema": { "type": "string" },
+            "schema": {
+              "type": "string"
+            },
             "description": "ID do aplicativo OAuth."
           },
           {
             "name": "redirect_uri",
             "in": "query",
             "required": true,
-            "schema": { "type": "string", "format": "uri" },
+            "schema": {
+              "type": "string",
+              "format": "uri"
+            },
             "description": "URI de redirecionamento registrada no aplicativo."
           },
           {
             "name": "response_type",
             "in": "query",
             "required": true,
-            "schema": { "type": "string", "enum": ["code"] },
+            "schema": {
+              "type": "string",
+              "enum": ["code"]
+            },
             "description": "Deve ser \"code\"."
           },
           {
             "name": "state",
             "in": "query",
             "required": false,
-            "schema": { "type": "string" },
+            "schema": {
+              "type": "string"
+            },
             "description": "String aleatória gerada pelo cliente. Retornada sem alteração no callback. Fortemente recomendada para prevenção de CSRF."
           }
         ],
         "responses": {
-          "302": { "description": "Redirecionamento para a tela de consent da Vendaze." },
+          "302": {
+            "description": "Redirecionamento para a tela de consent da Vendaze."
+          },
           "400": {
-            "description": "Parâmetro ausente ou inválido. Códigos de erro possíveis: `invalid_request` (parâmetro `client_id`, `redirect_uri` ou `response_type` ausente — mensagem identifica o parâmetro específico, ex: `\"Missing required parameter: redirect_uri.\"`), `unsupported_response_type` (`response_type` diferente de `code` — mensagem: `\"response_type must be \\\"code\\\".\"`), `invalid_request` (`redirect_uri` não corresponde a nenhuma URI registrada — mensagem: `\"redirect_uri does not match any registered URI.\"`).",
+            "description": "Parâmetro ausente ou inválido. Códigos de erro possíveis: `invalid_request` (parâmetro `client_id`, `redirect_uri` ou `response_type` ausente. mensagem identifica o parâmetro específico, ex: `\"Missing required parameter: redirect_uri.\"`), `unsupported_response_type` (`response_type` diferente de `code`. mensagem: `\"response_type must be \\\"code\\\".\"`), `invalid_request` (`redirect_uri` não corresponde a nenhuma URI registrada. mensagem: `\"redirect_uri does not match any registered URI.\"`).",
             "content": {
               "application/json": {
-                "schema": { "$ref": "#/components/schemas/ErrorResponse" },
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                },
                 "example": {
                   "error": {
                     "code": "invalid_request",
@@ -211,7 +291,9 @@
             "description": "Aplicativo não encontrado ou inativo. Código de erro: `invalid_client`. Mensagem: `\"Invalid client credentials.\"`",
             "content": {
               "application/json": {
-                "schema": { "$ref": "#/components/schemas/ErrorResponse" },
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                },
                 "example": {
                   "error": {
                     "code": "invalid_client",
@@ -222,12 +304,16 @@
               }
             }
           },
-          "429": { "$ref": "#/components/responses/RateLimitExceeded" },
+          "429": {
+            "$ref": "#/components/responses/RateLimitExceeded"
+          },
           "500": {
             "description": "Serviço de autorização indisponível. Código de erro: `internal_error`. Mensagem: `\"An unexpected error occurred.\"` Tente novamente.",
             "content": {
               "application/json": {
-                "schema": { "$ref": "#/components/schemas/ErrorResponse" },
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                },
                 "example": {
                   "error": {
                     "code": "internal_error",
@@ -250,18 +336,32 @@
         "tags": ["OAuth"],
         "requestBody": {
           "required": true,
-          "content": { "application/json": { "schema": { "$ref": "#/components/schemas/TokenRequest" } } }
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/TokenRequest"
+              }
+            }
+          }
         },
         "responses": {
           "200": {
             "description": "Tokens emitidos com sucesso.",
-            "content": { "application/json": { "schema": { "$ref": "#/components/schemas/TokenResponse" } } }
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/TokenResponse"
+                }
+              }
+            }
           },
           "400": {
             "description": "Parâmetro ausente ou inválido. Códigos de erro possíveis: `bad_request` (body malformado ou Content-Type não suportado), `unsupported_grant_type` (`grant_type` diferente de `authorization_code` ou `refresh_token`), `invalid_request` (parâmetro obrigatório ausente para o `grant_type` informado), `invalid_grant` (authorization code inválido, expirado, já utilizado ou sem correspondência).",
             "content": {
               "application/json": {
-                "schema": { "$ref": "#/components/schemas/ErrorResponse" },
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                },
                 "example": {
                   "error": {
                     "code": "invalid_grant",
@@ -276,7 +376,9 @@
             "description": "Credenciais do cliente inválidas (`client_id` ou `client_secret`).",
             "content": {
               "application/json": {
-                "schema": { "$ref": "#/components/schemas/ErrorResponse" },
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                },
                 "example": {
                   "error": {
                     "code": "invalid_client",
@@ -287,12 +389,16 @@
               }
             }
           },
-          "429": { "$ref": "#/components/responses/RateLimitExceeded" },
+          "429": {
+            "$ref": "#/components/responses/RateLimitExceeded"
+          },
           "500": {
             "description": "Falha na troca de tokens. O servidor de autorização estava indisponível ou retornou uma resposta inesperada. Tente novamente.",
             "content": {
               "application/json": {
-                "schema": { "$ref": "#/components/schemas/ErrorResponse" },
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                },
                 "example": {
                   "error": {
                     "code": "internal_error",
@@ -315,7 +421,13 @@
         "tags": ["OAuth"],
         "requestBody": {
           "required": true,
-          "content": { "application/json": { "schema": { "$ref": "#/components/schemas/RevokeTokenRequest" } } }
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/RevokeTokenRequest"
+              }
+            }
+          }
         },
         "responses": {
           "200": {
@@ -325,17 +437,22 @@
                 "schema": {
                   "type": "object",
                   "properties": {
-                    "revoked": { "type": "boolean", "example": true }
+                    "revoked": {
+                      "type": "boolean",
+                      "example": true
+                    }
                   }
                 }
               }
             }
           },
           "400": {
-            "description": "Parâmetro ausente ou inválido. Códigos de erro possíveis: `bad_request` (body JSON malformado), `invalid_request` (parâmetro `token`, `client_id` ou `client_secret` ausente; ou `token` não é um access token válido — refresh tokens não são aceitos).",
+            "description": "Parâmetro ausente ou inválido. Códigos de erro possíveis: `bad_request` (body JSON malformado), `invalid_request` (parâmetro `token`, `client_id` ou `client_secret` ausente; ou `token` não é um access token válido. refresh tokens não são aceitos).",
             "content": {
               "application/json": {
-                "schema": { "$ref": "#/components/schemas/ErrorResponse" },
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                },
                 "example": {
                   "error": {
                     "code": "invalid_request",
@@ -350,7 +467,9 @@
             "description": "Credenciais do cliente inválidas (`client_id` ou `client_secret`).",
             "content": {
               "application/json": {
-                "schema": { "$ref": "#/components/schemas/ErrorResponse" },
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                },
                 "example": {
                   "error": {
                     "code": "invalid_client",
@@ -361,12 +480,16 @@
               }
             }
           },
-          "429": { "$ref": "#/components/responses/RateLimitExceeded" },
+          "429": {
+            "$ref": "#/components/responses/RateLimitExceeded"
+          },
           "500": {
             "description": "Erro inesperado durante a validação das credenciais.",
             "content": {
               "application/json": {
-                "schema": { "$ref": "#/components/schemas/ErrorResponse" },
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                },
                 "example": {
                   "error": {
                     "code": "internal_error",
@@ -383,36 +506,101 @@
   },
   "components": {
     "securitySchemes": {
-      "bearerAuth": { "type": "http", "scheme": "bearer", "description": "Access token OAuth 2.1." }
+      "bearerAuth": {
+        "type": "http",
+        "scheme": "bearer",
+        "description": "Access token OAuth 2.1."
+      }
     },
     "parameters": {
       "id": {
         "name": "id",
         "in": "path",
         "required": true,
-        "schema": { "type": "string", "format": "uuid" },
+        "schema": {
+          "type": "string",
+          "format": "uuid"
+        },
         "description": "UUID do recurso."
       },
-      "page": { "name": "page", "in": "query", "schema": { "type": "integer", "default": 1, "minimum": 1 } },
+      "page": {
+        "name": "page",
+        "in": "query",
+        "schema": {
+          "type": "integer",
+          "default": 1,
+          "minimum": 1
+        }
+      },
       "per_page": {
         "name": "per_page",
         "in": "query",
-        "schema": { "type": "integer", "default": 50, "minimum": 1, "maximum": 100 },
+        "schema": {
+          "type": "integer",
+          "default": 50,
+          "minimum": 1,
+          "maximum": 100
+        },
         "description": "Máx. 100."
       },
-      "order_by": { "name": "order_by", "in": "query", "schema": { "type": "string", "default": "created_at" } },
-      "order": { "name": "order", "in": "query", "schema": { "type": "string", "enum": ["asc", "desc"], "default": "desc" } },
-      "created_after": { "name": "created_after", "in": "query", "schema": { "type": "string", "format": "date-time" } },
-      "created_before": { "name": "created_before", "in": "query", "schema": { "type": "string", "format": "date-time" } },
-      "updated_after": { "name": "updated_after", "in": "query", "schema": { "type": "string", "format": "date-time" } },
-      "updated_before": { "name": "updated_before", "in": "query", "schema": { "type": "string", "format": "date-time" } }
+      "order_by": {
+        "name": "order_by",
+        "in": "query",
+        "schema": {
+          "type": "string",
+          "default": "created_at"
+        }
+      },
+      "order": {
+        "name": "order",
+        "in": "query",
+        "schema": {
+          "type": "string",
+          "enum": ["asc", "desc"],
+          "default": "desc"
+        }
+      },
+      "created_after": {
+        "name": "created_after",
+        "in": "query",
+        "schema": {
+          "type": "string",
+          "format": "date-time"
+        }
+      },
+      "created_before": {
+        "name": "created_before",
+        "in": "query",
+        "schema": {
+          "type": "string",
+          "format": "date-time"
+        }
+      },
+      "updated_after": {
+        "name": "updated_after",
+        "in": "query",
+        "schema": {
+          "type": "string",
+          "format": "date-time"
+        }
+      },
+      "updated_before": {
+        "name": "updated_before",
+        "in": "query",
+        "schema": {
+          "type": "string",
+          "format": "date-time"
+        }
+      }
     },
     "responses": {
       "Unauthorized": {
-        "description": "Token ausente, inválido ou expirado. Códigos de erro e mensagens possíveis: `unauthorized` — `\"Missing or invalid Authorization header.\"`, `\"Invalid or malformed token.\"` ou `\"Token is missing required claims.\"`; `token_expired` — `\"Access token expired. Refresh using the refresh token.\"`",
+        "description": "Token ausente, inválido ou expirado. Códigos de erro e mensagens possíveis: `unauthorized`. `\"Missing or invalid Authorization header.\"`, `\"Invalid or malformed token.\"` ou `\"Token is missing required claims.\"`; `token_expired`. `\"Access token expired. Refresh using the refresh token.\"`",
         "content": {
           "application/json": {
-            "schema": { "$ref": "#/components/schemas/ErrorResponse" },
+            "schema": {
+              "$ref": "#/components/schemas/ErrorResponse"
+            },
             "example": {
               "error": {
                 "code": "unauthorized",
@@ -427,7 +615,9 @@
         "description": "Token sem o escopo necessário. Código de erro: `insufficient_scope`. Mensagem: `\"This endpoint requires the '{scope}' scope.\"` onde `{scope}` é o escopo exato que está faltando.",
         "content": {
           "application/json": {
-            "schema": { "$ref": "#/components/schemas/ErrorResponse" },
+            "schema": {
+              "$ref": "#/components/schemas/ErrorResponse"
+            },
             "example": {
               "error": {
                 "code": "insufficient_scope",
@@ -442,9 +632,15 @@
         "description": "Recurso não encontrado, soft-deletado ou pertencente a outro workspace. Código de erro: `not_found`. Mensagem: `\"{Entity} not found.\"`",
         "content": {
           "application/json": {
-            "schema": { "$ref": "#/components/schemas/ErrorResponse" },
+            "schema": {
+              "$ref": "#/components/schemas/ErrorResponse"
+            },
             "example": {
-              "error": { "code": "not_found", "message": "App not found.", "request_id": "550e8400-e29b-41d4-a716-446655440000" }
+              "error": {
+                "code": "not_found",
+                "message": "App not found.",
+                "request_id": "550e8400-e29b-41d4-a716-446655440000"
+              }
             }
           }
         }
@@ -453,12 +649,16 @@
         "description": "Validação de entrada falhou. Código de erro: `validation_error`. Mensagem: `\"Validation failed.\"` O objeto `fields` mapeia cada campo inválido a uma descrição do problema.",
         "content": {
           "application/json": {
-            "schema": { "$ref": "#/components/schemas/ValidationErrorResponse" },
+            "schema": {
+              "$ref": "#/components/schemas/ValidationErrorResponse"
+            },
             "example": {
               "error": {
                 "code": "validation_error",
                 "message": "Validation failed.",
-                "fields": { "email": "Invalid email address." },
+                "fields": {
+                  "email": "Invalid email address."
+                },
                 "request_id": "550e8400-e29b-41d4-a716-446655440000"
               }
             }
@@ -469,7 +669,9 @@
         "description": "Limite de taxa excedido. Código de erro: `rate_limit_exceeded`. Mensagem: `\"Rate limit exceeded. Try again in {N} seconds.\"` O header `Retry-After` contém o mesmo valor.",
         "content": {
           "application/json": {
-            "schema": { "$ref": "#/components/schemas/ErrorResponse" },
+            "schema": {
+              "$ref": "#/components/schemas/ErrorResponse"
+            },
             "example": {
               "error": {
                 "code": "rate_limit_exceeded",
@@ -488,9 +690,18 @@
           "error": {
             "type": "object",
             "properties": {
-              "code": { "type": "string", "example": "not_found" },
-              "message": { "type": "string", "example": "Resource not found." },
-              "request_id": { "type": "string", "format": "uuid" }
+              "code": {
+                "type": "string",
+                "example": "not_found"
+              },
+              "message": {
+                "type": "string",
+                "example": "Resource not found."
+              },
+              "request_id": {
+                "type": "string",
+                "format": "uuid"
+              }
             }
           }
         }
@@ -501,10 +712,24 @@
           "error": {
             "type": "object",
             "properties": {
-              "code": { "type": "string", "example": "validation_error" },
-              "message": { "type": "string", "example": "Validation failed." },
-              "fields": { "type": "object", "additionalProperties": { "type": "string" } },
-              "request_id": { "type": "string", "format": "uuid" }
+              "code": {
+                "type": "string",
+                "example": "validation_error"
+              },
+              "message": {
+                "type": "string",
+                "example": "Validation failed."
+              },
+              "fields": {
+                "type": "object",
+                "additionalProperties": {
+                  "type": "string"
+                }
+              },
+              "request_id": {
+                "type": "string",
+                "format": "uuid"
+              }
             }
           }
         }
@@ -512,17 +737,33 @@
       "PaginationMeta": {
         "type": "object",
         "properties": {
-          "total": { "type": "integer", "example": 150 },
-          "page": { "type": "integer", "example": 1 },
-          "per_page": { "type": "integer", "example": 50 },
-          "has_more": { "type": "boolean", "example": true }
+          "total": {
+            "type": "integer",
+            "example": 150
+          },
+          "page": {
+            "type": "integer",
+            "example": 1
+          },
+          "per_page": {
+            "type": "integer",
+            "example": 50
+          },
+          "has_more": {
+            "type": "boolean",
+            "example": true
+          }
         }
       },
       "ContactEmail": {
         "type": "object",
         "required": ["email"],
         "properties": {
-          "email": { "type": "string", "format": "email", "example": "nome@empresa.com" },
+          "email": {
+            "type": "string",
+            "format": "email",
+            "example": "nome@empresa.com"
+          },
           "type": {
             "type": "string",
             "enum": ["personal", "work", "other"],
@@ -530,13 +771,19 @@
             "example": "work"
           }
         },
-        "example": { "email": "nome@empresa.com", "type": "work" }
+        "example": {
+          "email": "nome@empresa.com",
+          "type": "work"
+        }
       },
       "ContactPhone": {
         "type": "object",
         "required": ["phone"],
         "properties": {
-          "phone": { "type": "string", "example": "+5511999990001" },
+          "phone": {
+            "type": "string",
+            "example": "+5511999990001"
+          },
           "type": {
             "type": "string",
             "enum": ["mobile", "work", "residential", "other"],
@@ -544,38 +791,78 @@
             "example": "mobile"
           }
         },
-        "example": { "phone": "+5511999990001", "type": "mobile" }
+        "example": {
+          "phone": "+5511999990001",
+          "type": "mobile"
+        }
       },
       "Tag": {
         "type": "object",
         "properties": {
-          "id": { "type": "string", "format": "uuid" },
-          "name": { "type": "string" },
-          "color_text": { "type": "string", "nullable": true },
-          "color_background": { "type": "string", "nullable": true },
-          "created_at": { "type": "string", "format": "date-time" }
+          "id": {
+            "type": "string",
+            "format": "uuid"
+          },
+          "name": {
+            "type": "string"
+          },
+          "color_text": {
+            "type": "string",
+            "nullable": true
+          },
+          "color_background": {
+            "type": "string",
+            "nullable": true
+          },
+          "created_at": {
+            "type": "string",
+            "format": "date-time"
+          }
         }
       },
       "ContactList": {
         "type": "object",
         "properties": {
-          "id": { "type": "string", "format": "uuid" },
-          "name": { "type": "string" },
-          "created_at": { "type": "string", "format": "date-time" }
+          "id": {
+            "type": "string",
+            "format": "uuid"
+          },
+          "name": {
+            "type": "string"
+          },
+          "created_at": {
+            "type": "string",
+            "format": "date-time"
+          }
         }
       },
       "CustomFieldValue": {
         "type": "object",
         "properties": {
-          "id": { "type": "string", "format": "uuid" },
-          "value": { "type": "string", "nullable": true },
+          "id": {
+            "type": "string",
+            "format": "uuid"
+          },
+          "value": {
+            "type": "string",
+            "nullable": true
+          },
           "field": {
             "type": "object",
             "properties": {
-              "id": { "type": "string", "format": "uuid" },
-              "label": { "type": "string" },
-              "key": { "type": "string" },
-              "type": { "type": "string" }
+              "id": {
+                "type": "string",
+                "format": "uuid"
+              },
+              "label": {
+                "type": "string"
+              },
+              "key": {
+                "type": "string"
+              },
+              "type": {
+                "type": "string"
+              }
             }
           }
         }
@@ -608,9 +895,21 @@
         "type": "object",
         "required": ["app_name", "email", "redirect_uris", "scopes"],
         "properties": {
-          "app_name": { "type": "string", "maxLength": 100, "example": "Meu SaaS" },
-          "email": { "type": "string", "format": "email", "example": "dev@meusaas.com" },
-          "description": { "type": "string", "maxLength": 500, "example": "Integração com a Vendaze para sincronizar contatos." },
+          "app_name": {
+            "type": "string",
+            "maxLength": 100,
+            "example": "Meu SaaS"
+          },
+          "email": {
+            "type": "string",
+            "format": "email",
+            "example": "dev@meusaas.com"
+          },
+          "description": {
+            "type": "string",
+            "maxLength": 500,
+            "example": "Integração com a Vendaze para sincronizar contatos."
+          },
           "avatar_image": {
             "type": "string",
             "example": "data:image/png;base64,iVBORw0KGgo...",
@@ -618,12 +917,17 @@
           },
           "redirect_uris": {
             "type": "array",
-            "items": { "type": "string", "format": "uri" },
+            "items": {
+              "type": "string",
+              "format": "uri"
+            },
             "example": ["https://meusaas.com/callback/vendaze"]
           },
           "scopes": {
             "type": "array",
-            "items": { "$ref": "#/components/schemas/ScopeValue" },
+            "items": {
+              "$ref": "#/components/schemas/ScopeValue"
+            },
             "example": ["people:read", "deals:write"],
             "description": "Escopos que seu app precisa. Usuários aprovam individualmente na tela de consentimento."
           }
@@ -635,14 +939,23 @@
           "data": {
             "type": "object",
             "properties": {
-              "app_name": { "type": "string", "example": "Meu SaaS" },
-              "client_id": { "type": "string", "example": "9a8b7c6d-5e4f-3a2b-1c0d-9e8f7a6b5c4d" },
+              "app_name": {
+                "type": "string",
+                "example": "Meu SaaS"
+              },
+              "client_id": {
+                "type": "string",
+                "example": "9a8b7c6d-5e4f-3a2b-1c0d-9e8f7a6b5c4d"
+              },
               "avatar_url": {
                 "type": "string",
                 "example": "https://storage.vendaze.com/assets/integrations/meusaas.jpg",
-                "description": "URL pública do avatar armazenado. Sempre JPEG — a Vendaze converte todos os formatos no upload. Presente somente se avatar_image foi enviado na requisição."
+                "description": "URL pública do avatar armazenado. Sempre JPEG. a Vendaze converte todos os formatos no upload. Presente somente se avatar_image foi enviado na requisição."
               },
-              "message": { "type": "string", "example": "Credentials sent by email." }
+              "message": {
+                "type": "string",
+                "example": "Credentials sent by email."
+              }
             }
           }
         }
@@ -682,7 +995,10 @@
           },
           "redirect_uris": {
             "type": "array",
-            "items": { "type": "string", "format": "uri" },
+            "items": {
+              "type": "string",
+              "format": "uri"
+            },
             "example": ["https://meusaas.com/callback/vendaze"],
             "description": "Nova lista de URIs HTTPS de redirecionamento. Substitui a lista anterior integralmente. Se omitido, a lista atual é mantida."
           }
@@ -694,7 +1010,10 @@
           "data": {
             "type": "object",
             "properties": {
-              "app_name": { "type": "string", "example": "Meu SaaS v2" },
+              "app_name": {
+                "type": "string",
+                "example": "Meu SaaS v2"
+              },
               "client_id": {
                 "type": "string",
                 "format": "uuid",
@@ -706,7 +1025,10 @@
                 "example": "https://storage.vendaze.com/assets/integrations/meusaasv2.jpg",
                 "description": "URL pública do avatar armazenado. Presente somente se avatar_image foi enviado na requisição."
               },
-              "message": { "type": "string", "example": "New credentials sent by email." }
+              "message": {
+                "type": "string",
+                "example": "New credentials sent by email."
+              }
             }
           }
         }
@@ -720,20 +1042,42 @@
             "enum": ["authorization_code", "refresh_token"],
             "description": "Tipo de concessão."
           },
-          "code": { "type": "string", "description": "Obrigatório para grant_type=authorization_code." },
-          "client_id": { "type": "string" },
-          "client_secret": { "type": "string" },
-          "refresh_token": { "type": "string", "description": "Obrigatório para grant_type=refresh_token." }
+          "code": {
+            "type": "string",
+            "description": "Obrigatório para grant_type=authorization_code."
+          },
+          "client_id": {
+            "type": "string"
+          },
+          "client_secret": {
+            "type": "string"
+          },
+          "refresh_token": {
+            "type": "string",
+            "description": "Obrigatório para grant_type=refresh_token."
+          }
         }
       },
       "TokenResponse": {
         "type": "object",
         "required": ["access_token", "refresh_token", "token_type", "expires_in", "workspace_slug"],
         "properties": {
-          "access_token": { "type": "string", "example": "eyJ..." },
-          "refresh_token": { "type": "string", "example": "eyJ..." },
-          "token_type": { "type": "string", "example": "Bearer" },
-          "expires_in": { "type": "integer", "example": 3600 },
+          "access_token": {
+            "type": "string",
+            "example": "eyJ..."
+          },
+          "refresh_token": {
+            "type": "string",
+            "example": "eyJ..."
+          },
+          "token_type": {
+            "type": "string",
+            "example": "Bearer"
+          },
+          "expires_in": {
+            "type": "integer",
+            "example": 3600
+          },
           "workspace_slug": {
             "type": "string",
             "description": "Slug do workspace autorizado pelo usuário. Use para identificar qual conta está conectada no seu app.",
@@ -745,9 +1089,16 @@
         "type": "object",
         "required": ["token", "client_id", "client_secret"],
         "properties": {
-          "token": { "type": "string", "description": "Access token a ser revogado. Deve ser o access_token (JWT), não o refresh_token." },
-          "client_id": { "type": "string" },
-          "client_secret": { "type": "string" }
+          "token": {
+            "type": "string",
+            "description": "Access token a ser revogado. Deve ser o access_token (JWT), não o refresh_token."
+          },
+          "client_id": {
+            "type": "string"
+          },
+          "client_secret": {
+            "type": "string"
+          }
         }
       }
     }

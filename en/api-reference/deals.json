@@ -4,11 +4,27 @@
     "title": "Deals",
     "description": "Manage deals in the sales pipeline.",
     "version": "1.0.0",
-    "contact": { "name": "Vendaze Support", "email": "suporte@vendaze.com" }
+    "contact": {
+      "name": "Vendaze Support",
+      "email": "suporte@vendaze.com"
+    }
   },
-  "servers": [{ "url": "https://api.vendaze.com", "description": "Production" }],
-  "security": [{ "bearerAuth": [] }],
-  "tags": [{ "name": "Deals" }],
+  "servers": [
+    {
+      "url": "https://api.vendaze.com",
+      "description": "Production"
+    }
+  ],
+  "security": [
+    {
+      "bearerAuth": []
+    }
+  ],
+  "tags": [
+    {
+      "name": "Deals"
+    }
+  ],
   "paths": {
     "/v1/deals": {
       "post": {
@@ -18,18 +34,32 @@
         "tags": ["Deals"],
         "requestBody": {
           "required": true,
-          "content": { "application/json": { "schema": { "$ref": "#/components/schemas/CreateDealRequest" } } }
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/CreateDealRequest"
+              }
+            }
+          }
         },
         "responses": {
           "201": {
             "description": "Deal created successfully.",
-            "content": { "application/json": { "schema": { "$ref": "#/components/schemas/DealWithEmbeddedResponse" } } }
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/DealWithEmbeddedResponse"
+                }
+              }
+            }
           },
           "400": {
             "description": "Invalid or unparseable JSON body. Error code: `bad_request`. Message: `\"Request body must be valid JSON.\"`",
             "content": {
               "application/json": {
-                "schema": { "$ref": "#/components/schemas/ErrorResponse" },
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                },
                 "example": {
                   "error": {
                     "code": "bad_request",
@@ -40,11 +70,21 @@
               }
             }
           },
-          "401": { "$ref": "#/components/responses/Unauthorized" },
-          "403": { "$ref": "#/components/responses/InsufficientScope" },
-          "422": { "$ref": "#/components/responses/ValidationError" },
-          "429": { "$ref": "#/components/responses/RateLimitExceeded" },
-          "500": { "$ref": "#/components/responses/InternalError" }
+          "401": {
+            "$ref": "#/components/responses/Unauthorized"
+          },
+          "403": {
+            "$ref": "#/components/responses/InsufficientScope"
+          },
+          "422": {
+            "$ref": "#/components/responses/ValidationError"
+          },
+          "429": {
+            "$ref": "#/components/responses/RateLimitExceeded"
+          },
+          "500": {
+            "$ref": "#/components/responses/InternalError"
+          }
         }
       }
     },
@@ -54,16 +94,34 @@
         "summary": "Get a deal",
         "description": "Returns a deal by ID with embedded pipeline, stage, products, custom fields, tags, people, and companies.",
         "tags": ["Deals"],
-        "parameters": [{ "$ref": "#/components/parameters/id" }],
+        "parameters": [
+          {
+            "$ref": "#/components/parameters/id"
+          }
+        ],
         "responses": {
           "200": {
             "description": "Deal returned successfully.",
-            "content": { "application/json": { "schema": { "$ref": "#/components/schemas/DealWithEmbeddedResponse" } } }
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/DealWithEmbeddedResponse"
+                }
+              }
+            }
           },
-          "401": { "$ref": "#/components/responses/Unauthorized" },
-          "403": { "$ref": "#/components/responses/InsufficientScope" },
-          "404": { "$ref": "#/components/responses/NotFound" },
-          "500": { "$ref": "#/components/responses/InternalError" }
+          "401": {
+            "$ref": "#/components/responses/Unauthorized"
+          },
+          "403": {
+            "$ref": "#/components/responses/InsufficientScope"
+          },
+          "404": {
+            "$ref": "#/components/responses/NotFound"
+          },
+          "500": {
+            "$ref": "#/components/responses/InternalError"
+          }
         }
       },
       "patch": {
@@ -71,21 +129,39 @@
         "summary": "Update a deal",
         "description": "Updates a deal. Only fields included in the body are modified. `source` cannot be changed.",
         "tags": ["Deals"],
-        "parameters": [{ "$ref": "#/components/parameters/id" }],
+        "parameters": [
+          {
+            "$ref": "#/components/parameters/id"
+          }
+        ],
         "requestBody": {
           "required": true,
-          "content": { "application/json": { "schema": { "$ref": "#/components/schemas/UpdateDealRequest" } } }
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/UpdateDealRequest"
+              }
+            }
+          }
         },
         "responses": {
           "200": {
             "description": "Deal updated successfully.",
-            "content": { "application/json": { "schema": { "$ref": "#/components/schemas/DealWithEmbeddedResponse" } } }
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/DealWithEmbeddedResponse"
+                }
+              }
+            }
           },
           "400": {
             "description": "Invalid or unparseable JSON body. Error code: `bad_request`. Message: `\"Request body must be valid JSON.\"` For PATCH with no fields: code `bad_request`, message `\"No fields provided for update.\"`",
             "content": {
               "application/json": {
-                "schema": { "$ref": "#/components/schemas/ErrorResponse" },
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                },
                 "example": {
                   "error": {
                     "code": "bad_request",
@@ -96,11 +172,21 @@
               }
             }
           },
-          "401": { "$ref": "#/components/responses/Unauthorized" },
-          "403": { "$ref": "#/components/responses/InsufficientScope" },
-          "404": { "$ref": "#/components/responses/NotFound" },
-          "422": { "$ref": "#/components/responses/ValidationError" },
-          "500": { "$ref": "#/components/responses/InternalError" }
+          "401": {
+            "$ref": "#/components/responses/Unauthorized"
+          },
+          "403": {
+            "$ref": "#/components/responses/InsufficientScope"
+          },
+          "404": {
+            "$ref": "#/components/responses/NotFound"
+          },
+          "422": {
+            "$ref": "#/components/responses/ValidationError"
+          },
+          "500": {
+            "$ref": "#/components/responses/InternalError"
+          }
         }
       },
       "delete": {
@@ -108,40 +194,69 @@
         "summary": "Delete a deal",
         "description": "Soft-delete: the record is no longer accessible via the API.",
         "tags": ["Deals"],
-        "parameters": [{ "$ref": "#/components/parameters/id" }],
+        "parameters": [
+          {
+            "$ref": "#/components/parameters/id"
+          }
+        ],
         "responses": {
           "204": {
             "description": "Deal deleted successfully.",
-            "content": { "application/json": { "schema": { "type": "object" } } }
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object"
+                }
+              }
+            }
           },
-          "401": { "$ref": "#/components/responses/Unauthorized" },
-          "403": { "$ref": "#/components/responses/InsufficientScope" },
-          "404": { "$ref": "#/components/responses/NotFound" },
-          "429": { "$ref": "#/components/responses/RateLimitExceeded" },
-          "500": { "$ref": "#/components/responses/InternalError" }
+          "401": {
+            "$ref": "#/components/responses/Unauthorized"
+          },
+          "403": {
+            "$ref": "#/components/responses/InsufficientScope"
+          },
+          "404": {
+            "$ref": "#/components/responses/NotFound"
+          },
+          "429": {
+            "$ref": "#/components/responses/RateLimitExceeded"
+          },
+          "500": {
+            "$ref": "#/components/responses/InternalError"
+          }
         }
       }
     }
   },
   "components": {
     "securitySchemes": {
-      "bearerAuth": { "type": "http", "scheme": "bearer", "description": "OAuth 2.1 access token." }
+      "bearerAuth": {
+        "type": "http",
+        "scheme": "bearer",
+        "description": "OAuth 2.1 access token."
+      }
     },
     "parameters": {
       "id": {
         "name": "id",
         "in": "path",
         "required": true,
-        "schema": { "type": "string", "format": "uuid" },
+        "schema": {
+          "type": "string",
+          "format": "uuid"
+        },
         "description": "UUID of the resource."
       }
     },
     "responses": {
       "Unauthorized": {
-        "description": "Token missing, invalid, or expired. Possible error codes and messages: `unauthorized` — `\"Missing or invalid Authorization header.\"`, `\"Invalid or malformed token.\"`, or `\"Token is missing required claims.\"`; `token_expired` — `\"Access token expired. Refresh using the refresh token.\"`",
+        "description": "Token missing, invalid, or expired. Possible error codes and messages: `unauthorized`. `\"Missing or invalid Authorization header.\"`, `\"Invalid or malformed token.\"`, or `\"Token is missing required claims.\"`; `token_expired`. `\"Access token expired. Refresh using the refresh token.\"`",
         "content": {
           "application/json": {
-            "schema": { "$ref": "#/components/schemas/ErrorResponse" },
+            "schema": {
+              "$ref": "#/components/schemas/ErrorResponse"
+            },
             "example": {
               "error": {
                 "code": "unauthorized",
@@ -156,7 +271,9 @@
         "description": "Token lacks the required scope. Error code: `insufficient_scope`. Message: `\"This endpoint requires the '{scope}' scope.\"` where `{scope}` is the exact missing scope (e.g. `\"This endpoint requires the 'deals:write' scope.\"`).",
         "content": {
           "application/json": {
-            "schema": { "$ref": "#/components/schemas/ErrorResponse" },
+            "schema": {
+              "$ref": "#/components/schemas/ErrorResponse"
+            },
             "example": {
               "error": {
                 "code": "insufficient_scope",
@@ -171,9 +288,15 @@
         "description": "Resource not found, soft-deleted, or belongs to another workspace. Error code: `not_found`. Message: `\"Deal not found.\"`",
         "content": {
           "application/json": {
-            "schema": { "$ref": "#/components/schemas/ErrorResponse" },
+            "schema": {
+              "$ref": "#/components/schemas/ErrorResponse"
+            },
             "example": {
-              "error": { "code": "not_found", "message": "Deal not found.", "request_id": "550e8400-e29b-41d4-a716-446655440000" }
+              "error": {
+                "code": "not_found",
+                "message": "Deal not found.",
+                "request_id": "550e8400-e29b-41d4-a716-446655440000"
+              }
             }
           }
         }
@@ -182,12 +305,16 @@
         "description": "Input validation failed. Error code: `validation_error`. Message: `\"Validation failed.\"` The `fields` object maps each invalid field to a description of the problem.",
         "content": {
           "application/json": {
-            "schema": { "$ref": "#/components/schemas/ValidationErrorResponse" },
+            "schema": {
+              "$ref": "#/components/schemas/ValidationErrorResponse"
+            },
             "example": {
               "error": {
                 "code": "validation_error",
                 "message": "Validation failed.",
-                "fields": { "currency": "Invalid enum value." },
+                "fields": {
+                  "currency": "Invalid enum value."
+                },
                 "request_id": "550e8400-e29b-41d4-a716-446655440000"
               }
             }
@@ -198,7 +325,9 @@
         "description": "Rate limit exceeded. Error code: `rate_limit_exceeded`. Message: `\"Rate limit exceeded. Try again in {N} seconds.\"` The `Retry-After` response header contains the same value.",
         "content": {
           "application/json": {
-            "schema": { "$ref": "#/components/schemas/ErrorResponse" },
+            "schema": {
+              "$ref": "#/components/schemas/ErrorResponse"
+            },
             "example": {
               "error": {
                 "code": "rate_limit_exceeded",
@@ -213,7 +342,9 @@
         "description": "Unexpected server error. Error code: `internal_error`. Possible messages: `\"An unexpected error occurred.\"` (generic failure) or `\"Deal updated but associations failed. Retry the associations.\"` (main record saved but association update failed). Use the `request_id` to correlate with server-side logs.",
         "content": {
           "application/json": {
-            "schema": { "$ref": "#/components/schemas/ErrorResponse" },
+            "schema": {
+              "$ref": "#/components/schemas/ErrorResponse"
+            },
             "example": {
               "error": {
                 "code": "internal_error",
@@ -232,9 +363,18 @@
           "error": {
             "type": "object",
             "properties": {
-              "code": { "type": "string", "example": "not_found" },
-              "message": { "type": "string", "example": "Deal not found." },
-              "request_id": { "type": "string", "format": "uuid" }
+              "code": {
+                "type": "string",
+                "example": "not_found"
+              },
+              "message": {
+                "type": "string",
+                "example": "Deal not found."
+              },
+              "request_id": {
+                "type": "string",
+                "format": "uuid"
+              }
             }
           }
         }
@@ -245,10 +385,24 @@
           "error": {
             "type": "object",
             "properties": {
-              "code": { "type": "string", "example": "validation_error" },
-              "message": { "type": "string", "example": "Validation failed." },
-              "fields": { "type": "object", "additionalProperties": { "type": "string" } },
-              "request_id": { "type": "string", "format": "uuid" }
+              "code": {
+                "type": "string",
+                "example": "validation_error"
+              },
+              "message": {
+                "type": "string",
+                "example": "Validation failed."
+              },
+              "fields": {
+                "type": "object",
+                "additionalProperties": {
+                  "type": "string"
+                }
+              },
+              "request_id": {
+                "type": "string",
+                "format": "uuid"
+              }
             }
           }
         }
@@ -296,15 +450,27 @@
       "CustomFieldValue": {
         "type": "object",
         "properties": {
-          "id": { "type": "string", "format": "uuid" },
+          "id": {
+            "type": "string",
+            "format": "uuid"
+          },
           "value": {},
           "field": {
             "type": "object",
             "properties": {
-              "id": { "type": "string", "format": "uuid" },
-              "label": { "type": "string" },
-              "key": { "type": "string" },
-              "type": { "type": "string" }
+              "id": {
+                "type": "string",
+                "format": "uuid"
+              },
+              "label": {
+                "type": "string"
+              },
+              "key": {
+                "type": "string"
+              },
+              "type": {
+                "type": "string"
+              }
             }
           }
         }
@@ -312,13 +478,37 @@
       "DealProduct": {
         "type": "object",
         "properties": {
-          "id": { "type": "string", "format": "uuid" },
-          "product_id": { "type": "string", "format": "uuid", "nullable": true },
-          "name": { "type": "string", "nullable": true },
-          "quantity": { "type": "integer", "example": 2 },
-          "billing_cycle": { "type": "string", "enum": ["one_time", "monthly", "quarterly", "annually"] },
-          "unit_price_cts": { "type": "integer", "description": "Unit price in cents.", "example": 50000 },
-          "total_price_cts": { "type": "integer", "description": "Total price in cents (unit_price_cts x quantity).", "example": 100000 }
+          "id": {
+            "type": "string",
+            "format": "uuid"
+          },
+          "product_id": {
+            "type": "string",
+            "format": "uuid",
+            "nullable": true
+          },
+          "name": {
+            "type": "string",
+            "nullable": true
+          },
+          "quantity": {
+            "type": "integer",
+            "example": 2
+          },
+          "billing_cycle": {
+            "type": "string",
+            "enum": ["one_time", "monthly", "quarterly", "annually"]
+          },
+          "unit_price_cts": {
+            "type": "integer",
+            "description": "Unit price in cents.",
+            "example": 50000
+          },
+          "total_price_cts": {
+            "type": "integer",
+            "description": "Total price in cents (unit_price_cts x quantity).",
+            "example": 100000
+          }
         }
       },
       "Owner": {
@@ -326,35 +516,82 @@
         "nullable": true,
         "description": "Workspace member responsible for this record. `null` when no owner is assigned.",
         "properties": {
-          "id": { "type": "string", "format": "uuid" },
-          "email": { "type": "string", "format": "email", "example": "joao@company.com" },
-          "name": { "type": "string", "example": "João Silva" }
+          "id": {
+            "type": "string",
+            "format": "uuid"
+          },
+          "email": {
+            "type": "string",
+            "format": "email",
+            "example": "joao@company.com"
+          },
+          "name": {
+            "type": "string",
+            "example": "João Silva"
+          }
         }
       },
       "Deal": {
         "type": "object",
         "properties": {
-          "id": { "type": "string", "format": "uuid" },
-          "name": { "type": "string", "example": "Acme Corp Annual Contract" },
-          "pipeline_id": { "type": "string", "format": "uuid" },
-          "stage_id": { "type": "string", "format": "uuid" },
-          "price_cts": { "type": "integer", "description": "Deal value in cents. 250000 = R$ 2,500.00", "example": 250000 },
-          "currency": { "$ref": "#/components/schemas/CurrencyCode" },
-          "owner": { "$ref": "#/components/schemas/Owner" },
+          "id": {
+            "type": "string",
+            "format": "uuid"
+          },
+          "name": {
+            "type": "string",
+            "example": "Acme Corp Annual Contract"
+          },
+          "pipeline_id": {
+            "type": "string",
+            "format": "uuid"
+          },
+          "stage_id": {
+            "type": "string",
+            "format": "uuid"
+          },
+          "price_cts": {
+            "type": "integer",
+            "description": "Deal value in cents. 250000 = R$ 2,500.00",
+            "example": 250000
+          },
+          "currency": {
+            "$ref": "#/components/schemas/CurrencyCode"
+          },
+          "owner": {
+            "$ref": "#/components/schemas/Owner"
+          },
           "source": {
             "type": "string",
             "description": "Name of the OAuth app that created the deal. Read-only.",
             "example": "My Integration App"
           },
-          "forecast_date": { "type": "string", "format": "date-time", "nullable": true, "example": "2026-12-31T00:00:00Z" },
-          "entity_id": { "type": "string", "description": "Human-readable unique identifier.", "example": "NEG-0001" },
-          "created_at": { "type": "string", "format": "date-time" },
-          "updated_at": { "type": "string", "format": "date-time" }
+          "forecast_date": {
+            "type": "string",
+            "format": "date-time",
+            "nullable": true,
+            "example": "2026-12-31T00:00:00Z"
+          },
+          "entity_id": {
+            "type": "string",
+            "description": "Human-readable unique identifier.",
+            "example": "NEG-0001"
+          },
+          "created_at": {
+            "type": "string",
+            "format": "date-time"
+          },
+          "updated_at": {
+            "type": "string",
+            "format": "date-time"
+          }
         }
       },
       "DealWithEmbedded": {
         "allOf": [
-          { "$ref": "#/components/schemas/Deal" },
+          {
+            "$ref": "#/components/schemas/Deal"
+          },
           {
             "type": "object",
             "properties": {
@@ -362,30 +599,64 @@
                 "type": "object",
                 "nullable": true,
                 "properties": {
-                  "id": { "type": "string", "format": "uuid" },
-                  "name": { "type": "string" }
+                  "id": {
+                    "type": "string",
+                    "format": "uuid"
+                  },
+                  "name": {
+                    "type": "string"
+                  }
                 }
               },
               "stage": {
                 "type": "object",
                 "nullable": true,
                 "properties": {
-                  "id": { "type": "string", "format": "uuid" },
-                  "name": { "type": "string" },
-                  "type": { "type": "string", "enum": ["open", "win", "lost"] }
+                  "id": {
+                    "type": "string",
+                    "format": "uuid"
+                  },
+                  "name": {
+                    "type": "string"
+                  },
+                  "type": {
+                    "type": "string",
+                    "enum": ["open", "win", "lost"]
+                  }
                 }
               },
-              "products": { "type": "array", "items": { "$ref": "#/components/schemas/DealProduct" } },
-              "custom_fields": { "type": "array", "items": { "$ref": "#/components/schemas/CustomFieldValue" } },
+              "products": {
+                "type": "array",
+                "items": {
+                  "$ref": "#/components/schemas/DealProduct"
+                }
+              },
+              "custom_fields": {
+                "type": "array",
+                "items": {
+                  "$ref": "#/components/schemas/CustomFieldValue"
+                }
+              },
               "tags": {
                 "type": "array",
                 "items": {
                   "type": "object",
                   "properties": {
-                    "id": { "type": "string", "format": "uuid" },
-                    "name": { "type": "string" },
-                    "color_text": { "type": "string", "nullable": true },
-                    "color_background": { "type": "string", "nullable": true }
+                    "id": {
+                      "type": "string",
+                      "format": "uuid"
+                    },
+                    "name": {
+                      "type": "string"
+                    },
+                    "color_text": {
+                      "type": "string",
+                      "nullable": true
+                    },
+                    "color_background": {
+                      "type": "string",
+                      "nullable": true
+                    }
                   }
                 }
               },
@@ -394,8 +665,13 @@
                 "items": {
                   "type": "object",
                   "properties": {
-                    "id": { "type": "string", "format": "uuid" },
-                    "full_name": { "type": "string" }
+                    "id": {
+                      "type": "string",
+                      "format": "uuid"
+                    },
+                    "full_name": {
+                      "type": "string"
+                    }
                   }
                 }
               },
@@ -404,8 +680,13 @@
                 "items": {
                   "type": "object",
                   "properties": {
-                    "id": { "type": "string", "format": "uuid" },
-                    "full_name": { "type": "string" }
+                    "id": {
+                      "type": "string",
+                      "format": "uuid"
+                    },
+                    "full_name": {
+                      "type": "string"
+                    }
                   }
                 }
               }
@@ -417,7 +698,10 @@
         "type": "object",
         "required": ["product_id"],
         "properties": {
-          "product_id": { "type": "string", "format": "uuid" },
+          "product_id": {
+            "type": "string",
+            "format": "uuid"
+          },
           "quantity": {
             "type": "integer",
             "minimum": 1,
@@ -436,29 +720,64 @@
         "type": "object",
         "required": ["name", "pipeline_id", "stage_id", "currency"],
         "properties": {
-          "name": { "type": "string", "maxLength": 70, "example": "Acme Corp Annual Contract" },
-          "pipeline_id": { "type": "string", "format": "uuid" },
-          "stage_id": { "type": "string", "format": "uuid" },
-          "currency": { "$ref": "#/components/schemas/CurrencyCode" },
-          "price_cts": { "type": "integer", "minimum": 0, "default": 0, "description": "Deal value in cents.", "example": 250000 },
+          "name": {
+            "type": "string",
+            "maxLength": 70,
+            "example": "Acme Corp Annual Contract"
+          },
+          "pipeline_id": {
+            "type": "string",
+            "format": "uuid"
+          },
+          "stage_id": {
+            "type": "string",
+            "format": "uuid"
+          },
+          "currency": {
+            "$ref": "#/components/schemas/CurrencyCode"
+          },
+          "price_cts": {
+            "type": "integer",
+            "minimum": 0,
+            "default": 0,
+            "description": "Deal value in cents.",
+            "example": 250000
+          },
           "owner_email": {
             "type": "string",
             "format": "email",
             "description": "Email of the workspace member to set as owner. The API resolves it to the internal user ID. Must be a member of this workspace.",
             "example": "joao@company.com"
           },
-          "forecast_date": { "type": "string", "format": "date-time", "nullable": true, "example": "2026-12-31T00:00:00Z" },
+          "forecast_date": {
+            "type": "string",
+            "format": "date-time",
+            "nullable": true,
+            "example": "2026-12-31T00:00:00Z"
+          },
           "person_ids": {
             "type": "array",
-            "items": { "type": "string", "format": "uuid" },
+            "items": {
+              "type": "string",
+              "format": "uuid"
+            },
             "description": "People to associate with this deal."
           },
           "company_ids": {
             "type": "array",
-            "items": { "type": "string", "format": "uuid" },
+            "items": {
+              "type": "string",
+              "format": "uuid"
+            },
             "description": "Companies to associate with this deal."
           },
-          "tag_ids": { "type": "array", "items": { "type": "string", "format": "uuid" } },
+          "tag_ids": {
+            "type": "array",
+            "items": {
+              "type": "string",
+              "format": "uuid"
+            }
+          },
           "custom_fields": {
             "type": "array",
             "items": {
@@ -471,22 +790,44 @@
                   "example": "deal_source",
                   "description": "Key of the custom field (e.g. `deal_source`). If no field with this key exists in the workspace, it is created automatically with type `text`."
                 },
-                "value": { "type": "string", "description": "Field value as a string." }
+                "value": {
+                  "type": "string",
+                  "description": "Field value as a string."
+                }
               }
             },
             "description": "Custom field values to set for the deal. Identified by `field_key`. If the field does not exist, it is created automatically with type `text`."
           },
-          "products": { "type": "array", "items": { "$ref": "#/components/schemas/DealProductInput" } }
+          "products": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/DealProductInput"
+            }
+          }
         }
       },
       "UpdateDealRequest": {
         "type": "object",
         "properties": {
-          "name": { "type": "string", "maxLength": 70 },
-          "pipeline_id": { "type": "string", "format": "uuid" },
-          "stage_id": { "type": "string", "format": "uuid" },
-          "currency": { "$ref": "#/components/schemas/CurrencyCode" },
-          "price_cts": { "type": "integer", "minimum": 0 },
+          "name": {
+            "type": "string",
+            "maxLength": 70
+          },
+          "pipeline_id": {
+            "type": "string",
+            "format": "uuid"
+          },
+          "stage_id": {
+            "type": "string",
+            "format": "uuid"
+          },
+          "currency": {
+            "$ref": "#/components/schemas/CurrencyCode"
+          },
+          "price_cts": {
+            "type": "integer",
+            "minimum": 0
+          },
           "owner_email": {
             "type": "string",
             "format": "email",
@@ -494,10 +835,32 @@
             "description": "Email of the workspace member to set as owner. Pass `null` to remove the owner. Must be a member of this workspace.",
             "example": "joao@company.com"
           },
-          "forecast_date": { "type": "string", "format": "date-time", "nullable": true },
-          "person_ids": { "type": "array", "items": { "type": "string", "format": "uuid" } },
-          "company_ids": { "type": "array", "items": { "type": "string", "format": "uuid" } },
-          "tag_ids": { "type": "array", "items": { "type": "string", "format": "uuid" } },
+          "forecast_date": {
+            "type": "string",
+            "format": "date-time",
+            "nullable": true
+          },
+          "person_ids": {
+            "type": "array",
+            "items": {
+              "type": "string",
+              "format": "uuid"
+            }
+          },
+          "company_ids": {
+            "type": "array",
+            "items": {
+              "type": "string",
+              "format": "uuid"
+            }
+          },
+          "tag_ids": {
+            "type": "array",
+            "items": {
+              "type": "string",
+              "format": "uuid"
+            }
+          },
           "custom_fields": {
             "type": "array",
             "items": {
@@ -510,12 +873,20 @@
                   "example": "deal_source",
                   "description": "Key of the custom field (e.g. `deal_source`). If no field with this key exists in the workspace, it is created automatically with type `text`."
                 },
-                "value": { "type": "string", "description": "Field value as a string." }
+                "value": {
+                  "type": "string",
+                  "description": "Field value as a string."
+                }
               }
             },
             "description": "Custom field values. Behavior depends on `association_mode`. In `append` mode, replaces the value for each `field_key` sent without touching others."
           },
-          "products": { "type": "array", "items": { "$ref": "#/components/schemas/DealProductInput" } },
+          "products": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/DealProductInput"
+            }
+          },
           "association_mode": {
             "type": "string",
             "enum": ["append", "replace"],
@@ -527,7 +898,9 @@
       "DealWithEmbeddedResponse": {
         "type": "object",
         "properties": {
-          "data": { "$ref": "#/components/schemas/DealWithEmbedded" }
+          "data": {
+            "$ref": "#/components/schemas/DealWithEmbedded"
+          }
         }
       }
     }

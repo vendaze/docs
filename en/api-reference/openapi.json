@@ -236,7 +236,7 @@
       "get": {
         "operationId": "authorize",
         "summary": "Start authorization",
-        "description": "Redirects the user's browser to the Vendaze consent screen. **This endpoint must be opened in a browser — do not call it with fetch, axios, or any HTTP client.** The user must navigate to this URL so they can log in and approve access. Scopes are resolved from the app registration.",
+        "description": "Redirects the user's browser to the Vendaze consent screen. **This endpoint must be opened in a browser. do not call it with fetch, axios, or any HTTP client.** The user must navigate to this URL so they can log in and approve access. Scopes are resolved from the app registration.",
         "security": [],
         "tags": [
           "OAuth"
@@ -289,7 +289,7 @@
             "description": "Redirect to the Vendaze consent screen."
           },
           "400": {
-            "description": "Invalid or missing parameter. Possible error codes: `invalid_request` (missing required parameter — message identifies which one, e.g. `\"Missing required parameter: redirect_uri.\"`), `unsupported_response_type` (`response_type` is not `code` — message: `\"response_type must be \\\"code\\\".\"`), `invalid_request` (`redirect_uri` not registered — message: `\"redirect_uri does not match any registered URI.\"`).",
+            "description": "Invalid or missing parameter. Possible error codes: `invalid_request` (missing required parameter. message identifies which one, e.g. `\"Missing required parameter: redirect_uri.\"`), `unsupported_response_type` (`response_type` is not `code`. message: `\"response_type must be \\\"code\\\".\"`), `invalid_request` (`redirect_uri` not registered. message: `\"redirect_uri does not match any registered URI.\"`).",
             "content": {
               "application/json": {
                 "schema": {
@@ -469,7 +469,7 @@
             }
           },
           "400": {
-            "description": "Invalid or missing parameter. Possible error codes: `bad_request` (malformed JSON body), `invalid_request` (missing `token`, `client_id`, or `client_secret`; or `token` is not a valid access token — refresh tokens are not accepted).",
+            "description": "Invalid or missing parameter. Possible error codes: `bad_request` (malformed JSON body), `invalid_request` (missing `token`, `client_id`, or `client_secret`; or `token` is not a valid access token. refresh tokens are not accepted).",
             "content": {
               "application/json": {
                 "schema": {
@@ -1194,7 +1194,7 @@
     },
     "responses": {
       "Unauthorized": {
-        "description": "Token missing, invalid, or expired. Possible error codes and messages: `unauthorized` — `\"Missing or invalid Authorization header.\"`, `\"Invalid or malformed token.\"`, or `\"Token is missing required claims.\"`; `token_expired` — `\"Access token expired. Refresh using the refresh token.\"`",
+        "description": "Token missing, invalid, or expired. Possible error codes and messages: `unauthorized`. `\"Missing or invalid Authorization header.\"`, `\"Invalid or malformed token.\"`, or `\"Token is missing required claims.\"`; `token_expired`. `\"Access token expired. Refresh using the refresh token.\"`",
         "content": {
           "application/json": {
             "schema": {
@@ -1597,7 +1597,7 @@
               "avatar_url": {
                 "type": "string",
                 "example": "https://storage.vendaze.com/assets/integrations/mysaas.jpg",
-                "description": "Public URL of the stored avatar. Always a JPEG — Vendaze converts all formats on upload. Only present if avatar_image was provided in the request."
+                "description": "Public URL of the stored avatar. Always a JPEG. Vendaze converts all formats on upload. Only present if avatar_image was provided in the request."
               },
               "message": {
                 "type": "string",
@@ -1968,14 +1968,6 @@
             },
             "description": "List IDs to associate with the person."
           },
-          "deal_ids": {
-            "type": "array",
-            "items": {
-              "type": "string",
-              "format": "uuid"
-            },
-            "description": "Deal IDs to associate with the person."
-          },
           "custom_fields": {
             "type": "array",
             "items": {
@@ -2061,14 +2053,6 @@
             },
             "description": "List IDs to associate. Behavior depends on `association_mode`."
           },
-          "deal_ids": {
-            "type": "array",
-            "items": {
-              "type": "string",
-              "format": "uuid"
-            },
-            "description": "Deal IDs to associate. Behavior depends on `association_mode`."
-          },
           "custom_fields": {
             "type": "array",
             "items": {
@@ -2099,7 +2083,7 @@
               "replace"
             ],
             "default": "append",
-            "description": "Controls how associations (`tag_ids`, `list_ids`, `deal_ids`, `custom_fields`) are applied. `append`: adds new associations without removing existing ones. `replace`: removes all current associations of each sent type and inserts the new ones. Sending an empty array with `replace` removes all associations of that type."
+            "description": "Controls how associations (`tag_ids`, `list_ids`, `custom_fields`) are applied. `append`: adds new associations without removing existing ones. `replace`: removes all current associations of each sent type and inserts the new ones. Sending an empty array with `replace` removes all associations of that type."
           }
         }
       },
@@ -2252,14 +2236,6 @@
             },
             "description": "List IDs to associate with the company."
           },
-          "deal_ids": {
-            "type": "array",
-            "items": {
-              "type": "string",
-              "format": "uuid"
-            },
-            "description": "Deal IDs to associate with the company."
-          },
           "custom_fields": {
             "type": "array",
             "items": {
@@ -2333,14 +2309,6 @@
             },
             "description": "List IDs to associate. Behavior depends on `association_mode`."
           },
-          "deal_ids": {
-            "type": "array",
-            "items": {
-              "type": "string",
-              "format": "uuid"
-            },
-            "description": "Deal IDs to associate. Behavior depends on `association_mode`."
-          },
           "custom_fields": {
             "type": "array",
             "items": {
@@ -2371,7 +2339,7 @@
               "replace"
             ],
             "default": "append",
-            "description": "Controls how associations (`tag_ids`, `list_ids`, `deal_ids`, `custom_fields`) are applied. `append`: adds new associations without removing existing ones. `replace`: removes all current associations of each sent type and inserts the new ones. Sending an empty array with `replace` removes all associations of that type."
+            "description": "Controls how associations (`tag_ids`, `list_ids`, `custom_fields`) are applied. `append`: adds new associations without removing existing ones. `replace`: removes all current associations of each sent type and inserts the new ones. Sending an empty array with `replace` removes all associations of that type."
           }
         }
       },

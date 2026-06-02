@@ -4,11 +4,27 @@
     "title": "Contacts - People",
     "description": "Manage individual contacts (people) in the workspace.",
     "version": "1.0.0",
-    "contact": { "name": "Vendaze Support", "email": "suporte@vendaze.com" }
+    "contact": {
+      "name": "Vendaze Support",
+      "email": "suporte@vendaze.com"
+    }
   },
-  "servers": [{ "url": "https://api.vendaze.com", "description": "Production" }],
-  "security": [{ "bearerAuth": [] }],
-  "tags": [{ "name": "People" }],
+  "servers": [
+    {
+      "url": "https://api.vendaze.com",
+      "description": "Production"
+    }
+  ],
+  "security": [
+    {
+      "bearerAuth": []
+    }
+  ],
+  "tags": [
+    {
+      "name": "People"
+    }
+  ],
   "paths": {
     "/v1/people": {
       "post": {
@@ -18,19 +34,43 @@
         "tags": ["People"],
         "requestBody": {
           "required": true,
-          "content": { "application/json": { "schema": { "$ref": "#/components/schemas/CreatePersonRequest" } } }
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/CreatePersonRequest"
+              }
+            }
+          }
         },
         "responses": {
           "201": {
             "description": "Person created successfully.",
-            "content": { "application/json": { "schema": { "$ref": "#/components/schemas/PersonWithEmbeddedResponse" } } }
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/PersonWithEmbeddedResponse"
+                }
+              }
+            }
           },
-          "400": { "$ref": "#/components/responses/BadRequest" },
-          "401": { "$ref": "#/components/responses/Unauthorized" },
-          "403": { "$ref": "#/components/responses/InsufficientScope" },
-          "422": { "$ref": "#/components/responses/ValidationError" },
-          "429": { "$ref": "#/components/responses/RateLimitExceeded" },
-          "500": { "$ref": "#/components/responses/InternalError" }
+          "400": {
+            "$ref": "#/components/responses/BadRequest"
+          },
+          "401": {
+            "$ref": "#/components/responses/Unauthorized"
+          },
+          "403": {
+            "$ref": "#/components/responses/InsufficientScope"
+          },
+          "422": {
+            "$ref": "#/components/responses/ValidationError"
+          },
+          "429": {
+            "$ref": "#/components/responses/RateLimitExceeded"
+          },
+          "500": {
+            "$ref": "#/components/responses/InternalError"
+          }
         }
       }
     },
@@ -40,16 +80,34 @@
         "summary": "Get a person",
         "description": "Returns a person by ID with embedded `company`, `tags`, `lists`, and `custom_fields`.",
         "tags": ["People"],
-        "parameters": [{ "$ref": "#/components/parameters/id" }],
+        "parameters": [
+          {
+            "$ref": "#/components/parameters/id"
+          }
+        ],
         "responses": {
           "200": {
             "description": "Person returned successfully.",
-            "content": { "application/json": { "schema": { "$ref": "#/components/schemas/PersonWithEmbeddedResponse" } } }
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/PersonWithEmbeddedResponse"
+                }
+              }
+            }
           },
-          "401": { "$ref": "#/components/responses/Unauthorized" },
-          "403": { "$ref": "#/components/responses/InsufficientScope" },
-          "404": { "$ref": "#/components/responses/NotFound" },
-          "500": { "$ref": "#/components/responses/InternalError" }
+          "401": {
+            "$ref": "#/components/responses/Unauthorized"
+          },
+          "403": {
+            "$ref": "#/components/responses/InsufficientScope"
+          },
+          "404": {
+            "$ref": "#/components/responses/NotFound"
+          },
+          "500": {
+            "$ref": "#/components/responses/InternalError"
+          }
         }
       },
       "patch": {
@@ -57,22 +115,50 @@
         "summary": "Update a person",
         "description": "Updates a person. Only fields included in the body are modified. Returns the updated person with embedded `company`, `tags`, `lists`, and `custom_fields`.",
         "tags": ["People"],
-        "parameters": [{ "$ref": "#/components/parameters/id" }],
+        "parameters": [
+          {
+            "$ref": "#/components/parameters/id"
+          }
+        ],
         "requestBody": {
           "required": true,
-          "content": { "application/json": { "schema": { "$ref": "#/components/schemas/UpdatePersonRequest" } } }
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/UpdatePersonRequest"
+              }
+            }
+          }
         },
         "responses": {
           "200": {
             "description": "Person updated successfully.",
-            "content": { "application/json": { "schema": { "$ref": "#/components/schemas/PersonWithEmbeddedResponse" } } }
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/PersonWithEmbeddedResponse"
+                }
+              }
+            }
           },
-          "400": { "$ref": "#/components/responses/BadRequest" },
-          "401": { "$ref": "#/components/responses/Unauthorized" },
-          "403": { "$ref": "#/components/responses/InsufficientScope" },
-          "404": { "$ref": "#/components/responses/NotFound" },
-          "422": { "$ref": "#/components/responses/ValidationError" },
-          "500": { "$ref": "#/components/responses/InternalError" }
+          "400": {
+            "$ref": "#/components/responses/BadRequest"
+          },
+          "401": {
+            "$ref": "#/components/responses/Unauthorized"
+          },
+          "403": {
+            "$ref": "#/components/responses/InsufficientScope"
+          },
+          "404": {
+            "$ref": "#/components/responses/NotFound"
+          },
+          "422": {
+            "$ref": "#/components/responses/ValidationError"
+          },
+          "500": {
+            "$ref": "#/components/responses/InternalError"
+          }
         }
       },
       "delete": {
@@ -80,31 +166,58 @@
         "summary": "Delete a person",
         "description": "Soft-deletes a person. The record is no longer accessible via the API.",
         "tags": ["People"],
-        "parameters": [{ "$ref": "#/components/parameters/id" }],
+        "parameters": [
+          {
+            "$ref": "#/components/parameters/id"
+          }
+        ],
         "responses": {
           "204": {
             "description": "Person deleted successfully.",
-            "content": { "application/json": { "schema": { "type": "object" } } }
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object"
+                }
+              }
+            }
           },
-          "401": { "$ref": "#/components/responses/Unauthorized" },
-          "403": { "$ref": "#/components/responses/InsufficientScope" },
-          "404": { "$ref": "#/components/responses/NotFound" },
-          "429": { "$ref": "#/components/responses/RateLimitExceeded" },
-          "500": { "$ref": "#/components/responses/InternalError" }
+          "401": {
+            "$ref": "#/components/responses/Unauthorized"
+          },
+          "403": {
+            "$ref": "#/components/responses/InsufficientScope"
+          },
+          "404": {
+            "$ref": "#/components/responses/NotFound"
+          },
+          "429": {
+            "$ref": "#/components/responses/RateLimitExceeded"
+          },
+          "500": {
+            "$ref": "#/components/responses/InternalError"
+          }
         }
       }
     }
   },
   "components": {
     "securitySchemes": {
-      "bearerAuth": { "type": "http", "scheme": "bearer", "description": "OAuth 2.1 access token." }
+      "bearerAuth": {
+        "type": "http",
+        "scheme": "bearer",
+        "description": "OAuth 2.1 access token."
+      }
     },
     "parameters": {
       "id": {
         "name": "id",
         "in": "path",
         "required": true,
-        "schema": { "type": "string", "format": "uuid" },
+        "schema": {
+          "type": "string",
+          "format": "uuid"
+        },
         "description": "UUID of the resource."
       }
     },
@@ -113,7 +226,9 @@
         "description": "Malformed request body or empty update. Error code: `bad_request`. Possible messages: `\"Request body must be valid JSON.\"` (unparseable body) or `\"No fields provided for update.\"` (PATCH with no fields).",
         "content": {
           "application/json": {
-            "schema": { "$ref": "#/components/schemas/ErrorResponse" },
+            "schema": {
+              "$ref": "#/components/schemas/ErrorResponse"
+            },
             "example": {
               "error": {
                 "code": "bad_request",
@@ -125,10 +240,12 @@
         }
       },
       "Unauthorized": {
-        "description": "Token missing, invalid, or expired. Possible error codes and messages: `unauthorized` — `\"Missing or invalid Authorization header.\"`, `\"Invalid or malformed token.\"`, or `\"Token is missing required claims.\"`; `token_expired` — `\"Access token expired. Refresh using the refresh token.\"`",
+        "description": "Token missing, invalid, or expired. Possible error codes and messages: `unauthorized`. `\"Missing or invalid Authorization header.\"`, `\"Invalid or malformed token.\"`, or `\"Token is missing required claims.\"`; `token_expired`. `\"Access token expired. Refresh using the refresh token.\"`",
         "content": {
           "application/json": {
-            "schema": { "$ref": "#/components/schemas/ErrorResponse" },
+            "schema": {
+              "$ref": "#/components/schemas/ErrorResponse"
+            },
             "example": {
               "error": {
                 "code": "unauthorized",
@@ -143,7 +260,9 @@
         "description": "Token lacks the required scope. Error code: `insufficient_scope`. Message: `\"This endpoint requires the '{scope}' scope.\"` where `{scope}` is the exact missing scope (e.g. `\"This endpoint requires the 'people:write' scope.\"`).",
         "content": {
           "application/json": {
-            "schema": { "$ref": "#/components/schemas/ErrorResponse" },
+            "schema": {
+              "$ref": "#/components/schemas/ErrorResponse"
+            },
             "example": {
               "error": {
                 "code": "insufficient_scope",
@@ -158,9 +277,15 @@
         "description": "Resource not found, soft-deleted, or belongs to another workspace. Error code: `not_found`. Message: `\"Person not found.\"`",
         "content": {
           "application/json": {
-            "schema": { "$ref": "#/components/schemas/ErrorResponse" },
+            "schema": {
+              "$ref": "#/components/schemas/ErrorResponse"
+            },
             "example": {
-              "error": { "code": "not_found", "message": "Person not found.", "request_id": "550e8400-e29b-41d4-a716-446655440000" }
+              "error": {
+                "code": "not_found",
+                "message": "Person not found.",
+                "request_id": "550e8400-e29b-41d4-a716-446655440000"
+              }
             }
           }
         }
@@ -169,12 +294,16 @@
         "description": "Input validation failed. Error code: `validation_error`. Message: `\"Validation failed.\"` The `fields` object maps each invalid field to a description of the problem.",
         "content": {
           "application/json": {
-            "schema": { "$ref": "#/components/schemas/ValidationErrorResponse" },
+            "schema": {
+              "$ref": "#/components/schemas/ValidationErrorResponse"
+            },
             "example": {
               "error": {
                 "code": "validation_error",
                 "message": "Validation failed.",
-                "fields": { "full_name": "String must contain at most 70 character(s)." },
+                "fields": {
+                  "full_name": "String must contain at most 70 character(s)."
+                },
                 "request_id": "550e8400-e29b-41d4-a716-446655440000"
               }
             }
@@ -185,7 +314,9 @@
         "description": "Rate limit exceeded. Error code: `rate_limit_exceeded`. Message: `\"Rate limit exceeded. Try again in {N} seconds.\"` The `Retry-After` response header contains the same value.",
         "content": {
           "application/json": {
-            "schema": { "$ref": "#/components/schemas/ErrorResponse" },
+            "schema": {
+              "$ref": "#/components/schemas/ErrorResponse"
+            },
             "example": {
               "error": {
                 "code": "rate_limit_exceeded",
@@ -200,7 +331,9 @@
         "description": "Unexpected server error. Error code: `internal_error`. Possible messages: `\"An unexpected error occurred.\"` (generic failure) or `\"Person updated but associations failed. Retry the associations.\"` (main record saved but association update failed). Use the `request_id` to correlate with server-side logs.",
         "content": {
           "application/json": {
-            "schema": { "$ref": "#/components/schemas/ErrorResponse" },
+            "schema": {
+              "$ref": "#/components/schemas/ErrorResponse"
+            },
             "example": {
               "error": {
                 "code": "internal_error",
@@ -219,9 +352,18 @@
           "error": {
             "type": "object",
             "properties": {
-              "code": { "type": "string", "example": "not_found" },
-              "message": { "type": "string", "example": "Person not found." },
-              "request_id": { "type": "string", "format": "uuid" }
+              "code": {
+                "type": "string",
+                "example": "not_found"
+              },
+              "message": {
+                "type": "string",
+                "example": "Person not found."
+              },
+              "request_id": {
+                "type": "string",
+                "format": "uuid"
+              }
             }
           }
         }
@@ -232,14 +374,27 @@
           "error": {
             "type": "object",
             "properties": {
-              "code": { "type": "string", "example": "validation_error" },
-              "message": { "type": "string", "example": "Validation failed." },
+              "code": {
+                "type": "string",
+                "example": "validation_error"
+              },
+              "message": {
+                "type": "string",
+                "example": "Validation failed."
+              },
               "fields": {
                 "type": "object",
-                "additionalProperties": { "type": "string" },
-                "example": { "full_name": "String must contain at most 70 character(s)." }
+                "additionalProperties": {
+                  "type": "string"
+                },
+                "example": {
+                  "full_name": "String must contain at most 70 character(s)."
+                }
               },
-              "request_id": { "type": "string", "format": "uuid" }
+              "request_id": {
+                "type": "string",
+                "format": "uuid"
+              }
             }
           }
         }
@@ -248,7 +403,11 @@
         "type": "object",
         "required": ["email"],
         "properties": {
-          "email": { "type": "string", "format": "email", "example": "nome@empresa.com" },
+          "email": {
+            "type": "string",
+            "format": "email",
+            "example": "nome@empresa.com"
+          },
           "type": {
             "type": "string",
             "enum": ["personal", "work", "other"],
@@ -256,13 +415,19 @@
             "example": "work"
           }
         },
-        "example": { "email": "nome@empresa.com", "type": "work" }
+        "example": {
+          "email": "nome@empresa.com",
+          "type": "work"
+        }
       },
       "ContactPhone": {
         "type": "object",
         "required": ["phone"],
         "properties": {
-          "phone": { "type": "string", "example": "+5511999990001" },
+          "phone": {
+            "type": "string",
+            "example": "+5511999990001"
+          },
           "type": {
             "type": "string",
             "enum": ["mobile", "work", "residential", "other"],
@@ -270,38 +435,77 @@
             "example": "mobile"
           }
         },
-        "example": { "phone": "+5511999990001", "type": "mobile" }
+        "example": {
+          "phone": "+5511999990001",
+          "type": "mobile"
+        }
       },
       "Tag": {
         "type": "object",
         "properties": {
-          "id": { "type": "string", "format": "uuid" },
-          "name": { "type": "string" },
-          "color_text": { "type": "string", "nullable": true, "example": "#ffffff" },
-          "color_background": { "type": "string", "nullable": true, "example": "#0085c0" },
-          "created_at": { "type": "string", "format": "date-time" }
+          "id": {
+            "type": "string",
+            "format": "uuid"
+          },
+          "name": {
+            "type": "string"
+          },
+          "color_text": {
+            "type": "string",
+            "nullable": true,
+            "example": "#ffffff"
+          },
+          "color_background": {
+            "type": "string",
+            "nullable": true,
+            "example": "#0085c0"
+          },
+          "created_at": {
+            "type": "string",
+            "format": "date-time"
+          }
         }
       },
       "ContactList": {
         "type": "object",
         "properties": {
-          "id": { "type": "string", "format": "uuid" },
-          "name": { "type": "string" },
-          "created_at": { "type": "string", "format": "date-time" }
+          "id": {
+            "type": "string",
+            "format": "uuid"
+          },
+          "name": {
+            "type": "string"
+          },
+          "created_at": {
+            "type": "string",
+            "format": "date-time"
+          }
         }
       },
       "CustomFieldValue": {
         "type": "object",
         "properties": {
-          "id": { "type": "string", "format": "uuid" },
+          "id": {
+            "type": "string",
+            "format": "uuid"
+          },
           "value": {},
           "field": {
             "type": "object",
             "properties": {
-              "id": { "type": "string", "format": "uuid" },
-              "label": { "type": "string" },
-              "key": { "type": "string" },
-              "type": { "type": "string" }
+              "id": {
+                "type": "string",
+                "format": "uuid"
+              },
+              "label": {
+                "type": "string"
+              },
+              "key": {
+                "type": "string"
+              },
+              "type": {
+                "type": "string"
+              }
             }
           }
         }
@@ -311,31 +515,72 @@
         "nullable": true,
         "description": "Workspace member responsible for this record. `null` when no owner is assigned.",
         "properties": {
-          "id": { "type": "string", "format": "uuid" },
-          "email": { "type": "string", "format": "email", "example": "joao@company.com" },
-          "name": { "type": "string", "example": "João Silva" }
+          "id": {
+            "type": "string",
+            "format": "uuid"
+          },
+          "email": {
+            "type": "string",
+            "format": "email",
+            "example": "joao@company.com"
+          },
+          "name": {
+            "type": "string",
+            "example": "João Silva"
+          }
         }
       },
       "Person": {
         "type": "object",
         "properties": {
-          "id": { "type": "string", "format": "uuid" },
-          "full_name": { "type": "string", "maxLength": 70, "example": "Maria Silva" },
+          "id": {
+            "type": "string",
+            "format": "uuid"
+          },
+          "full_name": {
+            "type": "string",
+            "maxLength": 70,
+            "example": "Maria Silva"
+          },
           "emails": {
             "type": "array",
             "nullable": true,
-            "items": { "$ref": "#/components/schemas/ContactEmail" },
-            "example": [{ "email": "maria@company.com", "type": "work" }]
+            "items": {
+              "$ref": "#/components/schemas/ContactEmail"
+            },
+            "example": [
+              {
+                "email": "maria@company.com",
+                "type": "work"
+              }
+            ]
           },
           "phones": {
             "type": "array",
             "nullable": true,
-            "items": { "$ref": "#/components/schemas/ContactPhone" },
-            "example": [{ "phone": "+5511999990001", "type": "mobile" }]
+            "items": {
+              "$ref": "#/components/schemas/ContactPhone"
+            },
+            "example": [
+              {
+                "phone": "+5511999990001",
+                "type": "mobile"
+              }
+            ]
           },
-          "company_id": { "type": "string", "format": "uuid", "nullable": true },
-          "owner": { "$ref": "#/components/schemas/Owner" },
-          "position": { "type": "string", "nullable": true, "example": "Sales Director" },
+          "company_id": {
+            "type": "string",
+            "format": "uuid",
+            "nullable": true
+          },
+          "owner": {
+            "$ref": "#/components/schemas/Owner"
+          },
+          "position": {
+            "type": "string",
+            "nullable": true,
+            "example": "Sales Director"
+          },
           "ranking": {
             "type": "number",
             "minimum": 0,
@@ -350,14 +595,25 @@
             "nullable": true,
             "example": "https://storage.vendaze.com/client/workspaces/abc/people/xyz/avatar/avatar_WWT1BGs9ma.webp"
           },
-          "entity_id": { "type": "string", "example": "g7wwkh0" },
-          "created_at": { "type": "string", "format": "date-time" },
-          "updated_at": { "type": "string", "format": "date-time" }
+          "entity_id": {
+            "type": "string",
+            "example": "g7wwkh0"
+          },
+          "created_at": {
+            "type": "string",
+            "format": "date-time"
+          },
+          "updated_at": {
+            "type": "string",
+            "format": "date-time"
+          }
         }
       },
       "PersonWithEmbedded": {
         "allOf": [
-          { "$ref": "#/components/schemas/Person" },
+          {
+            "$ref": "#/components/schemas/Person"
+          },
           {
             "type": "object",
             "properties": {
@@ -365,13 +621,33 @@
                 "type": "object",
                 "nullable": true,
                 "properties": {
-                  "id": { "type": "string", "format": "uuid" },
-                  "full_name": { "type": "string" }
+                  "id": {
+                    "type": "string",
+                    "format": "uuid"
+                  },
+                  "full_name": {
+                    "type": "string"
+                  }
                 }
               },
-              "tags": { "type": "array", "items": { "$ref": "#/components/schemas/Tag" } },
-              "lists": { "type": "array", "items": { "$ref": "#/components/schemas/ContactList" } },
-              "custom_fields": { "type": "array", "items": { "$ref": "#/components/schemas/CustomFieldValue" } }
+              "tags": {
+                "type": "array",
+                "items": {
+                  "$ref": "#/components/schemas/Tag"
+                }
+              },
+              "lists": {
+                "type": "array",
+                "items": {
+                  "$ref": "#/components/schemas/ContactList"
+                }
+              },
+              "custom_fields": {
+                "type": "array",
+                "items": {
+                  "$ref": "#/components/schemas/CustomFieldValue"
+                }
+              }
             }
           }
         ]
@@ -380,11 +656,32 @@
         "type": "object",
         "required": ["full_name"],
         "properties": {
-          "full_name": { "type": "string", "maxLength": 70, "example": "Maria Silva" },
-          "emails": { "type": "array", "items": { "$ref": "#/components/schemas/ContactEmail" } },
-          "phones": { "type": "array", "items": { "$ref": "#/components/schemas/ContactPhone" } },
-          "company_id": { "type": "string", "format": "uuid" },
-          "position": { "type": "string", "maxLength": 100, "example": "Sales Director" },
+          "full_name": {
+            "type": "string",
+            "maxLength": 70,
+            "example": "Maria Silva"
+          },
+          "emails": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/ContactEmail"
+            }
+          },
+          "phones": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/ContactPhone"
+            }
+          },
+          "company_id": {
+            "type": "string",
+            "format": "uuid"
+          },
+          "position": {
+            "type": "string",
+            "maxLength": 100,
+            "example": "Sales Director"
+          },
           "owner_email": {
             "type": "string",
             "format": "email",
@@ -398,18 +695,19 @@
           },
           "tag_ids": {
             "type": "array",
-            "items": { "type": "string", "format": "uuid" },
+            "items": {
+              "type": "string",
+              "format": "uuid"
+            },
             "description": "Tag IDs to associate with the person."
           },
           "list_ids": {
             "type": "array",
-            "items": { "type": "string", "format": "uuid" },
+            "items": {
+              "type": "string",
+              "format": "uuid"
+            },
             "description": "List IDs to associate with the person."
-          },
-          "deal_ids": {
-            "type": "array",
-            "items": { "type": "string", "format": "uuid" },
-            "description": "Deal IDs to associate with the person."
           },
           "custom_fields": {
             "type": "array",
@@ -423,7 +721,10 @@
                   "example": "lead_source",
                   "description": "Key of the custom field (e.g. `lead_source`). If no field with this key exists in the workspace, it is created automatically with type `text`."
                 },
-                "value": { "type": "string", "description": "Field value as a string." }
+                "value": {
+                  "type": "string",
+                  "description": "Field value as a string."
+                }
               }
             },
             "description": "Custom field values to set for the person. Identified by `field_key`. If the field does not exist, it is created automatically with type `text`."
@@ -434,9 +735,22 @@
         "type": "object",
         "description": "All fields are optional. Only fields included in the body are modified.",
         "properties": {
-          "full_name": { "type": "string", "maxLength": 70 },
-          "emails": { "type": "array", "items": { "$ref": "#/components/schemas/ContactEmail" } },
-          "phones": { "type": "array", "items": { "$ref": "#/components/schemas/ContactPhone" } },
+          "full_name": {
+            "type": "string",
+            "maxLength": 70
+          },
+          "emails": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/ContactEmail"
+            }
+          },
+          "phones": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/ContactPhone"
+            }
+          },
           "company_id": {
             "type": "string",
             "format": "uuid",
@@ -463,18 +777,19 @@
           },
           "tag_ids": {
             "type": "array",
-            "items": { "type": "string", "format": "uuid" },
+            "items": {
+              "type": "string",
+              "format": "uuid"
+            },
             "description": "Tag IDs to associate. Behavior depends on `association_mode`."
           },
           "list_ids": {
             "type": "array",
-            "items": { "type": "string", "format": "uuid" },
+            "items": {
+              "type": "string",
+              "format": "uuid"
+            },
             "description": "List IDs to associate. Behavior depends on `association_mode`."
-          },
-          "deal_ids": {
-            "type": "array",
-            "items": { "type": "string", "format": "uuid" },
-            "description": "Deal IDs to associate. Behavior depends on `association_mode`."
           },
           "custom_fields": {
             "type": "array",
@@ -488,7 +803,10 @@
                   "example": "lead_source",
                   "description": "Key of the custom field (e.g. `lead_source`). If no field with this key exists in the workspace, it is created automatically with type `text`."
                 },
-                "value": { "type": "string", "description": "Field value as a string." }
+                "value": {
+                  "type": "string",
+                  "description": "Field value as a string."
+                }
               }
             },
             "description": "Custom field values. Behavior depends on `association_mode`. In `append` mode, replaces the value for each `field_key` sent without touching others."
@@ -497,14 +815,16 @@
             "type": "string",
             "enum": ["append", "replace"],
             "default": "append",
-            "description": "Controls how associations (`tag_ids`, `list_ids`, `deal_ids`, `custom_fields`) are applied. `append`: adds new associations without removing existing ones. `replace`: removes all current associations of each sent type and inserts the new ones. Sending an empty array with `replace` removes all associations of that type."
+            "description": "Controls how associations (`tag_ids`, `list_ids`, `custom_fields`) are applied. `append`: adds new associations without removing existing ones. `replace`: removes all current associations of each sent type and inserts the new ones. Sending an empty array with `replace` removes all associations of that type."
           }
         }
       },
       "PersonWithEmbeddedResponse": {
         "type": "object",
         "properties": {
-          "data": { "$ref": "#/components/schemas/PersonWithEmbedded" }
+          "data": {
+            "$ref": "#/components/schemas/PersonWithEmbedded"
+          }
         }
       }
     }
