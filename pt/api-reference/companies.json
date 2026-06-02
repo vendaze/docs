@@ -300,6 +300,16 @@
           }
         }
       },
+      "Owner": {
+        "type": "object",
+        "nullable": true,
+        "description": "Membro do workspace responsável pelo registro. `null` quando não há responsável definido.",
+        "properties": {
+          "id": { "type": "string", "format": "uuid" },
+          "email": { "type": "string", "format": "email", "example": "joao@empresa.com" },
+          "name": { "type": "string", "example": "João Silva" }
+        }
+      },
       "Company": {
         "type": "object",
         "properties": {
@@ -317,7 +327,7 @@
             "items": { "$ref": "#/components/schemas/ContactPhone" },
             "example": [{ "phone": "+551130000000", "type": "work" }]
           },
-          "owner_user_id": { "type": "string", "format": "uuid", "nullable": true },
+          "owner": { "$ref": "#/components/schemas/Owner" },
           "avatar_url": {
             "type": "string",
             "format": "uri",
@@ -349,7 +359,12 @@
           "full_name": { "type": "string", "maxLength": 70, "example": "Acme Corp" },
           "emails": { "type": "array", "items": { "$ref": "#/components/schemas/ContactEmail" } },
           "phones": { "type": "array", "items": { "$ref": "#/components/schemas/ContactPhone" } },
-          "owner_user_id": { "type": "string", "format": "uuid" },
+          "owner_email": {
+            "type": "string",
+            "format": "email",
+            "description": "E-mail do membro do workspace a definir como responsável. A API resolve internamente para o ID do usuário. Deve ser membro deste workspace.",
+            "example": "joao@empresa.com"
+          },
           "avatar_image": {
             "type": "string",
             "description": "Data URI base64 completo da imagem (ex: `data:image/png;base64,...`). Formatos aceitos: JPEG, PNG, WebP, GIF, BMP, TIFF. Convertida para WebP 500x500.",
@@ -396,11 +411,12 @@
           "full_name": { "type": "string", "maxLength": 70 },
           "emails": { "type": "array", "items": { "$ref": "#/components/schemas/ContactEmail" } },
           "phones": { "type": "array", "items": { "$ref": "#/components/schemas/ContactPhone" } },
-          "owner_user_id": {
+          "owner_email": {
             "type": "string",
-            "format": "uuid",
+            "format": "email",
             "nullable": true,
-            "description": "Envie `null` para remover o responsável."
+            "description": "E-mail do membro do workspace a definir como responsável. Envie `null` para remover o responsável. Deve ser membro deste workspace.",
+            "example": "joao@empresa.com"
           },
           "avatar_image": {
             "type": "string",

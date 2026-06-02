@@ -302,6 +302,16 @@
           }
         }
       },
+      "Owner": {
+        "type": "object",
+        "nullable": true,
+        "description": "Membro do workspace responsável pelo registro. `null` quando não há responsável definido.",
+        "properties": {
+          "id": { "type": "string", "format": "uuid" },
+          "email": { "type": "string", "format": "email", "example": "joao@empresa.com" },
+          "name": { "type": "string", "example": "João Silva" }
+        }
+      },
       "Person": {
         "type": "object",
         "properties": {
@@ -320,7 +330,7 @@
             "example": [{ "phone": "+5511999990001", "type": "mobile" }]
           },
           "company_id": { "type": "string", "format": "uuid", "nullable": true },
-          "owner_user_id": { "type": "string", "format": "uuid", "nullable": true },
+          "owner": { "$ref": "#/components/schemas/Owner" },
           "position": { "type": "string", "nullable": true, "example": "Head of Sales" },
           "ranking": {
             "type": "number",
@@ -371,7 +381,12 @@
           "phones": { "type": "array", "items": { "$ref": "#/components/schemas/ContactPhone" } },
           "company_id": { "type": "string", "format": "uuid" },
           "position": { "type": "string", "maxLength": 100, "example": "Head of Sales" },
-          "owner_user_id": { "type": "string", "format": "uuid" },
+          "owner_email": {
+            "type": "string",
+            "format": "email",
+            "description": "E-mail do membro do workspace a definir como responsável. A API resolve internamente para o ID do usuário. Deve ser membro deste workspace.",
+            "example": "joao@empresa.com"
+          },
           "avatar_image": {
             "type": "string",
             "description": "Data URI base64 completo da imagem (ex: `data:image/png;base64,...`). Formatos aceitos: JPEG, PNG, WebP, GIF, BMP, TIFF. Convertida para WebP 500x500.",
@@ -430,11 +445,12 @@
             "nullable": true,
             "description": "Envie `null` para limpar o cargo."
           },
-          "owner_user_id": {
+          "owner_email": {
             "type": "string",
-            "format": "uuid",
+            "format": "email",
             "nullable": true,
-            "description": "Envie `null` para remover o responsavel."
+            "description": "E-mail do membro do workspace a definir como responsável. Envie `null` para remover o responsável. Deve ser membro deste workspace.",
+            "example": "joao@empresa.com"
           },
           "avatar_image": {
             "type": "string",

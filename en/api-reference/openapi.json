@@ -1737,6 +1737,26 @@
           }
         }
       },
+      "Owner": {
+        "type": "object",
+        "nullable": true,
+        "description": "Workspace member responsible for this record. `null` when no owner is assigned.",
+        "properties": {
+          "id": {
+            "type": "string",
+            "format": "uuid"
+          },
+          "email": {
+            "type": "string",
+            "format": "email",
+            "example": "joao@company.com"
+          },
+          "name": {
+            "type": "string",
+            "example": "João Silva"
+          }
+        }
+      },
       "Person": {
         "type": "object",
         "properties": {
@@ -1780,10 +1800,8 @@
             "format": "uuid",
             "nullable": true
           },
-          "owner_user_id": {
-            "type": "string",
-            "format": "uuid",
-            "nullable": true
+          "owner": {
+            "$ref": "#/components/schemas/Owner"
           },
           "position": {
             "type": "string",
@@ -1893,9 +1911,11 @@
             "maxLength": 100,
             "example": "Sales Director"
           },
-          "owner_user_id": {
+          "owner_email": {
             "type": "string",
-            "format": "uuid"
+            "format": "email",
+            "description": "Email of the workspace member to set as owner. The API resolves it to the internal user ID. Must be a member of this workspace.",
+            "example": "joao@company.com"
           },
           "avatar_image": {
             "type": "string",
@@ -1982,11 +2002,12 @@
             "nullable": true,
             "description": "Pass `null` to clear the job title."
           },
-          "owner_user_id": {
+          "owner_email": {
             "type": "string",
-            "format": "uuid",
+            "format": "email",
             "nullable": true,
-            "description": "Pass `null` to remove the owner."
+            "description": "Email of the workspace member to set as owner. Pass `null` to remove the owner. Must be a member of this workspace.",
+            "example": "joao@company.com"
           },
           "avatar_image": {
             "type": "string",
@@ -2096,10 +2117,8 @@
               }
             ]
           },
-          "owner_user_id": {
-            "type": "string",
-            "format": "uuid",
-            "nullable": true
+          "owner": {
+            "$ref": "#/components/schemas/Owner"
           },
           "avatar_url": {
             "type": "string",
@@ -2174,9 +2193,11 @@
               "$ref": "#/components/schemas/ContactPhone"
             }
           },
-          "owner_user_id": {
+          "owner_email": {
             "type": "string",
-            "format": "uuid"
+            "format": "email",
+            "description": "Email of the workspace member to set as owner. The API resolves it to the internal user ID. Must be a member of this workspace.",
+            "example": "joao@company.com"
           },
           "avatar_image": {
             "type": "string",
@@ -2251,11 +2272,12 @@
               "$ref": "#/components/schemas/ContactPhone"
             }
           },
-          "owner_user_id": {
+          "owner_email": {
             "type": "string",
-            "format": "uuid",
+            "format": "email",
             "nullable": true,
-            "description": "Pass `null` to remove the owner."
+            "description": "Email of the workspace member to set as owner. Pass `null` to remove the owner. Must be a member of this workspace.",
+            "example": "joao@company.com"
           },
           "avatar_image": {
             "type": "string",
@@ -2435,10 +2457,8 @@
           "currency": {
             "$ref": "#/components/schemas/CurrencyCode"
           },
-          "owner_user_id": {
-            "type": "string",
-            "format": "uuid",
-            "nullable": true
+          "owner": {
+            "$ref": "#/components/schemas/Owner"
           },
           "source": {
             "type": "string",
@@ -2633,9 +2653,11 @@
             "description": "Deal value in cents.",
             "example": 250000
           },
-          "owner_user_id": {
+          "owner_email": {
             "type": "string",
-            "format": "uuid"
+            "format": "email",
+            "description": "Email of the workspace member to set as owner. The API resolves it to the internal user ID. Must be a member of this workspace.",
+            "example": "joao@company.com"
           },
           "forecast_date": {
             "type": "string",
@@ -2716,10 +2738,12 @@
             "type": "integer",
             "minimum": 0
           },
-          "owner_user_id": {
+          "owner_email": {
             "type": "string",
-            "format": "uuid",
-            "nullable": true
+            "format": "email",
+            "nullable": true,
+            "description": "Email of the workspace member to set as owner. Pass `null` to remove the owner. Must be a member of this workspace.",
+            "example": "joao@company.com"
           },
           "forecast_date": {
             "type": "string",

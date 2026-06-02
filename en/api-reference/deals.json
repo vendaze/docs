@@ -317,6 +317,16 @@
           "total_price_cts": { "type": "integer", "description": "Total price in cents (unit_price_cts x quantity).", "example": 100000 }
         }
       },
+      "Owner": {
+        "type": "object",
+        "nullable": true,
+        "description": "Workspace member responsible for this record. `null` when no owner is assigned.",
+        "properties": {
+          "id": { "type": "string", "format": "uuid" },
+          "email": { "type": "string", "format": "email", "example": "joao@company.com" },
+          "name": { "type": "string", "example": "João Silva" }
+        }
+      },
       "Deal": {
         "type": "object",
         "properties": {
@@ -326,7 +336,7 @@
           "stage_id": { "type": "string", "format": "uuid" },
           "price_cts": { "type": "integer", "description": "Deal value in cents. 250000 = R$ 2,500.00", "example": 250000 },
           "currency": { "$ref": "#/components/schemas/CurrencyCode" },
-          "owner_user_id": { "type": "string", "format": "uuid", "nullable": true },
+          "owner": { "$ref": "#/components/schemas/Owner" },
           "source": {
             "type": "string",
             "description": "Name of the OAuth app that created the deal. Read-only.",
@@ -427,7 +437,12 @@
           "stage_id": { "type": "string", "format": "uuid" },
           "currency": { "$ref": "#/components/schemas/CurrencyCode" },
           "price_cts": { "type": "integer", "minimum": 0, "default": 0, "description": "Deal value in cents.", "example": 250000 },
-          "owner_user_id": { "type": "string", "format": "uuid" },
+          "owner_email": {
+            "type": "string",
+            "format": "email",
+            "description": "Email of the workspace member to set as owner. The API resolves it to the internal user ID. Must be a member of this workspace.",
+            "example": "joao@company.com"
+          },
           "forecast_date": { "type": "string", "format": "date-time", "nullable": true, "example": "2026-12-31T00:00:00Z" },
           "person_ids": {
             "type": "array",
@@ -468,7 +483,13 @@
           "stage_id": { "type": "string", "format": "uuid" },
           "currency": { "$ref": "#/components/schemas/CurrencyCode" },
           "price_cts": { "type": "integer", "minimum": 0 },
-          "owner_user_id": { "type": "string", "format": "uuid", "nullable": true },
+          "owner_email": {
+            "type": "string",
+            "format": "email",
+            "nullable": true,
+            "description": "Email of the workspace member to set as owner. Pass `null` to remove the owner. Must be a member of this workspace.",
+            "example": "joao@company.com"
+          },
           "forecast_date": { "type": "string", "format": "date-time", "nullable": true },
           "person_ids": { "type": "array", "items": { "type": "string", "format": "uuid" } },
           "company_ids": { "type": "array", "items": { "type": "string", "format": "uuid" } },

@@ -300,6 +300,16 @@
           }
         }
       },
+      "Owner": {
+        "type": "object",
+        "nullable": true,
+        "description": "Workspace member responsible for this record. `null` when no owner is assigned.",
+        "properties": {
+          "id": { "type": "string", "format": "uuid" },
+          "email": { "type": "string", "format": "email", "example": "joao@company.com" },
+          "name": { "type": "string", "example": "João Silva" }
+        }
+      },
       "Company": {
         "type": "object",
         "properties": {
@@ -317,7 +327,7 @@
             "items": { "$ref": "#/components/schemas/ContactPhone" },
             "example": [{ "phone": "+551130000000", "type": "work" }]
           },
-          "owner_user_id": { "type": "string", "format": "uuid", "nullable": true },
+          "owner": { "$ref": "#/components/schemas/Owner" },
           "avatar_url": {
             "type": "string",
             "format": "uri",
@@ -349,7 +359,12 @@
           "full_name": { "type": "string", "maxLength": 70, "example": "Acme Corp" },
           "emails": { "type": "array", "items": { "$ref": "#/components/schemas/ContactEmail" } },
           "phones": { "type": "array", "items": { "$ref": "#/components/schemas/ContactPhone" } },
-          "owner_user_id": { "type": "string", "format": "uuid" },
+          "owner_email": {
+            "type": "string",
+            "format": "email",
+            "description": "Email of the workspace member to set as owner. The API resolves it to the internal user ID. Must be a member of this workspace.",
+            "example": "joao@company.com"
+          },
           "avatar_image": {
             "type": "string",
             "description": "Full base64 data URI of the image (e.g. `data:image/png;base64,...`). Accepted formats: JPEG, PNG, WebP, GIF, BMP, TIFF. Converted to WebP 500x500.",
@@ -396,11 +411,12 @@
           "full_name": { "type": "string", "maxLength": 70 },
           "emails": { "type": "array", "items": { "$ref": "#/components/schemas/ContactEmail" } },
           "phones": { "type": "array", "items": { "$ref": "#/components/schemas/ContactPhone" } },
-          "owner_user_id": {
+          "owner_email": {
             "type": "string",
-            "format": "uuid",
+            "format": "email",
             "nullable": true,
-            "description": "Pass `null` to remove the owner."
+            "description": "Email of the workspace member to set as owner. Pass `null` to remove the owner. Must be a member of this workspace.",
+            "example": "joao@company.com"
           },
           "avatar_image": {
             "type": "string",

@@ -302,6 +302,16 @@
           }
         }
       },
+      "Owner": {
+        "type": "object",
+        "nullable": true,
+        "description": "Workspace member responsible for this record. `null` when no owner is assigned.",
+        "properties": {
+          "id": { "type": "string", "format": "uuid" },
+          "email": { "type": "string", "format": "email", "example": "joao@company.com" },
+          "name": { "type": "string", "example": "João Silva" }
+        }
+      },
       "Person": {
         "type": "object",
         "properties": {
@@ -320,7 +330,7 @@
             "example": [{ "phone": "+5511999990001", "type": "mobile" }]
           },
           "company_id": { "type": "string", "format": "uuid", "nullable": true },
-          "owner_user_id": { "type": "string", "format": "uuid", "nullable": true },
+          "owner": { "$ref": "#/components/schemas/Owner" },
           "position": { "type": "string", "nullable": true, "example": "Sales Director" },
           "ranking": {
             "type": "number",
@@ -371,7 +381,12 @@
           "phones": { "type": "array", "items": { "$ref": "#/components/schemas/ContactPhone" } },
           "company_id": { "type": "string", "format": "uuid" },
           "position": { "type": "string", "maxLength": 100, "example": "Sales Director" },
-          "owner_user_id": { "type": "string", "format": "uuid" },
+          "owner_email": {
+            "type": "string",
+            "format": "email",
+            "description": "Email of the workspace member to set as owner. The API resolves it to the internal user ID. Must be a member of this workspace.",
+            "example": "joao@company.com"
+          },
           "avatar_image": {
             "type": "string",
             "description": "Full base64 data URI of the image (e.g. `data:image/png;base64,...`). Accepted formats: JPEG, PNG, WebP, GIF, BMP, TIFF. Converted to WebP 500x500.",
@@ -430,11 +445,12 @@
             "nullable": true,
             "description": "Pass `null` to clear the job title."
           },
-          "owner_user_id": {
+          "owner_email": {
             "type": "string",
-            "format": "uuid",
+            "format": "email",
             "nullable": true,
-            "description": "Pass `null` to remove the owner."
+            "description": "Email of the workspace member to set as owner. Pass `null` to remove the owner. Must be a member of this workspace.",
+            "example": "joao@company.com"
           },
           "avatar_image": {
             "type": "string",
