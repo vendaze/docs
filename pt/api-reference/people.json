@@ -78,14 +78,18 @@
       "delete": {
         "operationId": "deletePerson",
         "summary": "Deletar pessoa",
-        "description": "Soft-delete: o registro não e mais acessível pela API.",
+        "description": "Soft-delete: o registro não é mais acessível pela API.",
         "tags": ["Pessoas"],
         "parameters": [{ "$ref": "#/components/parameters/id" }],
         "responses": {
-          "204": { "description": "Pessoa deletada com sucesso." },
+          "204": {
+            "description": "Pessoa deletada com sucesso.",
+            "content": { "application/json": { "schema": { "type": "object" } } }
+          },
           "401": { "$ref": "#/components/responses/Unauthorized" },
           "403": { "$ref": "#/components/responses/InsufficientScope" },
           "404": { "$ref": "#/components/responses/NotFound" },
+          "429": { "$ref": "#/components/responses/RateLimitExceeded" },
           "500": { "$ref": "#/components/responses/InternalError" }
         }
       }
