@@ -1954,13 +1954,14 @@
             "description": "Data URI base64 completo da imagem (ex: `data:image/png;base64,...`). Formatos aceitos: JPEG, PNG, WebP, GIF, BMP, TIFF. Convertida para WebP 500x500.",
             "example": "data:image/png;base64,iVBORw0KGgo..."
           },
-          "tag_ids": {
+          "tags": {
             "type": "array",
             "items": {
               "type": "string",
-              "format": "uuid"
+              "minLength": 1,
+              "maxLength": 30
             },
-            "description": "IDs de tags a associar com a pessoa."
+            "description": "Nomes (keys) das tags a associar com a pessoa. Se a tag não existir, será criada automaticamente."
           },
           "list_ids": {
             "type": "array",
@@ -2039,13 +2040,14 @@
             "description": "Data URI base64 completo da imagem (ex: `data:image/png;base64,...`). Substitui o avatar atual. Formatos aceitos: JPEG, PNG, WebP, GIF, BMP, TIFF. Convertida para WebP 500x500.",
             "example": "data:image/png;base64,iVBORw0KGgo..."
           },
-          "tag_ids": {
+          "tags": {
             "type": "array",
             "items": {
               "type": "string",
-              "format": "uuid"
+              "minLength": 1,
+              "maxLength": 30
             },
-            "description": "IDs de tags a associar. Comportamento depende de `association_mode`."
+            "description": "Nomes (keys) das tags a associar. Comportamento depende de `association_mode`. Se a tag não existir, será criada automaticamente."
           },
           "list_ids": {
             "type": "array",
@@ -2085,7 +2087,7 @@
               "replace"
             ],
             "default": "append",
-            "description": "Controla como as associacoes (`tag_ids`, `list_ids`, `custom_fields`) sao aplicadas. `append`: adiciona sem remover as existentes. `replace`: remove todas as associacoes atuais dos tipos enviados e insere as novas. Enviar array vazio com `replace` remove todas as associacoes daquele tipo."
+            "description": "Controla como as associacoes (`tags`, `list_ids`, `custom_fields`) sao aplicadas. `append`: adiciona sem remover as existentes. `replace`: remove todas as associacoes atuais dos tipos enviados e insere as novas. Enviar array vazio com `replace` remove todas as associacoes daquele tipo."
           }
         }
       },
@@ -2222,13 +2224,14 @@
             "description": "Data URI base64 completo da imagem (ex: `data:image/png;base64,...`). Formatos aceitos: JPEG, PNG, WebP, GIF, BMP, TIFF. Convertida para WebP 500x500.",
             "example": "data:image/png;base64,iVBORw0KGgo..."
           },
-          "tag_ids": {
+          "tags": {
             "type": "array",
             "items": {
               "type": "string",
-              "format": "uuid"
+              "minLength": 1,
+              "maxLength": 30
             },
-            "description": "IDs de tags para associar à empresa."
+            "description": "Nomes (keys) das tags a associar à empresa. Se a tag não existir, será criada automaticamente."
           },
           "list_ids": {
             "type": "array",
@@ -2295,13 +2298,14 @@
             "description": "Data URI base64 completo da imagem (ex: `data:image/png;base64,...`). Substitui o avatar atual. Formatos aceitos: JPEG, PNG, WebP, GIF, BMP, TIFF. Convertida para WebP 500x500.",
             "example": "data:image/png;base64,iVBORw0KGgo..."
           },
-          "tag_ids": {
+          "tags": {
             "type": "array",
             "items": {
               "type": "string",
-              "format": "uuid"
+              "minLength": 1,
+              "maxLength": 30
             },
-            "description": "IDs de tags para associar. O comportamento depende de `association_mode`."
+            "description": "Nomes (keys) das tags a associar. O comportamento depende de `association_mode`. Se a tag não existir, será criada automaticamente."
           },
           "list_ids": {
             "type": "array",
@@ -2341,7 +2345,7 @@
               "replace"
             ],
             "default": "append",
-            "description": "Controla como as associações (`tag_ids`, `list_ids`, `custom_fields`) são aplicadas. `append`: adiciona novas associações sem remover as existentes. `replace`: remove todas as associações atuais de cada tipo enviado e insere as novas. Enviar um array vazio com `replace` remove todas as associações daquele tipo."
+            "description": "Controla como as associações (`tags`, `list_ids`, `custom_fields`) são aplicadas. `append`: adiciona novas associações sem remover as existentes. `replace`: remove todas as associações atuais de cada tipo enviado e insere as novas. Enviar um array vazio com `replace` remove todas as associações daquele tipo."
           }
         }
       },
@@ -2685,12 +2689,14 @@
             },
             "description": "Empresas a associar ao negócio."
           },
-          "tag_ids": {
+          "tags": {
             "type": "array",
             "items": {
               "type": "string",
-              "format": "uuid"
-            }
+              "minLength": 1,
+              "maxLength": 30
+            },
+            "description": "Nomes (keys) das tags a associar ao negócio. Se a tag não existir, será criada automaticamente."
           },
           "custom_fields": {
             "type": "array",
@@ -2771,12 +2777,14 @@
               "format": "uuid"
             }
           },
-          "tag_ids": {
+          "tags": {
             "type": "array",
             "items": {
               "type": "string",
-              "format": "uuid"
-            }
+              "minLength": 1,
+              "maxLength": 30
+            },
+            "description": "Nomes (keys) das tags a associar. Se a tag não existir, será criada automaticamente."
           },
           "custom_fields": {
             "type": "array",

@@ -693,13 +693,14 @@
             "description": "Full base64 data URI of the image (e.g. `data:image/png;base64,...`). Accepted formats: JPEG, PNG, WebP, GIF, BMP, TIFF. Converted to WebP 500x500.",
             "example": "data:image/png;base64,iVBORw0KGgo..."
           },
-          "tag_ids": {
+          "tags": {
             "type": "array",
             "items": {
               "type": "string",
-              "format": "uuid"
+              "minLength": 1,
+              "maxLength": 30
             },
-            "description": "Tag IDs to associate with the person."
+            "description": "Tag names (keys) to associate with the person. If a tag doesn't exist, it will be automatically created."
           },
           "list_ids": {
             "type": "array",
@@ -775,13 +776,14 @@
             "description": "Full base64 data URI of the image (e.g. `data:image/png;base64,...`). Replaces the current avatar. Accepted formats: JPEG, PNG, WebP, GIF, BMP, TIFF. Converted to WebP 500x500.",
             "example": "data:image/png;base64,iVBORw0KGgo..."
           },
-          "tag_ids": {
+          "tags": {
             "type": "array",
             "items": {
               "type": "string",
-              "format": "uuid"
+              "minLength": 1,
+              "maxLength": 30
             },
-            "description": "Tag IDs to associate. Behavior depends on `association_mode`."
+            "description": "Tag names (keys) to associate. Behavior depends on `association_mode`. If a tag doesn't exist, it will be automatically created."
           },
           "list_ids": {
             "type": "array",
@@ -815,7 +817,7 @@
             "type": "string",
             "enum": ["append", "replace"],
             "default": "append",
-            "description": "Controls how associations (`tag_ids`, `list_ids`, `custom_fields`) are applied. `append`: adds new associations without removing existing ones. `replace`: removes all current associations of each sent type and inserts the new ones. Sending an empty array with `replace` removes all associations of that type."
+            "description": "Controls how associations (`tags`, `list_ids`, `custom_fields`) are applied. `append`: adds new associations without removing existing ones. `replace`: removes all current associations of each sent type and inserts the new ones. Sending an empty array with `replace` removes all associations of that type."
           }
         }
       },

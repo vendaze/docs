@@ -771,12 +771,14 @@
             },
             "description": "Empresas a associar ao negócio."
           },
-          "tag_ids": {
+          "tags": {
             "type": "array",
             "items": {
               "type": "string",
-              "format": "uuid"
-            }
+              "minLength": 1,
+              "maxLength": 30
+            },
+            "description": "Nomes (keys) das tags a associar ao negócio. Se a tag não existir, será criada automaticamente."
           },
           "custom_fields": {
             "type": "array",
@@ -854,12 +856,14 @@
               "format": "uuid"
             }
           },
-          "tag_ids": {
+          "tags": {
             "type": "array",
             "items": {
               "type": "string",
-              "format": "uuid"
-            }
+              "minLength": 1,
+              "maxLength": 30
+            },
+            "description": "Nomes (keys) das tags a associar. Se a tag não existir, será criada automaticamente."
           },
           "custom_fields": {
             "type": "array",
