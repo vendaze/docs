@@ -740,7 +740,7 @@
             "type": "integer",
             "minimum": 0,
             "default": 0,
-            "description": "Valor em centavos.",
+            "description": "Valor em centavos. Se a requisição incluir produtos associados (`products`), este valor e a moeda (`currency`) serão ignorados. O negócio herdará automaticamente a soma calculada dos produtos e a moeda do primeiro produto associado.",
             "example": 250000
           },
           "owner_email": {
@@ -828,7 +828,8 @@
           },
           "price_cts": {
             "type": "integer",
-            "minimum": 0
+            "minimum": 0,
+            "description": "Valor em centavos. Se a requisição incluir produtos associados (`products`), este valor e a moeda (`currency`) serão ignorados. O negócio herdará automaticamente a soma calculada dos produtos e a moeda do primeiro produto associado."
           },
           "owner_email": {
             "type": "string",

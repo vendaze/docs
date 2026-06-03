@@ -2699,7 +2699,7 @@
             "type": "integer",
             "minimum": 0,
             "default": 0,
-            "description": "Deal value in cents.",
+            "description": "Deal value in cents. If the request includes associated products (`products`), this value and the currency (`currency`) will be ignored. The deal will automatically inherit the calculated sum of the products and the currency of the first associated product.",
             "example": 250000
           },
           "owner_email": {
@@ -2790,7 +2790,8 @@
           },
           "price_cts": {
             "type": "integer",
-            "minimum": 0
+            "minimum": 0,
+            "description": "Deal value in cents. If the request includes associated products (`products`), this value and the currency (`currency`) will be ignored. The deal will automatically inherit the calculated sum of the products and the currency of the first associated product."
           },
           "owner_email": {
             "type": "string",
