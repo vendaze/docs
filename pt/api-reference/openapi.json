@@ -1597,7 +1597,7 @@
           "avatar_image": {
             "type": "string",
             "example": "data:image/png;base64,iVBORw0KGgo...",
-            "description": "Data URI base64 completo do logo do seu app (ex: `data:image/png;base64,...`). Formatos aceitos: JPEG, PNG, WebP, GIF, BMP, TIFF. Máx. 2MB."
+            "description": "URL HTTPS pública ou Data URI base64 completo do logo do seu app (ex: `data:image/png;base64,...`). Formatos aceitos: JPEG, PNG, WebP, GIF, BMP, TIFF. Máx. 2MB."
           },
           "redirect_uris": {
             "type": "array",
@@ -1683,7 +1683,7 @@
           "avatar_image": {
             "type": "string",
             "example": "data:image/png;base64,iVBORw0KGgo...",
-            "description": "Data URI base64 completo do logo do seu app (ex: `data:image/png;base64,...`). Formatos aceitos: JPEG, PNG, WebP, GIF, BMP, TIFF. Se omitido, o avatar atual é mantido."
+            "description": "URL HTTPS pública ou Data URI base64 completo do logo do seu app (ex: `data:image/png;base64,...`). Formatos aceitos: JPEG, PNG, WebP, GIF, BMP, TIFF. Se omitido, o avatar atual é mantido."
           },
           "redirect_uris": {
             "type": "array",
@@ -1994,7 +1994,7 @@
           },
           "avatar_image": {
             "type": "string",
-            "description": "Data URI base64 completo da imagem (ex: `data:image/png;base64,...`). Formatos aceitos: JPEG, PNG, WebP, GIF, BMP, TIFF. Convertida para WebP 500x500.",
+            "description": "URL HTTPS pública da imagem ou Data URI base64 completo (ex: `data:image/png;base64,...`). Formatos aceitos: JPEG, PNG, WebP, GIF, BMP, TIFF.",
             "example": "data:image/png;base64,iVBORw0KGgo..."
           },
           "tags": {
@@ -2080,7 +2080,7 @@
           },
           "avatar_image": {
             "type": "string",
-            "description": "Data URI base64 completo da imagem (ex: `data:image/png;base64,...`). Substitui o avatar atual. Formatos aceitos: JPEG, PNG, WebP, GIF, BMP, TIFF.",
+            "description": "URL HTTPS pública da imagem ou Data URI base64 completo (ex: `data:image/png;base64,...`). Substitui o avatar atual. Formatos aceitos: JPEG, PNG, WebP, GIF, BMP, TIFF.",
             "example": "data:image/png;base64,iVBORw0KGgo..."
           },
           "tags": {
@@ -2264,7 +2264,7 @@
           },
           "avatar_image": {
             "type": "string",
-            "description": "Data URI base64 completo da imagem (ex: `data:image/png;base64,...`). Formatos aceitos: JPEG, PNG, WebP, GIF, BMP, TIFF. Convertida para WebP 500x500.",
+            "description": "URL HTTPS pública da imagem ou Data URI base64 completo (ex: `data:image/png;base64,...`). Formatos aceitos: JPEG, PNG, WebP, GIF, BMP, TIFF.",
             "example": "data:image/png;base64,iVBORw0KGgo..."
           },
           "tags": {
@@ -2338,7 +2338,7 @@
           },
           "avatar_image": {
             "type": "string",
-            "description": "Data URI base64 completo da imagem (ex: `data:image/png;base64,...`). Substitui o avatar atual. Formatos aceitos: JPEG, PNG, WebP, GIF, BMP, TIFF.",
+            "description": "URL HTTPS pública da imagem ou Data URI base64 completo (ex: `data:image/png;base64,...`). Substitui o avatar atual. Formatos aceitos: JPEG, PNG, WebP, GIF, BMP, TIFF.",
             "example": "data:image/png;base64,iVBORw0KGgo..."
           },
           "tags": {

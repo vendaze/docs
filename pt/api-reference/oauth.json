@@ -954,7 +954,7 @@
           "avatar_image": {
             "type": "string",
             "example": "data:image/png;base64,iVBORw0KGgo...",
-            "description": "Data URI base64 completo do logo do seu app (ex: `data:image/png;base64,...`). Formatos aceitos: JPEG, PNG, WebP, GIF, BMP, TIFF. Máx. 2MB."
+            "description": "URL HTTPS pública ou Data URI base64 completo do logo do seu app (ex: `data:image/png;base64,...`). Formatos aceitos: JPEG, PNG, WebP, GIF, BMP, TIFF. Máx. 2MB."
           },
           "redirect_uris": {
             "type": "array",
@@ -1032,7 +1032,7 @@
           "avatar_image": {
             "type": "string",
             "example": "data:image/png;base64,iVBORw0KGgo...",
-            "description": "Data URI base64 completo do logo do seu app (ex: `data:image/png;base64,...`). Formatos aceitos: JPEG, PNG, WebP, GIF, BMP, TIFF. Se omitido, o avatar atual é mantido."
+            "description": "URL HTTPS pública ou Data URI base64 completo do logo do seu app (ex: `data:image/png;base64,...`). Formatos aceitos: JPEG, PNG, WebP, GIF, BMP, TIFF. Se omitido, o avatar atual é mantido."
           },
           "redirect_uris": {
             "type": "array",
