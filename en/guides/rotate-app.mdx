@@ -82,14 +82,14 @@ The new `client_secret` is sent **only by email** and never returned in the API 
 
 ## Request parameters
 
-| Parameter       | Type     | Required | Description                                                                                                                                                                                                                              |
-| --------------- | -------- | -------- | ---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
-| `client_id`     | string   | Yes      | Current `client_id` of the app being rotated.                                                                                                                                                                                            |
-| `email`         | string   | Yes      | Email address registered with the app. Used to verify ownership. The API never reveals which email is on file. It returns an error if the value does not match.                                                                          |
-| `app_name`      | string   | No       | New name shown to users on the consent screen. Max 100 chars. If omitted, the current name is kept.                                                                                                                                      |
-| `description`   | string   | No       | New description of what your app does. Max 500 chars. If omitted, the current description is kept.                                                                                                                                       |
-| `avatar_url`    | string   | No       | HTTPS URL of your app logo. Vendaze fetches the image, validates it, converts it to JPEG (max 400x400px), and stores it. Accepted formats: JPEG, PNG, WebP, GIF, BMP, TIFF. SVG is not accepted. If omitted, the current avatar is kept. |
-| `redirect_uris` | string[] | No       | New list of HTTPS redirect URIs. Replaces the previous list entirely. If omitted, the current list is kept.                                                                                                                              |
+| Parameter       | Type     | Required | Description                                                                                                                                                     |
+| --------------- | -------- | -------- | --------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| `client_id`     | string   | Yes      | Current `client_id` of the app being rotated.                                                                                                                   |
+| `email`         | string   | Yes      | Email address registered with the app. Used to verify ownership. The API never reveals which email is on file. It returns an error if the value does not match. |
+| `app_name`      | string   | No       | New name shown to users on the consent screen. Max 100 chars. If omitted, the current name is kept.                                                             |
+| `description`   | string   | No       | New description of what your app does. Max 500 chars. If omitted, the current description is kept.                                                              |
+| `avatar_url`    | string   | No       | HTTPS URL of your app logo. Accepted formats: JPEG, PNG, WebP, GIF, BMP, TIFF. If omitted, the current avatar is kept.                                          |
+| `redirect_uris` | string[] | No       | New list of HTTPS redirect URIs. Replaces the previous list entirely. If omitted, the current list is kept.                                                     |
 
 <Note>
   Scopes cannot be changed via rotation. Scopes are fixed at registration and are permanent for the

@@ -81,14 +81,14 @@ O novo `client_secret` é enviado **somente por e-mail** e nunca retorna na resp
 
 ## Parâmetros da requisição
 
-| Parâmetro       | Tipo     | Obrigatório | Descrição                                                                                                                                                                                                                                      |
-| --------------- | -------- | ----------- | ---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
-| `client_id`     | string   | Sim         | `client_id` atual do aplicativo a ser rotacionado.                                                                                                                                                                                             |
-| `email`         | string   | Sim         | E-mail cadastrado no aplicativo. Usado para verificar a propriedade. A API nunca revela qual e-mail está cadastrado. Retorna erro se o valor não corresponder.                                                                                 |
-| `app_name`      | string   | Não         | Novo nome exibido aos usuários na tela de consentimento. Máx. 100 chars. Se omitido, o nome atual é mantido.                                                                                                                                   |
-| `description`   | string   | Não         | Nova descrição do que seu app faz. Máx. 500 chars. Se omitido, a descrição atual é mantida.                                                                                                                                                    |
-| `avatar_url`    | string   | Não         | URL HTTPS do logo do seu app. A Vendaze faz o download da imagem, valida o formato, converte para JPEG (máx. 400x400px) e armazena. Formatos aceitos: JPEG, PNG, WebP, GIF, BMP, TIFF. SVG não é aceito. Se omitido, o avatar atual é mantido. |
-| `redirect_uris` | string[] | Não         | Nova lista de URIs HTTPS de redirecionamento. Substitui a lista anterior integralmente. Se omitido, a lista atual é mantida.                                                                                                                   |
+| Parâmetro       | Tipo     | Obrigatório | Descrição                                                                                                                                                      |
+| --------------- | -------- | ----------- | -------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| `client_id`     | string   | Sim         | `client_id` atual do aplicativo a ser rotacionado.                                                                                                             |
+| `email`         | string   | Sim         | E-mail cadastrado no aplicativo. Usado para verificar a propriedade. A API nunca revela qual e-mail está cadastrado. Retorna erro se o valor não corresponder. |
+| `app_name`      | string   | Não         | Novo nome exibido aos usuários na tela de consentimento. Máx. 100 chars. Se omitido, o nome atual é mantido.                                                   |
+| `description`   | string   | Não         | Nova descrição do que seu app faz. Máx. 500 chars. Se omitido, a descrição atual é mantida.                                                                    |
+| `avatar_url`    | string   | Não         | URL HTTPS do logo do seu app. Formatos aceitos: JPEG, PNG, WebP, GIF, BMP, TIFF. Se omitido, o avatar atual é mantido.                                         |
+| `redirect_uris` | string[] | Não         | Nova lista de URIs HTTPS de redirecionamento. Substitui a lista anterior integralmente. Se omitido, a lista atual é mantida.                                   |
 
 <Note>
   Os escopos não podem ser alterados via rotação. Eles são definidos no registro e são permanentes

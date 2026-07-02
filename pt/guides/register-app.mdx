@@ -83,16 +83,16 @@ Seu `client_secret` é enviado **somente por e-mail** e nunca retorna na respost
 
 ## Parâmetros da requisição
 
-| Parâmetro       | Tipo     | Obrigatório | Descrição                                                                                                                                                                                                          |
-| --------------- | -------- | ----------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------ |
-| `app_name`      | string   | Sim         | Nome da integração exibido aos usuários na tela de consentimento. Máx. 100 chars.                                                                                                                                  |
-| `email`         | string   | Sim         | E-mail para receber as credenciais. Cada endereço pode estar associado a apenas um aplicativo registrado.                                                                                                          |
-| `description`   | string   | Não         | Descrição curta do que seu app faz. Máx. 500 chars.                                                                                                                                                                |
-| `avatar_url`    | string   | Não         | URL HTTPS do logo do seu app. A Vendaze faz o download da imagem, valida o formato, converte para JPEG (máx. 400x400px) e armazena. Formatos aceitos: JPEG, PNG, WebP, GIF, BMP, TIFF. SVG não é aceito. Máx. 2MB. |
-| `redirect_uris` | string[] | Sim         | Uma ou mais URIs HTTPS para o callback OAuth. Correspondência exata obrigatória.                                                                                                                                   |
-| `scopes`        | string[] | Sim         | Escopos que seu app precisa. O usuário vê a lista completa na tela de consentimento e aprova ou nega tudo de uma vez.                                                                                              |
+| Parâmetro       | Tipo     | Obrigatório | Descrição                                                                                                             |
+| --------------- | -------- | ----------- | --------------------------------------------------------------------------------------------------------------------- |
+| `app_name`      | string   | Sim         | Nome da integração exibido aos usuários na tela de consentimento. Máx. 100 chars.                                     |
+| `email`         | string   | Sim         | E-mail para receber as credenciais. Cada endereço pode estar associado a apenas um aplicativo registrado.             |
+| `description`   | string   | Não         | Descrição curta do que seu app faz. Máx. 500 chars.                                                                   |
+| `avatar_url`    | string   | Não         | URL HTTPS do logo do seu app. Formatos aceitos: JPEG, PNG, WebP, GIF, BMP, TIFF. Máx. 2MB.                            |
+| `redirect_uris` | string[] | Sim         | Uma ou mais URIs HTTPS para o callback OAuth. Correspondência exata obrigatória.                                      |
+| `scopes`        | string[] | Sim         | Escopos que seu app precisa. O usuário vê a lista completa na tela de consentimento e aprova ou nega tudo de uma vez. |
 
-Quando `avatar_url` é fornecido, a Vendaze faz o download da imagem do seu servidor, valida o formato pelo magic byte do arquivo (não pelo Content-Type declarado), converte para JPEG (máx. 400x400px) e armazena na infraestrutura da Vendaze. O `avatar_url` na resposta é sempre uma URL `https://storage.vendaze.com`.
+O `avatar_url` na resposta é sempre uma URL `https://storage.vendaze.com`.
 
 ## URIs de redirecionamento
 

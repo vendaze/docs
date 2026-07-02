@@ -715,7 +715,7 @@
           },
           "avatar_image": {
             "type": "string",
-            "description": "Full base64 data URI of the image (e.g. `data:image/png;base64,...`). Replaces the current avatar. Accepted formats: JPEG, PNG, WebP, GIF, BMP, TIFF. Converted to WebP 500x500.",
+            "description": "Full base64 data URI of the image (e.g. `data:image/png;base64,...`). Replaces the current avatar. Accepted formats: JPEG, PNG, WebP, GIF, BMP, TIFF.",
             "example": "data:image/png;base64,iVBORw0KGgo..."
           },
           "tags": {
