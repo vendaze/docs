@@ -14,7 +14,7 @@
       "get": {
         "operationId": "listTaskTypes",
         "summary": "Listar tipos de tarefa",
-        "description": "Retorna uma lista paginada dos tipos de tarefa do workspace.\n\n**Escopo:** `tasks:read`.",
+        "description": "Retorna uma lista paginada dos tipos de tarefa do workspace.\n\n<Accordion title=\"Escopo necessário\">\n`tasks:read`\n</Accordion>",
         "tags": ["Tipos de Tarefas"],
         "parameters": [
           {
@@ -74,7 +74,7 @@
       "post": {
         "operationId": "createTaskType",
         "summary": "Criar tipo de tarefa",
-        "description": "Cria um novo tipo de tarefa no workspace.\n\n**Escopo:** `tasks:write`.\n\nA `key` deve ser única no workspace e conter apenas letras minúsculas, dígitos e underscores entre palavras (ex: `acompanhamento`).",
+        "description": "Cria um novo tipo de tarefa no workspace.\n\nA `key` deve ser única no workspace e conter apenas letras minúsculas, dígitos e underscores entre palavras (ex: `acompanhamento`).\n\n<Accordion title=\"Escopo necessário\">\n`tasks:write`\n</Accordion>",
         "tags": ["Tipos de Tarefas"],
         "requestBody": {
           "required": true,
@@ -99,7 +99,7 @@
       "patch": {
         "operationId": "updateTaskType",
         "summary": "Atualizar tipo de tarefa",
-        "description": "Atualiza um tipo de tarefa. Apenas os campos enviados no body são alterados.\n\n**Escopo:** `tasks:write`.",
+        "description": "Atualiza um tipo de tarefa. Apenas os campos enviados no body são alterados.\n\n<Accordion title=\"Escopo necessário\">\n`tasks:write`\n</Accordion>",
         "tags": ["Tipos de Tarefas"],
         "parameters": [{ "$ref": "#/components/parameters/id" }],
         "requestBody": {
@@ -124,7 +124,7 @@
       "delete": {
         "operationId": "deleteTaskType",
         "summary": "Deletar tipo de tarefa",
-        "description": "Remove permanentemente um tipo de tarefa. As tarefas associadas a este tipo terão o campo `type` definido como `null`.\n\n**Escopo:** `tasks:write`.",
+        "description": "Remove permanentemente um tipo de tarefa. As tarefas associadas a este tipo terão o campo `type` definido como `null`.\n\n<Accordion title=\"Escopo necessário\">\n`tasks:write`\n</Accordion>",
         "tags": ["Tipos de Tarefas"],
         "parameters": [{ "$ref": "#/components/parameters/id" }],
         "responses": {

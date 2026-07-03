@@ -22,7 +22,7 @@
       "get": {
         "operationId": "listLists",
         "summary": "Listar listas",
-        "description": "Retorna uma lista paginada das listas de contatos do workspace. Cada item inclui `people_count` e `companies_count` com a quantidade atual de membros.\n\n**Escopo:** `people:read` ou `companies:read`.",
+        "description": "Retorna uma lista paginada das listas de contatos do workspace. Cada item inclui `people_count` e `companies_count` com a quantidade atual de membros.\n\n<Accordion title=\"Escopo necessário\">\n`people:read` ou `companies:read`\n</Accordion>",
         "tags": ["Listas"],
         "parameters": [
           {
@@ -86,7 +86,7 @@
       "post": {
         "operationId": "createList",
         "summary": "Criar lista",
-        "description": "Cria uma nova lista de contatos no workspace.\n\n**Escopo:** `people:write` ou `companies:write`.",
+        "description": "Cria uma nova lista de contatos no workspace.\n\n<Accordion title=\"Escopo necessário\">\n`people:write` ou `companies:write`\n</Accordion>",
         "tags": ["Listas"],
         "requestBody": {
           "required": true,
@@ -118,7 +118,7 @@
       "patch": {
         "operationId": "updateList",
         "summary": "Atualizar lista",
-        "description": "Atualiza uma lista de contatos. Apenas os campos enviados no body são alterados.\n\n**Escopo:** `people:write` ou `companies:write`.",
+        "description": "Atualiza uma lista de contatos. Apenas os campos enviados no body são alterados.\n\n<Accordion title=\"Escopo necessário\">\n`people:write` ou `companies:write`\n</Accordion>",
         "tags": ["Listas"],
         "parameters": [{ "$ref": "#/components/parameters/id" }],
         "requestBody": {
@@ -150,7 +150,7 @@
       "delete": {
         "operationId": "deleteList",
         "summary": "Deletar lista",
-        "description": "Realiza o soft delete de uma lista de contatos. O registro não ficará mais acessível via API.\n\n**Escopo:** `people:write` ou `companies:write`.",
+        "description": "Realiza o soft delete de uma lista de contatos. O registro não ficará mais acessível via API.\n\n<Accordion title=\"Escopo necessário\">\n`people:write` ou `companies:write`\n</Accordion>",
         "tags": ["Listas"],
         "parameters": [{ "$ref": "#/components/parameters/id" }],
         "responses": {

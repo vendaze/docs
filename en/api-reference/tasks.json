@@ -22,7 +22,7 @@
       "get": {
         "operationId": "listTasks",
         "summary": "List tasks",
-        "description": "Returns a paginated list of tasks in the workspace. Supports filtering by `person_id`, `company_id`, `deal_id`, `type_id`, `priority`, and `completed`. Each task includes the `type` object embedded.\n\n**Scope:** `tasks:read`.",
+        "description": "Returns a paginated list of tasks in the workspace. Supports filtering by `person_id`, `company_id`, `deal_id`, `type_id`, `priority`, and `completed`. Each task includes the `type` object embedded.\n\n<Accordion title=\"Required scope\">\n`tasks:read`\n</Accordion>",
         "tags": ["Tasks"],
         "parameters": [
           {
@@ -139,7 +139,7 @@
       "post": {
         "operationId": "createTask",
         "summary": "Create a task",
-        "description": "Creates a new task in the workspace.\n\n**Scope:** `tasks:write`.\n\n`owner_email` must be the email of an existing workspace member. The API resolves it to the internal user ID.",
+        "description": "Creates a new task in the workspace.\n\n`owner_email` must be the email of an existing workspace member. The API resolves it to the internal user ID.\n\n<Accordion title=\"Required scope\">\n`tasks:write`\n</Accordion>",
         "tags": ["Tasks"],
         "requestBody": {
           "required": true,
@@ -171,7 +171,7 @@
       "patch": {
         "operationId": "updateTask",
         "summary": "Update a task",
-        "description": "Updates a task. Only fields included in the body are modified.\n\n**Scope:** `tasks:write`.\n\nSend `null` for `type_id`, `person_id`, `company_id`, `deal_id`, or `owner_email` to remove those associations. Send `null` for `priority` to clear the priority.",
+        "description": "Updates a task. Only fields included in the body are modified.\n\nSend `null` for `type_id`, `person_id`, `company_id`, `deal_id`, or `owner_email` to remove those associations. Send `null` for `priority` to clear the priority.\n\n<Accordion title=\"Required scope\">\n`tasks:write`\n</Accordion>",
         "tags": ["Tasks"],
         "parameters": [{ "$ref": "#/components/parameters/id" }],
         "requestBody": {
@@ -203,7 +203,7 @@
       "delete": {
         "operationId": "deleteTask",
         "summary": "Delete a task",
-        "description": "Permanently deletes a task. This operation is irreversible — tasks do not support soft delete.\n\n**Scope:** `tasks:write`.",
+        "description": "Permanently deletes a task. This operation is irreversible — tasks do not support soft delete.\n\n<Accordion title=\"Required scope\">\n`tasks:write`\n</Accordion>",
         "tags": ["Tasks"],
         "parameters": [{ "$ref": "#/components/parameters/id" }],
         "responses": {

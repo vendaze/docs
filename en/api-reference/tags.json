@@ -30,7 +30,7 @@
       "get": {
         "operationId": "listTags",
         "summary": "List tags",
-        "description": "Returns a paginated list of tags in the workspace.\n\n**Scope:** Any valid Vendaze scope.",
+        "description": "Returns a paginated list of tags in the workspace.\n\n<Accordion title=\"Required scope\">\nAny valid Vendaze scope.\n</Accordion>",
         "tags": ["Tags"],
         "parameters": [
           {
@@ -95,7 +95,7 @@
       "post": {
         "operationId": "createTag",
         "summary": "Create a tag",
-        "description": "Creates a new tag in the workspace.\n\n**Scope:** `people:write`, `companies:write`, or `deals:write`.\n\nThe `key` must be unique within the workspace and contain only lowercase letters, digits, and underscores between words (e.g. `hot_lead`). No spaces, accents, or other punctuation are allowed.",
+        "description": "Creates a new tag in the workspace.\n\nThe `key` must be unique within the workspace and contain only lowercase letters, digits, and underscores between words (e.g. `hot_lead`). No spaces, accents, or other punctuation are allowed.\n\n<Accordion title=\"Required scope\">\n`people:write`, `companies:write`, or `deals:write`\n</Accordion>",
         "tags": ["Tags"],
         "requestBody": {
           "required": true,
@@ -128,7 +128,7 @@
       "get": {
         "operationId": "getTag",
         "summary": "Get a tag",
-        "description": "Returns a tag by its `id` (UUID) or `key` (string).\n\n**Scope:** Any valid Vendaze scope.",
+        "description": "Returns a tag by its `id` (UUID) or `key` (string).\n\n<Accordion title=\"Required scope\">\nAny valid Vendaze scope.\n</Accordion>",
         "tags": ["Tags"],
         "parameters": [{ "$ref": "#/components/parameters/identifier" }],
         "responses": {
@@ -149,7 +149,7 @@
       "patch": {
         "operationId": "updateTag",
         "summary": "Update a tag",
-        "description": "Updates a tag by its `id` (UUID) or `key` (string). Only fields included in the body are modified.\n\n**Scope:** `people:write`, `companies:write`, or `deals:write`.\n\nTo remove a custom color and revert to the workspace default, send `null` for `color_text` or `color_background`.",
+        "description": "Updates a tag by its `id` (UUID) or `key` (string). Only fields included in the body are modified.\n\nTo remove a custom color and revert to the workspace default, send `null` for `color_text` or `color_background`.\n\n<Accordion title=\"Required scope\">\n`people:write`, `companies:write`, or `deals:write`\n</Accordion>",
         "tags": ["Tags"],
         "parameters": [{ "$ref": "#/components/parameters/identifier" }],
         "requestBody": {
@@ -182,7 +182,7 @@
       "delete": {
         "operationId": "deleteTag",
         "summary": "Delete a tag",
-        "description": "Soft-deletes a tag by its `id` (UUID) or `key` (string). All associations with people, companies, and deals are also removed.\n\n**Scope:** `people:write`, `companies:write`, or `deals:write`.",
+        "description": "Soft-deletes a tag by its `id` (UUID) or `key` (string). All associations with people, companies, and deals are also removed.\n\n<Accordion title=\"Required scope\">\n`people:write`, `companies:write`, or `deals:write`\n</Accordion>",
         "tags": ["Tags"],
         "parameters": [{ "$ref": "#/components/parameters/identifier" }],
         "responses": {

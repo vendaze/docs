@@ -22,7 +22,7 @@
       "get": {
         "operationId": "listTasks",
         "summary": "Listar tarefas",
-        "description": "Retorna uma lista paginada de tarefas do workspace. Suporta filtros por `person_id`, `company_id`, `deal_id`, `type_id`, `priority` e `completed`. Cada tarefa inclui o objeto `type` embutido.\n\n**Escopo:** `tasks:read`.",
+        "description": "Retorna uma lista paginada de tarefas do workspace. Suporta filtros por `person_id`, `company_id`, `deal_id`, `type_id`, `priority` e `completed`. Cada tarefa inclui o objeto `type` embutido.\n\n<Accordion title=\"Escopo necessário\">\n`tasks:read`\n</Accordion>",
         "tags": ["Tarefas"],
         "parameters": [
           {
@@ -139,7 +139,7 @@
       "post": {
         "operationId": "createTask",
         "summary": "Criar tarefa",
-        "description": "Cria uma nova tarefa no workspace.\n\n**Escopo:** `tasks:write`.\n\n`owner_email` deve ser o e-mail de um membro existente do workspace. A API resolve internamente para o ID do usuário.",
+        "description": "Cria uma nova tarefa no workspace.\n\n`owner_email` deve ser o e-mail de um membro existente do workspace. A API resolve internamente para o ID do usuário.\n\n<Accordion title=\"Escopo necessário\">\n`tasks:write`\n</Accordion>",
         "tags": ["Tarefas"],
         "requestBody": {
           "required": true,
@@ -171,7 +171,7 @@
       "patch": {
         "operationId": "updateTask",
         "summary": "Atualizar tarefa",
-        "description": "Atualiza uma tarefa. Apenas os campos enviados no body são alterados.\n\n**Escopo:** `tasks:write`.\n\nEnvie `null` para `type_id`, `person_id`, `company_id`, `deal_id` ou `owner_email` para remover essas associações. Envie `null` para `priority` para limpar a prioridade.",
+        "description": "Atualiza uma tarefa. Apenas os campos enviados no body são alterados.\n\nEnvie `null` para `type_id`, `person_id`, `company_id`, `deal_id` ou `owner_email` para remover essas associações. Envie `null` para `priority` para limpar a prioridade.\n\n<Accordion title=\"Escopo necessário\">\n`tasks:write`\n</Accordion>",
         "tags": ["Tarefas"],
         "parameters": [{ "$ref": "#/components/parameters/id" }],
         "requestBody": {
@@ -203,7 +203,7 @@
       "delete": {
         "operationId": "deleteTask",
         "summary": "Deletar tarefa",
-        "description": "Remove permanentemente uma tarefa. A operação é irreversível: tarefas não possuem soft delete.\n\n**Escopo:** `tasks:write`.",
+        "description": "Remove permanentemente uma tarefa. A operação é irreversível: tarefas não possuem soft delete.\n\n<Accordion title=\"Escopo necessário\">\n`tasks:write`\n</Accordion>",
         "tags": ["Tarefas"],
         "parameters": [{ "$ref": "#/components/parameters/id" }],
         "responses": {

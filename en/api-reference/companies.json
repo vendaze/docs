@@ -30,7 +30,7 @@
       "get": {
         "operationId": "listCompanies",
         "summary": "List companies",
-        "description": "Returns a paginated list of companies in the workspace. Does not include embedded `tags` or `lists`. `custom_fields` are included.",
+        "description": "Returns a paginated list of companies in the workspace. Does not include embedded `tags` or `lists`. `custom_fields` are included.\n\n<Accordion title=\"Required scope\">\n`companies:read`\n</Accordion>",
         "tags": ["Companies"],
         "parameters": [
           {
@@ -99,7 +99,7 @@
       "post": {
         "operationId": "createCompany",
         "summary": "Create a company",
-        "description": "Creates a new company in the workspace. Returns the created company with embedded `tags`, `lists`, and `custom_fields`.",
+        "description": "Creates a new company in the workspace. Returns the created company with embedded `tags`, `lists`, and `custom_fields`.\n\n<Accordion title=\"Required scope\">\n`companies:write`\n</Accordion>",
         "tags": ["Companies"],
         "requestBody": {
           "required": true,
@@ -147,7 +147,7 @@
       "get": {
         "operationId": "getCompany",
         "summary": "Get a company",
-        "description": "Returns a company by ID with embedded `tags`, `lists`, and `custom_fields`.",
+        "description": "Returns a company by ID with embedded `tags`, `lists`, and `custom_fields`.\n\n<Accordion title=\"Required scope\">\n`companies:read`\n</Accordion>",
         "tags": ["Companies"],
         "parameters": [
           {
@@ -182,7 +182,7 @@
       "patch": {
         "operationId": "updateCompany",
         "summary": "Update a company",
-        "description": "Updates a company. Only fields included in the body are modified. Returns the updated company with embedded `tags`, `lists`, and `custom_fields`.",
+        "description": "Updates a company. Only fields included in the body are modified. Returns the updated company with embedded `tags`, `lists`, and `custom_fields`.\n\n<Accordion title=\"Required scope\">\n`companies:write`\n</Accordion>",
         "tags": ["Companies"],
         "parameters": [
           {
@@ -233,7 +233,7 @@
       "delete": {
         "operationId": "deleteCompany",
         "summary": "Delete a company",
-        "description": "Soft-deletes a company. The record is no longer accessible via the API.",
+        "description": "Soft-deletes a company. The record is no longer accessible via the API.\n\n<Accordion title=\"Required scope\">\n`companies:write`\n</Accordion>",
         "tags": ["Companies"],
         "parameters": [
           {

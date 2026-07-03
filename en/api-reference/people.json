@@ -30,7 +30,7 @@
       "get": {
         "operationId": "listPeople",
         "summary": "List people",
-        "description": "Returns a paginated list of people in the workspace. Does not include embedded `company`, `tags`, or `lists`. `custom_fields` are included.",
+        "description": "Returns a paginated list of people in the workspace. Does not include embedded `company`, `tags`, or `lists`. `custom_fields` are included.\n\n<Accordion title=\"Required scope\">\n`people:read`\n</Accordion>",
         "tags": ["People"],
         "parameters": [
           {
@@ -99,7 +99,7 @@
       "post": {
         "operationId": "createPerson",
         "summary": "Create a person",
-        "description": "Creates a new person in the workspace. Returns the created person with embedded `company`, `tags`, `lists`, and `custom_fields`.",
+        "description": "Creates a new person in the workspace. Returns the created person with embedded `company`, `tags`, `lists`, and `custom_fields`.\n\n<Accordion title=\"Required scope\">\n`people:write`\n</Accordion>",
         "tags": ["People"],
         "requestBody": {
           "required": true,
@@ -147,7 +147,7 @@
       "get": {
         "operationId": "getPerson",
         "summary": "Get a person",
-        "description": "Returns a person by ID with embedded `company`, `tags`, `lists`, and `custom_fields`.",
+        "description": "Returns a person by ID with embedded `company`, `tags`, `lists`, and `custom_fields`.\n\n<Accordion title=\"Required scope\">\n`people:read`\n</Accordion>",
         "tags": ["People"],
         "parameters": [
           {
@@ -182,7 +182,7 @@
       "patch": {
         "operationId": "updatePerson",
         "summary": "Update a person",
-        "description": "Updates a person. Only fields included in the body are modified. Returns the updated person with embedded `company`, `tags`, `lists`, and `custom_fields`.",
+        "description": "Updates a person. Only fields included in the body are modified. Returns the updated person with embedded `company`, `tags`, `lists`, and `custom_fields`.\n\n<Accordion title=\"Required scope\">\n`people:write`\n</Accordion>",
         "tags": ["People"],
         "parameters": [
           {
@@ -233,7 +233,7 @@
       "delete": {
         "operationId": "deletePerson",
         "summary": "Delete a person",
-        "description": "Soft-deletes a person. The record is no longer accessible via the API.",
+        "description": "Soft-deletes a person. The record is no longer accessible via the API.\n\n<Accordion title=\"Required scope\">\n`people:write`\n</Accordion>",
         "tags": ["People"],
         "parameters": [
           {

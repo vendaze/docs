@@ -30,7 +30,7 @@
       "get": {
         "operationId": "listTags",
         "summary": "Listar tags",
-        "description": "Retorna uma lista paginada das tags do workspace.\n\n**Escopo:** Qualquer escopo válido da Vendaze.",
+        "description": "Retorna uma lista paginada das tags do workspace.\n\n<Accordion title=\"Escopo necessário\">\nQualquer escopo válido da Vendaze.\n</Accordion>",
         "tags": ["Tags"],
         "parameters": [
           {
@@ -95,7 +95,7 @@
       "post": {
         "operationId": "createTag",
         "summary": "Criar tag",
-        "description": "Cria uma nova tag no workspace.\n\n**Escopo:** `people:write`, `companies:write` ou `deals:write`.\n\nA `key` deve ser única no workspace e conter apenas letras minúsculas, dígitos e underscores entre palavras (ex: `lead_quente`). Espaços, acentos e outros caracteres não são permitidos.",
+        "description": "Cria uma nova tag no workspace.\n\nA `key` deve ser única no workspace e conter apenas letras minúsculas, dígitos e underscores entre palavras (ex: `lead_quente`). Espaços, acentos e outros caracteres não são permitidos.\n\n<Accordion title=\"Escopo necessário\">\n`people:write`, `companies:write` ou `deals:write`\n</Accordion>",
         "tags": ["Tags"],
         "requestBody": {
           "required": true,
@@ -128,7 +128,7 @@
       "get": {
         "operationId": "getTag",
         "summary": "Buscar tag",
-        "description": "Retorna uma tag pelo `id` (UUID) ou `key` (string).\n\n**Escopo:** Qualquer escopo válido da Vendaze.",
+        "description": "Retorna uma tag pelo `id` (UUID) ou `key` (string).\n\n<Accordion title=\"Escopo necessário\">\nQualquer escopo válido da Vendaze.\n</Accordion>",
         "tags": ["Tags"],
         "parameters": [{ "$ref": "#/components/parameters/identifier" }],
         "responses": {
@@ -149,7 +149,7 @@
       "patch": {
         "operationId": "updateTag",
         "summary": "Atualizar tag",
-        "description": "Atualiza uma tag pelo `id` (UUID) ou `key` (string). Apenas os campos enviados no body são alterados.\n\n**Escopo:** `people:write`, `companies:write` ou `deals:write`.\n\nPara remover uma cor customizada e reverter para o padrão do workspace, envie `null` em `color_text` ou `color_background`.",
+        "description": "Atualiza uma tag pelo `id` (UUID) ou `key` (string). Apenas os campos enviados no body são alterados.\n\nPara remover uma cor customizada e reverter para o padrão do workspace, envie `null` em `color_text` ou `color_background`.\n\n<Accordion title=\"Escopo necessário\">\n`people:write`, `companies:write` ou `deals:write`\n</Accordion>",
         "tags": ["Tags"],
         "parameters": [{ "$ref": "#/components/parameters/identifier" }],
         "requestBody": {
@@ -182,7 +182,7 @@
       "delete": {
         "operationId": "deleteTag",
         "summary": "Deletar tag",
-        "description": "Realiza o soft delete de uma tag pelo `id` (UUID) ou `key` (string). Todas as associações da tag com pessoas, empresas e deals também são removidas.\n\n**Escopo:** `people:write`, `companies:write` ou `deals:write`.",
+        "description": "Realiza o soft delete de uma tag pelo `id` (UUID) ou `key` (string). Todas as associações da tag com pessoas, empresas e deals também são removidas.\n\n<Accordion title=\"Escopo necessário\">\n`people:write`, `companies:write` ou `deals:write`\n</Accordion>",
         "tags": ["Tags"],
         "parameters": [{ "$ref": "#/components/parameters/identifier" }],
         "responses": {

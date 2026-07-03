@@ -17,7 +17,7 @@
       "get": {
         "operationId": "listTaskTypes",
         "summary": "List task types",
-        "description": "Returns a paginated list of task types in the workspace.\n\n**Scope:** `tasks:read`.",
+        "description": "Returns a paginated list of task types in the workspace.\n\n<Accordion title=\"Required scope\">\n`tasks:read`\n</Accordion>",
         "tags": ["Task Types"],
         "parameters": [
           {
@@ -77,7 +77,7 @@
       "post": {
         "operationId": "createTaskType",
         "summary": "Create a task type",
-        "description": "Creates a new task type in the workspace.\n\n**Scope:** `tasks:write`.\n\nThe `key` must be unique within the workspace and contain only lowercase letters, digits, and underscores between words (e.g. `follow_up`).",
+        "description": "Creates a new task type in the workspace.\n\nThe `key` must be unique within the workspace and contain only lowercase letters, digits, and underscores between words (e.g. `follow_up`).\n\n<Accordion title=\"Required scope\">\n`tasks:write`\n</Accordion>",
         "tags": ["Task Types"],
         "requestBody": {
           "required": true,
@@ -108,7 +108,7 @@
       "patch": {
         "operationId": "updateTaskType",
         "summary": "Update a task type",
-        "description": "Updates a task type. Only fields included in the body are modified.\n\n**Scope:** `tasks:write`.",
+        "description": "Updates a task type. Only fields included in the body are modified.\n\n<Accordion title=\"Required scope\">\n`tasks:write`\n</Accordion>",
         "tags": ["Task Types"],
         "parameters": [{ "$ref": "#/components/parameters/id" }],
         "requestBody": {
@@ -139,7 +139,7 @@
       "delete": {
         "operationId": "deleteTaskType",
         "summary": "Delete a task type",
-        "description": "Permanently deletes a task type. Tasks currently assigned to this type will have their `type` set to `null`.\n\n**Scope:** `tasks:write`.",
+        "description": "Permanently deletes a task type. Tasks currently assigned to this type will have their `type` set to `null`.\n\n<Accordion title=\"Required scope\">\n`tasks:write`\n</Accordion>",
         "tags": ["Task Types"],
         "parameters": [{ "$ref": "#/components/parameters/id" }],
         "responses": {
