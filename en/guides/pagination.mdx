@@ -1,0 +1,121 @@
+---
+title: 'Pagination'
+description: 'Learn how list endpoints work: page size, ordering, and navigating through results.'
+icon: 'table-list'
+keywords: ['pagination', 'list endpoints', 'per_page', 'order_by', 'has_more', 'Vendaze API']
+---
+
+All list endpoints in the Vendaze API return paginated results. The response always includes a `data` array and a `meta` object with navigation details.
+
+## Query parameters
+
+| Parameter  | Type    | Default      | Description                                         |
+| ---------- | ------- | ------------ | --------------------------------------------------- |
+| `page`     | integer | `1`          | Page number. Must be a positive integer.            |
+| `per_page` | integer | `50`         | Number of records per page. Maximum: `50`.          |
+| `order_by` | string  | `created_at` | Field to sort by. Accepted values vary by endpoint. |
+| `order`    | string  | `desc`       | Sort direction. Must be `asc` or `desc`.            |
+
+### Accepted `order_by` values by resource
+
+| Resource    | Accepted values                         |
+| ----------- | --------------------------------------- |
+| `people`    | `created_at`, `updated_at`, `full_name` |
+| `companies` | `created_at`, `updated_at`, `full_name` |
+
+## Response structure
+
+```json
+{
+  "data": [
+    {
+      "id": "a1b2c3d4-e5f6-7890-abcd-ef1234567890",
+      "full_name": "Maria Silva",
+      "emails": [{ "email": "maria@company.com", "type": "work" }],
+      "phones": [{ "phone": "+5511999990001", "type": "mobile" }],
+      "owner": {
+        "id": "b2c3d4e5-f6a7-8901-bcde-f12345678901",
+        "email": "joao@company.com",
+        "name": "João Silva"
+      },
+      "avatar_url": null,
+      "entity_id": "g7wwkh0",
+      "created_at": "2026-01-15T10:30:00Z",
+      "updated_at": "2026-01-15T10:30:00Z",
+      "custom_fields": []
+    }
+  ],
+  "meta": {
+    "total": 120,
+    "page": 1,
+    "per_page": 50,
+    "has_more": true
+  }
+}
+```
+
+### `meta` fields
+
+| Field      | Type    | Description                                                  |
+| ---------- | ------- | ------------------------------------------------------------ |
+| `total`    | integer | Total number of records in the workspace matching the query. |
+| `page`     | integer | Current page number.                                         |
+| `per_page` | integer | Number of records returned in this page.                     |
+| `has_more` | boolean | `true` when there are additional pages after this one.       |
+
+## List vs. detail responses
+
+List endpoints return a compact object per record. Embedded relations (`company`, `tags`, `lists`) are not included in list responses. Use the individual `GET /:id` endpoint to retrieve a record with all embedded data.
+
+| Field           | List response | Detail response (`GET /:id`) |
+| --------------- | :-----------: | :--------------------------: |
+| Base fields     |      Yes      |             Yes              |
+| `custom_fields` |      Yes      |             Yes              |
+| `company`       |      No       |      Yes (people only)       |
+| `tags`          |      No       |             Yes              |
+| `lists`         |      No       |             Yes              |
+
+## Iterating through all pages
+
+```javascript
+async function fetchAllPeople(accessToken) {
+  const results = [];
+  let page = 1;
+  let hasMore = true;
+
+  while (hasMore) {
+    const res = await fetch(
+      `https://api.vendaze.com/v1/people?page=${page}&per_page=50&order_by=created_at&order=asc`,
+      { headers: { Authorization: `Bearer ${accessToken}` } },
+    );
+
+    if (!res.ok) throw new Error(`Request failed: ${res.status}`);
+
+    const { data, meta } = await res.json();
+    results.push(...data);
+
+    hasMore = meta.has_more;
+    page += 1;
+  }
+
+  return results;
+}
+```
+
+## Validation errors
+
+Sending invalid pagination parameters returns a `422` with the specific field errors:
+
+```json
+{
+  "error": {
+    "code": "validation_error",
+    "message": "Validation failed.",
+    "fields": {
+      "per_page": "Must be between 1 and 50.",
+      "order_by": "Must be one of: created_at, updated_at, full_name."
+    },
+    "request_id": "550e8400-e29b-41d4-a716-446655440000"
+  }
+}
+```
