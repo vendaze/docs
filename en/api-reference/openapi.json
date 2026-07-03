@@ -584,7 +584,7 @@
       "get": {
         "operationId": "listPeople",
         "summary": "List people",
-        "description": "Returns a paginated list of people in the workspace. Does not include embedded `company`, `tags`, or `lists`. `custom_fields` are included.\n\n<Accordion title=\"Required scope\">\n`people:read`\n</Accordion>",
+        "description": "Returns a paginated list of people in the workspace.\n\n<Accordion title=\"Required scope\">\n`people:read`\n</Accordion>",
         "tags": [
           "People"
         ],
@@ -705,7 +705,7 @@
       "post": {
         "operationId": "createPerson",
         "summary": "Create a person",
-        "description": "Creates a new person in the workspace. Returns the created person with embedded `company`, `tags`, `lists`, and `custom_fields`.\n\n<Accordion title=\"Required scope\">\n`people:write`\n</Accordion>",
+        "description": "Creates a new person in the workspace.\n\n<Accordion title=\"Required scope\">\n`people:write`\n</Accordion>",
         "tags": [
           "People"
         ],
@@ -755,7 +755,7 @@
       "get": {
         "operationId": "getPerson",
         "summary": "Get a person",
-        "description": "Returns a person by ID with embedded `company`, `tags`, `lists`, and `custom_fields`.\n\n<Accordion title=\"Required scope\">\n`people:read`\n</Accordion>",
+        "description": "Returns the person corresponding to the ID.\n\n<Accordion title=\"Required scope\">\n`people:read`\n</Accordion>",
         "tags": [
           "People"
         ],
@@ -792,7 +792,7 @@
       "patch": {
         "operationId": "updatePerson",
         "summary": "Update a person",
-        "description": "Updates a person. Only fields included in the body are modified. Returns the updated person with embedded `company`, `tags`, `lists`, and `custom_fields`.\n\n<Accordion title=\"Required scope\">\n`people:write`\n</Accordion>",
+        "description": "Updates a person. Only the submitted fields are modified.\n\n<Accordion title=\"Required scope\">\n`people:write`\n</Accordion>",
         "tags": [
           "People"
         ],
@@ -887,7 +887,7 @@
       "get": {
         "operationId": "listCompanies",
         "summary": "List companies",
-        "description": "Returns a paginated list of companies in the workspace. Does not include embedded `tags` or `lists`. `custom_fields` are included.\n\n<Accordion title=\"Required scope\">\n`companies:read`\n</Accordion>",
+        "description": "Returns a paginated list of companies in the workspace.\n\n<Accordion title=\"Required scope\">\n`companies:read`\n</Accordion>",
         "tags": [
           "Companies"
         ],
@@ -1008,7 +1008,7 @@
       "post": {
         "operationId": "createCompany",
         "summary": "Create a company",
-        "description": "Creates a new company in the workspace. Returns the created company with embedded `tags`, `lists`, and `custom_fields`.\n\n<Accordion title=\"Required scope\">\n`companies:write`\n</Accordion>",
+        "description": "Creates a new company in the workspace.\n\n<Accordion title=\"Required scope\">\n`companies:write`\n</Accordion>",
         "tags": [
           "Companies"
         ],
@@ -1058,7 +1058,7 @@
       "get": {
         "operationId": "getCompany",
         "summary": "Get a company",
-        "description": "Returns a company by ID with embedded `tags`, `lists`, and `custom_fields`.\n\n<Accordion title=\"Required scope\">\n`companies:read`\n</Accordion>",
+        "description": "Returns the company corresponding to the ID.\n\n<Accordion title=\"Required scope\">\n`companies:read`\n</Accordion>",
         "tags": [
           "Companies"
         ],
@@ -1095,7 +1095,7 @@
       "patch": {
         "operationId": "updateCompany",
         "summary": "Update a company",
-        "description": "Updates a company. Only fields included in the body are modified. Returns the updated company with embedded `tags`, `lists`, and `custom_fields`.\n\n<Accordion title=\"Required scope\">\n`companies:write`\n</Accordion>",
+        "description": "Updates a company. Only the fields sent in the body are modified.\n\n<Accordion title=\"Required scope\">\n`companies:write`\n</Accordion>",
         "tags": [
           "Companies"
         ],
@@ -1190,7 +1190,7 @@
       "post": {
         "operationId": "createDeal",
         "summary": "Create a deal",
-        "description": "Creates a new deal in the workspace. The `source` field is automatically set to the name of the OAuth app making the request and cannot be set by the caller.\n\n<Accordion title=\"Required scope\">\n`deals:write`\n</Accordion>",
+        "description": "Creates a new deal in the workspace.\n\n<Accordion title=\"Required scope\">\n`deals:write`\n</Accordion>",
         "tags": [
           "Deals"
         ],
@@ -1254,7 +1254,7 @@
       "get": {
         "operationId": "getDeal",
         "summary": "Get a deal",
-        "description": "Returns a deal by ID with embedded pipeline, stage, products, custom fields, tags, people, and companies.\n\n<Accordion title=\"Required scope\">\n`deals:read`\n</Accordion>",
+        "description": "Returns the deal corresponding to the ID.\n\n<Accordion title=\"Required scope\">\n`deals:read`\n</Accordion>",
         "tags": [
           "Deals"
         ],
@@ -1291,7 +1291,7 @@
       "patch": {
         "operationId": "updateDeal",
         "summary": "Update a deal",
-        "description": "Updates a deal. Only fields included in the body are modified. `source` cannot be changed.\n\n<Accordion title=\"Required scope\">\n`deals:write`\n</Accordion>",
+        "description": "Updates a deal. Only the fields sent are modified.\n\n<Accordion title=\"Required scope\">\n`deals:write`\n</Accordion>",
         "tags": [
           "Deals"
         ],
@@ -1400,7 +1400,7 @@
       "get": {
         "operationId": "listTasks",
         "summary": "List tasks",
-        "description": "Returns a paginated list of tasks in the workspace. Supports filtering by `person_id`, `company_id`, `deal_id`, `type_id`, `priority`, and `completed`. Each task includes the `type` object embedded.\n\n<Accordion title=\"Required scope\">\n`tasks:read`\n</Accordion>",
+        "description": "Returns a paginated list of workspace tasks.\n\n<Accordion title=\"Required scope\">\n`tasks:read`\n</Accordion>",
         "tags": [
           "Tasks"
         ],
@@ -1580,7 +1580,7 @@
       "post": {
         "operationId": "createTask",
         "summary": "Create a task",
-        "description": "Creates a new task in the workspace.\n\n`owner_email` must be the email of an existing workspace member. The API resolves it to the internal user ID.\n\n<Accordion title=\"Required scope\">\n`tasks:write`\n</Accordion>",
+        "description": "Creates a new task in the workspace.\n\n<Accordion title=\"Required scope\">\n`tasks:write`\n</Accordion>",
         "tags": [
           "Tasks"
         ],
@@ -1630,7 +1630,7 @@
       "patch": {
         "operationId": "updateTask",
         "summary": "Update a task",
-        "description": "Updates a task. Only fields included in the body are modified.\n\nSend `null` for `type_id`, `person_id`, `company_id`, `deal_id`, or `owner_email` to remove those associations. Send `null` for `priority` to clear the priority.\n\n<Accordion title=\"Required scope\">\n`tasks:write`\n</Accordion>",
+        "description": "Updates a task. Only the fields sent in the body are modified.\n\n<Accordion title=\"Required scope\">\n`tasks:write`\n</Accordion>",
         "tags": [
           "Tasks"
         ],
@@ -1686,7 +1686,7 @@
       "delete": {
         "operationId": "deleteTask",
         "summary": "Delete a task",
-        "description": "Permanently deletes a task. This operation is irreversible — tasks do not support soft delete.\n\n<Accordion title=\"Required scope\">\n`tasks:write`\n</Accordion>",
+        "description": "Permanently deletes a task. This operation is irreversible. Tasks do not support soft delete.\n\n<Accordion title=\"Required scope\">\n`tasks:write`\n</Accordion>",
         "tags": [
           "Tasks"
         ],
@@ -1831,7 +1831,7 @@
       "post": {
         "operationId": "createTaskType",
         "summary": "Create a task type",
-        "description": "Creates a new task type in the workspace.\n\nThe `key` must be unique within the workspace and contain only lowercase letters, digits, and underscores between words (e.g. `follow_up`).\n\n<Accordion title=\"Required scope\">\n`tasks:write`\n</Accordion>",
+        "description": "Creates a new task type in the workspace.\n\n<Accordion title=\"Required scope\">\n`tasks:write`\n</Accordion>",
         "tags": [
           "Task Types"
         ],
@@ -1943,7 +1943,7 @@
       "delete": {
         "operationId": "deleteTaskType",
         "summary": "Delete a task type",
-        "description": "Permanently deletes a task type. Tasks currently assigned to this type will have their `type` set to `null`.\n\n<Accordion title=\"Required scope\">\n`tasks:write`\n</Accordion>",
+        "description": "Permanently removes a task type.\n\n<Accordion title=\"Required scope\">\n`tasks:write`\n</Accordion>",
         "tags": [
           "Task Types"
         ],
@@ -2088,7 +2088,7 @@
       "post": {
         "operationId": "createTag",
         "summary": "Create a tag",
-        "description": "Creates a new tag in the workspace.\n\nThe `key` must be unique within the workspace and contain only lowercase letters, digits, and underscores between words (e.g. `hot_lead`). No spaces, accents, or other punctuation are allowed.\n\n<Accordion title=\"Required scope\">\n`people:write`, `companies:write`, or `deals:write`\n</Accordion>",
+        "description": "Creates a new tag in the workspace.\n\n<Accordion title=\"Required scope\">\n`people:write`, `companies:write`, or `deals:write`\n</Accordion>",
         "tags": [
           "Tags"
         ],
@@ -2178,7 +2178,7 @@
       "patch": {
         "operationId": "updateTag",
         "summary": "Update a tag",
-        "description": "Updates a tag by its `id` (UUID) or `key` (string). Only fields included in the body are modified.\n\nTo remove a custom color and revert to the workspace default, send `null` for `color_text` or `color_background`.\n\n<Accordion title=\"Required scope\">\n`people:write`, `companies:write`, or `deals:write`\n</Accordion>",
+        "description": "Updates a tag by its `id` (UUID) or `key` (string). Only fields included in the body are modified.\n\n<Accordion title=\"Required scope\">\n`people:write`, `companies:write`, or `deals:write`\n</Accordion>",
         "tags": [
           "Tags"
         ],
@@ -2237,7 +2237,7 @@
       "delete": {
         "operationId": "deleteTag",
         "summary": "Delete a tag",
-        "description": "Soft-deletes a tag by its `id` (UUID) or `key` (string). All associations with people, companies, and deals are also removed.\n\n<Accordion title=\"Required scope\">\n`people:write`, `companies:write`, or `deals:write`\n</Accordion>",
+        "description": "Soft-deletes a tag by its `id` (UUID) or `key` (string).\n\n<Accordion title=\"Required scope\">\n`people:write`, `companies:write`, or `deals:write`\n</Accordion>",
         "tags": [
           "Tags"
         ],
@@ -2280,7 +2280,7 @@
       "get": {
         "operationId": "listLists",
         "summary": "List lists",
-        "description": "Returns a paginated list of contact lists in the workspace. Each item includes `people_count` and `companies_count` with the current number of members.\n\n<Accordion title=\"Required scope\">\n`people:read` or `companies:read`\n</Accordion>",
+        "description": "Returns a paginated list of contact lists in the workspace.\n\n<Accordion title=\"Required scope\">\n`people:read` or `companies:read`\n</Accordion>",
         "tags": [
           "Lists"
         ],
@@ -3619,7 +3619,7 @@
       },
       "PersonList": {
         "type": "object",
-        "description": "Compact person object returned in list responses. Does not include embedded `company`, `tags`, or `lists`.",
+        "description": "Compact person object returned in list responses.",
         "properties": {
           "id": {
             "type": "string",
@@ -3946,7 +3946,7 @@
       },
       "CompanyList": {
         "type": "object",
-        "description": "Compact company object returned in list responses. Does not include embedded `tags` or `lists`.",
+        "description": "Compact company object returned in list responses.",
         "properties": {
           "id": {
             "type": "string",

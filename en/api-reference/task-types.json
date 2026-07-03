@@ -77,7 +77,7 @@
       "post": {
         "operationId": "createTaskType",
         "summary": "Create a task type",
-        "description": "Creates a new task type in the workspace.\n\nThe `key` must be unique within the workspace and contain only lowercase letters, digits, and underscores between words (e.g. `follow_up`).\n\n<Accordion title=\"Required scope\">\n`tasks:write`\n</Accordion>",
+        "description": "Creates a new task type in the workspace.\n\n<Accordion title=\"Required scope\">\n`tasks:write`\n</Accordion>",
         "tags": ["Task Types"],
         "requestBody": {
           "required": true,
@@ -139,7 +139,7 @@
       "delete": {
         "operationId": "deleteTaskType",
         "summary": "Delete a task type",
-        "description": "Permanently deletes a task type. Tasks currently assigned to this type will have their `type` set to `null`.\n\n<Accordion title=\"Required scope\">\n`tasks:write`\n</Accordion>",
+        "description": "Permanently removes a task type.\n\n<Accordion title=\"Required scope\">\n`tasks:write`\n</Accordion>",
         "tags": ["Task Types"],
         "parameters": [{ "$ref": "#/components/parameters/id" }],
         "responses": {

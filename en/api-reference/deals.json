@@ -30,7 +30,7 @@
       "post": {
         "operationId": "createDeal",
         "summary": "Create a deal",
-        "description": "Creates a new deal in the workspace. The `source` field is automatically set to the name of the OAuth app making the request and cannot be set by the caller.\n\n<Accordion title=\"Required scope\">\n`deals:write`\n</Accordion>",
+        "description": "Creates a new deal in the workspace.\n\n<Accordion title=\"Required scope\">\n`deals:write`\n</Accordion>",
         "tags": ["Deals"],
         "requestBody": {
           "required": true,
@@ -92,7 +92,7 @@
       "get": {
         "operationId": "getDeal",
         "summary": "Get a deal",
-        "description": "Returns a deal by ID with embedded pipeline, stage, products, custom fields, tags, people, and companies.\n\n<Accordion title=\"Required scope\">\n`deals:read`\n</Accordion>",
+        "description": "Returns the deal corresponding to the ID.\n\n<Accordion title=\"Required scope\">\n`deals:read`\n</Accordion>",
         "tags": ["Deals"],
         "parameters": [
           {
@@ -127,7 +127,7 @@
       "patch": {
         "operationId": "updateDeal",
         "summary": "Update a deal",
-        "description": "Updates a deal. Only fields included in the body are modified. `source` cannot be changed.\n\n<Accordion title=\"Required scope\">\n`deals:write`\n</Accordion>",
+        "description": "Updates a deal. Only the fields sent are modified.\n\n<Accordion title=\"Required scope\">\n`deals:write`\n</Accordion>",
         "tags": ["Deals"],
         "parameters": [
           {

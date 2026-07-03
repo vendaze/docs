@@ -30,7 +30,7 @@
       "get": {
         "operationId": "listPeople",
         "summary": "List people",
-        "description": "Returns a paginated list of people in the workspace. Does not include embedded `company`, `tags`, or `lists`. `custom_fields` are included.\n\n<Accordion title=\"Required scope\">\n`people:read`\n</Accordion>",
+        "description": "Returns a paginated list of people in the workspace.\n\n<Accordion title=\"Required scope\">\n`people:read`\n</Accordion>",
         "tags": ["People"],
         "parameters": [
           {
@@ -99,7 +99,7 @@
       "post": {
         "operationId": "createPerson",
         "summary": "Create a person",
-        "description": "Creates a new person in the workspace. Returns the created person with embedded `company`, `tags`, `lists`, and `custom_fields`.\n\n<Accordion title=\"Required scope\">\n`people:write`\n</Accordion>",
+        "description": "Creates a new person in the workspace.\n\n<Accordion title=\"Required scope\">\n`people:write`\n</Accordion>",
         "tags": ["People"],
         "requestBody": {
           "required": true,
@@ -147,7 +147,7 @@
       "get": {
         "operationId": "getPerson",
         "summary": "Get a person",
-        "description": "Returns a person by ID with embedded `company`, `tags`, `lists`, and `custom_fields`.\n\n<Accordion title=\"Required scope\">\n`people:read`\n</Accordion>",
+        "description": "Returns the person corresponding to the ID.\n\n<Accordion title=\"Required scope\">\n`people:read`\n</Accordion>",
         "tags": ["People"],
         "parameters": [
           {
@@ -182,7 +182,7 @@
       "patch": {
         "operationId": "updatePerson",
         "summary": "Update a person",
-        "description": "Updates a person. Only fields included in the body are modified. Returns the updated person with embedded `company`, `tags`, `lists`, and `custom_fields`.\n\n<Accordion title=\"Required scope\">\n`people:write`\n</Accordion>",
+        "description": "Updates a person. Only the submitted fields are modified.\n\n<Accordion title=\"Required scope\">\n`people:write`\n</Accordion>",
         "tags": ["People"],
         "parameters": [
           {
@@ -926,7 +926,7 @@
       },
       "PersonList": {
         "type": "object",
-        "description": "Compact person object returned in list responses. Does not include embedded `company`, `tags`, or `lists`.",
+        "description": "Compact person object returned in list responses.",
         "properties": {
           "id": { "type": "string", "format": "uuid" },
           "full_name": { "type": "string", "maxLength": 70, "example": "Maria Silva" },

@@ -22,7 +22,7 @@
       "get": {
         "operationId": "listLists",
         "summary": "List lists",
-        "description": "Returns a paginated list of contact lists in the workspace. Each item includes `people_count` and `companies_count` with the current number of members.\n\n<Accordion title=\"Required scope\">\n`people:read` or `companies:read`\n</Accordion>",
+        "description": "Returns a paginated list of contact lists in the workspace.\n\n<Accordion title=\"Required scope\">\n`people:read` or `companies:read`\n</Accordion>",
         "tags": ["Lists"],
         "parameters": [
           {
