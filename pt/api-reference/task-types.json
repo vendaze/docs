@@ -99,7 +99,7 @@
       "patch": {
         "operationId": "updateTaskType",
         "summary": "Atualizar tipo de tarefa",
-        "description": "Atualiza um tipo de tarefa. Apenas os campos enviados no body são alterados.\n\n**Escopo:** `tasks:write`.\n\nEnvie `null` para `key` para remover a chave deste tipo.",
+        "description": "Atualiza um tipo de tarefa. Apenas os campos enviados no body são alterados.\n\n**Escopo:** `tasks:write`.",
         "tags": ["Tipos de Tarefas"],
         "parameters": [{ "$ref": "#/components/parameters/id" }],
         "requestBody": {
@@ -383,9 +383,8 @@
             "type": "string",
             "minLength": 1,
             "maxLength": 40,
-            "nullable": true,
             "pattern": "^[a-z0-9]+(_[a-z0-9]+)*$",
-            "description": "Nova chave. Envie `null` para remover.",
+            "description": "Nova chave identificadora. Apenas letras minúsculas, dígitos e underscores.",
             "example": "reuniao"
           }
         }

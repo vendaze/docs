@@ -1884,7 +1884,7 @@
       "patch": {
         "operationId": "updateTaskType",
         "summary": "Update a task type",
-        "description": "Updates a task type. Only fields included in the body are modified.\n\n**Scope:** `tasks:write`.\n\nSend `null` for `key` to remove the key from this type.",
+        "description": "Updates a task type. Only fields included in the body are modified.\n\n**Scope:** `tasks:write`.",
         "tags": [
           "Task Types"
         ],
@@ -5178,9 +5178,8 @@
             "type": "string",
             "minLength": 1,
             "maxLength": 40,
-            "nullable": true,
             "pattern": "^[a-z0-9]+(_[a-z0-9]+)*$",
-            "description": "New identifier key. Send `null` to remove the key.",
+            "description": "New identifier key. Lowercase letters, digits, and underscores only.",
             "example": "phone_call"
           }
         }
