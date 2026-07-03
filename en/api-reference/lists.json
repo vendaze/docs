@@ -1,0 +1,415 @@
+{
+  "openapi": "3.1.0",
+  "info": {
+    "title": "Lists",
+    "description": "Manage contact lists in the workspace.",
+    "version": "1.0.0",
+    "contact": {
+      "name": "Vendaze Support",
+      "email": "suporte@vendaze.com"
+    }
+  },
+  "servers": [
+    {
+      "url": "https://api.vendaze.com",
+      "description": "Production"
+    }
+  ],
+  "security": [{ "bearerAuth": [] }],
+  "tags": [{ "name": "Lists" }],
+  "paths": {
+    "/v1/lists": {
+      "get": {
+        "operationId": "listLists",
+        "summary": "List lists",
+        "description": "Returns a paginated list of contact lists in the workspace. Each item includes `people_count` and `companies_count` with the current number of members.\n\n**Scope:** `people:read` or `companies:read`.",
+        "tags": ["Lists"],
+        "parameters": [
+          {
+            "name": "page",
+            "in": "query",
+            "schema": { "type": "integer", "minimum": 1, "default": 1 },
+            "description": "Page number."
+          },
+          {
+            "name": "per_page",
+            "in": "query",
+            "schema": { "type": "integer", "minimum": 1, "maximum": 100, "default": 50 },
+            "description": "Number of records per page. Maximum: 100."
+          },
+          {
+            "name": "order_by",
+            "in": "query",
+            "schema": { "type": "string", "enum": ["created_at", "name"], "default": "created_at" },
+            "description": "Field to sort by."
+          },
+          {
+            "name": "order",
+            "in": "query",
+            "schema": { "type": "string", "enum": ["asc", "desc"], "default": "desc" },
+            "description": "Sort direction."
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Lists returned successfully.",
+            "content": {
+              "application/json": {
+                "schema": { "$ref": "#/components/schemas/ListsListResponse" },
+                "example": {
+                  "data": [
+                    {
+                      "id": "a1b2c3d4-e5f6-7890-abcd-ef1234567890",
+                      "name": "Newsletter Subscribers",
+                      "people_count": 142,
+                      "companies_count": 0,
+                      "created_at": "2026-01-15T10:30:00Z"
+                    }
+                  ],
+                  "meta": {
+                    "total": 8,
+                    "page": 1,
+                    "per_page": 50,
+                    "has_more": false
+                  }
+                }
+              }
+            }
+          },
+          "401": { "$ref": "#/components/responses/Unauthorized" },
+          "403": { "$ref": "#/components/responses/InsufficientScope" },
+          "422": { "$ref": "#/components/responses/ValidationError" },
+          "429": { "$ref": "#/components/responses/RateLimitExceeded" },
+          "500": { "$ref": "#/components/responses/InternalError" }
+        }
+      },
+      "post": {
+        "operationId": "createList",
+        "summary": "Create a list",
+        "description": "Creates a new contact list in the workspace.\n\n**Scope:** `people:write` or `companies:write`.",
+        "tags": ["Lists"],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": { "$ref": "#/components/schemas/CreateListRequest" }
+            }
+          }
+        },
+        "responses": {
+          "201": {
+            "description": "List created successfully.",
+            "content": {
+              "application/json": {
+                "schema": { "$ref": "#/components/schemas/ListResponse" }
+              }
+            }
+          },
+          "400": { "$ref": "#/components/responses/BadRequest" },
+          "401": { "$ref": "#/components/responses/Unauthorized" },
+          "403": { "$ref": "#/components/responses/InsufficientScope" },
+          "422": { "$ref": "#/components/responses/ValidationError" },
+          "429": { "$ref": "#/components/responses/RateLimitExceeded" },
+          "500": { "$ref": "#/components/responses/InternalError" }
+        }
+      }
+    },
+    "/v1/lists/{id}": {
+      "patch": {
+        "operationId": "updateList",
+        "summary": "Update a list",
+        "description": "Updates a contact list. Only fields included in the body are modified.\n\n**Scope:** `people:write` or `companies:write`.",
+        "tags": ["Lists"],
+        "parameters": [{ "$ref": "#/components/parameters/id" }],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": { "$ref": "#/components/schemas/UpdateListRequest" }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "List updated successfully.",
+            "content": {
+              "application/json": {
+                "schema": { "$ref": "#/components/schemas/ListResponse" }
+              }
+            }
+          },
+          "400": { "$ref": "#/components/responses/BadRequest" },
+          "401": { "$ref": "#/components/responses/Unauthorized" },
+          "403": { "$ref": "#/components/responses/InsufficientScope" },
+          "404": { "$ref": "#/components/responses/NotFound" },
+          "422": { "$ref": "#/components/responses/ValidationError" },
+          "429": { "$ref": "#/components/responses/RateLimitExceeded" },
+          "500": { "$ref": "#/components/responses/InternalError" }
+        }
+      },
+      "delete": {
+        "operationId": "deleteList",
+        "summary": "Delete a list",
+        "description": "Soft-deletes a contact list. The record is no longer accessible via the API.\n\n**Scope:** `people:write` or `companies:write`.",
+        "tags": ["Lists"],
+        "parameters": [{ "$ref": "#/components/parameters/id" }],
+        "responses": {
+          "204": {
+            "description": "List deleted successfully.",
+            "content": {
+              "application/json": {
+                "schema": { "type": "object" },
+                "example": {}
+              }
+            }
+          },
+          "401": { "$ref": "#/components/responses/Unauthorized" },
+          "403": { "$ref": "#/components/responses/InsufficientScope" },
+          "404": { "$ref": "#/components/responses/NotFound" },
+          "429": { "$ref": "#/components/responses/RateLimitExceeded" },
+          "500": { "$ref": "#/components/responses/InternalError" }
+        }
+      }
+    }
+  },
+  "components": {
+    "securitySchemes": {
+      "bearerAuth": {
+        "type": "http",
+        "scheme": "bearer",
+        "description": "OAuth 2.1 access token."
+      }
+    },
+    "parameters": {
+      "id": {
+        "name": "id",
+        "in": "path",
+        "required": true,
+        "schema": { "type": "string", "format": "uuid" },
+        "description": "UUID of the resource."
+      }
+    },
+    "responses": {
+      "BadRequest": {
+        "description": "Malformed request body or empty update. Error code: `bad_request`. Possible messages: `\"Request body must be valid JSON.\"` or `\"No fields provided for update.\"`",
+        "content": {
+          "application/json": {
+            "schema": { "$ref": "#/components/schemas/ErrorResponse" },
+            "example": {
+              "error": {
+                "code": "bad_request",
+                "message": "Request body must be valid JSON.",
+                "request_id": "550e8400-e29b-41d4-a716-446655440000"
+              }
+            }
+          }
+        }
+      },
+      "Unauthorized": {
+        "description": "Token missing, invalid, or expired. Possible error codes: `unauthorized`, `token_expired`.",
+        "content": {
+          "application/json": {
+            "schema": { "$ref": "#/components/schemas/ErrorResponse" },
+            "example": {
+              "error": {
+                "code": "unauthorized",
+                "message": "Missing or invalid Authorization header.",
+                "request_id": "550e8400-e29b-41d4-a716-446655440000"
+              }
+            }
+          }
+        }
+      },
+      "InsufficientScope": {
+        "description": "Token lacks the required scope. Error code: `insufficient_scope`.",
+        "content": {
+          "application/json": {
+            "schema": { "$ref": "#/components/schemas/ErrorResponse" },
+            "example": {
+              "error": {
+                "code": "insufficient_scope",
+                "message": "This endpoint requires the 'people:write' scope.",
+                "request_id": "550e8400-e29b-41d4-a716-446655440000"
+              }
+            }
+          }
+        }
+      },
+      "NotFound": {
+        "description": "List not found, soft-deleted, or belongs to another workspace. Error code: `not_found`.",
+        "content": {
+          "application/json": {
+            "schema": { "$ref": "#/components/schemas/ErrorResponse" },
+            "example": {
+              "error": {
+                "code": "not_found",
+                "message": "List not found.",
+                "request_id": "550e8400-e29b-41d4-a716-446655440000"
+              }
+            }
+          }
+        }
+      },
+      "ValidationError": {
+        "description": "Input validation failed. Error code: `validation_error`.",
+        "content": {
+          "application/json": {
+            "schema": { "$ref": "#/components/schemas/ValidationErrorResponse" },
+            "example": {
+              "error": {
+                "code": "validation_error",
+                "message": "Validation failed.",
+                "fields": { "name": "String must contain at most 50 character(s)." },
+                "request_id": "550e8400-e29b-41d4-a716-446655440000"
+              }
+            }
+          }
+        }
+      },
+      "RateLimitExceeded": {
+        "description": "Rate limit exceeded. Error code: `rate_limit_exceeded`.",
+        "content": {
+          "application/json": {
+            "schema": { "$ref": "#/components/schemas/ErrorResponse" },
+            "example": {
+              "error": {
+                "code": "rate_limit_exceeded",
+                "message": "Rate limit exceeded. Try again in 60 seconds.",
+                "request_id": "550e8400-e29b-41d4-a716-446655440000"
+              }
+            }
+          }
+        }
+      },
+      "InternalError": {
+        "description": "Unexpected server error. Error code: `internal_error`.",
+        "content": {
+          "application/json": {
+            "schema": { "$ref": "#/components/schemas/ErrorResponse" },
+            "example": {
+              "error": {
+                "code": "internal_error",
+                "message": "An unexpected error occurred.",
+                "request_id": "550e8400-e29b-41d4-a716-446655440000"
+              }
+            }
+          }
+        }
+      }
+    },
+    "schemas": {
+      "ErrorResponse": {
+        "type": "object",
+        "properties": {
+          "error": {
+            "type": "object",
+            "properties": {
+              "code": { "type": "string", "example": "not_found" },
+              "message": { "type": "string", "example": "List not found." },
+              "request_id": { "type": "string", "format": "uuid" }
+            }
+          }
+        }
+      },
+      "ValidationErrorResponse": {
+        "type": "object",
+        "properties": {
+          "error": {
+            "type": "object",
+            "properties": {
+              "code": { "type": "string", "example": "validation_error" },
+              "message": { "type": "string", "example": "Validation failed." },
+              "fields": {
+                "type": "object",
+                "additionalProperties": { "type": "string" }
+              },
+              "request_id": { "type": "string", "format": "uuid" }
+            }
+          }
+        }
+      },
+      "PaginationMeta": {
+        "type": "object",
+        "properties": {
+          "total": { "type": "integer", "example": 8, "description": "Total number of records matching the query." },
+          "page": { "type": "integer", "example": 1, "description": "Current page number." },
+          "per_page": { "type": "integer", "example": 50, "description": "Number of records per page." },
+          "has_more": { "type": "boolean", "example": false, "description": "`true` when there are more pages after the current one." }
+        }
+      },
+      "List": {
+        "type": "object",
+        "properties": {
+          "id": {
+            "type": "string",
+            "format": "uuid",
+            "description": "Unique identifier of the list."
+          },
+          "name": {
+            "type": "string",
+            "maxLength": 50,
+            "description": "Display name of the list.",
+            "example": "Newsletter Subscribers"
+          },
+          "people_count": {
+            "type": "integer",
+            "description": "Number of people currently in the list.",
+            "example": 142
+          },
+          "companies_count": {
+            "type": "integer",
+            "description": "Number of companies currently in the list.",
+            "example": 0
+          },
+          "created_at": {
+            "type": "string",
+            "format": "date-time",
+            "description": "ISO 8601 UTC timestamp of when the list was created."
+          }
+        }
+      },
+      "ListResponse": {
+        "type": "object",
+        "properties": {
+          "data": { "$ref": "#/components/schemas/List" }
+        }
+      },
+      "ListsListResponse": {
+        "type": "object",
+        "properties": {
+          "data": {
+            "type": "array",
+            "items": { "$ref": "#/components/schemas/List" }
+          },
+          "meta": { "$ref": "#/components/schemas/PaginationMeta" }
+        }
+      },
+      "CreateListRequest": {
+        "type": "object",
+        "required": ["name"],
+        "properties": {
+          "name": {
+            "type": "string",
+            "minLength": 1,
+            "maxLength": 50,
+            "description": "Display name of the list.",
+            "example": "Newsletter Subscribers"
+          }
+        }
+      },
+      "UpdateListRequest": {
+        "type": "object",
+        "description": "All fields are optional. Only fields included in the body are modified.",
+        "properties": {
+          "name": {
+            "type": "string",
+            "minLength": 1,
+            "maxLength": 50,
+            "description": "New display name.",
+            "example": "VIP Customers"
+          }
+        }
+      }
+    }
+  }
+}

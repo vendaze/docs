@@ -34,7 +34,16 @@
       "name": "Deals"
     },
     {
+      "name": "Tasks"
+    },
+    {
+      "name": "Task Types"
+    },
+    {
       "name": "Tags"
+    },
+    {
+      "name": "Lists"
     }
   ],
   "paths": {
@@ -1387,6 +1396,592 @@
         }
       }
     },
+    "/v1/tasks": {
+      "get": {
+        "operationId": "listTasks",
+        "summary": "List tasks",
+        "description": "Returns a paginated list of tasks in the workspace. Supports filtering by `person_id`, `company_id`, `deal_id`, `type_id`, `priority`, and `completed`. Each task includes the `type` object embedded.\n\n**Scope:** `tasks:read`.",
+        "tags": [
+          "Tasks"
+        ],
+        "parameters": [
+          {
+            "name": "page",
+            "in": "query",
+            "schema": {
+              "type": "integer",
+              "minimum": 1,
+              "default": 1
+            },
+            "description": "Page number."
+          },
+          {
+            "name": "per_page",
+            "in": "query",
+            "schema": {
+              "type": "integer",
+              "minimum": 1,
+              "maximum": 100,
+              "default": 50
+            },
+            "description": "Number of records per page. Maximum: 100."
+          },
+          {
+            "name": "order_by",
+            "in": "query",
+            "schema": {
+              "type": "string",
+              "enum": [
+                "created_at",
+                "due_date",
+                "updated_at"
+              ],
+              "default": "created_at"
+            },
+            "description": "Field to sort by."
+          },
+          {
+            "name": "order",
+            "in": "query",
+            "schema": {
+              "type": "string",
+              "enum": [
+                "asc",
+                "desc"
+              ],
+              "default": "desc"
+            },
+            "description": "Sort direction."
+          },
+          {
+            "name": "person_id",
+            "in": "query",
+            "schema": {
+              "type": "string",
+              "format": "uuid"
+            },
+            "description": "Filter by person UUID."
+          },
+          {
+            "name": "company_id",
+            "in": "query",
+            "schema": {
+              "type": "string",
+              "format": "uuid"
+            },
+            "description": "Filter by company UUID."
+          },
+          {
+            "name": "deal_id",
+            "in": "query",
+            "schema": {
+              "type": "string",
+              "format": "uuid"
+            },
+            "description": "Filter by deal UUID."
+          },
+          {
+            "name": "type_id",
+            "in": "query",
+            "schema": {
+              "type": "string",
+              "format": "uuid"
+            },
+            "description": "Filter by task type UUID."
+          },
+          {
+            "name": "priority",
+            "in": "query",
+            "schema": {
+              "type": "string",
+              "enum": [
+                "high",
+                "medium",
+                "low"
+              ]
+            },
+            "description": "Filter by priority level."
+          },
+          {
+            "name": "completed",
+            "in": "query",
+            "schema": {
+              "type": "string",
+              "enum": [
+                "true",
+                "false"
+              ]
+            },
+            "description": "Filter by completion status."
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Tasks returned successfully.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/TasksListResponse"
+                },
+                "example": {
+                  "data": [
+                    {
+                      "id": "a1b2c3d4-e5f6-7890-abcd-ef1234567890",
+                      "title": "Follow up with prospect",
+                      "notes": "Send the proposal by Friday.",
+                      "due_date": "2026-06-15T09:00:00Z",
+                      "type": {
+                        "id": "b2c3d4e5-f6a7-8901-bcde-f12345678901",
+                        "title": "Call",
+                        "color": "#463dfb",
+                        "key": "call"
+                      },
+                      "person_id": "c3d4e5f6-a7b8-9012-cdef-123456789012",
+                      "company_id": null,
+                      "deal_id": null,
+                      "owner": {
+                        "id": "d4e5f6a7-b8c9-0123-defa-234567890123",
+                        "name": "John Smith",
+                        "email": "john@company.com"
+                      },
+                      "priority": "high",
+                      "completed": false,
+                      "created_at": "2026-06-01T10:30:00Z",
+                      "updated_at": "2026-06-01T10:30:00Z"
+                    }
+                  ],
+                  "meta": {
+                    "total": 34,
+                    "page": 1,
+                    "per_page": 50,
+                    "has_more": false
+                  }
+                }
+              }
+            }
+          },
+          "401": {
+            "$ref": "#/components/responses/Unauthorized"
+          },
+          "403": {
+            "$ref": "#/components/responses/InsufficientScope"
+          },
+          "422": {
+            "$ref": "#/components/responses/ValidationError"
+          },
+          "429": {
+            "$ref": "#/components/responses/RateLimitExceeded"
+          },
+          "500": {
+            "$ref": "#/components/responses/InternalError"
+          }
+        }
+      },
+      "post": {
+        "operationId": "createTask",
+        "summary": "Create a task",
+        "description": "Creates a new task in the workspace.\n\n**Scope:** `tasks:write`.\n\n`owner_email` must be the email of an existing workspace member. The API resolves it to the internal user ID.",
+        "tags": [
+          "Tasks"
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/CreateTaskRequest"
+              }
+            }
+          }
+        },
+        "responses": {
+          "201": {
+            "description": "Task created successfully.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/TaskResponse"
+                }
+              }
+            }
+          },
+          "400": {
+            "$ref": "#/components/responses/BadRequest"
+          },
+          "401": {
+            "$ref": "#/components/responses/Unauthorized"
+          },
+          "403": {
+            "$ref": "#/components/responses/InsufficientScope"
+          },
+          "422": {
+            "$ref": "#/components/responses/ValidationError"
+          },
+          "429": {
+            "$ref": "#/components/responses/RateLimitExceeded"
+          },
+          "500": {
+            "$ref": "#/components/responses/InternalError"
+          }
+        }
+      }
+    },
+    "/v1/tasks/{id}": {
+      "patch": {
+        "operationId": "updateTask",
+        "summary": "Update a task",
+        "description": "Updates a task. Only fields included in the body are modified.\n\n**Scope:** `tasks:write`.\n\nSend `null` for `type_id`, `person_id`, `company_id`, `deal_id`, or `owner_email` to remove those associations. Send `null` for `priority` to clear the priority.",
+        "tags": [
+          "Tasks"
+        ],
+        "parameters": [
+          {
+            "$ref": "#/components/parameters/id"
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/UpdateTaskRequest"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Task updated successfully.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/TaskResponse"
+                }
+              }
+            }
+          },
+          "400": {
+            "$ref": "#/components/responses/BadRequest"
+          },
+          "401": {
+            "$ref": "#/components/responses/Unauthorized"
+          },
+          "403": {
+            "$ref": "#/components/responses/InsufficientScope"
+          },
+          "404": {
+            "$ref": "#/components/responses/NotFound"
+          },
+          "422": {
+            "$ref": "#/components/responses/ValidationError"
+          },
+          "429": {
+            "$ref": "#/components/responses/RateLimitExceeded"
+          },
+          "500": {
+            "$ref": "#/components/responses/InternalError"
+          }
+        }
+      },
+      "delete": {
+        "operationId": "deleteTask",
+        "summary": "Delete a task",
+        "description": "Permanently deletes a task. This operation is irreversible — tasks do not support soft delete.\n\n**Scope:** `tasks:write`.",
+        "tags": [
+          "Tasks"
+        ],
+        "parameters": [
+          {
+            "$ref": "#/components/parameters/id"
+          }
+        ],
+        "responses": {
+          "204": {
+            "description": "Task deleted successfully.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object"
+                },
+                "example": {}
+              }
+            }
+          },
+          "401": {
+            "$ref": "#/components/responses/Unauthorized"
+          },
+          "403": {
+            "$ref": "#/components/responses/InsufficientScope"
+          },
+          "404": {
+            "$ref": "#/components/responses/NotFound"
+          },
+          "429": {
+            "$ref": "#/components/responses/RateLimitExceeded"
+          },
+          "500": {
+            "$ref": "#/components/responses/InternalError"
+          }
+        }
+      }
+    },
+    "/v1/task-types": {
+      "get": {
+        "operationId": "listTaskTypes",
+        "summary": "List task types",
+        "description": "Returns a paginated list of task types in the workspace.\n\n**Scope:** `tasks:read`.",
+        "tags": [
+          "Task Types"
+        ],
+        "parameters": [
+          {
+            "name": "page",
+            "in": "query",
+            "schema": {
+              "type": "integer",
+              "minimum": 1,
+              "default": 1
+            },
+            "description": "Page number."
+          },
+          {
+            "name": "per_page",
+            "in": "query",
+            "schema": {
+              "type": "integer",
+              "minimum": 1,
+              "maximum": 100,
+              "default": 50
+            },
+            "description": "Number of records per page. Maximum: 100."
+          },
+          {
+            "name": "order_by",
+            "in": "query",
+            "schema": {
+              "type": "string",
+              "enum": [
+                "created_at",
+                "title"
+              ],
+              "default": "created_at"
+            },
+            "description": "Field to sort by."
+          },
+          {
+            "name": "order",
+            "in": "query",
+            "schema": {
+              "type": "string",
+              "enum": [
+                "asc",
+                "desc"
+              ],
+              "default": "desc"
+            },
+            "description": "Sort direction."
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Task types returned successfully.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/TaskTypesListResponse"
+                },
+                "example": {
+                  "data": [
+                    {
+                      "id": "a1b2c3d4-e5f6-7890-abcd-ef1234567890",
+                      "title": "Call",
+                      "color": "#463dfb",
+                      "key": "call",
+                      "created_at": "2026-01-15T10:30:00Z",
+                      "updated_at": "2026-01-15T10:30:00Z"
+                    }
+                  ],
+                  "meta": {
+                    "total": 5,
+                    "page": 1,
+                    "per_page": 50,
+                    "has_more": false
+                  }
+                }
+              }
+            }
+          },
+          "401": {
+            "$ref": "#/components/responses/Unauthorized"
+          },
+          "403": {
+            "$ref": "#/components/responses/InsufficientScope"
+          },
+          "422": {
+            "$ref": "#/components/responses/ValidationError"
+          },
+          "429": {
+            "$ref": "#/components/responses/RateLimitExceeded"
+          },
+          "500": {
+            "$ref": "#/components/responses/InternalError"
+          }
+        }
+      },
+      "post": {
+        "operationId": "createTaskType",
+        "summary": "Create a task type",
+        "description": "Creates a new task type in the workspace.\n\n**Scope:** `tasks:write`.\n\nThe `key` must be unique within the workspace and contain only lowercase letters, digits, and underscores between words (e.g. `follow_up`). If omitted, the type can still be referenced by its `id`.",
+        "tags": [
+          "Task Types"
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/CreateTaskTypeRequest"
+              }
+            }
+          }
+        },
+        "responses": {
+          "201": {
+            "description": "Task type created successfully.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/TaskTypeResponse"
+                }
+              }
+            }
+          },
+          "400": {
+            "$ref": "#/components/responses/BadRequest"
+          },
+          "401": {
+            "$ref": "#/components/responses/Unauthorized"
+          },
+          "403": {
+            "$ref": "#/components/responses/InsufficientScope"
+          },
+          "409": {
+            "$ref": "#/components/responses/Conflict"
+          },
+          "422": {
+            "$ref": "#/components/responses/ValidationError"
+          },
+          "429": {
+            "$ref": "#/components/responses/RateLimitExceeded"
+          },
+          "500": {
+            "$ref": "#/components/responses/InternalError"
+          }
+        }
+      }
+    },
+    "/v1/task-types/{id}": {
+      "patch": {
+        "operationId": "updateTaskType",
+        "summary": "Update a task type",
+        "description": "Updates a task type. Only fields included in the body are modified.\n\n**Scope:** `tasks:write`.\n\nSend `null` for `key` to remove the key from this type.",
+        "tags": [
+          "Task Types"
+        ],
+        "parameters": [
+          {
+            "$ref": "#/components/parameters/id"
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/UpdateTaskTypeRequest"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Task type updated successfully.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/TaskTypeResponse"
+                }
+              }
+            }
+          },
+          "400": {
+            "$ref": "#/components/responses/BadRequest"
+          },
+          "401": {
+            "$ref": "#/components/responses/Unauthorized"
+          },
+          "403": {
+            "$ref": "#/components/responses/InsufficientScope"
+          },
+          "404": {
+            "$ref": "#/components/responses/NotFound"
+          },
+          "409": {
+            "$ref": "#/components/responses/Conflict"
+          },
+          "422": {
+            "$ref": "#/components/responses/ValidationError"
+          },
+          "429": {
+            "$ref": "#/components/responses/RateLimitExceeded"
+          },
+          "500": {
+            "$ref": "#/components/responses/InternalError"
+          }
+        }
+      },
+      "delete": {
+        "operationId": "deleteTaskType",
+        "summary": "Delete a task type",
+        "description": "Permanently deletes a task type. Tasks currently assigned to this type will have their `type` set to `null`.\n\n**Scope:** `tasks:write`.",
+        "tags": [
+          "Task Types"
+        ],
+        "parameters": [
+          {
+            "$ref": "#/components/parameters/id"
+          }
+        ],
+        "responses": {
+          "204": {
+            "description": "Task type deleted successfully.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object"
+                },
+                "example": {}
+              }
+            }
+          },
+          "401": {
+            "$ref": "#/components/responses/Unauthorized"
+          },
+          "403": {
+            "$ref": "#/components/responses/InsufficientScope"
+          },
+          "404": {
+            "$ref": "#/components/responses/NotFound"
+          },
+          "429": {
+            "$ref": "#/components/responses/RateLimitExceeded"
+          },
+          "500": {
+            "$ref": "#/components/responses/InternalError"
+          }
+        }
+      }
+    },
     "/v1/tags": {
       "get": {
         "operationId": "listTags",
@@ -1680,6 +2275,256 @@
           }
         }
       }
+    },
+    "/v1/lists": {
+      "get": {
+        "operationId": "listLists",
+        "summary": "List lists",
+        "description": "Returns a paginated list of contact lists in the workspace. Each item includes `people_count` and `companies_count` with the current number of members.\n\n**Scope:** `people:read` or `companies:read`.",
+        "tags": [
+          "Lists"
+        ],
+        "parameters": [
+          {
+            "name": "page",
+            "in": "query",
+            "schema": {
+              "type": "integer",
+              "minimum": 1,
+              "default": 1
+            },
+            "description": "Page number."
+          },
+          {
+            "name": "per_page",
+            "in": "query",
+            "schema": {
+              "type": "integer",
+              "minimum": 1,
+              "maximum": 100,
+              "default": 50
+            },
+            "description": "Number of records per page. Maximum: 100."
+          },
+          {
+            "name": "order_by",
+            "in": "query",
+            "schema": {
+              "type": "string",
+              "enum": [
+                "created_at",
+                "name"
+              ],
+              "default": "created_at"
+            },
+            "description": "Field to sort by."
+          },
+          {
+            "name": "order",
+            "in": "query",
+            "schema": {
+              "type": "string",
+              "enum": [
+                "asc",
+                "desc"
+              ],
+              "default": "desc"
+            },
+            "description": "Sort direction."
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Lists returned successfully.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ListsListResponse"
+                },
+                "example": {
+                  "data": [
+                    {
+                      "id": "a1b2c3d4-e5f6-7890-abcd-ef1234567890",
+                      "name": "Newsletter Subscribers",
+                      "people_count": 142,
+                      "companies_count": 0,
+                      "created_at": "2026-01-15T10:30:00Z"
+                    }
+                  ],
+                  "meta": {
+                    "total": 8,
+                    "page": 1,
+                    "per_page": 50,
+                    "has_more": false
+                  }
+                }
+              }
+            }
+          },
+          "401": {
+            "$ref": "#/components/responses/Unauthorized"
+          },
+          "403": {
+            "$ref": "#/components/responses/InsufficientScope"
+          },
+          "422": {
+            "$ref": "#/components/responses/ValidationError"
+          },
+          "429": {
+            "$ref": "#/components/responses/RateLimitExceeded"
+          },
+          "500": {
+            "$ref": "#/components/responses/InternalError"
+          }
+        }
+      },
+      "post": {
+        "operationId": "createList",
+        "summary": "Create a list",
+        "description": "Creates a new contact list in the workspace.\n\n**Scope:** `people:write` or `companies:write`.",
+        "tags": [
+          "Lists"
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/CreateListRequest"
+              }
+            }
+          }
+        },
+        "responses": {
+          "201": {
+            "description": "List created successfully.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ListResponse"
+                }
+              }
+            }
+          },
+          "400": {
+            "$ref": "#/components/responses/BadRequest"
+          },
+          "401": {
+            "$ref": "#/components/responses/Unauthorized"
+          },
+          "403": {
+            "$ref": "#/components/responses/InsufficientScope"
+          },
+          "422": {
+            "$ref": "#/components/responses/ValidationError"
+          },
+          "429": {
+            "$ref": "#/components/responses/RateLimitExceeded"
+          },
+          "500": {
+            "$ref": "#/components/responses/InternalError"
+          }
+        }
+      }
+    },
+    "/v1/lists/{id}": {
+      "patch": {
+        "operationId": "updateList",
+        "summary": "Update a list",
+        "description": "Updates a contact list. Only fields included in the body are modified.\n\n**Scope:** `people:write` or `companies:write`.",
+        "tags": [
+          "Lists"
+        ],
+        "parameters": [
+          {
+            "$ref": "#/components/parameters/id"
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/UpdateListRequest"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "List updated successfully.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ListResponse"
+                }
+              }
+            }
+          },
+          "400": {
+            "$ref": "#/components/responses/BadRequest"
+          },
+          "401": {
+            "$ref": "#/components/responses/Unauthorized"
+          },
+          "403": {
+            "$ref": "#/components/responses/InsufficientScope"
+          },
+          "404": {
+            "$ref": "#/components/responses/NotFound"
+          },
+          "422": {
+            "$ref": "#/components/responses/ValidationError"
+          },
+          "429": {
+            "$ref": "#/components/responses/RateLimitExceeded"
+          },
+          "500": {
+            "$ref": "#/components/responses/InternalError"
+          }
+        }
+      },
+      "delete": {
+        "operationId": "deleteList",
+        "summary": "Delete a list",
+        "description": "Soft-deletes a contact list. The record is no longer accessible via the API.\n\n**Scope:** `people:write` or `companies:write`.",
+        "tags": [
+          "Lists"
+        ],
+        "parameters": [
+          {
+            "$ref": "#/components/parameters/id"
+          }
+        ],
+        "responses": {
+          "204": {
+            "description": "List deleted successfully.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object"
+                },
+                "example": {}
+              }
+            }
+          },
+          "401": {
+            "$ref": "#/components/responses/Unauthorized"
+          },
+          "403": {
+            "$ref": "#/components/responses/InsufficientScope"
+          },
+          "404": {
+            "$ref": "#/components/responses/NotFound"
+          },
+          "429": {
+            "$ref": "#/components/responses/RateLimitExceeded"
+          },
+          "500": {
+            "$ref": "#/components/responses/InternalError"
+          }
+        }
+      }
     }
   },
   "components": {
@@ -1785,7 +2630,7 @@
     },
     "responses": {
       "Unauthorized": {
-        "description": "Token missing, invalid, or expired. Possible error codes and messages: `unauthorized`: `\"Missing or invalid Authorization header.\"`, `\"Invalid or malformed token.\"`, or `\"Token is missing required claims.\"`; `token_expired`: `\"Access token expired. Refresh using the refresh token.\"`",
+        "description": "Token missing, invalid, or expired. Possible error codes: `unauthorized`, `token_expired`.",
         "content": {
           "application/json": {
             "schema": {
@@ -1802,7 +2647,7 @@
         }
       },
       "InsufficientScope": {
-        "description": "Token lacks the required scope. Error code: `insufficient_scope`. Message: `\"This endpoint requires the '{scope}' scope.\"`",
+        "description": "Token lacks the required scope. Error code: `insufficient_scope`.",
         "content": {
           "application/json": {
             "schema": {
@@ -1811,7 +2656,7 @@
             "example": {
               "error": {
                 "code": "insufficient_scope",
-                "message": "This endpoint requires the 'tags:write' scope.",
+                "message": "This endpoint requires the 'people:write' scope.",
                 "request_id": "550e8400-e29b-41d4-a716-446655440000"
               }
             }
@@ -1819,7 +2664,7 @@
         }
       },
       "NotFound": {
-        "description": "Tag not found, soft-deleted, or belongs to another workspace. Error code: `not_found`. Message: `\"Tag not found.\"`",
+        "description": "List not found, soft-deleted, or belongs to another workspace. Error code: `not_found`.",
         "content": {
           "application/json": {
             "schema": {
@@ -1828,7 +2673,7 @@
             "example": {
               "error": {
                 "code": "not_found",
-                "message": "Tag not found.",
+                "message": "List not found.",
                 "request_id": "550e8400-e29b-41d4-a716-446655440000"
               }
             }
@@ -1836,7 +2681,7 @@
         }
       },
       "ValidationError": {
-        "description": "Input validation failed. Error code: `validation_error`. Message: `\"Validation failed.\"` The `fields` object maps each invalid field to a description of the problem.",
+        "description": "Input validation failed. Error code: `validation_error`.",
         "content": {
           "application/json": {
             "schema": {
@@ -1847,8 +2692,7 @@
                 "code": "validation_error",
                 "message": "Validation failed.",
                 "fields": {
-                  "key": "Key must contain only lowercase letters, digits, and underscores between words (e.g. hot_lead).",
-                  "color_text": "Color must be a valid hex RGB color (e.g. #e5e7eb)."
+                  "name": "String must contain at most 50 character(s)."
                 },
                 "request_id": "550e8400-e29b-41d4-a716-446655440000"
               }
@@ -1857,7 +2701,7 @@
         }
       },
       "RateLimitExceeded": {
-        "description": "Rate limit exceeded. Error code: `rate_limit_exceeded`. Message: `\"Rate limit exceeded. Try again in {N} seconds.\"` The `Retry-After` response header contains the same value.",
+        "description": "Rate limit exceeded. Error code: `rate_limit_exceeded`.",
         "content": {
           "application/json": {
             "schema": {
@@ -1874,7 +2718,7 @@
         }
       },
       "BadRequest": {
-        "description": "Malformed request body or empty update. Error code: `bad_request`. Possible messages: `\"Request body must be valid JSON.\"` (unparseable body) or `\"No fields provided for update.\"` (PATCH with no fields).",
+        "description": "Malformed request body or empty update. Error code: `bad_request`. Possible messages: `\"Request body must be valid JSON.\"` or `\"No fields provided for update.\"`",
         "content": {
           "application/json": {
             "schema": {
@@ -1891,7 +2735,7 @@
         }
       },
       "InternalError": {
-        "description": "Unexpected server error. Error code: `internal_error`. Message: `\"An unexpected error occurred.\"` Use the `request_id` to correlate with server-side logs.",
+        "description": "Unexpected server error. Error code: `internal_error`.",
         "content": {
           "application/json": {
             "schema": {
@@ -1941,7 +2785,7 @@
               },
               "message": {
                 "type": "string",
-                "example": "Tag not found."
+                "example": "List not found."
               },
               "request_id": {
                 "type": "string",
@@ -1984,7 +2828,7 @@
         "properties": {
           "total": {
             "type": "integer",
-            "example": 12,
+            "example": 8,
             "description": "Total number of records matching the query."
           },
           "page": {
@@ -2401,20 +3245,20 @@
       "Owner": {
         "type": "object",
         "nullable": true,
-        "description": "Workspace member responsible for this record. `null` when no owner is assigned.",
+        "description": "Workspace member responsible for this task. `null` when no owner is assigned.",
         "properties": {
           "id": {
             "type": "string",
             "format": "uuid"
           },
+          "name": {
+            "type": "string",
+            "example": "John Smith"
+          },
           "email": {
             "type": "string",
             "format": "email",
-            "example": "joao@company.com"
-          },
-          "name": {
-            "type": "string",
-            "example": "João Silva"
+            "example": "john@company.com"
           }
         }
       },
@@ -3261,21 +4105,19 @@
             "type": "string",
             "example": "Acme Corp Annual Contract"
           },
-          "pipeline_id": {
-            "type": "string",
-            "format": "uuid"
-          },
-          "stage_id": {
-            "type": "string",
-            "format": "uuid"
-          },
-          "price_cts": {
+          "amount": {
             "type": "integer",
             "description": "Deal value in cents. 250000 = R$ 2,500.00",
             "example": 250000
           },
           "currency": {
             "$ref": "#/components/schemas/CurrencyCode"
+          },
+          "formatted_amount": {
+            "type": "string",
+            "nullable": true,
+            "description": "Deal value formatted using the currency's symbol, decimal separator, and thousands separator.",
+            "example": "R$ 2.500,00"
           },
           "owner": {
             "$ref": "#/components/schemas/Owner"
@@ -3737,6 +4579,610 @@
           }
         }
       },
+      "TaskType": {
+        "type": "object",
+        "properties": {
+          "id": {
+            "type": "string",
+            "format": "uuid",
+            "description": "Unique identifier of the task type."
+          },
+          "title": {
+            "type": "string",
+            "maxLength": 40,
+            "example": "Call",
+            "description": "Display name of the task type."
+          },
+          "color": {
+            "type": "string",
+            "pattern": "^#[0-9a-fA-F]{6}$",
+            "description": "Display color in hex RGB format.",
+            "example": "#463dfb"
+          },
+          "key": {
+            "type": "string",
+            "nullable": true,
+            "maxLength": 40,
+            "description": "Optional identifier key. Unique within the workspace. Used in the `type` field when creating or updating tasks.",
+            "example": "call"
+          },
+          "created_at": {
+            "type": "string",
+            "format": "date-time"
+          },
+          "updated_at": {
+            "type": "string",
+            "format": "date-time"
+          }
+        }
+      },
+      "TaskWithEmbedded": {
+        "type": "object",
+        "description": "Task object returned by POST and PATCH. Includes full embedded objects for person, company, and deal instead of plain IDs.",
+        "properties": {
+          "id": {
+            "type": "string",
+            "format": "uuid"
+          },
+          "title": {
+            "type": "string",
+            "maxLength": 200,
+            "example": "Follow up with prospect"
+          },
+          "notes": {
+            "type": "string",
+            "nullable": true,
+            "maxLength": 3000
+          },
+          "due_date": {
+            "type": "string",
+            "format": "date-time"
+          },
+          "type": {
+            "$ref": "#/components/schemas/TaskType"
+          },
+          "person": {
+            "$ref": "#/components/schemas/PersonEmbedded"
+          },
+          "company": {
+            "$ref": "#/components/schemas/CompanyEmbedded"
+          },
+          "deal": {
+            "$ref": "#/components/schemas/DealEmbedded"
+          },
+          "owner": {
+            "$ref": "#/components/schemas/Owner"
+          },
+          "priority": {
+            "type": "string",
+            "nullable": true,
+            "enum": [
+              "high",
+              "medium",
+              "low"
+            ]
+          },
+          "completed": {
+            "type": "boolean"
+          },
+          "created_at": {
+            "type": "string",
+            "format": "date-time"
+          },
+          "updated_at": {
+            "type": "string",
+            "format": "date-time"
+          }
+        }
+      },
+      "PersonEmbedded": {
+        "type": "object",
+        "nullable": true,
+        "description": "Person associated with the task. `null` when no person is assigned.",
+        "properties": {
+          "id": {
+            "type": "string",
+            "format": "uuid"
+          },
+          "full_name": {
+            "type": "string",
+            "example": "Jane Doe"
+          },
+          "emails": {
+            "type": "array",
+            "nullable": true,
+            "items": {
+              "type": "object",
+              "properties": {
+                "email": {
+                  "type": "string"
+                },
+                "type": {
+                  "type": "string"
+                }
+              }
+            }
+          },
+          "phones": {
+            "type": "array",
+            "nullable": true,
+            "items": {
+              "type": "object",
+              "properties": {
+                "phone": {
+                  "type": "string"
+                },
+                "type": {
+                  "type": "string"
+                }
+              }
+            }
+          },
+          "ranking": {
+            "type": "number"
+          },
+          "position": {
+            "type": "string",
+            "nullable": true
+          },
+          "created_at": {
+            "type": "string",
+            "format": "date-time"
+          },
+          "updated_at": {
+            "type": "string",
+            "format": "date-time"
+          }
+        }
+      },
+      "CompanyEmbedded": {
+        "type": "object",
+        "nullable": true,
+        "description": "Company associated with the task. `null` when no company is assigned.",
+        "properties": {
+          "id": {
+            "type": "string",
+            "format": "uuid"
+          },
+          "full_name": {
+            "type": "string",
+            "example": "Acme Corp"
+          },
+          "emails": {
+            "type": "array",
+            "nullable": true,
+            "items": {
+              "type": "object",
+              "properties": {
+                "email": {
+                  "type": "string"
+                },
+                "type": {
+                  "type": "string"
+                }
+              }
+            }
+          },
+          "phones": {
+            "type": "array",
+            "nullable": true,
+            "items": {
+              "type": "object",
+              "properties": {
+                "phone": {
+                  "type": "string"
+                },
+                "type": {
+                  "type": "string"
+                }
+              }
+            }
+          },
+          "created_at": {
+            "type": "string",
+            "format": "date-time"
+          },
+          "updated_at": {
+            "type": "string",
+            "format": "date-time"
+          }
+        }
+      },
+      "DealEmbedded": {
+        "type": "object",
+        "nullable": true,
+        "description": "Deal associated with the task. `null` when no deal is assigned. Value fields follow the same format as `GET /v1/deals`.",
+        "properties": {
+          "id": {
+            "type": "string",
+            "format": "uuid"
+          },
+          "name": {
+            "type": "string",
+            "example": "Enterprise Plan Q3"
+          },
+          "amount": {
+            "type": "integer",
+            "description": "Deal value in cents.",
+            "example": 250000
+          },
+          "currency": {
+            "type": "string",
+            "description": "ISO 4217 currency code.",
+            "example": "BRL"
+          },
+          "formatted_amount": {
+            "type": "string",
+            "nullable": true,
+            "description": "Deal value formatted using the currency's symbol and separators.",
+            "example": "R$ 2.500,00"
+          },
+          "pipeline": {
+            "type": "object",
+            "nullable": true,
+            "properties": {
+              "id": {
+                "type": "string",
+                "format": "uuid"
+              },
+              "name": {
+                "type": "string"
+              }
+            }
+          },
+          "stage": {
+            "type": "object",
+            "nullable": true,
+            "properties": {
+              "id": {
+                "type": "string",
+                "format": "uuid"
+              },
+              "name": {
+                "type": "string"
+              },
+              "type": {
+                "type": "string",
+                "enum": [
+                  "open",
+                  "win",
+                  "lost"
+                ]
+              }
+            }
+          },
+          "source": {
+            "type": "string"
+          },
+          "forecast_date": {
+            "type": "string",
+            "format": "date-time",
+            "nullable": true
+          },
+          "created_at": {
+            "type": "string",
+            "format": "date-time"
+          },
+          "updated_at": {
+            "type": "string",
+            "format": "date-time"
+          }
+        }
+      },
+      "Task": {
+        "type": "object",
+        "properties": {
+          "id": {
+            "type": "string",
+            "format": "uuid",
+            "description": "Unique identifier of the task."
+          },
+          "title": {
+            "type": "string",
+            "maxLength": 200,
+            "example": "Follow up with prospect"
+          },
+          "notes": {
+            "type": "string",
+            "nullable": true,
+            "maxLength": 3000,
+            "description": "Optional notes for the task.",
+            "example": "Send the proposal by Friday."
+          },
+          "due_date": {
+            "type": "string",
+            "format": "date-time",
+            "description": "ISO 8601 UTC datetime when the task is due.",
+            "example": "2026-06-15T09:00:00Z"
+          },
+          "type": {
+            "$ref": "#/components/schemas/TaskType"
+          },
+          "person_id": {
+            "type": "string",
+            "format": "uuid",
+            "nullable": true,
+            "description": "UUID of the person associated with this task."
+          },
+          "company_id": {
+            "type": "string",
+            "format": "uuid",
+            "nullable": true,
+            "description": "UUID of the company associated with this task."
+          },
+          "deal_id": {
+            "type": "string",
+            "format": "uuid",
+            "nullable": true,
+            "description": "UUID of the deal associated with this task."
+          },
+          "owner": {
+            "$ref": "#/components/schemas/Owner"
+          },
+          "priority": {
+            "type": "string",
+            "nullable": true,
+            "enum": [
+              "high",
+              "medium",
+              "low"
+            ],
+            "description": "Priority level. `null` when no priority is set.",
+            "example": "high"
+          },
+          "completed": {
+            "type": "boolean",
+            "description": "`true` when the task has been completed.",
+            "example": false
+          },
+          "created_at": {
+            "type": "string",
+            "format": "date-time"
+          },
+          "updated_at": {
+            "type": "string",
+            "format": "date-time"
+          }
+        }
+      },
+      "TaskResponse": {
+        "type": "object",
+        "properties": {
+          "data": {
+            "$ref": "#/components/schemas/TaskWithEmbedded"
+          }
+        }
+      },
+      "TasksListResponse": {
+        "type": "object",
+        "properties": {
+          "data": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/Task"
+            }
+          },
+          "meta": {
+            "$ref": "#/components/schemas/PaginationMeta"
+          }
+        }
+      },
+      "CreateTaskRequest": {
+        "type": "object",
+        "required": [
+          "title",
+          "due_date"
+        ],
+        "properties": {
+          "title": {
+            "type": "string",
+            "minLength": 1,
+            "maxLength": 200,
+            "description": "Task title.",
+            "example": "Follow up with prospect"
+          },
+          "due_date": {
+            "type": "string",
+            "format": "date-time",
+            "description": "ISO 8601 UTC datetime when the task is due.",
+            "example": "2026-06-15T09:00:00Z"
+          },
+          "notes": {
+            "type": "string",
+            "maxLength": 3000,
+            "description": "Optional notes.",
+            "example": "Send the proposal by Friday."
+          },
+          "type": {
+            "type": "string",
+            "description": "Task type `id` (UUID) or `key` (string). The API resolves it to the internal type ID. Use `GET /v1/task-types` to list available types.",
+            "example": "call"
+          },
+          "person_id": {
+            "type": "string",
+            "format": "uuid",
+            "description": "UUID of the person to associate with this task."
+          },
+          "company_id": {
+            "type": "string",
+            "format": "uuid",
+            "description": "UUID of the company to associate with this task."
+          },
+          "deal_id": {
+            "type": "string",
+            "format": "uuid",
+            "description": "UUID of the deal to associate with this task."
+          },
+          "owner_email": {
+            "type": "string",
+            "format": "email",
+            "description": "Email of the workspace member to set as owner. The API resolves it to the internal user ID.",
+            "example": "john@company.com"
+          },
+          "priority": {
+            "type": "string",
+            "enum": [
+              "high",
+              "medium",
+              "low"
+            ],
+            "description": "Priority level.",
+            "example": "high"
+          }
+        }
+      },
+      "UpdateTaskRequest": {
+        "type": "object",
+        "description": "All fields are optional. Only fields included in the body are modified. Send `null` to clear a field.",
+        "properties": {
+          "title": {
+            "type": "string",
+            "minLength": 1,
+            "maxLength": 200,
+            "description": "New task title.",
+            "example": "Follow up with prospect — send contract"
+          },
+          "due_date": {
+            "type": "string",
+            "format": "date-time",
+            "description": "New due date in ISO 8601 UTC.",
+            "example": "2026-06-20T14:00:00Z"
+          },
+          "notes": {
+            "type": "string",
+            "nullable": true,
+            "maxLength": 3000,
+            "description": "New notes. Send `null` to clear.",
+            "example": "Contract ready, awaiting signature."
+          },
+          "type": {
+            "type": "string",
+            "nullable": true,
+            "description": "Task type `id` (UUID) or `key` (string). Send `null` to remove the type. The API resolves it to the internal type ID.",
+            "example": "meeting"
+          },
+          "person_id": {
+            "type": "string",
+            "format": "uuid",
+            "nullable": true,
+            "description": "New person UUID. Send `null` to remove."
+          },
+          "company_id": {
+            "type": "string",
+            "format": "uuid",
+            "nullable": true,
+            "description": "New company UUID. Send `null` to remove."
+          },
+          "deal_id": {
+            "type": "string",
+            "format": "uuid",
+            "nullable": true,
+            "description": "New deal UUID. Send `null` to remove."
+          },
+          "owner_email": {
+            "type": "string",
+            "format": "email",
+            "nullable": true,
+            "description": "Email of the new owner. Send `null` to remove the owner.",
+            "example": "jane@company.com"
+          },
+          "priority": {
+            "type": "string",
+            "enum": [
+              "high",
+              "medium",
+              "low"
+            ],
+            "nullable": true,
+            "description": "New priority. Send `null` to clear.",
+            "example": "medium"
+          },
+          "completed": {
+            "type": "boolean",
+            "description": "Mark the task as completed or not.",
+            "example": true
+          }
+        }
+      },
+      "TaskTypeResponse": {
+        "type": "object",
+        "properties": {
+          "data": {
+            "$ref": "#/components/schemas/TaskType"
+          }
+        }
+      },
+      "TaskTypesListResponse": {
+        "type": "object",
+        "properties": {
+          "data": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/TaskType"
+            }
+          },
+          "meta": {
+            "$ref": "#/components/schemas/PaginationMeta"
+          }
+        }
+      },
+      "CreateTaskTypeRequest": {
+        "type": "object",
+        "required": [
+          "title"
+        ],
+        "properties": {
+          "title": {
+            "type": "string",
+            "minLength": 1,
+            "maxLength": 40,
+            "description": "Display name of the task type.",
+            "example": "Call"
+          },
+          "color": {
+            "type": "string",
+            "pattern": "^#[0-9a-fA-F]{6}$",
+            "description": "Display color in hex RGB format. Defaults to `#463dfb` if omitted.",
+            "example": "#463dfb"
+          },
+          "key": {
+            "type": "string",
+            "minLength": 1,
+            "maxLength": 40,
+            "pattern": "^[a-z0-9]+(_[a-z0-9]+)*$",
+            "description": "Optional identifier key. Lowercase letters, digits, and underscores only. Used in the `type` field when creating or updating tasks.",
+            "example": "call"
+          }
+        }
+      },
+      "UpdateTaskTypeRequest": {
+        "type": "object",
+        "description": "All fields are optional. Only fields included in the body are modified.",
+        "properties": {
+          "title": {
+            "type": "string",
+            "minLength": 1,
+            "maxLength": 40,
+            "description": "New display name.",
+            "example": "Phone Call"
+          },
+          "color": {
+            "type": "string",
+            "pattern": "^#[0-9a-fA-F]{6}$",
+            "description": "New display color in hex RGB format.",
+            "example": "#10b981"
+          },
+          "key": {
+            "type": "string",
+            "minLength": 1,
+            "maxLength": 40,
+            "nullable": true,
+            "pattern": "^[a-z0-9]+(_[a-z0-9]+)*$",
+            "description": "New identifier key. Send `null` to remove the key.",
+            "example": "phone_call"
+          }
+        }
+      },
       "TagResponse": {
         "type": "object",
         "properties": {
@@ -3827,6 +5273,87 @@
             "pattern": "^#[0-9a-fA-F]{6}$",
             "description": "New background color in hex RGB format. Send `null` to revert to the workspace default.",
             "example": "#e4e6eb"
+          }
+        }
+      },
+      "List": {
+        "type": "object",
+        "properties": {
+          "id": {
+            "type": "string",
+            "format": "uuid",
+            "description": "Unique identifier of the list."
+          },
+          "name": {
+            "type": "string",
+            "maxLength": 50,
+            "description": "Display name of the list.",
+            "example": "Newsletter Subscribers"
+          },
+          "people_count": {
+            "type": "integer",
+            "description": "Number of people currently in the list.",
+            "example": 142
+          },
+          "companies_count": {
+            "type": "integer",
+            "description": "Number of companies currently in the list.",
+            "example": 0
+          },
+          "created_at": {
+            "type": "string",
+            "format": "date-time",
+            "description": "ISO 8601 UTC timestamp of when the list was created."
+          }
+        }
+      },
+      "ListResponse": {
+        "type": "object",
+        "properties": {
+          "data": {
+            "$ref": "#/components/schemas/List"
+          }
+        }
+      },
+      "ListsListResponse": {
+        "type": "object",
+        "properties": {
+          "data": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/List"
+            }
+          },
+          "meta": {
+            "$ref": "#/components/schemas/PaginationMeta"
+          }
+        }
+      },
+      "CreateListRequest": {
+        "type": "object",
+        "required": [
+          "name"
+        ],
+        "properties": {
+          "name": {
+            "type": "string",
+            "minLength": 1,
+            "maxLength": 50,
+            "description": "Display name of the list.",
+            "example": "Newsletter Subscribers"
+          }
+        }
+      },
+      "UpdateListRequest": {
+        "type": "object",
+        "description": "All fields are optional. Only fields included in the body are modified.",
+        "properties": {
+          "name": {
+            "type": "string",
+            "minLength": 1,
+            "maxLength": 50,
+            "description": "New display name.",
+            "example": "VIP Customers"
           }
         }
       }

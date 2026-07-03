@@ -542,21 +542,19 @@
             "type": "string",
             "example": "Contrato Anual Acme Corp"
           },
-          "pipeline_id": {
-            "type": "string",
-            "format": "uuid"
-          },
-          "stage_id": {
-            "type": "string",
-            "format": "uuid"
-          },
-          "price_cts": {
+          "amount": {
             "type": "integer",
             "description": "Valor em centavos. 250000 = R$ 2.500,00",
             "example": 250000
           },
           "currency": {
             "$ref": "#/components/schemas/CurrencyCode"
+          },
+          "formatted_amount": {
+            "type": "string",
+            "nullable": true,
+            "description": "Valor formatado usando o símbolo, separador decimal e separador de milhar da moeda.",
+            "example": "R$ 2.500,00"
           },
           "owner": {
             "$ref": "#/components/schemas/Owner"

@@ -1,0 +1,413 @@
+{
+  "openapi": "3.1.0",
+  "info": {
+    "title": "Task Types",
+    "description": "Manage task types in the workspace.",
+    "version": "1.0.0",
+    "contact": {
+      "name": "Vendaze Support",
+      "email": "suporte@vendaze.com"
+    }
+  },
+  "servers": [{ "url": "https://api.vendaze.com", "description": "Production" }],
+  "security": [{ "bearerAuth": [] }],
+  "tags": [{ "name": "Task Types" }],
+  "paths": {
+    "/v1/task-types": {
+      "get": {
+        "operationId": "listTaskTypes",
+        "summary": "List task types",
+        "description": "Returns a paginated list of task types in the workspace.\n\n**Scope:** `tasks:read`.",
+        "tags": ["Task Types"],
+        "parameters": [
+          {
+            "name": "page",
+            "in": "query",
+            "schema": { "type": "integer", "minimum": 1, "default": 1 },
+            "description": "Page number."
+          },
+          {
+            "name": "per_page",
+            "in": "query",
+            "schema": { "type": "integer", "minimum": 1, "maximum": 100, "default": 50 },
+            "description": "Number of records per page. Maximum: 100."
+          },
+          {
+            "name": "order_by",
+            "in": "query",
+            "schema": { "type": "string", "enum": ["created_at", "title"], "default": "created_at" },
+            "description": "Field to sort by."
+          },
+          {
+            "name": "order",
+            "in": "query",
+            "schema": { "type": "string", "enum": ["asc", "desc"], "default": "desc" },
+            "description": "Sort direction."
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Task types returned successfully.",
+            "content": {
+              "application/json": {
+                "schema": { "$ref": "#/components/schemas/TaskTypesListResponse" },
+                "example": {
+                  "data": [
+                    {
+                      "id": "a1b2c3d4-e5f6-7890-abcd-ef1234567890",
+                      "title": "Call",
+                      "color": "#463dfb",
+                      "key": "call",
+                      "created_at": "2026-01-15T10:30:00Z",
+                      "updated_at": "2026-01-15T10:30:00Z"
+                    }
+                  ],
+                  "meta": { "total": 5, "page": 1, "per_page": 50, "has_more": false }
+                }
+              }
+            }
+          },
+          "401": { "$ref": "#/components/responses/Unauthorized" },
+          "403": { "$ref": "#/components/responses/InsufficientScope" },
+          "422": { "$ref": "#/components/responses/ValidationError" },
+          "429": { "$ref": "#/components/responses/RateLimitExceeded" },
+          "500": { "$ref": "#/components/responses/InternalError" }
+        }
+      },
+      "post": {
+        "operationId": "createTaskType",
+        "summary": "Create a task type",
+        "description": "Creates a new task type in the workspace.\n\n**Scope:** `tasks:write`.\n\nThe `key` must be unique within the workspace and contain only lowercase letters, digits, and underscores between words (e.g. `follow_up`). If omitted, the type can still be referenced by its `id`.",
+        "tags": ["Task Types"],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": { "$ref": "#/components/schemas/CreateTaskTypeRequest" }
+            }
+          }
+        },
+        "responses": {
+          "201": {
+            "description": "Task type created successfully.",
+            "content": {
+              "application/json": { "schema": { "$ref": "#/components/schemas/TaskTypeResponse" } }
+            }
+          },
+          "400": { "$ref": "#/components/responses/BadRequest" },
+          "401": { "$ref": "#/components/responses/Unauthorized" },
+          "403": { "$ref": "#/components/responses/InsufficientScope" },
+          "409": { "$ref": "#/components/responses/Conflict" },
+          "422": { "$ref": "#/components/responses/ValidationError" },
+          "429": { "$ref": "#/components/responses/RateLimitExceeded" },
+          "500": { "$ref": "#/components/responses/InternalError" }
+        }
+      }
+    },
+    "/v1/task-types/{id}": {
+      "patch": {
+        "operationId": "updateTaskType",
+        "summary": "Update a task type",
+        "description": "Updates a task type. Only fields included in the body are modified.\n\n**Scope:** `tasks:write`.\n\nSend `null` for `key` to remove the key from this type.",
+        "tags": ["Task Types"],
+        "parameters": [{ "$ref": "#/components/parameters/id" }],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": { "$ref": "#/components/schemas/UpdateTaskTypeRequest" }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Task type updated successfully.",
+            "content": {
+              "application/json": { "schema": { "$ref": "#/components/schemas/TaskTypeResponse" } }
+            }
+          },
+          "400": { "$ref": "#/components/responses/BadRequest" },
+          "401": { "$ref": "#/components/responses/Unauthorized" },
+          "403": { "$ref": "#/components/responses/InsufficientScope" },
+          "404": { "$ref": "#/components/responses/NotFound" },
+          "409": { "$ref": "#/components/responses/Conflict" },
+          "422": { "$ref": "#/components/responses/ValidationError" },
+          "429": { "$ref": "#/components/responses/RateLimitExceeded" },
+          "500": { "$ref": "#/components/responses/InternalError" }
+        }
+      },
+      "delete": {
+        "operationId": "deleteTaskType",
+        "summary": "Delete a task type",
+        "description": "Permanently deletes a task type. Tasks currently assigned to this type will have their `type` set to `null`.\n\n**Scope:** `tasks:write`.",
+        "tags": ["Task Types"],
+        "parameters": [{ "$ref": "#/components/parameters/id" }],
+        "responses": {
+          "204": {
+            "description": "Task type deleted successfully.",
+            "content": { "application/json": { "schema": { "type": "object" }, "example": {} } }
+          },
+          "401": { "$ref": "#/components/responses/Unauthorized" },
+          "403": { "$ref": "#/components/responses/InsufficientScope" },
+          "404": { "$ref": "#/components/responses/NotFound" },
+          "429": { "$ref": "#/components/responses/RateLimitExceeded" },
+          "500": { "$ref": "#/components/responses/InternalError" }
+        }
+      }
+    }
+  },
+  "components": {
+    "securitySchemes": {
+      "bearerAuth": { "type": "http", "scheme": "bearer", "description": "OAuth 2.1 access token." }
+    },
+    "parameters": {
+      "id": {
+        "name": "id",
+        "in": "path",
+        "required": true,
+        "schema": { "type": "string", "format": "uuid" },
+        "description": "UUID of the task type."
+      }
+    },
+    "responses": {
+      "BadRequest": {
+        "description": "Malformed request body or empty update. Error code: `bad_request`.",
+        "content": {
+          "application/json": {
+            "schema": { "$ref": "#/components/schemas/ErrorResponse" },
+            "example": {
+              "error": {
+                "code": "bad_request",
+                "message": "No fields provided for update.",
+                "request_id": "550e8400-e29b-41d4-a716-446655440000"
+              }
+            }
+          }
+        }
+      },
+      "Unauthorized": {
+        "description": "Token missing, invalid, or expired. Possible error codes: `unauthorized`, `token_expired`.",
+        "content": {
+          "application/json": {
+            "schema": { "$ref": "#/components/schemas/ErrorResponse" },
+            "example": {
+              "error": {
+                "code": "unauthorized",
+                "message": "Missing or invalid Authorization header.",
+                "request_id": "550e8400-e29b-41d4-a716-446655440000"
+              }
+            }
+          }
+        }
+      },
+      "InsufficientScope": {
+        "description": "Token lacks the required scope. Error code: `insufficient_scope`.",
+        "content": {
+          "application/json": {
+            "schema": { "$ref": "#/components/schemas/ErrorResponse" },
+            "example": {
+              "error": {
+                "code": "insufficient_scope",
+                "message": "This endpoint requires the 'tasks:write' scope.",
+                "request_id": "550e8400-e29b-41d4-a716-446655440000"
+              }
+            }
+          }
+        }
+      },
+      "NotFound": {
+        "description": "Task type not found or belongs to another workspace. Error code: `not_found`.",
+        "content": {
+          "application/json": {
+            "schema": { "$ref": "#/components/schemas/ErrorResponse" },
+            "example": {
+              "error": { "code": "not_found", "message": "TaskType not found.", "request_id": "550e8400-e29b-41d4-a716-446655440000" }
+            }
+          }
+        }
+      },
+      "Conflict": {
+        "description": "A task type with the same `key` already exists in this workspace. Error code: `conflict`.",
+        "content": {
+          "application/json": {
+            "schema": { "$ref": "#/components/schemas/ErrorResponse" },
+            "example": {
+              "error": {
+                "code": "conflict",
+                "message": "A record with this value already exists.",
+                "fields": { "key": "Value already in use." },
+                "request_id": "550e8400-e29b-41d4-a716-446655440000"
+              }
+            }
+          }
+        }
+      },
+      "ValidationError": {
+        "description": "Input validation failed. Error code: `validation_error`.",
+        "content": {
+          "application/json": {
+            "schema": { "$ref": "#/components/schemas/ValidationErrorResponse" },
+            "example": {
+              "error": {
+                "code": "validation_error",
+                "message": "Validation failed.",
+                "fields": { "color": "Color must be a valid hex RGB color (e.g. #463dfb)." },
+                "request_id": "550e8400-e29b-41d4-a716-446655440000"
+              }
+            }
+          }
+        }
+      },
+      "RateLimitExceeded": {
+        "description": "Rate limit exceeded. Error code: `rate_limit_exceeded`.",
+        "content": {
+          "application/json": {
+            "schema": { "$ref": "#/components/schemas/ErrorResponse" },
+            "example": {
+              "error": {
+                "code": "rate_limit_exceeded",
+                "message": "Rate limit exceeded. Try again in 60 seconds.",
+                "request_id": "550e8400-e29b-41d4-a716-446655440000"
+              }
+            }
+          }
+        }
+      },
+      "InternalError": {
+        "description": "Unexpected server error. Error code: `internal_error`.",
+        "content": {
+          "application/json": {
+            "schema": { "$ref": "#/components/schemas/ErrorResponse" },
+            "example": {
+              "error": {
+                "code": "internal_error",
+                "message": "An unexpected error occurred.",
+                "request_id": "550e8400-e29b-41d4-a716-446655440000"
+              }
+            }
+          }
+        }
+      }
+    },
+    "schemas": {
+      "ErrorResponse": {
+        "type": "object",
+        "properties": {
+          "error": {
+            "type": "object",
+            "properties": {
+              "code": { "type": "string", "example": "not_found" },
+              "message": { "type": "string", "example": "TaskType not found." },
+              "request_id": { "type": "string", "format": "uuid" }
+            }
+          }
+        }
+      },
+      "ValidationErrorResponse": {
+        "type": "object",
+        "properties": {
+          "error": {
+            "type": "object",
+            "properties": {
+              "code": { "type": "string", "example": "validation_error" },
+              "message": { "type": "string", "example": "Validation failed." },
+              "fields": { "type": "object", "additionalProperties": { "type": "string" } },
+              "request_id": { "type": "string", "format": "uuid" }
+            }
+          }
+        }
+      },
+      "PaginationMeta": {
+        "type": "object",
+        "properties": {
+          "total": { "type": "integer", "example": 5 },
+          "page": { "type": "integer", "example": 1 },
+          "per_page": { "type": "integer", "example": 50 },
+          "has_more": { "type": "boolean", "example": false }
+        }
+      },
+      "TaskType": {
+        "type": "object",
+        "properties": {
+          "id": { "type": "string", "format": "uuid", "description": "Unique identifier of the task type." },
+          "title": { "type": "string", "maxLength": 40, "example": "Call", "description": "Display name of the task type." },
+          "color": {
+            "type": "string",
+            "pattern": "^#[0-9a-fA-F]{6}$",
+            "description": "Display color in hex RGB format.",
+            "example": "#463dfb"
+          },
+          "key": {
+            "type": "string",
+            "nullable": true,
+            "maxLength": 40,
+            "description": "Optional identifier key. Unique within the workspace. Used in the `type` field when creating or updating tasks.",
+            "example": "call"
+          },
+          "created_at": { "type": "string", "format": "date-time" },
+          "updated_at": { "type": "string", "format": "date-time" }
+        }
+      },
+      "TaskTypeResponse": {
+        "type": "object",
+        "properties": { "data": { "$ref": "#/components/schemas/TaskType" } }
+      },
+      "TaskTypesListResponse": {
+        "type": "object",
+        "properties": {
+          "data": { "type": "array", "items": { "$ref": "#/components/schemas/TaskType" } },
+          "meta": { "$ref": "#/components/schemas/PaginationMeta" }
+        }
+      },
+      "CreateTaskTypeRequest": {
+        "type": "object",
+        "required": ["title"],
+        "properties": {
+          "title": {
+            "type": "string",
+            "minLength": 1,
+            "maxLength": 40,
+            "description": "Display name of the task type.",
+            "example": "Call"
+          },
+          "color": {
+            "type": "string",
+            "pattern": "^#[0-9a-fA-F]{6}$",
+            "description": "Display color in hex RGB format. Defaults to `#463dfb` if omitted.",
+            "example": "#463dfb"
+          },
+          "key": {
+            "type": "string",
+            "minLength": 1,
+            "maxLength": 40,
+            "pattern": "^[a-z0-9]+(_[a-z0-9]+)*$",
+            "description": "Optional identifier key. Lowercase letters, digits, and underscores only. Used in the `type` field when creating or updating tasks.",
+            "example": "call"
+          }
+        }
+      },
+      "UpdateTaskTypeRequest": {
+        "type": "object",
+        "description": "All fields are optional. Only fields included in the body are modified.",
+        "properties": {
+          "title": { "type": "string", "minLength": 1, "maxLength": 40, "description": "New display name.", "example": "Phone Call" },
+          "color": {
+            "type": "string",
+            "pattern": "^#[0-9a-fA-F]{6}$",
+            "description": "New display color in hex RGB format.",
+            "example": "#10b981"
+          },
+          "key": {
+            "type": "string",
+            "minLength": 1,
+            "maxLength": 40,
+            "nullable": true,
+            "pattern": "^[a-z0-9]+(_[a-z0-9]+)*$",
+            "description": "New identifier key. Send `null` to remove the key.",
+            "example": "phone_call"
+          }
+        }
+      }
+    }
+  }
+}

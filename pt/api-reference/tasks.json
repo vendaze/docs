@@ -1,0 +1,726 @@
+{
+  "openapi": "3.1.0",
+  "info": {
+    "title": "Tarefas",
+    "description": "Gerencie tarefas no workspace.",
+    "version": "1.0.0",
+    "contact": {
+      "name": "Suporte Vendaze",
+      "email": "suporte@vendaze.com"
+    }
+  },
+  "servers": [
+    {
+      "url": "https://api.vendaze.com",
+      "description": "Produção"
+    }
+  ],
+  "security": [{ "bearerAuth": [] }],
+  "tags": [{ "name": "Tarefas" }],
+  "paths": {
+    "/v1/tasks": {
+      "get": {
+        "operationId": "listTasks",
+        "summary": "Listar tarefas",
+        "description": "Retorna uma lista paginada de tarefas do workspace. Suporta filtros por `person_id`, `company_id`, `deal_id`, `type_id`, `priority` e `completed`. Cada tarefa inclui o objeto `type` embutido.\n\n**Escopo:** `tasks:read`.",
+        "tags": ["Tarefas"],
+        "parameters": [
+          {
+            "name": "page",
+            "in": "query",
+            "schema": { "type": "integer", "minimum": 1, "default": 1 },
+            "description": "Número da página."
+          },
+          {
+            "name": "per_page",
+            "in": "query",
+            "schema": { "type": "integer", "minimum": 1, "maximum": 100, "default": 50 },
+            "description": "Quantidade de registros por página. Máximo: 100."
+          },
+          {
+            "name": "order_by",
+            "in": "query",
+            "schema": { "type": "string", "enum": ["created_at", "due_date", "updated_at"], "default": "created_at" },
+            "description": "Campo de ordenação."
+          },
+          {
+            "name": "order",
+            "in": "query",
+            "schema": { "type": "string", "enum": ["asc", "desc"], "default": "desc" },
+            "description": "Direção da ordenação."
+          },
+          {
+            "name": "person_id",
+            "in": "query",
+            "schema": { "type": "string", "format": "uuid" },
+            "description": "Filtrar por UUID de pessoa."
+          },
+          {
+            "name": "company_id",
+            "in": "query",
+            "schema": { "type": "string", "format": "uuid" },
+            "description": "Filtrar por UUID de empresa."
+          },
+          {
+            "name": "deal_id",
+            "in": "query",
+            "schema": { "type": "string", "format": "uuid" },
+            "description": "Filtrar por UUID de deal."
+          },
+          {
+            "name": "type_id",
+            "in": "query",
+            "schema": { "type": "string", "format": "uuid" },
+            "description": "Filtrar por UUID do tipo de tarefa."
+          },
+          {
+            "name": "priority",
+            "in": "query",
+            "schema": { "type": "string", "enum": ["high", "medium", "low"] },
+            "description": "Filtrar por nível de prioridade."
+          },
+          {
+            "name": "completed",
+            "in": "query",
+            "schema": { "type": "string", "enum": ["true", "false"] },
+            "description": "Filtrar por status de conclusão."
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Tarefas retornadas com sucesso.",
+            "content": {
+              "application/json": {
+                "schema": { "$ref": "#/components/schemas/TasksListResponse" },
+                "example": {
+                  "data": [
+                    {
+                      "id": "a1b2c3d4-e5f6-7890-abcd-ef1234567890",
+                      "title": "Ligar para o prospect",
+                      "notes": "Enviar a proposta até sexta.",
+                      "due_date": "2026-06-15T09:00:00Z",
+                      "type": {
+                        "id": "b2c3d4e5-f6a7-8901-bcde-f12345678901",
+                        "title": "Ligação",
+                        "color": "#463dfb",
+                        "key": "ligacao"
+                      },
+                      "person_id": "c3d4e5f6-a7b8-9012-cdef-123456789012",
+                      "company_id": null,
+                      "deal_id": null,
+                      "owner": {
+                        "id": "d4e5f6a7-b8c9-0123-defa-234567890123",
+                        "name": "João Silva",
+                        "email": "joao@empresa.com.br"
+                      },
+                      "priority": "high",
+                      "completed": false,
+                      "created_at": "2026-06-01T10:30:00Z",
+                      "updated_at": "2026-06-01T10:30:00Z"
+                    }
+                  ],
+                  "meta": {
+                    "total": 34,
+                    "page": 1,
+                    "per_page": 50,
+                    "has_more": false
+                  }
+                }
+              }
+            }
+          },
+          "401": { "$ref": "#/components/responses/Unauthorized" },
+          "403": { "$ref": "#/components/responses/InsufficientScope" },
+          "422": { "$ref": "#/components/responses/ValidationError" },
+          "429": { "$ref": "#/components/responses/RateLimitExceeded" },
+          "500": { "$ref": "#/components/responses/InternalError" }
+        }
+      },
+      "post": {
+        "operationId": "createTask",
+        "summary": "Criar tarefa",
+        "description": "Cria uma nova tarefa no workspace.\n\n**Escopo:** `tasks:write`.\n\n`owner_email` deve ser o e-mail de um membro existente do workspace. A API resolve internamente para o ID do usuário.",
+        "tags": ["Tarefas"],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": { "$ref": "#/components/schemas/CreateTaskRequest" }
+            }
+          }
+        },
+        "responses": {
+          "201": {
+            "description": "Tarefa criada com sucesso.",
+            "content": {
+              "application/json": {
+                "schema": { "$ref": "#/components/schemas/TaskResponse" }
+              }
+            }
+          },
+          "400": { "$ref": "#/components/responses/BadRequest" },
+          "401": { "$ref": "#/components/responses/Unauthorized" },
+          "403": { "$ref": "#/components/responses/InsufficientScope" },
+          "422": { "$ref": "#/components/responses/ValidationError" },
+          "429": { "$ref": "#/components/responses/RateLimitExceeded" },
+          "500": { "$ref": "#/components/responses/InternalError" }
+        }
+      }
+    },
+    "/v1/tasks/{id}": {
+      "patch": {
+        "operationId": "updateTask",
+        "summary": "Atualizar tarefa",
+        "description": "Atualiza uma tarefa. Apenas os campos enviados no body são alterados.\n\n**Escopo:** `tasks:write`.\n\nEnvie `null` para `type_id`, `person_id`, `company_id`, `deal_id` ou `owner_email` para remover essas associações. Envie `null` para `priority` para limpar a prioridade.",
+        "tags": ["Tarefas"],
+        "parameters": [{ "$ref": "#/components/parameters/id" }],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": { "$ref": "#/components/schemas/UpdateTaskRequest" }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Tarefa atualizada com sucesso.",
+            "content": {
+              "application/json": {
+                "schema": { "$ref": "#/components/schemas/TaskResponse" }
+              }
+            }
+          },
+          "400": { "$ref": "#/components/responses/BadRequest" },
+          "401": { "$ref": "#/components/responses/Unauthorized" },
+          "403": { "$ref": "#/components/responses/InsufficientScope" },
+          "404": { "$ref": "#/components/responses/NotFound" },
+          "422": { "$ref": "#/components/responses/ValidationError" },
+          "429": { "$ref": "#/components/responses/RateLimitExceeded" },
+          "500": { "$ref": "#/components/responses/InternalError" }
+        }
+      },
+      "delete": {
+        "operationId": "deleteTask",
+        "summary": "Deletar tarefa",
+        "description": "Remove permanentemente uma tarefa. A operação é irreversível: tarefas não possuem soft delete.\n\n**Escopo:** `tasks:write`.",
+        "tags": ["Tarefas"],
+        "parameters": [{ "$ref": "#/components/parameters/id" }],
+        "responses": {
+          "204": {
+            "description": "Tarefa deletada com sucesso.",
+            "content": {
+              "application/json": {
+                "schema": { "type": "object" },
+                "example": {}
+              }
+            }
+          },
+          "401": { "$ref": "#/components/responses/Unauthorized" },
+          "403": { "$ref": "#/components/responses/InsufficientScope" },
+          "404": { "$ref": "#/components/responses/NotFound" },
+          "429": { "$ref": "#/components/responses/RateLimitExceeded" },
+          "500": { "$ref": "#/components/responses/InternalError" }
+        }
+      }
+    }
+  },
+  "components": {
+    "securitySchemes": {
+      "bearerAuth": {
+        "type": "http",
+        "scheme": "bearer",
+        "description": "Access token OAuth 2.1."
+      }
+    },
+    "parameters": {
+      "id": {
+        "name": "id",
+        "in": "path",
+        "required": true,
+        "schema": { "type": "string", "format": "uuid" },
+        "description": "UUID do recurso."
+      }
+    },
+    "responses": {
+      "BadRequest": {
+        "description": "Body malformado ou nenhum campo enviado para atualização. Código: `bad_request`.",
+        "content": {
+          "application/json": {
+            "schema": { "$ref": "#/components/schemas/ErrorResponse" },
+            "example": {
+              "error": {
+                "code": "bad_request",
+                "message": "Request body must be valid JSON.",
+                "request_id": "550e8400-e29b-41d4-a716-446655440000"
+              }
+            }
+          }
+        }
+      },
+      "Unauthorized": {
+        "description": "Token ausente, inválido ou expirado. Códigos possíveis: `unauthorized`, `token_expired`.",
+        "content": {
+          "application/json": {
+            "schema": { "$ref": "#/components/schemas/ErrorResponse" },
+            "example": {
+              "error": {
+                "code": "unauthorized",
+                "message": "Missing or invalid Authorization header.",
+                "request_id": "550e8400-e29b-41d4-a716-446655440000"
+              }
+            }
+          }
+        }
+      },
+      "InsufficientScope": {
+        "description": "Token sem o escopo necessário. Código: `insufficient_scope`.",
+        "content": {
+          "application/json": {
+            "schema": { "$ref": "#/components/schemas/ErrorResponse" },
+            "example": {
+              "error": {
+                "code": "insufficient_scope",
+                "message": "This endpoint requires the 'tasks:write' scope.",
+                "request_id": "550e8400-e29b-41d4-a716-446655440000"
+              }
+            }
+          }
+        }
+      },
+      "NotFound": {
+        "description": "Tarefa não encontrada ou pertence a outro workspace. Código: `not_found`.",
+        "content": {
+          "application/json": {
+            "schema": { "$ref": "#/components/schemas/ErrorResponse" },
+            "example": {
+              "error": {
+                "code": "not_found",
+                "message": "Task not found.",
+                "request_id": "550e8400-e29b-41d4-a716-446655440000"
+              }
+            }
+          }
+        }
+      },
+      "ValidationError": {
+        "description": "Validação dos campos falhou. Código: `validation_error`.",
+        "content": {
+          "application/json": {
+            "schema": { "$ref": "#/components/schemas/ValidationErrorResponse" },
+            "example": {
+              "error": {
+                "code": "validation_error",
+                "message": "Validation failed.",
+                "fields": {
+                  "due_date": "due_date must be a valid ISO 8601 UTC datetime (e.g. 2026-06-01T10:00:00Z).",
+                  "priority": "Invalid enum value. Expected 'high' | 'medium' | 'low', received 'urgente'."
+                },
+                "request_id": "550e8400-e29b-41d4-a716-446655440000"
+              }
+            }
+          }
+        }
+      },
+      "RateLimitExceeded": {
+        "description": "Limite de requisições excedido. Código: `rate_limit_exceeded`.",
+        "content": {
+          "application/json": {
+            "schema": { "$ref": "#/components/schemas/ErrorResponse" },
+            "example": {
+              "error": {
+                "code": "rate_limit_exceeded",
+                "message": "Rate limit exceeded. Try again in 60 seconds.",
+                "request_id": "550e8400-e29b-41d4-a716-446655440000"
+              }
+            }
+          }
+        }
+      },
+      "InternalError": {
+        "description": "Erro interno inesperado. Código: `internal_error`.",
+        "content": {
+          "application/json": {
+            "schema": { "$ref": "#/components/schemas/ErrorResponse" },
+            "example": {
+              "error": {
+                "code": "internal_error",
+                "message": "An unexpected error occurred.",
+                "request_id": "550e8400-e29b-41d4-a716-446655440000"
+              }
+            }
+          }
+        }
+      }
+    },
+    "schemas": {
+      "ErrorResponse": {
+        "type": "object",
+        "properties": {
+          "error": {
+            "type": "object",
+            "properties": {
+              "code": { "type": "string", "example": "not_found" },
+              "message": { "type": "string", "example": "Task not found." },
+              "request_id": { "type": "string", "format": "uuid" }
+            }
+          }
+        }
+      },
+      "ValidationErrorResponse": {
+        "type": "object",
+        "properties": {
+          "error": {
+            "type": "object",
+            "properties": {
+              "code": { "type": "string", "example": "validation_error" },
+              "message": { "type": "string", "example": "Validation failed." },
+              "fields": {
+                "type": "object",
+                "additionalProperties": { "type": "string" }
+              },
+              "request_id": { "type": "string", "format": "uuid" }
+            }
+          }
+        }
+      },
+      "PaginationMeta": {
+        "type": "object",
+        "properties": {
+          "total": { "type": "integer", "example": 34, "description": "Total de registros que correspondem à consulta." },
+          "page": { "type": "integer", "example": 1, "description": "Número da página atual." },
+          "per_page": { "type": "integer", "example": 50, "description": "Registros por página." },
+          "has_more": { "type": "boolean", "example": false, "description": "`true` quando há mais páginas após a atual." }
+        }
+      },
+      "Owner": {
+        "type": "object",
+        "nullable": true,
+        "description": "Membro do workspace responsável pela tarefa. `null` quando nenhum responsável está atribuído.",
+        "properties": {
+          "id": { "type": "string", "format": "uuid" },
+          "name": { "type": "string", "example": "João Silva" },
+          "email": { "type": "string", "format": "email", "example": "joao@empresa.com.br" }
+        }
+      },
+      "TaskType": {
+        "type": "object",
+        "nullable": true,
+        "description": "Tipo da tarefa. `null` quando nenhum tipo está atribuído.",
+        "properties": {
+          "id": { "type": "string", "format": "uuid" },
+          "title": { "type": "string", "example": "Ligação" },
+          "color": {
+            "type": "string",
+            "pattern": "^#[0-9a-fA-F]{6}$",
+            "description": "Cor de exibição em formato hex RGB.",
+            "example": "#463dfb"
+          },
+          "key": {
+            "type": "string",
+            "nullable": true,
+            "description": "Chave identificadora opcional do tipo de tarefa.",
+            "example": "ligacao"
+          }
+        }
+      },
+      "TaskWithEmbedded": {
+        "type": "object",
+        "description": "Tarefa retornada pelo POST e PATCH. Inclui os objetos completos de person, company e deal no lugar dos IDs planos.",
+        "properties": {
+          "id": { "type": "string", "format": "uuid" },
+          "title": { "type": "string", "maxLength": 200, "example": "Ligar para o prospect" },
+          "notes": { "type": "string", "nullable": true, "maxLength": 3000 },
+          "due_date": { "type": "string", "format": "date-time" },
+          "type": { "$ref": "#/components/schemas/TaskType" },
+          "person": { "$ref": "#/components/schemas/PersonEmbedded" },
+          "company": { "$ref": "#/components/schemas/CompanyEmbedded" },
+          "deal": { "$ref": "#/components/schemas/DealEmbedded" },
+          "owner": { "$ref": "#/components/schemas/Owner" },
+          "priority": { "type": "string", "nullable": true, "enum": ["high", "medium", "low"] },
+          "completed": { "type": "boolean" },
+          "created_at": { "type": "string", "format": "date-time" },
+          "updated_at": { "type": "string", "format": "date-time" }
+        }
+      },
+      "PersonEmbedded": {
+        "type": "object",
+        "nullable": true,
+        "description": "Pessoa associada à tarefa. `null` quando nenhuma pessoa está atribuída.",
+        "properties": {
+          "id": { "type": "string", "format": "uuid" },
+          "full_name": { "type": "string", "example": "Maria Silva" },
+          "emails": {
+            "type": "array",
+            "nullable": true,
+            "items": { "type": "object", "properties": { "email": { "type": "string" }, "type": { "type": "string" } } }
+          },
+          "phones": {
+            "type": "array",
+            "nullable": true,
+            "items": { "type": "object", "properties": { "phone": { "type": "string" }, "type": { "type": "string" } } }
+          },
+          "ranking": { "type": "number" },
+          "position": { "type": "string", "nullable": true },
+          "created_at": { "type": "string", "format": "date-time" },
+          "updated_at": { "type": "string", "format": "date-time" }
+        }
+      },
+      "CompanyEmbedded": {
+        "type": "object",
+        "nullable": true,
+        "description": "Empresa associada à tarefa. `null` quando nenhuma empresa está atribuída.",
+        "properties": {
+          "id": { "type": "string", "format": "uuid" },
+          "full_name": { "type": "string", "example": "Empresa Exemplo S.A." },
+          "emails": {
+            "type": "array",
+            "nullable": true,
+            "items": { "type": "object", "properties": { "email": { "type": "string" }, "type": { "type": "string" } } }
+          },
+          "phones": {
+            "type": "array",
+            "nullable": true,
+            "items": { "type": "object", "properties": { "phone": { "type": "string" }, "type": { "type": "string" } } }
+          },
+          "created_at": { "type": "string", "format": "date-time" },
+          "updated_at": { "type": "string", "format": "date-time" }
+        }
+      },
+      "DealEmbedded": {
+        "type": "object",
+        "nullable": true,
+        "description": "Deal associado à tarefa. `null` quando nenhum deal está atribuído. Os campos de valor seguem o mesmo formato de `GET /v1/deals`.",
+        "properties": {
+          "id": { "type": "string", "format": "uuid" },
+          "name": { "type": "string", "example": "Plano Enterprise Q3" },
+          "amount": { "type": "integer", "description": "Valor do deal em centavos.", "example": 250000 },
+          "currency": { "type": "string", "description": "Código ISO 4217 da moeda.", "example": "BRL" },
+          "formatted_amount": {
+            "type": "string",
+            "nullable": true,
+            "description": "Valor formatado com símbolo e separadores da moeda.",
+            "example": "R$ 2.500,00"
+          },
+          "pipeline": {
+            "type": "object",
+            "nullable": true,
+            "properties": {
+              "id": { "type": "string", "format": "uuid" },
+              "name": { "type": "string" }
+            }
+          },
+          "stage": {
+            "type": "object",
+            "nullable": true,
+            "properties": {
+              "id": { "type": "string", "format": "uuid" },
+              "name": { "type": "string" },
+              "type": { "type": "string", "enum": ["open", "win", "lost"] }
+            }
+          },
+          "source": { "type": "string" },
+          "forecast_date": { "type": "string", "format": "date-time", "nullable": true },
+          "created_at": { "type": "string", "format": "date-time" },
+          "updated_at": { "type": "string", "format": "date-time" }
+        }
+      },
+      "Task": {
+        "type": "object",
+        "properties": {
+          "id": { "type": "string", "format": "uuid", "description": "Identificador único da tarefa." },
+          "title": { "type": "string", "maxLength": 200, "example": "Ligar para o prospect" },
+          "notes": {
+            "type": "string",
+            "nullable": true,
+            "maxLength": 3000,
+            "description": "Notas opcionais da tarefa.",
+            "example": "Enviar a proposta até sexta."
+          },
+          "due_date": {
+            "type": "string",
+            "format": "date-time",
+            "description": "Data e hora de vencimento da tarefa em ISO 8601 UTC.",
+            "example": "2026-06-15T09:00:00Z"
+          },
+          "type": { "$ref": "#/components/schemas/TaskType" },
+          "person_id": {
+            "type": "string",
+            "format": "uuid",
+            "nullable": true,
+            "description": "UUID da pessoa associada à tarefa."
+          },
+          "company_id": {
+            "type": "string",
+            "format": "uuid",
+            "nullable": true,
+            "description": "UUID da empresa associada à tarefa."
+          },
+          "deal_id": {
+            "type": "string",
+            "format": "uuid",
+            "nullable": true,
+            "description": "UUID do deal associado à tarefa."
+          },
+          "owner": { "$ref": "#/components/schemas/Owner" },
+          "priority": {
+            "type": "string",
+            "nullable": true,
+            "enum": ["high", "medium", "low"],
+            "description": "Nível de prioridade. `null` quando nenhuma prioridade está definida.",
+            "example": "high"
+          },
+          "completed": {
+            "type": "boolean",
+            "description": "`true` quando a tarefa foi concluída.",
+            "example": false
+          },
+          "created_at": { "type": "string", "format": "date-time" },
+          "updated_at": { "type": "string", "format": "date-time" }
+        }
+      },
+      "TaskResponse": {
+        "type": "object",
+        "properties": {
+          "data": { "$ref": "#/components/schemas/TaskWithEmbedded" }
+        }
+      },
+      "TasksListResponse": {
+        "type": "object",
+        "properties": {
+          "data": {
+            "type": "array",
+            "items": { "$ref": "#/components/schemas/Task" }
+          },
+          "meta": { "$ref": "#/components/schemas/PaginationMeta" }
+        }
+      },
+      "CreateTaskRequest": {
+        "type": "object",
+        "required": ["title", "due_date"],
+        "properties": {
+          "title": {
+            "type": "string",
+            "minLength": 1,
+            "maxLength": 200,
+            "description": "Título da tarefa.",
+            "example": "Ligar para o prospect"
+          },
+          "due_date": {
+            "type": "string",
+            "format": "date-time",
+            "description": "Data e hora de vencimento em ISO 8601 UTC.",
+            "example": "2026-06-15T09:00:00Z"
+          },
+          "notes": {
+            "type": "string",
+            "maxLength": 3000,
+            "description": "Notas opcionais.",
+            "example": "Enviar a proposta até sexta."
+          },
+          "type": {
+            "type": "string",
+            "description": "`id` (UUID) ou `key` do tipo de tarefa. A API resolve internamente para o ID do tipo. Use `GET /v1/task-types` para listar os tipos disponíveis.",
+            "example": "ligacao"
+          },
+          "person_id": {
+            "type": "string",
+            "format": "uuid",
+            "description": "UUID da pessoa a associar à tarefa."
+          },
+          "company_id": {
+            "type": "string",
+            "format": "uuid",
+            "description": "UUID da empresa a associar à tarefa."
+          },
+          "deal_id": {
+            "type": "string",
+            "format": "uuid",
+            "description": "UUID do deal a associar à tarefa."
+          },
+          "owner_email": {
+            "type": "string",
+            "format": "email",
+            "description": "E-mail do membro do workspace a definir como responsável. A API resolve internamente para o ID do usuário.",
+            "example": "joao@empresa.com.br"
+          },
+          "priority": {
+            "type": "string",
+            "enum": ["high", "medium", "low"],
+            "description": "Nível de prioridade.",
+            "example": "high"
+          }
+        }
+      },
+      "UpdateTaskRequest": {
+        "type": "object",
+        "description": "Todos os campos são opcionais. Apenas os campos enviados no body são alterados. Envie `null` para limpar um campo.",
+        "properties": {
+          "title": {
+            "type": "string",
+            "minLength": 1,
+            "maxLength": 200,
+            "description": "Novo título da tarefa.",
+            "example": "Ligar para o prospect e enviar contrato"
+          },
+          "due_date": {
+            "type": "string",
+            "format": "date-time",
+            "description": "Nova data de vencimento em ISO 8601 UTC.",
+            "example": "2026-06-20T14:00:00Z"
+          },
+          "notes": {
+            "type": "string",
+            "nullable": true,
+            "maxLength": 3000,
+            "description": "Novas notas. Envie `null` para limpar.",
+            "example": "Contrato pronto, aguardando assinatura."
+          },
+          "type": {
+            "type": "string",
+            "nullable": true,
+            "description": "`id` (UUID) ou `key` do tipo de tarefa. Envie `null` para remover. A API resolve internamente para o ID do tipo.",
+            "example": "reuniao"
+          },
+          "person_id": {
+            "type": "string",
+            "format": "uuid",
+            "nullable": true,
+            "description": "Novo UUID de pessoa. Envie `null` para remover."
+          },
+          "company_id": {
+            "type": "string",
+            "format": "uuid",
+            "nullable": true,
+            "description": "Novo UUID de empresa. Envie `null` para remover."
+          },
+          "deal_id": {
+            "type": "string",
+            "format": "uuid",
+            "nullable": true,
+            "description": "Novo UUID de deal. Envie `null` para remover."
+          },
+          "owner_email": {
+            "type": "string",
+            "format": "email",
+            "nullable": true,
+            "description": "E-mail do novo responsável. Envie `null` para remover o responsável.",
+            "example": "maria@empresa.com.br"
+          },
+          "priority": {
+            "type": "string",
+            "enum": ["high", "medium", "low"],
+            "nullable": true,
+            "description": "Nova prioridade. Envie `null` para limpar.",
+            "example": "medium"
+          },
+          "completed": {
+            "type": "boolean",
+            "description": "Marcar a tarefa como concluída ou não.",
+            "example": true
+          }
+        }
+      }
+    }
+  }
+}
