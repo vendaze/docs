@@ -1830,7 +1830,7 @@
       "post": {
         "operationId": "createTaskType",
         "summary": "Criar tipo de tarefa",
-        "description": "Cria um novo tipo de tarefa no workspace.\n\n**Escopo:** `tasks:write`.\n\nA `key` deve ser única no workspace e conter apenas letras minúsculas, dígitos e underscores entre palavras (ex: `follow_up`). Se omitida, o tipo ainda pode ser referenciado pelo `id`.",
+        "description": "Cria um novo tipo de tarefa no workspace.\n\n**Escopo:** `tasks:write`.\n\nA `key` deve ser única no workspace e conter apenas letras minúsculas, dígitos e underscores entre palavras (ex: `acompanhamento`).",
         "tags": [
           "Tipos de Tarefas"
         ],
@@ -4605,7 +4605,7 @@
             "type": "string",
             "nullable": true,
             "maxLength": 40,
-            "description": "Chave identificadora opcional. Única no workspace. Usada no campo `type` ao criar ou atualizar tarefas.",
+            "description": "Chave identificadora do tipo de tarefa. Única no workspace. Usada no campo `type` ao criar ou atualizar tarefas.",
             "example": "ligacao"
           },
           "created_at": {
@@ -5131,7 +5131,9 @@
       "CreateTaskTypeRequest": {
         "type": "object",
         "required": [
-          "title"
+          "title",
+          "color",
+          "key"
         ],
         "properties": {
           "title": {
@@ -5144,7 +5146,7 @@
           "color": {
             "type": "string",
             "pattern": "^#[0-9a-fA-F]{6}$",
-            "description": "Cor de exibição em formato hex RGB. Padrão: `#463dfb`.",
+            "description": "Cor de exibição em formato hex RGB.",
             "example": "#463dfb"
           },
           "key": {
@@ -5152,7 +5154,7 @@
             "minLength": 1,
             "maxLength": 40,
             "pattern": "^[a-z0-9]+(_[a-z0-9]+)*$",
-            "description": "Chave identificadora opcional. Usada no campo `type` ao criar ou atualizar tarefas.",
+            "description": "Chave identificadora do tipo de tarefa. Única no workspace. Apenas letras minúsculas, dígitos e underscores. Usada no campo `type` ao criar ou atualizar tarefas.",
             "example": "ligacao"
           }
         }
