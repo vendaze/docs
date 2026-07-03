@@ -1,0 +1,520 @@
+{
+  "openapi": "3.1.0",
+  "info": {
+    "title": "Tags",
+    "description": "Gerencie as tags do workspace.",
+    "version": "1.0.0",
+    "contact": {
+      "name": "Suporte Vendaze",
+      "email": "suporte@vendaze.com"
+    }
+  },
+  "servers": [
+    {
+      "url": "https://api.vendaze.com",
+      "description": "Produção"
+    }
+  ],
+  "security": [
+    {
+      "bearerAuth": []
+    }
+  ],
+  "tags": [
+    {
+      "name": "Tags"
+    }
+  ],
+  "paths": {
+    "/v1/tags": {
+      "get": {
+        "operationId": "listTags",
+        "summary": "Listar tags",
+        "description": "Retorna uma lista paginada das tags do workspace.\n\n**Escopo:** Qualquer escopo válido da Vendaze.",
+        "tags": ["Tags"],
+        "parameters": [
+          {
+            "name": "page",
+            "in": "query",
+            "schema": { "type": "integer", "minimum": 1, "default": 1 },
+            "description": "Número da página."
+          },
+          {
+            "name": "per_page",
+            "in": "query",
+            "schema": { "type": "integer", "minimum": 1, "maximum": 100, "default": 50 },
+            "description": "Quantidade de registros por página. Máximo: 100."
+          },
+          {
+            "name": "order_by",
+            "in": "query",
+            "schema": { "type": "string", "enum": ["created_at", "name"], "default": "created_at" },
+            "description": "Campo de ordenação."
+          },
+          {
+            "name": "order",
+            "in": "query",
+            "schema": { "type": "string", "enum": ["asc", "desc"], "default": "desc" },
+            "description": "Direção da ordenação."
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Tags retornadas com sucesso.",
+            "content": {
+              "application/json": {
+                "schema": { "$ref": "#/components/schemas/TagsListResponse" },
+                "example": {
+                  "data": [
+                    {
+                      "id": "a1b2c3d4-e5f6-7890-abcd-ef1234567890",
+                      "name": "Lead Quente",
+                      "key": "lead_quente",
+                      "color_text": "#ffffff",
+                      "color_background": "#ef4444",
+                      "created_at": "2026-01-15T10:30:00Z"
+                    }
+                  ],
+                  "meta": {
+                    "total": 12,
+                    "page": 1,
+                    "per_page": 50,
+                    "has_more": false
+                  }
+                }
+              }
+            }
+          },
+          "401": { "$ref": "#/components/responses/Unauthorized" },
+          "403": { "$ref": "#/components/responses/InsufficientScope" },
+          "422": { "$ref": "#/components/responses/ValidationError" },
+          "429": { "$ref": "#/components/responses/RateLimitExceeded" },
+          "500": { "$ref": "#/components/responses/InternalError" }
+        }
+      },
+      "post": {
+        "operationId": "createTag",
+        "summary": "Criar tag",
+        "description": "Cria uma nova tag no workspace.\n\n**Escopo:** `people:write`, `companies:write` ou `deals:write`.\n\nA `key` deve ser única no workspace e conter apenas letras minúsculas, dígitos e underscores entre palavras (ex: `lead_quente`). Espaços, acentos e outros caracteres não são permitidos.",
+        "tags": ["Tags"],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": { "$ref": "#/components/schemas/CreateTagRequest" }
+            }
+          }
+        },
+        "responses": {
+          "201": {
+            "description": "Tag criada com sucesso.",
+            "content": {
+              "application/json": {
+                "schema": { "$ref": "#/components/schemas/TagResponse" }
+              }
+            }
+          },
+          "400": { "$ref": "#/components/responses/BadRequest" },
+          "401": { "$ref": "#/components/responses/Unauthorized" },
+          "403": { "$ref": "#/components/responses/InsufficientScope" },
+          "409": { "$ref": "#/components/responses/Conflict" },
+          "422": { "$ref": "#/components/responses/ValidationError" },
+          "429": { "$ref": "#/components/responses/RateLimitExceeded" },
+          "500": { "$ref": "#/components/responses/InternalError" }
+        }
+      }
+    },
+    "/v1/tags/{identifier}": {
+      "get": {
+        "operationId": "getTag",
+        "summary": "Buscar tag",
+        "description": "Retorna uma tag pelo `id` (UUID) ou `key` (string).\n\n**Escopo:** Qualquer escopo válido da Vendaze.",
+        "tags": ["Tags"],
+        "parameters": [{ "$ref": "#/components/parameters/identifier" }],
+        "responses": {
+          "200": {
+            "description": "Tag retornada com sucesso.",
+            "content": {
+              "application/json": {
+                "schema": { "$ref": "#/components/schemas/TagResponse" }
+              }
+            }
+          },
+          "401": { "$ref": "#/components/responses/Unauthorized" },
+          "403": { "$ref": "#/components/responses/InsufficientScope" },
+          "404": { "$ref": "#/components/responses/NotFound" },
+          "500": { "$ref": "#/components/responses/InternalError" }
+        }
+      },
+      "patch": {
+        "operationId": "updateTag",
+        "summary": "Atualizar tag",
+        "description": "Atualiza uma tag pelo `id` (UUID) ou `key` (string). Apenas os campos enviados no body são alterados.\n\n**Escopo:** `people:write`, `companies:write` ou `deals:write`.\n\nPara remover uma cor customizada e reverter para o padrão do workspace, envie `null` em `color_text` ou `color_background`.",
+        "tags": ["Tags"],
+        "parameters": [{ "$ref": "#/components/parameters/identifier" }],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": { "$ref": "#/components/schemas/UpdateTagRequest" }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Tag atualizada com sucesso.",
+            "content": {
+              "application/json": {
+                "schema": { "$ref": "#/components/schemas/TagResponse" }
+              }
+            }
+          },
+          "400": { "$ref": "#/components/responses/BadRequest" },
+          "401": { "$ref": "#/components/responses/Unauthorized" },
+          "403": { "$ref": "#/components/responses/InsufficientScope" },
+          "404": { "$ref": "#/components/responses/NotFound" },
+          "409": { "$ref": "#/components/responses/Conflict" },
+          "422": { "$ref": "#/components/responses/ValidationError" },
+          "429": { "$ref": "#/components/responses/RateLimitExceeded" },
+          "500": { "$ref": "#/components/responses/InternalError" }
+        }
+      },
+      "delete": {
+        "operationId": "deleteTag",
+        "summary": "Deletar tag",
+        "description": "Realiza o soft delete de uma tag pelo `id` (UUID) ou `key` (string). Todas as associações da tag com pessoas, empresas e deals também são removidas.\n\n**Escopo:** `people:write`, `companies:write` ou `deals:write`.",
+        "tags": ["Tags"],
+        "parameters": [{ "$ref": "#/components/parameters/identifier" }],
+        "responses": {
+          "204": {
+            "description": "Tag deletada com sucesso.",
+            "content": {
+              "application/json": {
+                "schema": { "type": "object" },
+                "example": {}
+              }
+            }
+          },
+          "401": { "$ref": "#/components/responses/Unauthorized" },
+          "403": { "$ref": "#/components/responses/InsufficientScope" },
+          "404": { "$ref": "#/components/responses/NotFound" },
+          "429": { "$ref": "#/components/responses/RateLimitExceeded" },
+          "500": { "$ref": "#/components/responses/InternalError" }
+        }
+      }
+    }
+  },
+  "components": {
+    "securitySchemes": {
+      "bearerAuth": {
+        "type": "http",
+        "scheme": "bearer",
+        "description": "Access token OAuth 2.1."
+      }
+    },
+    "parameters": {
+      "identifier": {
+        "name": "identifier",
+        "in": "path",
+        "required": true,
+        "schema": {
+          "type": "string"
+        },
+        "description": "`id` (UUID) ou `key` (string) da tag. Ambos os formatos são aceitos."
+      }
+    },
+    "responses": {
+      "BadRequest": {
+        "description": "Body malformado ou nenhum campo enviado para atualização. Código de erro: `bad_request`. Mensagens possíveis: `\"Request body must be valid JSON.\"` (body não parseável) ou `\"No fields provided for update.\"` (PATCH sem campos).",
+        "content": {
+          "application/json": {
+            "schema": { "$ref": "#/components/schemas/ErrorResponse" },
+            "example": {
+              "error": {
+                "code": "bad_request",
+                "message": "Request body must be valid JSON.",
+                "request_id": "550e8400-e29b-41d4-a716-446655440000"
+              }
+            }
+          }
+        }
+      },
+      "Unauthorized": {
+        "description": "Token ausente, inválido ou expirado. Códigos possíveis: `unauthorized`: `\"Missing or invalid Authorization header.\"`, `\"Invalid or malformed token.\"` ou `\"Token is missing required claims.\"`; `token_expired`: `\"Access token expired. Refresh using the refresh token.\"`",
+        "content": {
+          "application/json": {
+            "schema": { "$ref": "#/components/schemas/ErrorResponse" },
+            "example": {
+              "error": {
+                "code": "unauthorized",
+                "message": "Missing or invalid Authorization header.",
+                "request_id": "550e8400-e29b-41d4-a716-446655440000"
+              }
+            }
+          }
+        }
+      },
+      "InsufficientScope": {
+        "description": "Token sem o escopo necessário. Código: `insufficient_scope`. Mensagem: `\"This endpoint requires the '{scope}' scope.\"`",
+        "content": {
+          "application/json": {
+            "schema": { "$ref": "#/components/schemas/ErrorResponse" },
+            "example": {
+              "error": {
+                "code": "insufficient_scope",
+                "message": "This endpoint requires the 'tags:write' scope.",
+                "request_id": "550e8400-e29b-41d4-a716-446655440000"
+              }
+            }
+          }
+        }
+      },
+      "NotFound": {
+        "description": "Tag não encontrada, deletada ou pertence a outro workspace. Código: `not_found`. Mensagem: `\"Tag not found.\"`",
+        "content": {
+          "application/json": {
+            "schema": { "$ref": "#/components/schemas/ErrorResponse" },
+            "example": {
+              "error": {
+                "code": "not_found",
+                "message": "Tag not found.",
+                "request_id": "550e8400-e29b-41d4-a716-446655440000"
+              }
+            }
+          }
+        }
+      },
+      "Conflict": {
+        "description": "Já existe uma tag com a mesma `key` neste workspace. Código: `conflict`.",
+        "content": {
+          "application/json": {
+            "schema": { "$ref": "#/components/schemas/ErrorResponse" },
+            "example": {
+              "error": {
+                "code": "conflict",
+                "message": "A record with this value already exists.",
+                "fields": { "key": "Value already in use." },
+                "request_id": "550e8400-e29b-41d4-a716-446655440000"
+              }
+            }
+          }
+        }
+      },
+      "ValidationError": {
+        "description": "Validação dos campos falhou. Código: `validation_error`. Mensagem: `\"Validation failed.\"` O objeto `fields` mapeia cada campo inválido com a descrição do problema.",
+        "content": {
+          "application/json": {
+            "schema": { "$ref": "#/components/schemas/ValidationErrorResponse" },
+            "example": {
+              "error": {
+                "code": "validation_error",
+                "message": "Validation failed.",
+                "fields": {
+                  "key": "Key must contain only lowercase letters, digits, and underscores between words (e.g. lead_quente).",
+                  "color_text": "Color must be a valid hex RGB color (e.g. #e5e7eb)."
+                },
+                "request_id": "550e8400-e29b-41d4-a716-446655440000"
+              }
+            }
+          }
+        }
+      },
+      "RateLimitExceeded": {
+        "description": "Limite de requisições excedido. Código: `rate_limit_exceeded`. Mensagem: `\"Rate limit exceeded. Try again in {N} seconds.\"` O header `Retry-After` contém o mesmo valor.",
+        "content": {
+          "application/json": {
+            "schema": { "$ref": "#/components/schemas/ErrorResponse" },
+            "example": {
+              "error": {
+                "code": "rate_limit_exceeded",
+                "message": "Rate limit exceeded. Try again in 60 seconds.",
+                "request_id": "550e8400-e29b-41d4-a716-446655440000"
+              }
+            }
+          }
+        }
+      },
+      "InternalError": {
+        "description": "Erro interno inesperado. Código: `internal_error`. Mensagem: `\"An unexpected error occurred.\"` Use o `request_id` para correlacionar com os logs do servidor.",
+        "content": {
+          "application/json": {
+            "schema": { "$ref": "#/components/schemas/ErrorResponse" },
+            "example": {
+              "error": {
+                "code": "internal_error",
+                "message": "An unexpected error occurred.",
+                "request_id": "550e8400-e29b-41d4-a716-446655440000"
+              }
+            }
+          }
+        }
+      }
+    },
+    "schemas": {
+      "ErrorResponse": {
+        "type": "object",
+        "properties": {
+          "error": {
+            "type": "object",
+            "properties": {
+              "code": { "type": "string", "example": "not_found" },
+              "message": { "type": "string", "example": "Tag not found." },
+              "request_id": { "type": "string", "format": "uuid" }
+            }
+          }
+        }
+      },
+      "ValidationErrorResponse": {
+        "type": "object",
+        "properties": {
+          "error": {
+            "type": "object",
+            "properties": {
+              "code": { "type": "string", "example": "validation_error" },
+              "message": { "type": "string", "example": "Validation failed." },
+              "fields": {
+                "type": "object",
+                "additionalProperties": { "type": "string" }
+              },
+              "request_id": { "type": "string", "format": "uuid" }
+            }
+          }
+        }
+      },
+      "PaginationMeta": {
+        "type": "object",
+        "properties": {
+          "total": { "type": "integer", "example": 12, "description": "Total de registros que correspondem à consulta." },
+          "page": { "type": "integer", "example": 1, "description": "Número da página atual." },
+          "per_page": { "type": "integer", "example": 50, "description": "Registros por página." },
+          "has_more": { "type": "boolean", "example": false, "description": "`true` quando há mais páginas após a atual." }
+        }
+      },
+      "Tag": {
+        "type": "object",
+        "properties": {
+          "id": {
+            "type": "string",
+            "format": "uuid",
+            "description": "Identificador único da tag."
+          },
+          "name": {
+            "type": "string",
+            "maxLength": 30,
+            "description": "Nome de exibição da tag.",
+            "example": "Lead Quente"
+          },
+          "key": {
+            "type": "string",
+            "maxLength": 30,
+            "description": "Chave única no workspace. Apenas letras minúsculas, dígitos e underscores (ex: `lead_quente`). Usada para referenciar a tag nos arrays de associação.",
+            "example": "lead_quente"
+          },
+          "color_text": {
+            "type": "string",
+            "nullable": true,
+            "pattern": "^#[0-9a-fA-F]{6}$",
+            "description": "Cor do texto em formato hex RGB. `null` significa que o padrão do workspace é aplicado.",
+            "example": "#ffffff"
+          },
+          "color_background": {
+            "type": "string",
+            "nullable": true,
+            "pattern": "^#[0-9a-fA-F]{6}$",
+            "description": "Cor de fundo em formato hex RGB. `null` significa que o padrão do workspace é aplicado.",
+            "example": "#ef4444"
+          },
+          "created_at": {
+            "type": "string",
+            "format": "date-time",
+            "description": "Timestamp ISO 8601 UTC de criação da tag."
+          }
+        }
+      },
+      "TagResponse": {
+        "type": "object",
+        "properties": {
+          "data": { "$ref": "#/components/schemas/Tag" }
+        }
+      },
+      "TagsListResponse": {
+        "type": "object",
+        "properties": {
+          "data": {
+            "type": "array",
+            "items": { "$ref": "#/components/schemas/Tag" }
+          },
+          "meta": { "$ref": "#/components/schemas/PaginationMeta" }
+        }
+      },
+      "CreateTagRequest": {
+        "type": "object",
+        "required": ["name", "key"],
+        "properties": {
+          "name": {
+            "type": "string",
+            "minLength": 1,
+            "maxLength": 30,
+            "description": "Nome de exibição da tag.",
+            "example": "Lead Quente"
+          },
+          "key": {
+            "type": "string",
+            "minLength": 1,
+            "maxLength": 30,
+            "pattern": "^[a-z0-9]+(_[a-z0-9]+)*$",
+            "description": "Chave única no workspace. Apenas letras minúsculas, dígitos e underscores entre palavras. Sem espaços, acentos ou pontuação.",
+            "example": "lead_quente"
+          },
+          "color_text": {
+            "type": "string",
+            "pattern": "^#[0-9a-fA-F]{6}$",
+            "description": "Cor do texto em formato hex RGB (ex: `#ffffff`). Se omitido, aplica o padrão do workspace (`#374152`).",
+            "example": "#ffffff"
+          },
+          "color_background": {
+            "type": "string",
+            "pattern": "^#[0-9a-fA-F]{6}$",
+            "description": "Cor de fundo em formato hex RGB (ex: `#ef4444`). Se omitido, aplica o padrão do workspace (`#e4e6eb`).",
+            "example": "#ef4444"
+          }
+        }
+      },
+      "UpdateTagRequest": {
+        "type": "object",
+        "description": "Todos os campos são opcionais. Apenas os campos enviados no body são alterados.",
+        "properties": {
+          "name": {
+            "type": "string",
+            "minLength": 1,
+            "maxLength": 30,
+            "description": "Novo nome de exibição.",
+            "example": "Lead Frio"
+          },
+          "key": {
+            "type": "string",
+            "minLength": 1,
+            "maxLength": 30,
+            "pattern": "^[a-z0-9]+(_[a-z0-9]+)*$",
+            "description": "Nova chave. Não pode conflitar com uma chave existente no workspace.",
+            "example": "lead_frio"
+          },
+          "color_text": {
+            "type": "string",
+            "nullable": true,
+            "pattern": "^#[0-9a-fA-F]{6}$",
+            "description": "Nova cor do texto em formato hex RGB. Envie `null` para reverter ao padrão do workspace.",
+            "example": "#374152"
+          },
+          "color_background": {
+            "type": "string",
+            "nullable": true,
+            "pattern": "^#[0-9a-fA-F]{6}$",
+            "description": "Nova cor de fundo em formato hex RGB. Envie `null` para reverter ao padrão do workspace.",
+            "example": "#e4e6eb"
+          }
+        }
+      }
+    }
+  }
+}
