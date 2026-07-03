@@ -74,7 +74,7 @@
       "post": {
         "operationId": "createTaskType",
         "summary": "Criar tipo de tarefa",
-        "description": "Cria um novo tipo de tarefa no workspace.\n\nA `key` deve ser única no workspace e conter apenas letras minúsculas, dígitos e underscores entre palavras (ex: `acompanhamento`).\n\n<Accordion title=\"Escopo necessário\">\n`tasks:write`\n</Accordion>",
+        "description": "Cria um novo tipo de tarefa no workspace.\n\n<Accordion title=\"Escopo necessário\">\n`tasks:write`\n</Accordion>",
         "tags": ["Tipos de Tarefas"],
         "requestBody": {
           "required": true,
@@ -124,7 +124,7 @@
       "delete": {
         "operationId": "deleteTaskType",
         "summary": "Deletar tipo de tarefa",
-        "description": "Remove permanentemente um tipo de tarefa. As tarefas associadas a este tipo terão o campo `type` definido como `null`.\n\n<Accordion title=\"Escopo necessário\">\n`tasks:write`\n</Accordion>",
+        "description": "Remove permanentemente um tipo de tarefa.\n\n<Accordion title=\"Escopo necessário\">\n`tasks:write`\n</Accordion>",
         "tags": ["Tipos de Tarefas"],
         "parameters": [{ "$ref": "#/components/parameters/id" }],
         "responses": {

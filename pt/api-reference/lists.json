@@ -22,7 +22,7 @@
       "get": {
         "operationId": "listLists",
         "summary": "Listar listas",
-        "description": "Retorna uma lista paginada das listas de contatos do workspace. Cada item inclui `people_count` e `companies_count` com a quantidade atual de membros.\n\n<Accordion title=\"Escopo necessário\">\n`people:read` ou `companies:read`\n</Accordion>",
+        "description": "Retorna uma lista paginada das listas de contatos do workspace.\n\n<Accordion title=\"Escopo necessário\">\n`people:read` ou `companies:read`\n</Accordion>",
         "tags": ["Listas"],
         "parameters": [
           {

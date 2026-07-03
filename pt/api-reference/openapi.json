@@ -51,7 +51,7 @@
       "post": {
         "operationId": "registerApp",
         "summary": "Registrar um aplicativo",
-        "description": "Registra um novo aplicativo OAuth. As credenciais são enviadas por e-mail. Não requer autenticação.",
+        "description": "Registra um novo aplicativo OAuth. As credenciais são enviadas por e-mail.",
         "security": [],
         "tags": [
           "OAuth"
@@ -583,7 +583,7 @@
       "get": {
         "operationId": "listPeople",
         "summary": "Listar pessoas",
-        "description": "Retorna uma lista paginada de pessoas no workspace. Não inclui `company`, `tags` ou `lists` embutidos. `custom_fields` são incluídos.\n\n<Accordion title=\"Escopo necessário\">\n`people:read`\n</Accordion>",
+        "description": "Retorna uma lista paginada de pessoas no workspace.\n\n<Accordion title=\"Escopo necessário\">\n`people:read`\n</Accordion>",
         "tags": [
           "Pessoas"
         ],
@@ -704,7 +704,7 @@
       "post": {
         "operationId": "createPerson",
         "summary": "Criar pessoa",
-        "description": "Cria uma nova pessoa no workspace. Retorna a pessoa criada com `company`, `tags`, `lists` e `custom_fields` embutidos.\n\n<Accordion title=\"Escopo necessário\">\n`people:write`\n</Accordion>",
+        "description": "Cria uma nova pessoa no workspace.\n\n<Accordion title=\"Escopo necessário\">\n`people:write`\n</Accordion>",
         "tags": [
           "Pessoas"
         ],
@@ -754,7 +754,7 @@
       "get": {
         "operationId": "getPerson",
         "summary": "Buscar pessoa",
-        "description": "Retorna uma pessoa por ID com `company`, `tags`, `lists` e `custom_fields` embutidos.\n\n<Accordion title=\"Escopo necessário\">\n`people:read`\n</Accordion>",
+        "description": "Retorna a pessoa correspondente ao ID.\n\n<Accordion title=\"Escopo necessário\">\n`people:read`\n</Accordion>",
         "tags": [
           "Pessoas"
         ],
@@ -791,7 +791,7 @@
       "patch": {
         "operationId": "updatePerson",
         "summary": "Atualizar pessoa",
-        "description": "Atualiza uma pessoa. Apenas os campos enviados são modificados. Retorna a pessoa atualizada com `company`, `tags`, `lists` e `custom_fields` embutidos.\n\n<Accordion title=\"Escopo necessário\">\n`people:write`\n</Accordion>",
+        "description": "Atualiza uma pessoa. Apenas os campos enviados são modificados.\n\n<Accordion title=\"Escopo necessário\">\n`people:write`\n</Accordion>",
         "tags": [
           "Pessoas"
         ],
@@ -886,7 +886,7 @@
       "get": {
         "operationId": "listCompanies",
         "summary": "Listar empresas",
-        "description": "Retorna uma lista paginada de empresas no workspace. Não inclui `tags` ou `lists` embutidos. `custom_fields` são incluídos.\n\n<Accordion title=\"Escopo necessário\">\n`companies:read`\n</Accordion>",
+        "description": "Retorna uma lista paginada de empresas no workspace.\n\n<Accordion title=\"Escopo necessário\">\n`companies:read`\n</Accordion>",
         "tags": [
           "Empresas"
         ],
@@ -1007,7 +1007,7 @@
       "post": {
         "operationId": "createCompany",
         "summary": "Criar empresa",
-        "description": "Cria uma nova empresa no workspace. Retorna a empresa criada com `tags`, `lists` e `custom_fields` embutidos.\n\n<Accordion title=\"Escopo necessário\">\n`companies:write`\n</Accordion>",
+        "description": "Cria uma nova empresa no workspace.\n\n<Accordion title=\"Escopo necessário\">\n`companies:write`\n</Accordion>",
         "tags": [
           "Empresas"
         ],
@@ -1057,7 +1057,7 @@
       "get": {
         "operationId": "getCompany",
         "summary": "Buscar empresa",
-        "description": "Retorna uma empresa por ID com `tags`, `lists` e `custom_fields` embutidos.\n\n<Accordion title=\"Escopo necessário\">\n`companies:read`\n</Accordion>",
+        "description": "Retorna a empresa correspondente ao ID.\n\n<Accordion title=\"Escopo necessário\">\n`companies:read`\n</Accordion>",
         "tags": [
           "Empresas"
         ],
@@ -1094,7 +1094,7 @@
       "patch": {
         "operationId": "updateCompany",
         "summary": "Atualizar empresa",
-        "description": "Atualiza uma empresa. Apenas os campos enviados no body são modificados. Retorna a empresa atualizada com `tags`, `lists` e `custom_fields` embutidos.\n\n<Accordion title=\"Escopo necessário\">\n`companies:write`\n</Accordion>",
+        "description": "Atualiza uma empresa. Apenas os campos enviados no body são modificados.\n\n<Accordion title=\"Escopo necessário\">\n`companies:write`\n</Accordion>",
         "tags": [
           "Empresas"
         ],
@@ -1189,7 +1189,7 @@
       "post": {
         "operationId": "createDeal",
         "summary": "Criar negócio",
-        "description": "Cria um novo negócio no workspace. O campo `source` é preenchido automaticamente com o nome do OAuth app que faz a requisição e não pode ser definido pelo integrador.\n\n<Accordion title=\"Escopo necessário\">\n`deals:write`\n</Accordion>",
+        "description": "Cria um novo negócio no workspace.\n\n<Accordion title=\"Escopo necessário\">\n`deals:write`\n</Accordion>",
         "tags": [
           "Negócios"
         ],
@@ -1253,7 +1253,7 @@
       "get": {
         "operationId": "getDeal",
         "summary": "Buscar negócio",
-        "description": "Retorna um negócio por ID com pipeline, estágio, produtos, campos adicionais, tags, pessoas e empresas associadas.\n\n<Accordion title=\"Escopo necessário\">\n`deals:read`\n</Accordion>",
+        "description": "Retorna o negócio correspondente ao ID.\n\n<Accordion title=\"Escopo necessário\">\n`deals:read`\n</Accordion>",
         "tags": [
           "Negócios"
         ],
@@ -1290,7 +1290,7 @@
       "patch": {
         "operationId": "updateDeal",
         "summary": "Atualizar negócio",
-        "description": "Atualiza um negócio. Apenas campos enviados são modificados. O campo `source` não pode ser alterado.\n\n<Accordion title=\"Escopo necessário\">\n`deals:write`\n</Accordion>",
+        "description": "Atualiza um negócio. Apenas campos enviados são modificados.\n\n<Accordion title=\"Escopo necessário\">\n`deals:write`\n</Accordion>",
         "tags": [
           "Negócios"
         ],
@@ -1399,7 +1399,7 @@
       "get": {
         "operationId": "listTasks",
         "summary": "Listar tarefas",
-        "description": "Retorna uma lista paginada de tarefas do workspace. Suporta filtros por `person_id`, `company_id`, `deal_id`, `type_id`, `priority` e `completed`. Cada tarefa inclui o objeto `type` embutido.\n\n<Accordion title=\"Escopo necessário\">\n`tasks:read`\n</Accordion>",
+        "description": "Retorna uma lista paginada de tarefas do workspace.\n\n<Accordion title=\"Escopo necessário\">\n`tasks:read`\n</Accordion>",
         "tags": [
           "Tarefas"
         ],
@@ -1579,7 +1579,7 @@
       "post": {
         "operationId": "createTask",
         "summary": "Criar tarefa",
-        "description": "Cria uma nova tarefa no workspace.\n\n`owner_email` deve ser o e-mail de um membro existente do workspace. A API resolve internamente para o ID do usuário.\n\n<Accordion title=\"Escopo necessário\">\n`tasks:write`\n</Accordion>",
+        "description": "Cria uma nova tarefa no workspace.\n\n<Accordion title=\"Escopo necessário\">\n`tasks:write`\n</Accordion>",
         "tags": [
           "Tarefas"
         ],
@@ -1629,7 +1629,7 @@
       "patch": {
         "operationId": "updateTask",
         "summary": "Atualizar tarefa",
-        "description": "Atualiza uma tarefa. Apenas os campos enviados no body são alterados.\n\nEnvie `null` para `type_id`, `person_id`, `company_id`, `deal_id` ou `owner_email` para remover essas associações. Envie `null` para `priority` para limpar a prioridade.\n\n<Accordion title=\"Escopo necessário\">\n`tasks:write`\n</Accordion>",
+        "description": "Atualiza uma tarefa. Apenas os campos enviados no body são alterados.\n\n<Accordion title=\"Escopo necessário\">\n`tasks:write`\n</Accordion>",
         "tags": [
           "Tarefas"
         ],
@@ -1830,7 +1830,7 @@
       "post": {
         "operationId": "createTaskType",
         "summary": "Criar tipo de tarefa",
-        "description": "Cria um novo tipo de tarefa no workspace.\n\nA `key` deve ser única no workspace e conter apenas letras minúsculas, dígitos e underscores entre palavras (ex: `acompanhamento`).\n\n<Accordion title=\"Escopo necessário\">\n`tasks:write`\n</Accordion>",
+        "description": "Cria um novo tipo de tarefa no workspace.\n\n<Accordion title=\"Escopo necessário\">\n`tasks:write`\n</Accordion>",
         "tags": [
           "Tipos de Tarefas"
         ],
@@ -1942,7 +1942,7 @@
       "delete": {
         "operationId": "deleteTaskType",
         "summary": "Deletar tipo de tarefa",
-        "description": "Remove permanentemente um tipo de tarefa. As tarefas associadas a este tipo terão o campo `type` definido como `null`.\n\n<Accordion title=\"Escopo necessário\">\n`tasks:write`\n</Accordion>",
+        "description": "Remove permanentemente um tipo de tarefa.\n\n<Accordion title=\"Escopo necessário\">\n`tasks:write`\n</Accordion>",
         "tags": [
           "Tipos de Tarefas"
         ],
@@ -2087,7 +2087,7 @@
       "post": {
         "operationId": "createTag",
         "summary": "Criar tag",
-        "description": "Cria uma nova tag no workspace.\n\nA `key` deve ser única no workspace e conter apenas letras minúsculas, dígitos e underscores entre palavras (ex: `lead_quente`). Espaços, acentos e outros caracteres não são permitidos.\n\n<Accordion title=\"Escopo necessário\">\n`people:write`, `companies:write` ou `deals:write`\n</Accordion>",
+        "description": "Cria uma nova tag no workspace.\n\n<Accordion title=\"Escopo necessário\">\n`people:write`, `companies:write` ou `deals:write`\n</Accordion>",
         "tags": [
           "Tags"
         ],
@@ -2177,7 +2177,7 @@
       "patch": {
         "operationId": "updateTag",
         "summary": "Atualizar tag",
-        "description": "Atualiza uma tag pelo `id` (UUID) ou `key` (string). Apenas os campos enviados no body são alterados.\n\nPara remover uma cor customizada e reverter para o padrão do workspace, envie `null` em `color_text` ou `color_background`.\n\n<Accordion title=\"Escopo necessário\">\n`people:write`, `companies:write` ou `deals:write`\n</Accordion>",
+        "description": "Atualiza uma tag pelo `id` (UUID) ou `key` (string). Apenas os campos enviados no body são alterados.\n\n<Accordion title=\"Escopo necessário\">\n`people:write`, `companies:write` ou `deals:write`\n</Accordion>",
         "tags": [
           "Tags"
         ],
@@ -2236,7 +2236,7 @@
       "delete": {
         "operationId": "deleteTag",
         "summary": "Deletar tag",
-        "description": "Realiza o soft delete de uma tag pelo `id` (UUID) ou `key` (string). Todas as associações da tag com pessoas, empresas e deals também são removidas.\n\n<Accordion title=\"Escopo necessário\">\n`people:write`, `companies:write` ou `deals:write`\n</Accordion>",
+        "description": "Realiza o soft delete de uma tag pelo `id` (UUID) ou `key` (string).\n\n<Accordion title=\"Escopo necessário\">\n`people:write`, `companies:write` ou `deals:write`\n</Accordion>",
         "tags": [
           "Tags"
         ],
@@ -2279,7 +2279,7 @@
       "get": {
         "operationId": "listLists",
         "summary": "Listar listas",
-        "description": "Retorna uma lista paginada das listas de contatos do workspace. Cada item inclui `people_count` e `companies_count` com a quantidade atual de membros.\n\n<Accordion title=\"Escopo necessário\">\n`people:read` ou `companies:read`\n</Accordion>",
+        "description": "Retorna uma lista paginada das listas de contatos do workspace.\n\n<Accordion title=\"Escopo necessário\">\n`people:read` ou `companies:read`\n</Accordion>",
         "tags": [
           "Listas"
         ],
@@ -3621,7 +3621,7 @@
       },
       "PersonList": {
         "type": "object",
-        "description": "Objeto compacto de pessoa retornado nas listagens. Não inclui `company`, `tags` ou `lists` embutidos.",
+        "description": "Objeto compacto de pessoa retornado nas listagens.",
         "properties": {
           "id": {
             "type": "string",
@@ -3948,7 +3948,7 @@
       },
       "CompanyList": {
         "type": "object",
-        "description": "Objeto compacto de empresa retornado nas listagens. Não inclui `tags` ou `lists` embutidos.",
+        "description": "Objeto compacto de empresa retornado nas listagens.",
         "properties": {
           "id": {
             "type": "string",

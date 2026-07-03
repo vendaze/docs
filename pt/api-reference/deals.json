@@ -30,7 +30,7 @@
       "post": {
         "operationId": "createDeal",
         "summary": "Criar negócio",
-        "description": "Cria um novo negócio no workspace. O campo `source` é preenchido automaticamente com o nome do OAuth app que faz a requisição e não pode ser definido pelo integrador.\n\n<Accordion title=\"Escopo necessário\">\n`deals:write`\n</Accordion>",
+        "description": "Cria um novo negócio no workspace.\n\n<Accordion title=\"Escopo necessário\">\n`deals:write`\n</Accordion>",
         "tags": ["Negócios"],
         "requestBody": {
           "required": true,
@@ -92,7 +92,7 @@
       "get": {
         "operationId": "getDeal",
         "summary": "Buscar negócio",
-        "description": "Retorna um negócio por ID com pipeline, estágio, produtos, campos adicionais, tags, pessoas e empresas associadas.\n\n<Accordion title=\"Escopo necessário\">\n`deals:read`\n</Accordion>",
+        "description": "Retorna o negócio correspondente ao ID.\n\n<Accordion title=\"Escopo necessário\">\n`deals:read`\n</Accordion>",
         "tags": ["Negócios"],
         "parameters": [
           {
@@ -127,7 +127,7 @@
       "patch": {
         "operationId": "updateDeal",
         "summary": "Atualizar negócio",
-        "description": "Atualiza um negócio. Apenas campos enviados são modificados. O campo `source` não pode ser alterado.\n\n<Accordion title=\"Escopo necessário\">\n`deals:write`\n</Accordion>",
+        "description": "Atualiza um negócio. Apenas campos enviados são modificados.\n\n<Accordion title=\"Escopo necessário\">\n`deals:write`\n</Accordion>",
         "tags": ["Negócios"],
         "parameters": [
           {

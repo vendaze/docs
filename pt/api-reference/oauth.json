@@ -30,7 +30,7 @@
       "post": {
         "operationId": "registerApp",
         "summary": "Registrar um aplicativo",
-        "description": "Registra um novo aplicativo OAuth. As credenciais são enviadas por e-mail. Não requer autenticação.",
+        "description": "Registra um novo aplicativo OAuth. As credenciais são enviadas por e-mail.",
         "security": [],
         "tags": ["OAuth"],
         "requestBody": {

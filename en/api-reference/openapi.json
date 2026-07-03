@@ -51,7 +51,7 @@
       "post": {
         "operationId": "registerApp",
         "summary": "Register an app",
-        "description": "Register a new OAuth app. Credentials are sent by email. No authentication required.",
+        "description": "Register a new OAuth app. Credentials are sent by email.",
         "security": [],
         "tags": [
           "OAuth"

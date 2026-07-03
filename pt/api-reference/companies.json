@@ -30,7 +30,7 @@
       "get": {
         "operationId": "listCompanies",
         "summary": "Listar empresas",
-        "description": "Retorna uma lista paginada de empresas no workspace. Não inclui `tags` ou `lists` embutidos. `custom_fields` são incluídos.\n\n<Accordion title=\"Escopo necessário\">\n`companies:read`\n</Accordion>",
+        "description": "Retorna uma lista paginada de empresas no workspace.\n\n<Accordion title=\"Escopo necessário\">\n`companies:read`\n</Accordion>",
         "tags": ["Empresas"],
         "parameters": [
           {
@@ -99,7 +99,7 @@
       "post": {
         "operationId": "createCompany",
         "summary": "Criar empresa",
-        "description": "Cria uma nova empresa no workspace. Retorna a empresa criada com `tags`, `lists` e `custom_fields` embutidos.\n\n<Accordion title=\"Escopo necessário\">\n`companies:write`\n</Accordion>",
+        "description": "Cria uma nova empresa no workspace.\n\n<Accordion title=\"Escopo necessário\">\n`companies:write`\n</Accordion>",
         "tags": ["Empresas"],
         "requestBody": {
           "required": true,
@@ -147,7 +147,7 @@
       "get": {
         "operationId": "getCompany",
         "summary": "Buscar empresa",
-        "description": "Retorna uma empresa por ID com `tags`, `lists` e `custom_fields` embutidos.\n\n<Accordion title=\"Escopo necessário\">\n`companies:read`\n</Accordion>",
+        "description": "Retorna a empresa correspondente ao ID.\n\n<Accordion title=\"Escopo necessário\">\n`companies:read`\n</Accordion>",
         "tags": ["Empresas"],
         "parameters": [
           {
@@ -182,7 +182,7 @@
       "patch": {
         "operationId": "updateCompany",
         "summary": "Atualizar empresa",
-        "description": "Atualiza uma empresa. Apenas os campos enviados no body são modificados. Retorna a empresa atualizada com `tags`, `lists` e `custom_fields` embutidos.\n\n<Accordion title=\"Escopo necessário\">\n`companies:write`\n</Accordion>",
+        "description": "Atualiza uma empresa. Apenas os campos enviados no body são modificados.\n\n<Accordion title=\"Escopo necessário\">\n`companies:write`\n</Accordion>",
         "tags": ["Empresas"],
         "parameters": [
           {
@@ -842,7 +842,7 @@
       },
       "CompanyList": {
         "type": "object",
-        "description": "Objeto compacto de empresa retornado nas listagens. Não inclui `tags` ou `lists` embutidos.",
+        "description": "Objeto compacto de empresa retornado nas listagens.",
         "properties": {
           "id": { "type": "string", "format": "uuid" },
           "full_name": { "type": "string", "maxLength": 70, "example": "Acme Corp" },
