@@ -1,18 +1,18 @@
 {
   "openapi": "3.1.0",
   "info": {
-    "title": "Tags",
-    "description": "Manage tags in the workspace.",
+    "title": "Produtos",
+    "description": "Gerencie produtos no workspace.",
     "version": "1.0.0",
     "contact": {
-      "name": "Vendaze Support",
+      "name": "Suporte Vendaze",
       "email": "suporte@vendaze.com"
     }
   },
   "servers": [
     {
       "url": "https://api.vendaze.com",
-      "description": "Production"
+      "description": "Produção"
     }
   ],
   "security": [
@@ -22,61 +22,65 @@
   ],
   "tags": [
     {
-      "name": "Tags"
+      "name": "Produtos"
     }
   ],
   "paths": {
-    "/v1/tags": {
+    "/v1/products": {
       "get": {
-        "operationId": "listTags",
-        "summary": "List tags",
-        "description": "Returns a paginated list of tags in the workspace.\n\n<Accordion title=\"Required scope\">\nAny valid Vendaze scope.\n</Accordion>",
-        "tags": ["Tags"],
+        "operationId": "listProducts",
+        "summary": "Listar produtos",
+        "description": "Retorna uma lista paginada de produtos do workspace.\n\n<Accordion title=\"Escopo necessário\">\n`products:read`\n</Accordion>",
+        "tags": ["Produtos"],
         "parameters": [
           {
             "name": "page",
             "in": "query",
             "schema": { "type": "integer", "minimum": 1, "default": 1 },
-            "description": "Page number."
+            "description": "Número da página."
           },
           {
             "name": "per_page",
             "in": "query",
             "schema": { "type": "integer", "minimum": 1, "maximum": 50, "default": 50 },
-            "description": "Number of records per page. Maximum: 50."
+            "description": "Registros por página. Máximo: 50."
           },
           {
             "name": "order_by",
             "in": "query",
             "schema": { "type": "string", "enum": ["created_at", "name"], "default": "created_at" },
-            "description": "Field to sort by."
+            "description": "Campo de ordenação."
           },
           {
             "name": "order",
             "in": "query",
             "schema": { "type": "string", "enum": ["asc", "desc"], "default": "desc" },
-            "description": "Sort direction."
+            "description": "Direção da ordenação."
           }
         ],
         "responses": {
           "200": {
-            "description": "Tags returned successfully.",
+            "description": "Produtos retornados com sucesso.",
             "content": {
               "application/json": {
-                "schema": { "$ref": "#/components/schemas/TagsListResponse" },
+                "schema": { "$ref": "#/components/schemas/ProductsListResponse" },
                 "example": {
                   "data": [
                     {
                       "id": "a1b2c3d4-e5f6-7890-abcd-ef1234567890",
-                      "name": "Hot Lead",
-                      "key": "hot_lead",
-                      "color_text": "#ffffff",
-                      "color_background": "#ef4444",
+                      "name": "Plano Empresarial",
+                      "price_cts": 99900,
+                      "currency": "BRL",
+                      "description": "Plano completo para grandes equipes.",
+                      "image_url": "https://storage.vendaze.com/client/workspaces/abc/products/xyz/image/avatar_Ab1Cd2Ef3G.webp",
+                      "code": "PLANO-EMP",
+                      "is_active": true,
+                      "billing_cycle": "monthly",
                       "created_at": "2026-01-15T10:30:00Z"
                     }
                   ],
                   "meta": {
-                    "total": 12,
+                    "total": 8,
                     "page": 1,
                     "per_page": 50,
                     "has_more": false
@@ -93,24 +97,24 @@
         }
       },
       "post": {
-        "operationId": "createTag",
-        "summary": "Create a tag",
-        "description": "Creates a new tag in the workspace.\n\n<Accordion title=\"Required scope\">\n`people:write`, `companies:write`, or `deals:write`\n</Accordion>",
-        "tags": ["Tags"],
+        "operationId": "createProduct",
+        "summary": "Criar produto",
+        "description": "Cria um novo produto no workspace.\n\n<Accordion title=\"Escopo necessário\">\n`products:write`\n</Accordion>",
+        "tags": ["Produtos"],
         "requestBody": {
           "required": true,
           "content": {
             "application/json": {
-              "schema": { "$ref": "#/components/schemas/CreateTagRequest" }
+              "schema": { "$ref": "#/components/schemas/CreateProductRequest" }
             }
           }
         },
         "responses": {
           "201": {
-            "description": "Tag created successfully.",
+            "description": "Produto criado com sucesso.",
             "content": {
               "application/json": {
-                "schema": { "$ref": "#/components/schemas/TagResponse" }
+                "schema": { "$ref": "#/components/schemas/ProductResponse" }
               }
             }
           },
@@ -124,19 +128,19 @@
         }
       }
     },
-    "/v1/tags/{identifier}": {
+    "/v1/products/{id}": {
       "get": {
-        "operationId": "getTag",
-        "summary": "Get a tag",
-        "description": "Returns a tag by its `id` (UUID) or `key` (string).\n\n<Accordion title=\"Required scope\">\nAny valid Vendaze scope.\n</Accordion>",
-        "tags": ["Tags"],
-        "parameters": [{ "$ref": "#/components/parameters/identifier" }],
+        "operationId": "getProduct",
+        "summary": "Buscar produto",
+        "description": "Retorna um produto pelo seu `id` (UUID).\n\n<Accordion title=\"Escopo necessário\">\n`products:read`\n</Accordion>",
+        "tags": ["Produtos"],
+        "parameters": [{ "$ref": "#/components/parameters/id" }],
         "responses": {
           "200": {
-            "description": "Tag returned successfully.",
+            "description": "Produto retornado com sucesso.",
             "content": {
               "application/json": {
-                "schema": { "$ref": "#/components/schemas/TagResponse" }
+                "schema": { "$ref": "#/components/schemas/ProductResponse" }
               }
             }
           },
@@ -147,25 +151,25 @@
         }
       },
       "patch": {
-        "operationId": "updateTag",
-        "summary": "Update a tag",
-        "description": "Updates a tag by its `id` (UUID) or `key` (string). Only fields included in the body are modified.\n\n<Accordion title=\"Required scope\">\n`people:write`, `companies:write`, or `deals:write`\n</Accordion>",
-        "tags": ["Tags"],
-        "parameters": [{ "$ref": "#/components/parameters/identifier" }],
+        "operationId": "updateProduct",
+        "summary": "Atualizar produto",
+        "description": "Atualiza um produto pelo seu `id` (UUID). Apenas os campos enviados no body são alterados.\n\n<Accordion title=\"Escopo necessário\">\n`products:write`\n</Accordion>",
+        "tags": ["Produtos"],
+        "parameters": [{ "$ref": "#/components/parameters/id" }],
         "requestBody": {
           "required": true,
           "content": {
             "application/json": {
-              "schema": { "$ref": "#/components/schemas/UpdateTagRequest" }
+              "schema": { "$ref": "#/components/schemas/UpdateProductRequest" }
             }
           }
         },
         "responses": {
           "200": {
-            "description": "Tag updated successfully.",
+            "description": "Produto atualizado com sucesso.",
             "content": {
               "application/json": {
-                "schema": { "$ref": "#/components/schemas/TagResponse" }
+                "schema": { "$ref": "#/components/schemas/ProductResponse" }
               }
             }
           },
@@ -180,14 +184,14 @@
         }
       },
       "delete": {
-        "operationId": "deleteTag",
-        "summary": "Delete a tag",
-        "description": "Soft-deletes a tag by its `id` (UUID) or `key` (string).\n\n<Accordion title=\"Required scope\">\n`people:write`, `companies:write`, or `deals:write`\n</Accordion>",
-        "tags": ["Tags"],
-        "parameters": [{ "$ref": "#/components/parameters/identifier" }],
+        "operationId": "deleteProduct",
+        "summary": "Excluir produto",
+        "description": "Realiza soft-delete de um produto pelo seu `id` (UUID).\n\n<Accordion title=\"Escopo necessário\">\n`products:write`\n</Accordion>",
+        "tags": ["Produtos"],
+        "parameters": [{ "$ref": "#/components/parameters/id" }],
         "responses": {
           "204": {
-            "description": "Tag deleted successfully.",
+            "description": "Produto excluído com sucesso.",
             "content": {
               "application/json": {
                 "schema": { "type": "object" },
@@ -209,23 +213,21 @@
       "bearerAuth": {
         "type": "http",
         "scheme": "bearer",
-        "description": "OAuth 2.1 access token."
+        "description": "Token de acesso OAuth 2.1."
       }
     },
     "parameters": {
-      "identifier": {
-        "name": "identifier",
+      "id": {
+        "name": "id",
         "in": "path",
         "required": true,
-        "schema": {
-          "type": "string"
-        },
-        "description": "Tag `id` (UUID) or `key` (string). Both formats are accepted."
+        "schema": { "type": "string", "format": "uuid" },
+        "description": "UUID do produto."
       }
     },
     "responses": {
       "BadRequest": {
-        "description": "Malformed request body or empty update. Error code: `bad_request`. Possible messages: `\"Request body must be valid JSON.\"` (unparseable body) or `\"No fields provided for update.\"` (PATCH with no fields).",
+        "description": "Body inválido ou atualização sem campos. Código de erro: `bad_request`.",
         "content": {
           "application/json": {
             "schema": { "$ref": "#/components/schemas/ErrorResponse" },
@@ -240,7 +242,7 @@
         }
       },
       "Unauthorized": {
-        "description": "Token missing, invalid, or expired. Possible error codes and messages: `unauthorized`: `\"Missing or invalid Authorization header.\"`, `\"Invalid or malformed token.\"`, or `\"Token is missing required claims.\"`; `token_expired`: `\"Access token expired. Refresh using the refresh token.\"`",
+        "description": "Token ausente, inválido ou expirado.",
         "content": {
           "application/json": {
             "schema": { "$ref": "#/components/schemas/ErrorResponse" },
@@ -255,14 +257,14 @@
         }
       },
       "InsufficientScope": {
-        "description": "Token lacks the required scope. Error code: `insufficient_scope`. Message: `\"This endpoint requires the '{scope}' scope.\"`",
+        "description": "Token sem o escopo necessário. Código de erro: `insufficient_scope`.",
         "content": {
           "application/json": {
             "schema": { "$ref": "#/components/schemas/ErrorResponse" },
             "example": {
               "error": {
                 "code": "insufficient_scope",
-                "message": "This endpoint requires the 'tags:write' scope.",
+                "message": "This endpoint requires the 'products:write' scope.",
                 "request_id": "550e8400-e29b-41d4-a716-446655440000"
               }
             }
@@ -270,14 +272,14 @@
         }
       },
       "NotFound": {
-        "description": "Tag not found, soft-deleted, or belongs to another workspace. Error code: `not_found`. Message: `\"Tag not found.\"`",
+        "description": "Produto não encontrado, excluído ou pertence a outro workspace. Código de erro: `not_found`.",
         "content": {
           "application/json": {
             "schema": { "$ref": "#/components/schemas/ErrorResponse" },
             "example": {
               "error": {
                 "code": "not_found",
-                "message": "Tag not found.",
+                "message": "Product not found.",
                 "request_id": "550e8400-e29b-41d4-a716-446655440000"
               }
             }
@@ -285,7 +287,7 @@
         }
       },
       "Conflict": {
-        "description": "A tag with the same `key` already exists in this workspace. Error code: `conflict`.",
+        "description": "Conflito de dados. Código de erro: `conflict`.",
         "content": {
           "application/json": {
             "schema": { "$ref": "#/components/schemas/ErrorResponse" },
@@ -293,7 +295,6 @@
               "error": {
                 "code": "conflict",
                 "message": "A record with this value already exists.",
-                "fields": { "key": "Value already in use." },
                 "request_id": "550e8400-e29b-41d4-a716-446655440000"
               }
             }
@@ -301,7 +302,7 @@
         }
       },
       "ValidationError": {
-        "description": "Input validation failed. Error code: `validation_error`. Message: `\"Validation failed.\"` The `fields` object maps each invalid field to a description of the problem.",
+        "description": "Validação dos dados falhou. Código de erro: `validation_error`.",
         "content": {
           "application/json": {
             "schema": { "$ref": "#/components/schemas/ValidationErrorResponse" },
@@ -310,8 +311,8 @@
                 "code": "validation_error",
                 "message": "Validation failed.",
                 "fields": {
-                  "key": "Key must contain only lowercase letters, digits, and underscores between words (e.g. hot_lead).",
-                  "color_text": "Color must be a valid hex RGB color (e.g. #e5e7eb)."
+                  "currency": "Invalid currency code.",
+                  "price_cts": "Number must be greater than or equal to 0."
                 },
                 "request_id": "550e8400-e29b-41d4-a716-446655440000"
               }
@@ -320,7 +321,7 @@
         }
       },
       "RateLimitExceeded": {
-        "description": "Rate limit exceeded. Error code: `rate_limit_exceeded`. Message: `\"Rate limit exceeded. Try again in {N} seconds.\"` The `Retry-After` response header contains the same value.",
+        "description": "Limite de requisições atingido. Código de erro: `rate_limit_exceeded`.",
         "content": {
           "application/json": {
             "schema": { "$ref": "#/components/schemas/ErrorResponse" },
@@ -335,7 +336,7 @@
         }
       },
       "InternalError": {
-        "description": "Unexpected server error. Error code: `internal_error`. Message: `\"An unexpected error occurred.\"` Use the `request_id` to correlate with server-side logs.",
+        "description": "Erro interno inesperado. Código de erro: `internal_error`.",
         "content": {
           "application/json": {
             "schema": { "$ref": "#/components/schemas/ErrorResponse" },
@@ -351,14 +352,54 @@
       }
     },
     "schemas": {
+      "CurrencyCode": {
+        "type": "string",
+        "description": "Código ISO 4217 de moeda suportado pela Vendaze.",
+        "enum": [
+          "AED",
+          "ARS",
+          "AUD",
+          "BRL",
+          "CAD",
+          "CHF",
+          "CLP",
+          "CNY",
+          "COP",
+          "DKK",
+          "EGP",
+          "EUR",
+          "GBP",
+          "HKD",
+          "ILS",
+          "INR",
+          "JPY",
+          "KWD",
+          "MAD",
+          "MXN",
+          "MYR",
+          "NGN",
+          "NOK",
+          "NZD",
+          "PEN",
+          "QAR",
+          "SAR",
+          "SEK",
+          "SGD",
+          "TRY",
+          "USD",
+          "UYU",
+          "ZAR"
+        ],
+        "example": "BRL"
+      },
       "ErrorResponse": {
         "type": "object",
         "properties": {
           "error": {
             "type": "object",
             "properties": {
-              "code": { "type": "string", "example": "not_found" },
-              "message": { "type": "string", "example": "Tag not found." },
+              "code": { "type": "string" },
+              "message": { "type": "string" },
               "request_id": { "type": "string", "format": "uuid" }
             }
           }
@@ -370,8 +411,8 @@
           "error": {
             "type": "object",
             "properties": {
-              "code": { "type": "string", "example": "validation_error" },
-              "message": { "type": "string", "example": "Validation failed." },
+              "code": { "type": "string" },
+              "message": { "type": "string" },
               "fields": {
                 "type": "object",
                 "additionalProperties": { "type": "string" }
@@ -384,134 +425,189 @@
       "PaginationMeta": {
         "type": "object",
         "properties": {
-          "total": { "type": "integer", "example": 12, "description": "Total number of records matching the query." },
-          "page": { "type": "integer", "example": 1, "description": "Current page number." },
-          "per_page": { "type": "integer", "example": 50, "description": "Number of records per page." },
-          "has_more": { "type": "boolean", "example": false, "description": "`true` when there are more pages after the current one." }
+          "total": { "type": "integer", "description": "Total de registros." },
+          "page": { "type": "integer", "description": "Página atual." },
+          "per_page": { "type": "integer", "description": "Registros por página." },
+          "has_more": { "type": "boolean", "description": "`true` quando há mais páginas após a atual." }
         }
       },
-      "Tag": {
+      "Product": {
         "type": "object",
         "properties": {
           "id": {
             "type": "string",
             "format": "uuid",
-            "description": "Unique identifier of the tag."
+            "description": "Identificador único."
           },
           "name": {
             "type": "string",
-            "maxLength": 30,
-            "description": "Display name of the tag.",
-            "example": "Hot Lead"
+            "maxLength": 80,
+            "description": "Nome do produto.",
+            "example": "Plano Empresarial"
           },
-          "key": {
-            "type": "string",
-            "maxLength": 30,
-            "description": "Unique key within the workspace. Lowercase letters, digits, and underscores only (e.g. `hot_lead`). Used to reference the tag in association arrays.",
-            "example": "hot_lead"
+          "price_cts": {
+            "type": "integer",
+            "description": "Preço em centavos da menor unidade monetária. Ex: `99900` = R$ 999,00.",
+            "example": 99900
           },
-          "color_text": {
-            "type": "string",
-            "nullable": true,
-            "pattern": "^#[0-9a-fA-F]{6}$",
-            "description": "Text color in hex RGB format. `null` means the workspace default is applied.",
-            "example": "#ffffff"
+          "currency": {
+            "$ref": "#/components/schemas/CurrencyCode"
           },
-          "color_background": {
+          "description": {
             "type": "string",
             "nullable": true,
-            "pattern": "^#[0-9a-fA-F]{6}$",
-            "description": "Background color in hex RGB format. `null` means the workspace default is applied.",
-            "example": "#ef4444"
+            "maxLength": 1000,
+            "description": "Descrição opcional do produto.",
+            "example": "Plano completo para grandes equipes."
+          },
+          "image_url": {
+            "type": "string",
+            "nullable": true,
+            "description": "URL pública da imagem do produto, ou `null` se não houver.",
+            "example": "https://storage.vendaze.com/client/workspaces/abc/products/xyz/image/avatar_Ab1Cd2Ef3G.webp"
+          },
+          "code": {
+            "type": "string",
+            "nullable": true,
+            "maxLength": 60,
+            "description": "Código interno ou SKU do produto.",
+            "example": "PLANO-EMP"
+          },
+          "is_active": {
+            "type": "boolean",
+            "description": "Se o produto está ativo.",
+            "example": true
+          },
+          "billing_cycle": {
+            "type": "string",
+            "enum": ["one_time", "monthly", "quarterly", "annually"],
+            "description": "Ciclo de cobrança do produto.",
+            "example": "monthly"
           },
           "created_at": {
             "type": "string",
             "format": "date-time",
-            "description": "ISO 8601 UTC timestamp of when the tag was created."
+            "description": "Data de criação em ISO 8601 UTC."
           }
         }
       },
-      "TagResponse": {
+      "ProductResponse": {
         "type": "object",
         "properties": {
-          "data": { "$ref": "#/components/schemas/Tag" }
+          "data": { "$ref": "#/components/schemas/Product" }
         }
       },
-      "TagsListResponse": {
+      "ProductsListResponse": {
         "type": "object",
         "properties": {
           "data": {
             "type": "array",
-            "items": { "$ref": "#/components/schemas/Tag" }
+            "items": { "$ref": "#/components/schemas/Product" }
           },
           "meta": { "$ref": "#/components/schemas/PaginationMeta" }
         }
       },
-      "CreateTagRequest": {
+      "CreateProductRequest": {
         "type": "object",
-        "required": ["name", "key"],
+        "required": ["name", "currency"],
         "properties": {
           "name": {
             "type": "string",
             "minLength": 1,
-            "maxLength": 30,
-            "description": "Display name of the tag.",
-            "example": "Hot Lead"
+            "maxLength": 80,
+            "description": "Nome do produto.",
+            "example": "Plano Empresarial"
           },
-          "key": {
-            "type": "string",
-            "minLength": 1,
-            "maxLength": 30,
-            "pattern": "^[a-z0-9]+(_[a-z0-9]+)*$",
-            "description": "Unique key within the workspace. Lowercase letters, digits, and underscores between words only. No spaces, accents, or other punctuation.",
-            "example": "hot_lead"
+          "currency": {
+            "$ref": "#/components/schemas/CurrencyCode"
           },
-          "color_text": {
-            "type": "string",
-            "pattern": "^#[0-9a-fA-F]{6}$",
-            "description": "Text color in hex RGB format (e.g. `#ffffff`). Omit to use the workspace default (`#374152`).",
-            "example": "#ffffff"
+          "price_cts": {
+            "type": "integer",
+            "minimum": 0,
+            "maximum": 1000000000000000,
+            "description": "Preço em centavos. Padrão: `0`.",
+            "example": 99900
           },
-          "color_background": {
+          "description": {
             "type": "string",
-            "pattern": "^#[0-9a-fA-F]{6}$",
-            "description": "Background color in hex RGB format (e.g. `#ef4444`). Omit to use the workspace default (`#e4e6eb`).",
-            "example": "#ef4444"
+            "maxLength": 1000,
+            "description": "Descrição do produto.",
+            "example": "Plano completo para grandes equipes."
+          },
+          "code": {
+            "type": "string",
+            "maxLength": 60,
+            "description": "Código interno ou SKU.",
+            "example": "PLANO-EMP"
+          },
+          "is_active": {
+            "type": "boolean",
+            "description": "Se o produto está ativo. Padrão: `true`.",
+            "example": true
+          },
+          "billing_cycle": {
+            "type": "string",
+            "enum": ["one_time", "monthly", "quarterly", "annually"],
+            "description": "Ciclo de cobrança. Padrão: `one_time`.",
+            "example": "monthly"
+          },
+          "image": {
+            "type": "string",
+            "description": "Imagem do produto. Aceita URL HTTPS pública, Base64 puro ou data URI completo (`data:image/png;base64,...`). Máximo 2 MB.",
+            "example": "https://exemplo.com/produto.png"
           }
         }
       },
-      "UpdateTagRequest": {
+      "UpdateProductRequest": {
         "type": "object",
-        "description": "All fields are optional. Only fields included in the body are modified.",
+        "description": "Todos os campos são opcionais. Apenas os campos enviados no body são alterados.",
         "properties": {
           "name": {
             "type": "string",
             "minLength": 1,
-            "maxLength": 30,
-            "description": "New display name.",
-            "example": "Cold Lead"
+            "maxLength": 80,
+            "description": "Novo nome do produto.",
+            "example": "Plano Empresarial Plus"
           },
-          "key": {
-            "type": "string",
-            "minLength": 1,
-            "maxLength": 30,
-            "pattern": "^[a-z0-9]+(_[a-z0-9]+)*$",
-            "description": "New unique key. Must not conflict with an existing key in the workspace.",
-            "example": "cold_lead"
+          "currency": {
+            "$ref": "#/components/schemas/CurrencyCode"
           },
-          "color_text": {
-            "type": "string",
-            "nullable": true,
-            "pattern": "^#[0-9a-fA-F]{6}$",
-            "description": "New text color in hex RGB format. Send `null` to revert to the workspace default.",
-            "example": "#374152"
+          "price_cts": {
+            "type": "integer",
+            "minimum": 0,
+            "maximum": 1000000000000000,
+            "description": "Novo preço em centavos.",
+            "example": 149900
           },
-          "color_background": {
+          "description": {
             "type": "string",
             "nullable": true,
-            "pattern": "^#[0-9a-fA-F]{6}$",
-            "description": "New background color in hex RGB format. Send `null` to revert to the workspace default.",
-            "example": "#e4e6eb"
+            "maxLength": 1000,
+            "description": "Nova descrição. Envie `null` para remover.",
+            "example": "Versão atualizada do plano empresarial."
+          },
+          "code": {
+            "type": "string",
+            "nullable": true,
+            "maxLength": 60,
+            "description": "Novo código interno. Envie `null` para remover.",
+            "example": "PLANO-EMP-PLUS"
+          },
+          "is_active": {
+            "type": "boolean",
+            "description": "Atualiza o status de ativo.",
+            "example": false
+          },
+          "billing_cycle": {
+            "type": "string",
+            "enum": ["one_time", "monthly", "quarterly", "annually"],
+            "description": "Novo ciclo de cobrança.",
+            "example": "annually"
+          },
+          "image": {
+            "type": "string",
+            "description": "Nova imagem do produto. Substitui a imagem atual.",
+            "example": "https://exemplo.com/nova-imagem.png"
           }
         }
       }

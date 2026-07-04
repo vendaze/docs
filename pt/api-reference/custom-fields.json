@@ -1,0 +1,621 @@
+{
+  "openapi": "3.1.0",
+  "info": {
+    "title": "Campos Adicionais",
+    "description": "Gerencie campos adicionais no workspace.",
+    "version": "1.0.0",
+    "contact": {
+      "name": "Suporte Vendaze",
+      "email": "suporte@vendaze.com"
+    }
+  },
+  "servers": [
+    {
+      "url": "https://api.vendaze.com",
+      "description": "Produção"
+    }
+  ],
+  "security": [
+    {
+      "bearerAuth": []
+    }
+  ],
+  "tags": [
+    {
+      "name": "Campos Adicionais"
+    }
+  ],
+  "paths": {
+    "/v1/custom-fields": {
+      "get": {
+        "operationId": "listCustomFields",
+        "summary": "Listar campos adicionais",
+        "description": "Retorna uma lista paginada de campos adicionais do workspace.\n\n<Accordion title=\"Escopo necessário\">\n`custom_fields:read`\n</Accordion>",
+        "tags": ["Campos Adicionais"],
+        "parameters": [
+          {
+            "name": "page",
+            "in": "query",
+            "schema": { "type": "integer", "minimum": 1, "default": 1 },
+            "description": "Número da página."
+          },
+          {
+            "name": "per_page",
+            "in": "query",
+            "schema": { "type": "integer", "minimum": 1, "maximum": 50, "default": 50 },
+            "description": "Registros por página. Máximo: 50."
+          },
+          {
+            "name": "order_by",
+            "in": "query",
+            "schema": { "type": "string", "enum": ["created_at", "label"], "default": "created_at" },
+            "description": "Campo de ordenação."
+          },
+          {
+            "name": "order",
+            "in": "query",
+            "schema": { "type": "string", "enum": ["asc", "desc"], "default": "desc" },
+            "description": "Direção da ordenação."
+          },
+          {
+            "name": "show_people",
+            "in": "query",
+            "schema": { "type": "boolean" },
+            "description": "Filtra campos que aparecem em registros de pessoas."
+          },
+          {
+            "name": "show_companies",
+            "in": "query",
+            "schema": { "type": "boolean" },
+            "description": "Filtra campos que aparecem em registros de empresas."
+          },
+          {
+            "name": "show_deals",
+            "in": "query",
+            "schema": { "type": "boolean" },
+            "description": "Filtra campos que aparecem em registros de negócios."
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Campos retornados com sucesso.",
+            "content": {
+              "application/json": {
+                "schema": { "$ref": "#/components/schemas/CustomFieldsListResponse" },
+                "example": {
+                  "data": [
+                    {
+                      "id": "a1b2c3d4-e5f6-7890-abcd-ef1234567890",
+                      "label": "CPF",
+                      "key": "cpf_cliente",
+                      "type": "cpf",
+                      "value": null,
+                      "required": false,
+                      "show_people": true,
+                      "show_companies": false,
+                      "show_deals": false,
+                      "created_at": "2026-01-15T10:30:00Z"
+                    }
+                  ],
+                  "meta": {
+                    "total": 5,
+                    "page": 1,
+                    "per_page": 50,
+                    "has_more": false
+                  }
+                }
+              }
+            }
+          },
+          "401": { "$ref": "#/components/responses/Unauthorized" },
+          "403": { "$ref": "#/components/responses/InsufficientScope" },
+          "422": { "$ref": "#/components/responses/ValidationError" },
+          "429": { "$ref": "#/components/responses/RateLimitExceeded" },
+          "500": { "$ref": "#/components/responses/InternalError" }
+        }
+      },
+      "post": {
+        "operationId": "createCustomField",
+        "summary": "Criar campo adicional",
+        "description": "Cria um novo campo adicional no workspace.\n\nPara os tipos `select` e `multi_select`, envie as opções disponíveis em `value` como um array de strings.\n\n<Accordion title=\"Escopo necessário\">\n`custom_fields:write`\n</Accordion>",
+        "tags": ["Campos Adicionais"],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": { "$ref": "#/components/schemas/CreateCustomFieldRequest" }
+            }
+          }
+        },
+        "responses": {
+          "201": {
+            "description": "Campo criado com sucesso.",
+            "content": {
+              "application/json": {
+                "schema": { "$ref": "#/components/schemas/CustomFieldResponse" }
+              }
+            }
+          },
+          "400": { "$ref": "#/components/responses/BadRequest" },
+          "401": { "$ref": "#/components/responses/Unauthorized" },
+          "403": { "$ref": "#/components/responses/InsufficientScope" },
+          "409": { "$ref": "#/components/responses/Conflict" },
+          "422": { "$ref": "#/components/responses/ValidationError" },
+          "429": { "$ref": "#/components/responses/RateLimitExceeded" },
+          "500": { "$ref": "#/components/responses/InternalError" }
+        }
+      }
+    },
+    "/v1/custom-fields/{identifier}": {
+      "patch": {
+        "operationId": "updateCustomField",
+        "summary": "Atualizar campo adicional",
+        "description": "Atualiza um campo adicional pelo `id` (UUID) ou `key` (string). Apenas os campos enviados no body são alterados.\n\n<Accordion title=\"Escopo necessário\">\n`custom_fields:write`\n</Accordion>",
+        "tags": ["Campos Adicionais"],
+        "parameters": [{ "$ref": "#/components/parameters/identifier" }],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": { "$ref": "#/components/schemas/UpdateCustomFieldRequest" }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Campo atualizado com sucesso.",
+            "content": {
+              "application/json": {
+                "schema": { "$ref": "#/components/schemas/CustomFieldResponse" }
+              }
+            }
+          },
+          "400": { "$ref": "#/components/responses/BadRequest" },
+          "401": { "$ref": "#/components/responses/Unauthorized" },
+          "403": { "$ref": "#/components/responses/InsufficientScope" },
+          "404": { "$ref": "#/components/responses/NotFound" },
+          "409": { "$ref": "#/components/responses/Conflict" },
+          "422": { "$ref": "#/components/responses/ValidationError" },
+          "429": { "$ref": "#/components/responses/RateLimitExceeded" },
+          "500": { "$ref": "#/components/responses/InternalError" }
+        }
+      },
+      "delete": {
+        "operationId": "deleteCustomField",
+        "summary": "Excluir campo adicional",
+        "description": "Realiza soft-delete de um campo adicional pelo `id` (UUID) ou `key` (string).\n\n<Accordion title=\"Escopo necessário\">\n`custom_fields:write`\n</Accordion>",
+        "tags": ["Campos Adicionais"],
+        "parameters": [{ "$ref": "#/components/parameters/identifier" }],
+        "responses": {
+          "204": {
+            "description": "Campo excluído com sucesso.",
+            "content": {
+              "application/json": {
+                "schema": { "type": "object" },
+                "example": {}
+              }
+            }
+          },
+          "401": { "$ref": "#/components/responses/Unauthorized" },
+          "403": { "$ref": "#/components/responses/InsufficientScope" },
+          "404": { "$ref": "#/components/responses/NotFound" },
+          "429": { "$ref": "#/components/responses/RateLimitExceeded" },
+          "500": { "$ref": "#/components/responses/InternalError" }
+        }
+      }
+    }
+  },
+  "components": {
+    "securitySchemes": {
+      "bearerAuth": {
+        "type": "http",
+        "scheme": "bearer",
+        "description": "Token de acesso OAuth 2.1."
+      }
+    },
+    "parameters": {
+      "identifier": {
+        "name": "identifier",
+        "in": "path",
+        "required": true,
+        "schema": { "type": "string" },
+        "description": "`id` (UUID) ou `key` (string) do campo. Ambos os formatos são aceitos."
+      }
+    },
+    "responses": {
+      "BadRequest": {
+        "description": "Body inválido ou atualização sem campos. Código de erro: `bad_request`.",
+        "content": {
+          "application/json": {
+            "schema": { "$ref": "#/components/schemas/ErrorResponse" },
+            "example": {
+              "error": {
+                "code": "bad_request",
+                "message": "Request body must be valid JSON.",
+                "request_id": "550e8400-e29b-41d4-a716-446655440000"
+              }
+            }
+          }
+        }
+      },
+      "Unauthorized": {
+        "description": "Token ausente, inválido ou expirado.",
+        "content": {
+          "application/json": {
+            "schema": { "$ref": "#/components/schemas/ErrorResponse" },
+            "example": {
+              "error": {
+                "code": "unauthorized",
+                "message": "Missing or invalid Authorization header.",
+                "request_id": "550e8400-e29b-41d4-a716-446655440000"
+              }
+            }
+          }
+        }
+      },
+      "InsufficientScope": {
+        "description": "Token sem o escopo necessário. Código de erro: `insufficient_scope`.",
+        "content": {
+          "application/json": {
+            "schema": { "$ref": "#/components/schemas/ErrorResponse" },
+            "example": {
+              "error": {
+                "code": "insufficient_scope",
+                "message": "This endpoint requires the 'custom_fields:write' scope.",
+                "request_id": "550e8400-e29b-41d4-a716-446655440000"
+              }
+            }
+          }
+        }
+      },
+      "NotFound": {
+        "description": "Campo não encontrado, excluído ou pertence a outro workspace. Código de erro: `not_found`.",
+        "content": {
+          "application/json": {
+            "schema": { "$ref": "#/components/schemas/ErrorResponse" },
+            "example": {
+              "error": {
+                "code": "not_found",
+                "message": "Custom field not found.",
+                "request_id": "550e8400-e29b-41d4-a716-446655440000"
+              }
+            }
+          }
+        }
+      },
+      "Conflict": {
+        "description": "Já existe um campo com a mesma `key` no workspace. Código de erro: `conflict`.",
+        "content": {
+          "application/json": {
+            "schema": { "$ref": "#/components/schemas/ErrorResponse" },
+            "example": {
+              "error": {
+                "code": "conflict",
+                "message": "A record with this value already exists.",
+                "fields": { "key": "Value already in use." },
+                "request_id": "550e8400-e29b-41d4-a716-446655440000"
+              }
+            }
+          }
+        }
+      },
+      "ValidationError": {
+        "description": "Validação dos dados falhou. Código de erro: `validation_error`.",
+        "content": {
+          "application/json": {
+            "schema": { "$ref": "#/components/schemas/ValidationErrorResponse" },
+            "example": {
+              "error": {
+                "code": "validation_error",
+                "message": "Validation failed.",
+                "fields": {
+                  "key": "Key must contain only lowercase letters, digits, and underscores between words (e.g. cpf_empresa).",
+                  "type": "Invalid enum value."
+                },
+                "request_id": "550e8400-e29b-41d4-a716-446655440000"
+              }
+            }
+          }
+        }
+      },
+      "RateLimitExceeded": {
+        "description": "Limite de requisições atingido. Código de erro: `rate_limit_exceeded`.",
+        "content": {
+          "application/json": {
+            "schema": { "$ref": "#/components/schemas/ErrorResponse" },
+            "example": {
+              "error": {
+                "code": "rate_limit_exceeded",
+                "message": "Rate limit exceeded. Try again in 60 seconds.",
+                "request_id": "550e8400-e29b-41d4-a716-446655440000"
+              }
+            }
+          }
+        }
+      },
+      "InternalError": {
+        "description": "Erro interno inesperado. Código de erro: `internal_error`.",
+        "content": {
+          "application/json": {
+            "schema": { "$ref": "#/components/schemas/ErrorResponse" },
+            "example": {
+              "error": {
+                "code": "internal_error",
+                "message": "An unexpected error occurred.",
+                "request_id": "550e8400-e29b-41d4-a716-446655440000"
+              }
+            }
+          }
+        }
+      }
+    },
+    "schemas": {
+      "ErrorResponse": {
+        "type": "object",
+        "properties": {
+          "error": {
+            "type": "object",
+            "properties": {
+              "code": { "type": "string" },
+              "message": { "type": "string" },
+              "request_id": { "type": "string", "format": "uuid" }
+            }
+          }
+        }
+      },
+      "ValidationErrorResponse": {
+        "type": "object",
+        "properties": {
+          "error": {
+            "type": "object",
+            "properties": {
+              "code": { "type": "string" },
+              "message": { "type": "string" },
+              "fields": {
+                "type": "object",
+                "additionalProperties": { "type": "string" }
+              },
+              "request_id": { "type": "string", "format": "uuid" }
+            }
+          }
+        }
+      },
+      "PaginationMeta": {
+        "type": "object",
+        "properties": {
+          "total": { "type": "integer", "description": "Total de registros." },
+          "page": { "type": "integer", "description": "Página atual." },
+          "per_page": { "type": "integer", "description": "Registros por página." },
+          "has_more": { "type": "boolean", "description": "`true` quando há mais páginas após a atual." }
+        }
+      },
+      "CustomField": {
+        "type": "object",
+        "properties": {
+          "id": {
+            "type": "string",
+            "format": "uuid",
+            "description": "Identificador único."
+          },
+          "label": {
+            "type": "string",
+            "maxLength": 40,
+            "description": "Rótulo exibido na interface.",
+            "example": "CPF"
+          },
+          "key": {
+            "type": "string",
+            "maxLength": 35,
+            "description": "Chave única no workspace. Usada para referenciar o campo ao associar valores a registros.",
+            "example": "cpf_cliente"
+          },
+          "type": {
+            "type": "string",
+            "enum": ["text", "long_text", "select", "multi_select", "cpf", "cnpj", "date", "number", "link", "address"],
+            "description": "Tipo do campo. Define o formato esperado do valor."
+          },
+          "value": {
+            "description": "Para tipos `select` e `multi_select`: lista de opções. Obrigatório para esses tipos. Deve ser omitido para todos os outros tipos de campo.",
+            "nullable": true,
+            "example": {
+              "select_list": [
+                { "key": "sl_opcao_a", "option": "Opção A" },
+                { "key": "sl_opcao_b", "option": "Opção B" }
+              ]
+            }
+          },
+          "required": {
+            "type": "boolean",
+            "description": "Indica se o campo é obrigatório ao criar ou editar um registro."
+          },
+          "show_people": {
+            "type": "boolean",
+            "description": "Se este campo aparece em registros de pessoas."
+          },
+          "show_companies": {
+            "type": "boolean",
+            "description": "Se este campo aparece em registros de empresas."
+          },
+          "show_deals": {
+            "type": "boolean",
+            "description": "Se este campo aparece em registros de negócios."
+          },
+          "created_at": {
+            "type": "string",
+            "format": "date-time",
+            "description": "Data de criação em ISO 8601 UTC."
+          }
+        }
+      },
+      "CustomFieldResponse": {
+        "type": "object",
+        "properties": {
+          "data": { "$ref": "#/components/schemas/CustomField" }
+        }
+      },
+      "CustomFieldsListResponse": {
+        "type": "object",
+        "properties": {
+          "data": {
+            "type": "array",
+            "items": { "$ref": "#/components/schemas/CustomField" }
+          },
+          "meta": { "$ref": "#/components/schemas/PaginationMeta" }
+        }
+      },
+      "CreateCustomFieldRequest": {
+        "type": "object",
+        "required": ["label", "key", "type"],
+        "properties": {
+          "label": {
+            "type": "string",
+            "minLength": 1,
+            "maxLength": 40,
+            "description": "Rótulo do campo.",
+            "example": "CPF"
+          },
+          "key": {
+            "type": "string",
+            "minLength": 1,
+            "maxLength": 35,
+            "pattern": "^[a-z0-9]+(_[a-z0-9]+)*$",
+            "description": "Chave única no workspace. Apenas letras minúsculas, dígitos e underscores entre palavras.",
+            "example": "cpf_cliente"
+          },
+          "type": {
+            "type": "string",
+            "enum": ["text", "long_text", "select", "multi_select", "cpf", "cnpj", "date", "number", "link", "address"],
+            "description": "Tipo do campo."
+          },
+          "value": {
+            "description": "Opções para tipos `select` e `multi_select`. Obrigatório quando `type` for `select` ou `multi_select`. Deve ser omitido para todos os outros tipos de campo.",
+            "example": {
+              "select_list": [
+                { "key": "sl_opcao_a", "option": "Opção A" },
+                { "key": "sl_opcao_b", "option": "Opção B" }
+              ]
+            },
+            "properties": {
+              "select_list": {
+                "type": "array",
+                "items": {
+                  "type": "object",
+                  "required": ["key", "option"],
+                  "properties": {
+                    "key": {
+                      "type": "string",
+                      "description": "Identificador único da opção dentro do campo. Apenas letras minúsculas, dígitos e underscores.",
+                      "example": "sl_opcao_a"
+                    },
+                    "option": {
+                      "type": "string",
+                      "description": "Texto exibido ao usuário.",
+                      "example": "Opção A"
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "required": {
+            "type": "boolean",
+            "description": "Se o campo é obrigatório. Padrão: `false`.",
+            "example": false
+          },
+          "show_people": {
+            "type": "boolean",
+            "description": "Exibir em pessoas. Padrão: `true`.",
+            "example": true
+          },
+          "show_companies": {
+            "type": "boolean",
+            "description": "Exibir em empresas. Padrão: `true`.",
+            "example": false
+          },
+          "show_deals": {
+            "type": "boolean",
+            "description": "Exibir em negócios. Padrão: `false`.",
+            "example": false
+          }
+        }
+      },
+      "UpdateCustomFieldRequest": {
+        "type": "object",
+        "description": "Todos os campos são opcionais. Apenas os campos enviados no body são alterados.",
+        "properties": {
+          "label": {
+            "type": "string",
+            "minLength": 1,
+            "maxLength": 40,
+            "description": "Novo rótulo.",
+            "example": "CPF do Responsável"
+          },
+          "key": {
+            "type": "string",
+            "minLength": 1,
+            "maxLength": 35,
+            "pattern": "^[a-z0-9]+(_[a-z0-9]+)*$",
+            "description": "Nova chave. Não pode conflitar com uma chave existente no workspace.",
+            "example": "cpf_responsavel"
+          },
+          "type": {
+            "type": "string",
+            "enum": ["text", "long_text", "select", "multi_select", "cpf", "cnpj", "date", "number", "link", "address"],
+            "description": "Novo tipo do campo."
+          },
+          "value": {
+            "description": "Atualiza as opções de campos `select` e `multi_select`. Substitui toda a lista existente. Deve ser omitido para todos os outros tipos de campo.",
+            "example": {
+              "select_list": [
+                { "key": "sl_opcao_a", "option": "Opção A" },
+                { "key": "sl_opcao_b", "option": "Opção B" },
+                { "key": "sl_opcao_c", "option": "Opção C" }
+              ]
+            },
+            "properties": {
+              "select_list": {
+                "type": "array",
+                "items": {
+                  "type": "object",
+                  "required": ["key", "option"],
+                  "properties": {
+                    "key": {
+                      "type": "string",
+                      "description": "Identificador único da opção. Apenas letras minúsculas, dígitos e underscores.",
+                      "example": "sl_opcao_a"
+                    },
+                    "option": {
+                      "type": "string",
+                      "description": "Texto exibido ao usuário.",
+                      "example": "Opção A"
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "required": {
+            "type": "boolean",
+            "description": "Atualiza o flag de obrigatoriedade.",
+            "example": true
+          },
+          "show_people": {
+            "type": "boolean",
+            "description": "Atualiza visibilidade em pessoas.",
+            "example": true
+          },
+          "show_companies": {
+            "type": "boolean",
+            "description": "Atualiza visibilidade em empresas.",
+            "example": false
+          },
+          "show_deals": {
+            "type": "boolean",
+            "description": "Atualiza visibilidade em negócios.",
+            "example": true
+          }
+        }
+      }
+    }
+  }
+}

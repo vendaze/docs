@@ -18,10 +18,16 @@ Todos os endpoints de listagem da API Vendaze retornam resultados paginados. A r
 
 ### Valores aceitos para `order_by` por recurso
 
-| Recurso     | Valores aceitos                         |
-| ----------- | --------------------------------------- |
-| `people`    | `created_at`, `updated_at`, `full_name` |
-| `companies` | `created_at`, `updated_at`, `full_name` |
+| Recurso         | Valores aceitos                         |
+| --------------- | --------------------------------------- |
+| `people`        | `created_at`, `updated_at`, `full_name` |
+| `companies`     | `created_at`, `updated_at`, `full_name` |
+| `tasks`         | `created_at`, `updated_at`, `due_date`  |
+| `task-types`    | `created_at`, `title`                   |
+| `products`      | `created_at`, `name`                    |
+| `tags`          | `created_at`, `name`                    |
+| `lists`         | `created_at`, `name`                    |
+| `custom-fields` | `created_at`, `label`                   |
 
 ## Estrutura da resposta
 

@@ -40,10 +40,16 @@
       "name": "Task Types"
     },
     {
+      "name": "Products"
+    },
+    {
       "name": "Tags"
     },
     {
       "name": "Lists"
+    },
+    {
+      "name": "Custom Fields"
     }
   ],
   "paths": {
@@ -1421,10 +1427,10 @@
             "schema": {
               "type": "integer",
               "minimum": 1,
-              "maximum": 100,
+              "maximum": 50,
               "default": 50
             },
-            "description": "Number of records per page. Maximum: 100."
+            "description": "Number of records per page. Maximum: 50."
           },
           {
             "name": "order_by",
@@ -1750,10 +1756,10 @@
             "schema": {
               "type": "integer",
               "minimum": 1,
-              "maximum": 100,
+              "maximum": 50,
               "default": 50
             },
-            "description": "Number of records per page. Maximum: 100."
+            "description": "Number of records per page. Maximum: 50."
           },
           {
             "name": "order_by",
@@ -1982,6 +1988,304 @@
         }
       }
     },
+    "/v1/products": {
+      "get": {
+        "operationId": "listProducts",
+        "summary": "List products",
+        "description": "Returns a paginated list of products in the workspace.\n\n<Accordion title=\"Required scope\">\n`products:read`\n</Accordion>",
+        "tags": [
+          "Products"
+        ],
+        "parameters": [
+          {
+            "name": "page",
+            "in": "query",
+            "schema": {
+              "type": "integer",
+              "minimum": 1,
+              "default": 1
+            },
+            "description": "Page number."
+          },
+          {
+            "name": "per_page",
+            "in": "query",
+            "schema": {
+              "type": "integer",
+              "minimum": 1,
+              "maximum": 50,
+              "default": 50
+            },
+            "description": "Number of records per page. Maximum: 50."
+          },
+          {
+            "name": "order_by",
+            "in": "query",
+            "schema": {
+              "type": "string",
+              "enum": [
+                "created_at",
+                "name"
+              ],
+              "default": "created_at"
+            },
+            "description": "Field to sort by."
+          },
+          {
+            "name": "order",
+            "in": "query",
+            "schema": {
+              "type": "string",
+              "enum": [
+                "asc",
+                "desc"
+              ],
+              "default": "desc"
+            },
+            "description": "Sort direction."
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Products returned successfully.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ProductsListResponse"
+                },
+                "example": {
+                  "data": [
+                    {
+                      "id": "a1b2c3d4-e5f6-7890-abcd-ef1234567890",
+                      "name": "Enterprise Plan",
+                      "price_cts": 99900,
+                      "currency": "USD",
+                      "description": "Full-featured plan for large teams.",
+                      "image_url": "https://storage.vendaze.com/client/workspaces/abc/products/xyz/image/avatar_Ab1Cd2Ef3G.webp",
+                      "code": "PLAN-ENT",
+                      "is_active": true,
+                      "billing_cycle": "monthly",
+                      "created_at": "2026-01-15T10:30:00Z"
+                    }
+                  ],
+                  "meta": {
+                    "total": 8,
+                    "page": 1,
+                    "per_page": 50,
+                    "has_more": false
+                  }
+                }
+              }
+            }
+          },
+          "401": {
+            "$ref": "#/components/responses/Unauthorized"
+          },
+          "403": {
+            "$ref": "#/components/responses/InsufficientScope"
+          },
+          "422": {
+            "$ref": "#/components/responses/ValidationError"
+          },
+          "429": {
+            "$ref": "#/components/responses/RateLimitExceeded"
+          },
+          "500": {
+            "$ref": "#/components/responses/InternalError"
+          }
+        }
+      },
+      "post": {
+        "operationId": "createProduct",
+        "summary": "Create a product",
+        "description": "Creates a new product in the workspace.\n\n<Accordion title=\"Required scope\">\n`products:write`\n</Accordion>",
+        "tags": [
+          "Products"
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/CreateProductRequest"
+              }
+            }
+          }
+        },
+        "responses": {
+          "201": {
+            "description": "Product created successfully.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ProductResponse"
+                }
+              }
+            }
+          },
+          "400": {
+            "$ref": "#/components/responses/BadRequest"
+          },
+          "401": {
+            "$ref": "#/components/responses/Unauthorized"
+          },
+          "403": {
+            "$ref": "#/components/responses/InsufficientScope"
+          },
+          "409": {
+            "$ref": "#/components/responses/Conflict"
+          },
+          "422": {
+            "$ref": "#/components/responses/ValidationError"
+          },
+          "429": {
+            "$ref": "#/components/responses/RateLimitExceeded"
+          },
+          "500": {
+            "$ref": "#/components/responses/InternalError"
+          }
+        }
+      }
+    },
+    "/v1/products/{id}": {
+      "get": {
+        "operationId": "getProduct",
+        "summary": "Get a product",
+        "description": "Returns a product by its `id` (UUID).\n\n<Accordion title=\"Required scope\">\n`products:read`\n</Accordion>",
+        "tags": [
+          "Products"
+        ],
+        "parameters": [
+          {
+            "$ref": "#/components/parameters/id"
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Product returned successfully.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ProductResponse"
+                }
+              }
+            }
+          },
+          "401": {
+            "$ref": "#/components/responses/Unauthorized"
+          },
+          "403": {
+            "$ref": "#/components/responses/InsufficientScope"
+          },
+          "404": {
+            "$ref": "#/components/responses/NotFound"
+          },
+          "500": {
+            "$ref": "#/components/responses/InternalError"
+          }
+        }
+      },
+      "patch": {
+        "operationId": "updateProduct",
+        "summary": "Update a product",
+        "description": "Updates a product by its `id` (UUID). Only fields included in the body are modified.\n\n<Accordion title=\"Required scope\">\n`products:write`\n</Accordion>",
+        "tags": [
+          "Products"
+        ],
+        "parameters": [
+          {
+            "$ref": "#/components/parameters/id"
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/UpdateProductRequest"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Product updated successfully.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ProductResponse"
+                }
+              }
+            }
+          },
+          "400": {
+            "$ref": "#/components/responses/BadRequest"
+          },
+          "401": {
+            "$ref": "#/components/responses/Unauthorized"
+          },
+          "403": {
+            "$ref": "#/components/responses/InsufficientScope"
+          },
+          "404": {
+            "$ref": "#/components/responses/NotFound"
+          },
+          "409": {
+            "$ref": "#/components/responses/Conflict"
+          },
+          "422": {
+            "$ref": "#/components/responses/ValidationError"
+          },
+          "429": {
+            "$ref": "#/components/responses/RateLimitExceeded"
+          },
+          "500": {
+            "$ref": "#/components/responses/InternalError"
+          }
+        }
+      },
+      "delete": {
+        "operationId": "deleteProduct",
+        "summary": "Delete a product",
+        "description": "Soft-deletes a product by its `id` (UUID).\n\n<Accordion title=\"Required scope\">\n`products:write`\n</Accordion>",
+        "tags": [
+          "Products"
+        ],
+        "parameters": [
+          {
+            "$ref": "#/components/parameters/id"
+          }
+        ],
+        "responses": {
+          "204": {
+            "description": "Product deleted successfully.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object"
+                },
+                "example": {}
+              }
+            }
+          },
+          "401": {
+            "$ref": "#/components/responses/Unauthorized"
+          },
+          "403": {
+            "$ref": "#/components/responses/InsufficientScope"
+          },
+          "404": {
+            "$ref": "#/components/responses/NotFound"
+          },
+          "429": {
+            "$ref": "#/components/responses/RateLimitExceeded"
+          },
+          "500": {
+            "$ref": "#/components/responses/InternalError"
+          }
+        }
+      }
+    },
     "/v1/tags": {
       "get": {
         "operationId": "listTags",
@@ -2007,10 +2311,10 @@
             "schema": {
               "type": "integer",
               "minimum": 1,
-              "maximum": 100,
+              "maximum": 50,
               "default": 50
             },
-            "description": "Number of records per page. Maximum: 100."
+            "description": "Number of records per page. Maximum: 50."
           },
           {
             "name": "order_by",
@@ -2301,10 +2605,10 @@
             "schema": {
               "type": "integer",
               "minimum": 1,
-              "maximum": 100,
+              "maximum": 50,
               "default": 50
             },
-            "description": "Number of records per page. Maximum: 100."
+            "description": "Number of records per page. Maximum: 50."
           },
           {
             "name": "order_by",
@@ -2525,6 +2829,306 @@
           }
         }
       }
+    },
+    "/v1/custom-fields": {
+      "get": {
+        "operationId": "listCustomFields",
+        "summary": "List custom fields",
+        "description": "Returns a paginated list of custom fields in the workspace.\n\n<Accordion title=\"Required scope\">\n`custom_fields:read`\n</Accordion>",
+        "tags": [
+          "Custom Fields"
+        ],
+        "parameters": [
+          {
+            "name": "page",
+            "in": "query",
+            "schema": {
+              "type": "integer",
+              "minimum": 1,
+              "default": 1
+            },
+            "description": "Page number."
+          },
+          {
+            "name": "per_page",
+            "in": "query",
+            "schema": {
+              "type": "integer",
+              "minimum": 1,
+              "maximum": 50,
+              "default": 50
+            },
+            "description": "Number of records per page. Maximum: 50."
+          },
+          {
+            "name": "order_by",
+            "in": "query",
+            "schema": {
+              "type": "string",
+              "enum": [
+                "created_at",
+                "label"
+              ],
+              "default": "created_at"
+            },
+            "description": "Field to sort by."
+          },
+          {
+            "name": "order",
+            "in": "query",
+            "schema": {
+              "type": "string",
+              "enum": [
+                "asc",
+                "desc"
+              ],
+              "default": "desc"
+            },
+            "description": "Sort direction."
+          },
+          {
+            "name": "show_people",
+            "in": "query",
+            "schema": {
+              "type": "boolean"
+            },
+            "description": "Filter fields that appear on people records."
+          },
+          {
+            "name": "show_companies",
+            "in": "query",
+            "schema": {
+              "type": "boolean"
+            },
+            "description": "Filter fields that appear on company records."
+          },
+          {
+            "name": "show_deals",
+            "in": "query",
+            "schema": {
+              "type": "boolean"
+            },
+            "description": "Filter fields that appear on deal records."
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Custom fields returned successfully.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/CustomFieldsListResponse"
+                },
+                "example": {
+                  "data": [
+                    {
+                      "id": "a1b2c3d4-e5f6-7890-abcd-ef1234567890",
+                      "label": "Lead Source",
+                      "key": "lead_source",
+                      "type": "select",
+                      "value": {
+                        "select_list": [
+                          {
+                            "key": "sl_google_search",
+                            "option": "Google Search"
+                          },
+                          {
+                            "key": "sl_social_media",
+                            "option": "Social Media"
+                          },
+                          {
+                            "key": "sl_referral",
+                            "option": "Referral"
+                          }
+                        ]
+                      },
+                      "required": false,
+                      "show_people": true,
+                      "show_companies": true,
+                      "show_deals": false,
+                      "created_at": "2026-01-15T10:30:00Z"
+                    }
+                  ],
+                  "meta": {
+                    "total": 5,
+                    "page": 1,
+                    "per_page": 50,
+                    "has_more": false
+                  }
+                }
+              }
+            }
+          },
+          "401": {
+            "$ref": "#/components/responses/Unauthorized"
+          },
+          "403": {
+            "$ref": "#/components/responses/InsufficientScope"
+          },
+          "422": {
+            "$ref": "#/components/responses/ValidationError"
+          },
+          "429": {
+            "$ref": "#/components/responses/RateLimitExceeded"
+          },
+          "500": {
+            "$ref": "#/components/responses/InternalError"
+          }
+        }
+      },
+      "post": {
+        "operationId": "createCustomField",
+        "summary": "Create a custom field",
+        "description": "Creates a new custom field in the workspace.\n\nFor `select` and `multi_select` types, pass the available options in `value` as an array of strings.\n\n<Accordion title=\"Required scope\">\n`custom_fields:write`\n</Accordion>",
+        "tags": [
+          "Custom Fields"
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/CreateCustomFieldRequest"
+              }
+            }
+          }
+        },
+        "responses": {
+          "201": {
+            "description": "Custom field created successfully.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/CustomFieldResponse"
+                }
+              }
+            }
+          },
+          "400": {
+            "$ref": "#/components/responses/BadRequest"
+          },
+          "401": {
+            "$ref": "#/components/responses/Unauthorized"
+          },
+          "403": {
+            "$ref": "#/components/responses/InsufficientScope"
+          },
+          "409": {
+            "$ref": "#/components/responses/Conflict"
+          },
+          "422": {
+            "$ref": "#/components/responses/ValidationError"
+          },
+          "429": {
+            "$ref": "#/components/responses/RateLimitExceeded"
+          },
+          "500": {
+            "$ref": "#/components/responses/InternalError"
+          }
+        }
+      }
+    },
+    "/v1/custom-fields/{identifier}": {
+      "patch": {
+        "operationId": "updateCustomField",
+        "summary": "Update a custom field",
+        "description": "Updates a custom field by its `id` (UUID) or `key` (string). Only fields included in the body are modified.\n\n<Accordion title=\"Required scope\">\n`custom_fields:write`\n</Accordion>",
+        "tags": [
+          "Custom Fields"
+        ],
+        "parameters": [
+          {
+            "$ref": "#/components/parameters/identifier"
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/UpdateCustomFieldRequest"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Custom field updated successfully.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/CustomFieldResponse"
+                }
+              }
+            }
+          },
+          "400": {
+            "$ref": "#/components/responses/BadRequest"
+          },
+          "401": {
+            "$ref": "#/components/responses/Unauthorized"
+          },
+          "403": {
+            "$ref": "#/components/responses/InsufficientScope"
+          },
+          "404": {
+            "$ref": "#/components/responses/NotFound"
+          },
+          "409": {
+            "$ref": "#/components/responses/Conflict"
+          },
+          "422": {
+            "$ref": "#/components/responses/ValidationError"
+          },
+          "429": {
+            "$ref": "#/components/responses/RateLimitExceeded"
+          },
+          "500": {
+            "$ref": "#/components/responses/InternalError"
+          }
+        }
+      },
+      "delete": {
+        "operationId": "deleteCustomField",
+        "summary": "Delete a custom field",
+        "description": "Soft-deletes a custom field by its `id` (UUID) or `key` (string).\n\n<Accordion title=\"Required scope\">\n`custom_fields:write`\n</Accordion>",
+        "tags": [
+          "Custom Fields"
+        ],
+        "parameters": [
+          {
+            "$ref": "#/components/parameters/identifier"
+          }
+        ],
+        "responses": {
+          "204": {
+            "description": "Custom field deleted successfully.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object"
+                },
+                "example": {}
+              }
+            }
+          },
+          "401": {
+            "$ref": "#/components/responses/Unauthorized"
+          },
+          "403": {
+            "$ref": "#/components/responses/InsufficientScope"
+          },
+          "404": {
+            "$ref": "#/components/responses/NotFound"
+          },
+          "429": {
+            "$ref": "#/components/responses/RateLimitExceeded"
+          },
+          "500": {
+            "$ref": "#/components/responses/InternalError"
+          }
+        }
+      }
     }
   },
   "components": {
@@ -2625,12 +3229,12 @@
         "schema": {
           "type": "string"
         },
-        "description": "Tag `id` (UUID) or `key` (string). Both formats are accepted."
+        "description": "Custom field `id` (UUID) or `key` (string). Both formats are accepted."
       }
     },
     "responses": {
       "Unauthorized": {
-        "description": "Token missing, invalid, or expired. Possible error codes: `unauthorized`, `token_expired`.",
+        "description": "Token missing, invalid, or expired.",
         "content": {
           "application/json": {
             "schema": {
@@ -2656,7 +3260,7 @@
             "example": {
               "error": {
                 "code": "insufficient_scope",
-                "message": "This endpoint requires the 'people:write' scope.",
+                "message": "This endpoint requires the 'custom_fields:write' scope.",
                 "request_id": "550e8400-e29b-41d4-a716-446655440000"
               }
             }
@@ -2664,7 +3268,7 @@
         }
       },
       "NotFound": {
-        "description": "List not found, soft-deleted, or belongs to another workspace. Error code: `not_found`.",
+        "description": "Custom field not found, soft-deleted, or belongs to another workspace. Error code: `not_found`.",
         "content": {
           "application/json": {
             "schema": {
@@ -2673,7 +3277,7 @@
             "example": {
               "error": {
                 "code": "not_found",
-                "message": "List not found.",
+                "message": "Custom field not found.",
                 "request_id": "550e8400-e29b-41d4-a716-446655440000"
               }
             }
@@ -2692,7 +3296,8 @@
                 "code": "validation_error",
                 "message": "Validation failed.",
                 "fields": {
-                  "name": "String must contain at most 50 character(s)."
+                  "key": "Key must contain only lowercase letters, digits, and underscores between words (e.g. cpf_empresa).",
+                  "type": "Invalid enum value."
                 },
                 "request_id": "550e8400-e29b-41d4-a716-446655440000"
               }
@@ -2718,7 +3323,7 @@
         }
       },
       "BadRequest": {
-        "description": "Malformed request body or empty update. Error code: `bad_request`. Possible messages: `\"Request body must be valid JSON.\"` or `\"No fields provided for update.\"`",
+        "description": "Malformed request body or empty update. Error code: `bad_request`.",
         "content": {
           "application/json": {
             "schema": {
@@ -2752,7 +3357,7 @@
         }
       },
       "Conflict": {
-        "description": "A tag with the same `key` already exists in this workspace. Error code: `conflict`.",
+        "description": "A custom field with the same `key` already exists. Error code: `conflict`.",
         "content": {
           "application/json": {
             "schema": {
@@ -2780,12 +3385,10 @@
             "type": "object",
             "properties": {
               "code": {
-                "type": "string",
-                "example": "not_found"
+                "type": "string"
               },
               "message": {
-                "type": "string",
-                "example": "List not found."
+                "type": "string"
               },
               "request_id": {
                 "type": "string",
@@ -2802,12 +3405,10 @@
             "type": "object",
             "properties": {
               "code": {
-                "type": "string",
-                "example": "validation_error"
+                "type": "string"
               },
               "message": {
-                "type": "string",
-                "example": "Validation failed."
+                "type": "string"
               },
               "fields": {
                 "type": "object",
@@ -2828,22 +3429,18 @@
         "properties": {
           "total": {
             "type": "integer",
-            "example": 8,
-            "description": "Total number of records matching the query."
+            "description": "Total number of records."
           },
           "page": {
             "type": "integer",
-            "example": 1,
             "description": "Current page number."
           },
           "per_page": {
             "type": "integer",
-            "example": 50,
-            "description": "Number of records per page."
+            "description": "Records per page."
           },
           "has_more": {
             "type": "boolean",
-            "example": false,
             "description": "`true` when there are more pages after the current one."
           }
         }
@@ -4051,7 +4648,7 @@
           "UYU",
           "ZAR"
         ],
-        "example": "BRL"
+        "example": "USD"
       },
       "DealProduct": {
         "type": "object",
@@ -5040,7 +5637,7 @@
             "minLength": 1,
             "maxLength": 200,
             "description": "New task title.",
-            "example": "Follow up with prospect — send contract"
+            "example": "Follow up with prospect."
           },
           "due_date": {
             "type": "string",
@@ -5181,6 +5778,210 @@
             "pattern": "^[a-z0-9]+(_[a-z0-9]+)*$",
             "description": "New identifier key. Lowercase letters, digits, and underscores only.",
             "example": "phone_call"
+          }
+        }
+      },
+      "Product": {
+        "type": "object",
+        "properties": {
+          "id": {
+            "type": "string",
+            "format": "uuid",
+            "description": "Unique identifier."
+          },
+          "name": {
+            "type": "string",
+            "maxLength": 80,
+            "description": "Product name.",
+            "example": "Enterprise Plan"
+          },
+          "price_cts": {
+            "type": "integer",
+            "description": "Price in the smallest currency unit (e.g. cents). `99900` = $999.00.",
+            "example": 99900
+          },
+          "currency": {
+            "$ref": "#/components/schemas/CurrencyCode"
+          },
+          "description": {
+            "type": "string",
+            "nullable": true,
+            "maxLength": 1000,
+            "description": "Optional product description.",
+            "example": "Full-featured plan for large teams."
+          },
+          "image_url": {
+            "type": "string",
+            "nullable": true,
+            "description": "Public URL of the product image, or `null` if none.",
+            "example": "https://storage.vendaze.com/client/workspaces/abc/products/xyz/image/avatar_Ab1Cd2Ef3G.webp"
+          },
+          "code": {
+            "type": "string",
+            "nullable": true,
+            "maxLength": 60,
+            "description": "Internal product code or SKU.",
+            "example": "PLAN-ENT"
+          },
+          "is_active": {
+            "type": "boolean",
+            "description": "Whether the product is active.",
+            "example": true
+          },
+          "billing_cycle": {
+            "type": "string",
+            "enum": [
+              "one_time",
+              "monthly",
+              "quarterly",
+              "annually"
+            ],
+            "description": "Billing cycle for the product.",
+            "example": "monthly"
+          },
+          "created_at": {
+            "type": "string",
+            "format": "date-time",
+            "description": "ISO 8601 UTC creation timestamp."
+          }
+        }
+      },
+      "ProductResponse": {
+        "type": "object",
+        "properties": {
+          "data": {
+            "$ref": "#/components/schemas/Product"
+          }
+        }
+      },
+      "ProductsListResponse": {
+        "type": "object",
+        "properties": {
+          "data": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/Product"
+            }
+          },
+          "meta": {
+            "$ref": "#/components/schemas/PaginationMeta"
+          }
+        }
+      },
+      "CreateProductRequest": {
+        "type": "object",
+        "required": [
+          "name",
+          "currency"
+        ],
+        "properties": {
+          "name": {
+            "type": "string",
+            "minLength": 1,
+            "maxLength": 80,
+            "description": "Product name.",
+            "example": "Enterprise Plan"
+          },
+          "currency": {
+            "$ref": "#/components/schemas/CurrencyCode"
+          },
+          "price_cts": {
+            "type": "integer",
+            "minimum": 0,
+            "maximum": 1000000000000000,
+            "description": "Price in the smallest currency unit. Defaults to `0`.",
+            "example": 99900
+          },
+          "description": {
+            "type": "string",
+            "maxLength": 1000,
+            "description": "Product description.",
+            "example": "Full-featured plan for large teams."
+          },
+          "code": {
+            "type": "string",
+            "maxLength": 60,
+            "description": "Internal product code or SKU.",
+            "example": "PLAN-ENT"
+          },
+          "is_active": {
+            "type": "boolean",
+            "description": "Whether the product is active. Defaults to `true`.",
+            "example": true
+          },
+          "billing_cycle": {
+            "type": "string",
+            "enum": [
+              "one_time",
+              "monthly",
+              "quarterly",
+              "annually"
+            ],
+            "description": "Billing cycle. Defaults to `one_time`.",
+            "example": "monthly"
+          },
+          "image": {
+            "type": "string",
+            "description": "Product image. Accepts a public HTTPS URL, a raw Base64 string, or a full data URI (`data:image/png;base64,...`). Maximum 2 MB.",
+            "example": "https://example.com/product.png"
+          }
+        }
+      },
+      "UpdateProductRequest": {
+        "type": "object",
+        "description": "All fields are optional. Only fields included in the body are modified.",
+        "properties": {
+          "name": {
+            "type": "string",
+            "minLength": 1,
+            "maxLength": 80,
+            "description": "New product name.",
+            "example": "Enterprise Plan v2"
+          },
+          "currency": {
+            "$ref": "#/components/schemas/CurrencyCode"
+          },
+          "price_cts": {
+            "type": "integer",
+            "minimum": 0,
+            "maximum": 1000000000000000,
+            "description": "New price in the smallest currency unit.",
+            "example": 149900
+          },
+          "description": {
+            "type": "string",
+            "nullable": true,
+            "maxLength": 1000,
+            "description": "New description. Send `null` to clear.",
+            "example": "Updated plan for enterprise customers."
+          },
+          "code": {
+            "type": "string",
+            "nullable": true,
+            "maxLength": 60,
+            "description": "New product code. Send `null` to clear.",
+            "example": "PLAN-ENT-V2"
+          },
+          "is_active": {
+            "type": "boolean",
+            "description": "Update active status.",
+            "example": false
+          },
+          "billing_cycle": {
+            "type": "string",
+            "enum": [
+              "one_time",
+              "monthly",
+              "quarterly",
+              "annually"
+            ],
+            "description": "New billing cycle.",
+            "example": "annually"
+          },
+          "image": {
+            "type": "string",
+            "description": "New product image. Replaces the existing one.",
+            "example": "https://example.com/new-product.png"
           }
         }
       },
@@ -5355,6 +6156,303 @@
             "maxLength": 50,
             "description": "New display name.",
             "example": "VIP Customers"
+          }
+        }
+      },
+      "CustomField": {
+        "type": "object",
+        "properties": {
+          "id": {
+            "type": "string",
+            "format": "uuid",
+            "description": "Unique identifier."
+          },
+          "label": {
+            "type": "string",
+            "maxLength": 40,
+            "description": "Display label shown in the interface.",
+            "example": "Tax ID"
+          },
+          "key": {
+            "type": "string",
+            "maxLength": 35,
+            "description": "Unique key within the workspace. Used to reference the field when associating values with records.",
+            "example": "tax_id"
+          },
+          "type": {
+            "type": "string",
+            "enum": [
+              "text",
+              "long_text",
+              "select",
+              "multi_select",
+              "cpf",
+              "cnpj",
+              "date",
+              "number",
+              "link",
+              "address"
+            ],
+            "description": "Field type. Determines the expected value format."
+          },
+          "value": {
+            "description": "For `select` and `multi_select` fields only: the available options. `null` for all other field types.",
+            "nullable": true,
+            "example": {
+              "select_list": [
+                {
+                  "key": "sl_option_a",
+                  "option": "Option A"
+                },
+                {
+                  "key": "sl_option_b",
+                  "option": "Option B"
+                }
+              ]
+            }
+          },
+          "required": {
+            "type": "boolean",
+            "description": "Whether the field is required when creating or editing a record."
+          },
+          "show_people": {
+            "type": "boolean",
+            "description": "Whether this field appears on people records."
+          },
+          "show_companies": {
+            "type": "boolean",
+            "description": "Whether this field appears on company records."
+          },
+          "show_deals": {
+            "type": "boolean",
+            "description": "Whether this field appears on deal records."
+          },
+          "created_at": {
+            "type": "string",
+            "format": "date-time",
+            "description": "ISO 8601 UTC creation timestamp."
+          }
+        }
+      },
+      "CustomFieldResponse": {
+        "type": "object",
+        "properties": {
+          "data": {
+            "$ref": "#/components/schemas/CustomField"
+          }
+        }
+      },
+      "CustomFieldsListResponse": {
+        "type": "object",
+        "properties": {
+          "data": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/CustomField"
+            }
+          },
+          "meta": {
+            "$ref": "#/components/schemas/PaginationMeta"
+          }
+        }
+      },
+      "CreateCustomFieldRequest": {
+        "type": "object",
+        "required": [
+          "label",
+          "key",
+          "type"
+        ],
+        "properties": {
+          "label": {
+            "type": "string",
+            "minLength": 1,
+            "maxLength": 40,
+            "description": "Display label.",
+            "example": "Tax ID"
+          },
+          "key": {
+            "type": "string",
+            "minLength": 1,
+            "maxLength": 35,
+            "pattern": "^[a-z0-9]+(_[a-z0-9]+)*$",
+            "description": "Unique key within the workspace. Lowercase letters, digits, and underscores between words only.",
+            "example": "tax_id"
+          },
+          "type": {
+            "type": "string",
+            "enum": [
+              "text",
+              "long_text",
+              "select",
+              "multi_select",
+              "cpf",
+              "cnpj",
+              "date",
+              "number",
+              "link",
+              "address"
+            ],
+            "description": "Field type. Cannot be changed after the field is created via this parameter, use PATCH to update it."
+          },
+          "value": {
+            "description": "Options for `select` and `multi_select` types. Required when `type` is `select` or `multi_select`. Must be omitted for all other field types.",
+            "example": {
+              "select_list": [
+                {
+                  "key": "sl_option_a",
+                  "option": "Option A"
+                },
+                {
+                  "key": "sl_option_b",
+                  "option": "Option B"
+                }
+              ]
+            },
+            "properties": {
+              "select_list": {
+                "type": "array",
+                "items": {
+                  "type": "object",
+                  "required": [
+                    "key",
+                    "option"
+                  ],
+                  "properties": {
+                    "key": {
+                      "type": "string",
+                      "description": "Unique identifier for the option within the field. Lowercase letters, digits, and underscores only.",
+                      "example": "sl_option_a"
+                    },
+                    "option": {
+                      "type": "string",
+                      "description": "Display text shown to the user.",
+                      "example": "Option A"
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "required": {
+            "type": "boolean",
+            "description": "Whether the field is required. Defaults to `false`.",
+            "example": false
+          },
+          "show_people": {
+            "type": "boolean",
+            "description": "Show on people records. Defaults to `true`.",
+            "example": true
+          },
+          "show_companies": {
+            "type": "boolean",
+            "description": "Show on company records. Defaults to `true`.",
+            "example": true
+          },
+          "show_deals": {
+            "type": "boolean",
+            "description": "Show on deal records. Defaults to `false`.",
+            "example": false
+          }
+        }
+      },
+      "UpdateCustomFieldRequest": {
+        "type": "object",
+        "description": "All fields are optional. Only fields included in the body are modified.",
+        "properties": {
+          "label": {
+            "type": "string",
+            "minLength": 1,
+            "maxLength": 40,
+            "description": "New display label.",
+            "example": "Federal Tax ID"
+          },
+          "key": {
+            "type": "string",
+            "minLength": 1,
+            "maxLength": 35,
+            "pattern": "^[a-z0-9]+(_[a-z0-9]+)*$",
+            "description": "New unique key. Must not conflict with an existing key in the workspace.",
+            "example": "federal_tax_id"
+          },
+          "type": {
+            "type": "string",
+            "enum": [
+              "text",
+              "long_text",
+              "select",
+              "multi_select",
+              "cpf",
+              "cnpj",
+              "date",
+              "number",
+              "link",
+              "address"
+            ],
+            "description": "New field type."
+          },
+          "value": {
+            "description": "Updates the options for `select` and `multi_select` fields. Replaces the entire existing list. Must be omitted for all other field types.",
+            "example": {
+              "select_list": [
+                {
+                  "key": "sl_option_a",
+                  "option": "Option A"
+                },
+                {
+                  "key": "sl_option_b",
+                  "option": "Option B"
+                },
+                {
+                  "key": "sl_option_c",
+                  "option": "Option C"
+                }
+              ]
+            },
+            "properties": {
+              "select_list": {
+                "type": "array",
+                "items": {
+                  "type": "object",
+                  "required": [
+                    "key",
+                    "option"
+                  ],
+                  "properties": {
+                    "key": {
+                      "type": "string",
+                      "description": "Unique identifier for the option. Lowercase letters, digits, and underscores only.",
+                      "example": "sl_option_a"
+                    },
+                    "option": {
+                      "type": "string",
+                      "description": "Display text shown to the user.",
+                      "example": "Option A"
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "required": {
+            "type": "boolean",
+            "description": "Update required flag.",
+            "example": true
+          },
+          "show_people": {
+            "type": "boolean",
+            "description": "Update visibility on people records.",
+            "example": true
+          },
+          "show_companies": {
+            "type": "boolean",
+            "description": "Update visibility on company records.",
+            "example": false
+          },
+          "show_deals": {
+            "type": "boolean",
+            "description": "Update visibility on deal records.",
+            "example": true
           }
         }
       }

@@ -40,10 +40,16 @@
       "name": "Tipos de Tarefas"
     },
     {
+      "name": "Produtos"
+    },
+    {
       "name": "Tags"
     },
     {
       "name": "Listas"
+    },
+    {
+      "name": "Campos Adicionais"
     }
   ],
   "paths": {
@@ -1420,10 +1426,10 @@
             "schema": {
               "type": "integer",
               "minimum": 1,
-              "maximum": 100,
+              "maximum": 50,
               "default": 50
             },
-            "description": "Quantidade de registros por página. Máximo: 100."
+            "description": "Quantidade de registros por página. Máximo: 50."
           },
           {
             "name": "order_by",
@@ -1749,10 +1755,10 @@
             "schema": {
               "type": "integer",
               "minimum": 1,
-              "maximum": 100,
+              "maximum": 50,
               "default": 50
             },
-            "description": "Quantidade de registros por página. Máximo: 100."
+            "description": "Quantidade de registros por página. Máximo: 50."
           },
           {
             "name": "order_by",
@@ -1981,6 +1987,304 @@
         }
       }
     },
+    "/v1/products": {
+      "get": {
+        "operationId": "listProducts",
+        "summary": "Listar produtos",
+        "description": "Retorna uma lista paginada de produtos do workspace.\n\n<Accordion title=\"Escopo necessário\">\n`products:read`\n</Accordion>",
+        "tags": [
+          "Produtos"
+        ],
+        "parameters": [
+          {
+            "name": "page",
+            "in": "query",
+            "schema": {
+              "type": "integer",
+              "minimum": 1,
+              "default": 1
+            },
+            "description": "Número da página."
+          },
+          {
+            "name": "per_page",
+            "in": "query",
+            "schema": {
+              "type": "integer",
+              "minimum": 1,
+              "maximum": 50,
+              "default": 50
+            },
+            "description": "Registros por página. Máximo: 50."
+          },
+          {
+            "name": "order_by",
+            "in": "query",
+            "schema": {
+              "type": "string",
+              "enum": [
+                "created_at",
+                "name"
+              ],
+              "default": "created_at"
+            },
+            "description": "Campo de ordenação."
+          },
+          {
+            "name": "order",
+            "in": "query",
+            "schema": {
+              "type": "string",
+              "enum": [
+                "asc",
+                "desc"
+              ],
+              "default": "desc"
+            },
+            "description": "Direção da ordenação."
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Produtos retornados com sucesso.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ProductsListResponse"
+                },
+                "example": {
+                  "data": [
+                    {
+                      "id": "a1b2c3d4-e5f6-7890-abcd-ef1234567890",
+                      "name": "Plano Empresarial",
+                      "price_cts": 99900,
+                      "currency": "BRL",
+                      "description": "Plano completo para grandes equipes.",
+                      "image_url": "https://storage.vendaze.com/client/workspaces/abc/products/xyz/image/avatar_Ab1Cd2Ef3G.webp",
+                      "code": "PLANO-EMP",
+                      "is_active": true,
+                      "billing_cycle": "monthly",
+                      "created_at": "2026-01-15T10:30:00Z"
+                    }
+                  ],
+                  "meta": {
+                    "total": 8,
+                    "page": 1,
+                    "per_page": 50,
+                    "has_more": false
+                  }
+                }
+              }
+            }
+          },
+          "401": {
+            "$ref": "#/components/responses/Unauthorized"
+          },
+          "403": {
+            "$ref": "#/components/responses/InsufficientScope"
+          },
+          "422": {
+            "$ref": "#/components/responses/ValidationError"
+          },
+          "429": {
+            "$ref": "#/components/responses/RateLimitExceeded"
+          },
+          "500": {
+            "$ref": "#/components/responses/InternalError"
+          }
+        }
+      },
+      "post": {
+        "operationId": "createProduct",
+        "summary": "Criar produto",
+        "description": "Cria um novo produto no workspace.\n\n<Accordion title=\"Escopo necessário\">\n`products:write`\n</Accordion>",
+        "tags": [
+          "Produtos"
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/CreateProductRequest"
+              }
+            }
+          }
+        },
+        "responses": {
+          "201": {
+            "description": "Produto criado com sucesso.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ProductResponse"
+                }
+              }
+            }
+          },
+          "400": {
+            "$ref": "#/components/responses/BadRequest"
+          },
+          "401": {
+            "$ref": "#/components/responses/Unauthorized"
+          },
+          "403": {
+            "$ref": "#/components/responses/InsufficientScope"
+          },
+          "409": {
+            "$ref": "#/components/responses/Conflict"
+          },
+          "422": {
+            "$ref": "#/components/responses/ValidationError"
+          },
+          "429": {
+            "$ref": "#/components/responses/RateLimitExceeded"
+          },
+          "500": {
+            "$ref": "#/components/responses/InternalError"
+          }
+        }
+      }
+    },
+    "/v1/products/{id}": {
+      "get": {
+        "operationId": "getProduct",
+        "summary": "Buscar produto",
+        "description": "Retorna um produto pelo seu `id` (UUID).\n\n<Accordion title=\"Escopo necessário\">\n`products:read`\n</Accordion>",
+        "tags": [
+          "Produtos"
+        ],
+        "parameters": [
+          {
+            "$ref": "#/components/parameters/id"
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Produto retornado com sucesso.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ProductResponse"
+                }
+              }
+            }
+          },
+          "401": {
+            "$ref": "#/components/responses/Unauthorized"
+          },
+          "403": {
+            "$ref": "#/components/responses/InsufficientScope"
+          },
+          "404": {
+            "$ref": "#/components/responses/NotFound"
+          },
+          "500": {
+            "$ref": "#/components/responses/InternalError"
+          }
+        }
+      },
+      "patch": {
+        "operationId": "updateProduct",
+        "summary": "Atualizar produto",
+        "description": "Atualiza um produto pelo seu `id` (UUID). Apenas os campos enviados no body são alterados.\n\n<Accordion title=\"Escopo necessário\">\n`products:write`\n</Accordion>",
+        "tags": [
+          "Produtos"
+        ],
+        "parameters": [
+          {
+            "$ref": "#/components/parameters/id"
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/UpdateProductRequest"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Produto atualizado com sucesso.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ProductResponse"
+                }
+              }
+            }
+          },
+          "400": {
+            "$ref": "#/components/responses/BadRequest"
+          },
+          "401": {
+            "$ref": "#/components/responses/Unauthorized"
+          },
+          "403": {
+            "$ref": "#/components/responses/InsufficientScope"
+          },
+          "404": {
+            "$ref": "#/components/responses/NotFound"
+          },
+          "409": {
+            "$ref": "#/components/responses/Conflict"
+          },
+          "422": {
+            "$ref": "#/components/responses/ValidationError"
+          },
+          "429": {
+            "$ref": "#/components/responses/RateLimitExceeded"
+          },
+          "500": {
+            "$ref": "#/components/responses/InternalError"
+          }
+        }
+      },
+      "delete": {
+        "operationId": "deleteProduct",
+        "summary": "Excluir produto",
+        "description": "Realiza soft-delete de um produto pelo seu `id` (UUID).\n\n<Accordion title=\"Escopo necessário\">\n`products:write`\n</Accordion>",
+        "tags": [
+          "Produtos"
+        ],
+        "parameters": [
+          {
+            "$ref": "#/components/parameters/id"
+          }
+        ],
+        "responses": {
+          "204": {
+            "description": "Produto excluído com sucesso.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object"
+                },
+                "example": {}
+              }
+            }
+          },
+          "401": {
+            "$ref": "#/components/responses/Unauthorized"
+          },
+          "403": {
+            "$ref": "#/components/responses/InsufficientScope"
+          },
+          "404": {
+            "$ref": "#/components/responses/NotFound"
+          },
+          "429": {
+            "$ref": "#/components/responses/RateLimitExceeded"
+          },
+          "500": {
+            "$ref": "#/components/responses/InternalError"
+          }
+        }
+      }
+    },
     "/v1/tags": {
       "get": {
         "operationId": "listTags",
@@ -2006,10 +2310,10 @@
             "schema": {
               "type": "integer",
               "minimum": 1,
-              "maximum": 100,
+              "maximum": 50,
               "default": 50
             },
-            "description": "Quantidade de registros por página. Máximo: 100."
+            "description": "Quantidade de registros por página. Máximo: 50."
           },
           {
             "name": "order_by",
@@ -2300,10 +2604,10 @@
             "schema": {
               "type": "integer",
               "minimum": 1,
-              "maximum": 100,
+              "maximum": 50,
               "default": 50
             },
-            "description": "Quantidade de registros por página. Máximo: 100."
+            "description": "Quantidade de registros por página. Máximo: 50."
           },
           {
             "name": "order_by",
@@ -2524,6 +2828,291 @@
           }
         }
       }
+    },
+    "/v1/custom-fields": {
+      "get": {
+        "operationId": "listCustomFields",
+        "summary": "Listar campos adicionais",
+        "description": "Retorna uma lista paginada de campos adicionais do workspace.\n\n<Accordion title=\"Escopo necessário\">\n`custom_fields:read`\n</Accordion>",
+        "tags": [
+          "Campos Adicionais"
+        ],
+        "parameters": [
+          {
+            "name": "page",
+            "in": "query",
+            "schema": {
+              "type": "integer",
+              "minimum": 1,
+              "default": 1
+            },
+            "description": "Número da página."
+          },
+          {
+            "name": "per_page",
+            "in": "query",
+            "schema": {
+              "type": "integer",
+              "minimum": 1,
+              "maximum": 50,
+              "default": 50
+            },
+            "description": "Registros por página. Máximo: 50."
+          },
+          {
+            "name": "order_by",
+            "in": "query",
+            "schema": {
+              "type": "string",
+              "enum": [
+                "created_at",
+                "label"
+              ],
+              "default": "created_at"
+            },
+            "description": "Campo de ordenação."
+          },
+          {
+            "name": "order",
+            "in": "query",
+            "schema": {
+              "type": "string",
+              "enum": [
+                "asc",
+                "desc"
+              ],
+              "default": "desc"
+            },
+            "description": "Direção da ordenação."
+          },
+          {
+            "name": "show_people",
+            "in": "query",
+            "schema": {
+              "type": "boolean"
+            },
+            "description": "Filtra campos que aparecem em registros de pessoas."
+          },
+          {
+            "name": "show_companies",
+            "in": "query",
+            "schema": {
+              "type": "boolean"
+            },
+            "description": "Filtra campos que aparecem em registros de empresas."
+          },
+          {
+            "name": "show_deals",
+            "in": "query",
+            "schema": {
+              "type": "boolean"
+            },
+            "description": "Filtra campos que aparecem em registros de negócios."
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Campos retornados com sucesso.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/CustomFieldsListResponse"
+                },
+                "example": {
+                  "data": [
+                    {
+                      "id": "a1b2c3d4-e5f6-7890-abcd-ef1234567890",
+                      "label": "CPF",
+                      "key": "cpf_cliente",
+                      "type": "cpf",
+                      "value": null,
+                      "required": false,
+                      "show_people": true,
+                      "show_companies": false,
+                      "show_deals": false,
+                      "created_at": "2026-01-15T10:30:00Z"
+                    }
+                  ],
+                  "meta": {
+                    "total": 5,
+                    "page": 1,
+                    "per_page": 50,
+                    "has_more": false
+                  }
+                }
+              }
+            }
+          },
+          "401": {
+            "$ref": "#/components/responses/Unauthorized"
+          },
+          "403": {
+            "$ref": "#/components/responses/InsufficientScope"
+          },
+          "422": {
+            "$ref": "#/components/responses/ValidationError"
+          },
+          "429": {
+            "$ref": "#/components/responses/RateLimitExceeded"
+          },
+          "500": {
+            "$ref": "#/components/responses/InternalError"
+          }
+        }
+      },
+      "post": {
+        "operationId": "createCustomField",
+        "summary": "Criar campo adicional",
+        "description": "Cria um novo campo adicional no workspace.\n\nPara os tipos `select` e `multi_select`, envie as opções disponíveis em `value` como um array de strings.\n\n<Accordion title=\"Escopo necessário\">\n`custom_fields:write`\n</Accordion>",
+        "tags": [
+          "Campos Adicionais"
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/CreateCustomFieldRequest"
+              }
+            }
+          }
+        },
+        "responses": {
+          "201": {
+            "description": "Campo criado com sucesso.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/CustomFieldResponse"
+                }
+              }
+            }
+          },
+          "400": {
+            "$ref": "#/components/responses/BadRequest"
+          },
+          "401": {
+            "$ref": "#/components/responses/Unauthorized"
+          },
+          "403": {
+            "$ref": "#/components/responses/InsufficientScope"
+          },
+          "409": {
+            "$ref": "#/components/responses/Conflict"
+          },
+          "422": {
+            "$ref": "#/components/responses/ValidationError"
+          },
+          "429": {
+            "$ref": "#/components/responses/RateLimitExceeded"
+          },
+          "500": {
+            "$ref": "#/components/responses/InternalError"
+          }
+        }
+      }
+    },
+    "/v1/custom-fields/{identifier}": {
+      "patch": {
+        "operationId": "updateCustomField",
+        "summary": "Atualizar campo adicional",
+        "description": "Atualiza um campo adicional pelo `id` (UUID) ou `key` (string). Apenas os campos enviados no body são alterados.\n\n<Accordion title=\"Escopo necessário\">\n`custom_fields:write`\n</Accordion>",
+        "tags": [
+          "Campos Adicionais"
+        ],
+        "parameters": [
+          {
+            "$ref": "#/components/parameters/identifier"
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/UpdateCustomFieldRequest"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Campo atualizado com sucesso.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/CustomFieldResponse"
+                }
+              }
+            }
+          },
+          "400": {
+            "$ref": "#/components/responses/BadRequest"
+          },
+          "401": {
+            "$ref": "#/components/responses/Unauthorized"
+          },
+          "403": {
+            "$ref": "#/components/responses/InsufficientScope"
+          },
+          "404": {
+            "$ref": "#/components/responses/NotFound"
+          },
+          "409": {
+            "$ref": "#/components/responses/Conflict"
+          },
+          "422": {
+            "$ref": "#/components/responses/ValidationError"
+          },
+          "429": {
+            "$ref": "#/components/responses/RateLimitExceeded"
+          },
+          "500": {
+            "$ref": "#/components/responses/InternalError"
+          }
+        }
+      },
+      "delete": {
+        "operationId": "deleteCustomField",
+        "summary": "Excluir campo adicional",
+        "description": "Realiza soft-delete de um campo adicional pelo `id` (UUID) ou `key` (string).\n\n<Accordion title=\"Escopo necessário\">\n`custom_fields:write`\n</Accordion>",
+        "tags": [
+          "Campos Adicionais"
+        ],
+        "parameters": [
+          {
+            "$ref": "#/components/parameters/identifier"
+          }
+        ],
+        "responses": {
+          "204": {
+            "description": "Campo excluído com sucesso.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object"
+                },
+                "example": {}
+              }
+            }
+          },
+          "401": {
+            "$ref": "#/components/responses/Unauthorized"
+          },
+          "403": {
+            "$ref": "#/components/responses/InsufficientScope"
+          },
+          "404": {
+            "$ref": "#/components/responses/NotFound"
+          },
+          "429": {
+            "$ref": "#/components/responses/RateLimitExceeded"
+          },
+          "500": {
+            "$ref": "#/components/responses/InternalError"
+          }
+        }
+      }
     }
   },
   "components": {
@@ -2531,7 +3120,7 @@
       "bearerAuth": {
         "type": "http",
         "scheme": "bearer",
-        "description": "Access token OAuth 2.1."
+        "description": "Token de acesso OAuth 2.1."
       }
     },
     "parameters": {
@@ -2624,12 +3213,12 @@
         "schema": {
           "type": "string"
         },
-        "description": "`id` (UUID) ou `key` (string) da tag. Ambos os formatos são aceitos."
+        "description": "`id` (UUID) ou `key` (string) do campo. Ambos os formatos são aceitos."
       }
     },
     "responses": {
       "Unauthorized": {
-        "description": "Token ausente, inválido ou expirado. Códigos possíveis: `unauthorized`, `token_expired`.",
+        "description": "Token ausente, inválido ou expirado.",
         "content": {
           "application/json": {
             "schema": {
@@ -2646,7 +3235,7 @@
         }
       },
       "InsufficientScope": {
-        "description": "Token sem o escopo necessário. Código: `insufficient_scope`.",
+        "description": "Token sem o escopo necessário. Código de erro: `insufficient_scope`.",
         "content": {
           "application/json": {
             "schema": {
@@ -2655,7 +3244,7 @@
             "example": {
               "error": {
                 "code": "insufficient_scope",
-                "message": "This endpoint requires the 'people:write' scope.",
+                "message": "This endpoint requires the 'custom_fields:write' scope.",
                 "request_id": "550e8400-e29b-41d4-a716-446655440000"
               }
             }
@@ -2663,7 +3252,7 @@
         }
       },
       "NotFound": {
-        "description": "Lista não encontrada, deletada ou pertence a outro workspace. Código: `not_found`.",
+        "description": "Campo não encontrado, excluído ou pertence a outro workspace. Código de erro: `not_found`.",
         "content": {
           "application/json": {
             "schema": {
@@ -2672,7 +3261,7 @@
             "example": {
               "error": {
                 "code": "not_found",
-                "message": "List not found.",
+                "message": "Custom field not found.",
                 "request_id": "550e8400-e29b-41d4-a716-446655440000"
               }
             }
@@ -2680,7 +3269,7 @@
         }
       },
       "ValidationError": {
-        "description": "Validação dos campos falhou. Código: `validation_error`.",
+        "description": "Validação dos dados falhou. Código de erro: `validation_error`.",
         "content": {
           "application/json": {
             "schema": {
@@ -2691,7 +3280,8 @@
                 "code": "validation_error",
                 "message": "Validation failed.",
                 "fields": {
-                  "name": "String must contain at most 50 character(s)."
+                  "key": "Key must contain only lowercase letters, digits, and underscores between words (e.g. cpf_empresa).",
+                  "type": "Invalid enum value."
                 },
                 "request_id": "550e8400-e29b-41d4-a716-446655440000"
               }
@@ -2700,7 +3290,7 @@
         }
       },
       "RateLimitExceeded": {
-        "description": "Limite de requisições excedido. Código: `rate_limit_exceeded`.",
+        "description": "Limite de requisições atingido. Código de erro: `rate_limit_exceeded`.",
         "content": {
           "application/json": {
             "schema": {
@@ -2717,7 +3307,7 @@
         }
       },
       "BadRequest": {
-        "description": "Body malformado ou nenhum campo enviado para atualização. Código: `bad_request`.",
+        "description": "Body inválido ou atualização sem campos. Código de erro: `bad_request`.",
         "content": {
           "application/json": {
             "schema": {
@@ -2734,7 +3324,7 @@
         }
       },
       "InternalError": {
-        "description": "Erro interno inesperado. Código: `internal_error`.",
+        "description": "Erro interno inesperado. Código de erro: `internal_error`.",
         "content": {
           "application/json": {
             "schema": {
@@ -2751,7 +3341,7 @@
         }
       },
       "Conflict": {
-        "description": "Já existe uma tag com a mesma `key` neste workspace. Código: `conflict`.",
+        "description": "Já existe um campo com a mesma `key` no workspace. Código de erro: `conflict`.",
         "content": {
           "application/json": {
             "schema": {
@@ -2779,12 +3369,10 @@
             "type": "object",
             "properties": {
               "code": {
-                "type": "string",
-                "example": "not_found"
+                "type": "string"
               },
               "message": {
-                "type": "string",
-                "example": "List not found."
+                "type": "string"
               },
               "request_id": {
                 "type": "string",
@@ -2801,12 +3389,10 @@
             "type": "object",
             "properties": {
               "code": {
-                "type": "string",
-                "example": "validation_error"
+                "type": "string"
               },
               "message": {
-                "type": "string",
-                "example": "Validation failed."
+                "type": "string"
               },
               "fields": {
                 "type": "object",
@@ -2827,22 +3413,18 @@
         "properties": {
           "total": {
             "type": "integer",
-            "example": 8,
-            "description": "Total de registros que correspondem à consulta."
+            "description": "Total de registros."
           },
           "page": {
             "type": "integer",
-            "example": 1,
-            "description": "Número da página atual."
+            "description": "Página atual."
           },
           "per_page": {
             "type": "integer",
-            "example": 50,
             "description": "Registros por página."
           },
           "has_more": {
             "type": "boolean",
-            "example": false,
             "description": "`true` quando há mais páginas após a atual."
           }
         }
@@ -5186,6 +5768,210 @@
           }
         }
       },
+      "Product": {
+        "type": "object",
+        "properties": {
+          "id": {
+            "type": "string",
+            "format": "uuid",
+            "description": "Identificador único."
+          },
+          "name": {
+            "type": "string",
+            "maxLength": 80,
+            "description": "Nome do produto.",
+            "example": "Plano Empresarial"
+          },
+          "price_cts": {
+            "type": "integer",
+            "description": "Preço em centavos da menor unidade monetária. Ex: `99900` = R$ 999,00.",
+            "example": 99900
+          },
+          "currency": {
+            "$ref": "#/components/schemas/CurrencyCode"
+          },
+          "description": {
+            "type": "string",
+            "nullable": true,
+            "maxLength": 1000,
+            "description": "Descrição opcional do produto.",
+            "example": "Plano completo para grandes equipes."
+          },
+          "image_url": {
+            "type": "string",
+            "nullable": true,
+            "description": "URL pública da imagem do produto, ou `null` se não houver.",
+            "example": "https://storage.vendaze.com/client/workspaces/abc/products/xyz/image/avatar_Ab1Cd2Ef3G.webp"
+          },
+          "code": {
+            "type": "string",
+            "nullable": true,
+            "maxLength": 60,
+            "description": "Código interno ou SKU do produto.",
+            "example": "PLANO-EMP"
+          },
+          "is_active": {
+            "type": "boolean",
+            "description": "Se o produto está ativo.",
+            "example": true
+          },
+          "billing_cycle": {
+            "type": "string",
+            "enum": [
+              "one_time",
+              "monthly",
+              "quarterly",
+              "annually"
+            ],
+            "description": "Ciclo de cobrança do produto.",
+            "example": "monthly"
+          },
+          "created_at": {
+            "type": "string",
+            "format": "date-time",
+            "description": "Data de criação em ISO 8601 UTC."
+          }
+        }
+      },
+      "ProductResponse": {
+        "type": "object",
+        "properties": {
+          "data": {
+            "$ref": "#/components/schemas/Product"
+          }
+        }
+      },
+      "ProductsListResponse": {
+        "type": "object",
+        "properties": {
+          "data": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/Product"
+            }
+          },
+          "meta": {
+            "$ref": "#/components/schemas/PaginationMeta"
+          }
+        }
+      },
+      "CreateProductRequest": {
+        "type": "object",
+        "required": [
+          "name",
+          "currency"
+        ],
+        "properties": {
+          "name": {
+            "type": "string",
+            "minLength": 1,
+            "maxLength": 80,
+            "description": "Nome do produto.",
+            "example": "Plano Empresarial"
+          },
+          "currency": {
+            "$ref": "#/components/schemas/CurrencyCode"
+          },
+          "price_cts": {
+            "type": "integer",
+            "minimum": 0,
+            "maximum": 1000000000000000,
+            "description": "Preço em centavos. Padrão: `0`.",
+            "example": 99900
+          },
+          "description": {
+            "type": "string",
+            "maxLength": 1000,
+            "description": "Descrição do produto.",
+            "example": "Plano completo para grandes equipes."
+          },
+          "code": {
+            "type": "string",
+            "maxLength": 60,
+            "description": "Código interno ou SKU.",
+            "example": "PLANO-EMP"
+          },
+          "is_active": {
+            "type": "boolean",
+            "description": "Se o produto está ativo. Padrão: `true`.",
+            "example": true
+          },
+          "billing_cycle": {
+            "type": "string",
+            "enum": [
+              "one_time",
+              "monthly",
+              "quarterly",
+              "annually"
+            ],
+            "description": "Ciclo de cobrança. Padrão: `one_time`.",
+            "example": "monthly"
+          },
+          "image": {
+            "type": "string",
+            "description": "Imagem do produto. Aceita URL HTTPS pública, Base64 puro ou data URI completo (`data:image/png;base64,...`). Máximo 2 MB.",
+            "example": "https://exemplo.com/produto.png"
+          }
+        }
+      },
+      "UpdateProductRequest": {
+        "type": "object",
+        "description": "Todos os campos são opcionais. Apenas os campos enviados no body são alterados.",
+        "properties": {
+          "name": {
+            "type": "string",
+            "minLength": 1,
+            "maxLength": 80,
+            "description": "Novo nome do produto.",
+            "example": "Plano Empresarial Plus"
+          },
+          "currency": {
+            "$ref": "#/components/schemas/CurrencyCode"
+          },
+          "price_cts": {
+            "type": "integer",
+            "minimum": 0,
+            "maximum": 1000000000000000,
+            "description": "Novo preço em centavos.",
+            "example": 149900
+          },
+          "description": {
+            "type": "string",
+            "nullable": true,
+            "maxLength": 1000,
+            "description": "Nova descrição. Envie `null` para remover.",
+            "example": "Versão atualizada do plano empresarial."
+          },
+          "code": {
+            "type": "string",
+            "nullable": true,
+            "maxLength": 60,
+            "description": "Novo código interno. Envie `null` para remover.",
+            "example": "PLANO-EMP-PLUS"
+          },
+          "is_active": {
+            "type": "boolean",
+            "description": "Atualiza o status de ativo.",
+            "example": false
+          },
+          "billing_cycle": {
+            "type": "string",
+            "enum": [
+              "one_time",
+              "monthly",
+              "quarterly",
+              "annually"
+            ],
+            "description": "Novo ciclo de cobrança.",
+            "example": "annually"
+          },
+          "image": {
+            "type": "string",
+            "description": "Nova imagem do produto. Substitui a imagem atual.",
+            "example": "https://exemplo.com/nova-imagem.png"
+          }
+        }
+      },
       "TagResponse": {
         "type": "object",
         "properties": {
@@ -5357,6 +6143,303 @@
             "maxLength": 50,
             "description": "Novo nome de exibição.",
             "example": "Clientes VIP"
+          }
+        }
+      },
+      "CustomField": {
+        "type": "object",
+        "properties": {
+          "id": {
+            "type": "string",
+            "format": "uuid",
+            "description": "Identificador único."
+          },
+          "label": {
+            "type": "string",
+            "maxLength": 40,
+            "description": "Rótulo exibido na interface.",
+            "example": "CPF"
+          },
+          "key": {
+            "type": "string",
+            "maxLength": 35,
+            "description": "Chave única no workspace. Usada para referenciar o campo ao associar valores a registros.",
+            "example": "cpf_cliente"
+          },
+          "type": {
+            "type": "string",
+            "enum": [
+              "text",
+              "long_text",
+              "select",
+              "multi_select",
+              "cpf",
+              "cnpj",
+              "date",
+              "number",
+              "link",
+              "address"
+            ],
+            "description": "Tipo do campo. Define o formato esperado do valor."
+          },
+          "value": {
+            "description": "Para tipos `select` e `multi_select`: lista de opções. Obrigatório para esses tipos. Deve ser omitido para todos os outros tipos de campo.",
+            "nullable": true,
+            "example": {
+              "select_list": [
+                {
+                  "key": "sl_opcao_a",
+                  "option": "Opção A"
+                },
+                {
+                  "key": "sl_opcao_b",
+                  "option": "Opção B"
+                }
+              ]
+            }
+          },
+          "required": {
+            "type": "boolean",
+            "description": "Indica se o campo é obrigatório ao criar ou editar um registro."
+          },
+          "show_people": {
+            "type": "boolean",
+            "description": "Se este campo aparece em registros de pessoas."
+          },
+          "show_companies": {
+            "type": "boolean",
+            "description": "Se este campo aparece em registros de empresas."
+          },
+          "show_deals": {
+            "type": "boolean",
+            "description": "Se este campo aparece em registros de negócios."
+          },
+          "created_at": {
+            "type": "string",
+            "format": "date-time",
+            "description": "Data de criação em ISO 8601 UTC."
+          }
+        }
+      },
+      "CustomFieldResponse": {
+        "type": "object",
+        "properties": {
+          "data": {
+            "$ref": "#/components/schemas/CustomField"
+          }
+        }
+      },
+      "CustomFieldsListResponse": {
+        "type": "object",
+        "properties": {
+          "data": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/CustomField"
+            }
+          },
+          "meta": {
+            "$ref": "#/components/schemas/PaginationMeta"
+          }
+        }
+      },
+      "CreateCustomFieldRequest": {
+        "type": "object",
+        "required": [
+          "label",
+          "key",
+          "type"
+        ],
+        "properties": {
+          "label": {
+            "type": "string",
+            "minLength": 1,
+            "maxLength": 40,
+            "description": "Rótulo do campo.",
+            "example": "CPF"
+          },
+          "key": {
+            "type": "string",
+            "minLength": 1,
+            "maxLength": 35,
+            "pattern": "^[a-z0-9]+(_[a-z0-9]+)*$",
+            "description": "Chave única no workspace. Apenas letras minúsculas, dígitos e underscores entre palavras.",
+            "example": "cpf_cliente"
+          },
+          "type": {
+            "type": "string",
+            "enum": [
+              "text",
+              "long_text",
+              "select",
+              "multi_select",
+              "cpf",
+              "cnpj",
+              "date",
+              "number",
+              "link",
+              "address"
+            ],
+            "description": "Tipo do campo."
+          },
+          "value": {
+            "description": "Opções para tipos `select` e `multi_select`. Obrigatório quando `type` for `select` ou `multi_select`. Deve ser omitido para todos os outros tipos de campo.",
+            "example": {
+              "select_list": [
+                {
+                  "key": "sl_opcao_a",
+                  "option": "Opção A"
+                },
+                {
+                  "key": "sl_opcao_b",
+                  "option": "Opção B"
+                }
+              ]
+            },
+            "properties": {
+              "select_list": {
+                "type": "array",
+                "items": {
+                  "type": "object",
+                  "required": [
+                    "key",
+                    "option"
+                  ],
+                  "properties": {
+                    "key": {
+                      "type": "string",
+                      "description": "Identificador único da opção dentro do campo. Apenas letras minúsculas, dígitos e underscores.",
+                      "example": "sl_opcao_a"
+                    },
+                    "option": {
+                      "type": "string",
+                      "description": "Texto exibido ao usuário.",
+                      "example": "Opção A"
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "required": {
+            "type": "boolean",
+            "description": "Se o campo é obrigatório. Padrão: `false`.",
+            "example": false
+          },
+          "show_people": {
+            "type": "boolean",
+            "description": "Exibir em pessoas. Padrão: `true`.",
+            "example": true
+          },
+          "show_companies": {
+            "type": "boolean",
+            "description": "Exibir em empresas. Padrão: `true`.",
+            "example": false
+          },
+          "show_deals": {
+            "type": "boolean",
+            "description": "Exibir em negócios. Padrão: `false`.",
+            "example": false
+          }
+        }
+      },
+      "UpdateCustomFieldRequest": {
+        "type": "object",
+        "description": "Todos os campos são opcionais. Apenas os campos enviados no body são alterados.",
+        "properties": {
+          "label": {
+            "type": "string",
+            "minLength": 1,
+            "maxLength": 40,
+            "description": "Novo rótulo.",
+            "example": "CPF do Responsável"
+          },
+          "key": {
+            "type": "string",
+            "minLength": 1,
+            "maxLength": 35,
+            "pattern": "^[a-z0-9]+(_[a-z0-9]+)*$",
+            "description": "Nova chave. Não pode conflitar com uma chave existente no workspace.",
+            "example": "cpf_responsavel"
+          },
+          "type": {
+            "type": "string",
+            "enum": [
+              "text",
+              "long_text",
+              "select",
+              "multi_select",
+              "cpf",
+              "cnpj",
+              "date",
+              "number",
+              "link",
+              "address"
+            ],
+            "description": "Novo tipo do campo."
+          },
+          "value": {
+            "description": "Atualiza as opções de campos `select` e `multi_select`. Substitui toda a lista existente. Deve ser omitido para todos os outros tipos de campo.",
+            "example": {
+              "select_list": [
+                {
+                  "key": "sl_opcao_a",
+                  "option": "Opção A"
+                },
+                {
+                  "key": "sl_opcao_b",
+                  "option": "Opção B"
+                },
+                {
+                  "key": "sl_opcao_c",
+                  "option": "Opção C"
+                }
+              ]
+            },
+            "properties": {
+              "select_list": {
+                "type": "array",
+                "items": {
+                  "type": "object",
+                  "required": [
+                    "key",
+                    "option"
+                  ],
+                  "properties": {
+                    "key": {
+                      "type": "string",
+                      "description": "Identificador único da opção. Apenas letras minúsculas, dígitos e underscores.",
+                      "example": "sl_opcao_a"
+                    },
+                    "option": {
+                      "type": "string",
+                      "description": "Texto exibido ao usuário.",
+                      "example": "Opção A"
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "required": {
+            "type": "boolean",
+            "description": "Atualiza o flag de obrigatoriedade.",
+            "example": true
+          },
+          "show_people": {
+            "type": "boolean",
+            "description": "Atualiza visibilidade em pessoas.",
+            "example": true
+          },
+          "show_companies": {
+            "type": "boolean",
+            "description": "Atualiza visibilidade em empresas.",
+            "example": false
+          },
+          "show_deals": {
+            "type": "boolean",
+            "description": "Atualiza visibilidade em negócios.",
+            "example": true
           }
         }
       }

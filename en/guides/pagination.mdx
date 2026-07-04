@@ -18,10 +18,16 @@ All list endpoints in the Vendaze API return paginated results. The response alw
 
 ### Accepted `order_by` values by resource
 
-| Resource    | Accepted values                         |
-| ----------- | --------------------------------------- |
-| `people`    | `created_at`, `updated_at`, `full_name` |
-| `companies` | `created_at`, `updated_at`, `full_name` |
+| Resource        | Accepted values                         |
+| --------------- | --------------------------------------- |
+| `people`        | `created_at`, `updated_at`, `full_name` |
+| `companies`     | `created_at`, `updated_at`, `full_name` |
+| `tasks`         | `created_at`, `updated_at`, `due_date`  |
+| `task-types`    | `created_at`, `title`                   |
+| `products`      | `created_at`, `name`                    |
+| `tags`          | `created_at`, `name`                    |
+| `lists`         | `created_at`, `name`                    |
+| `custom-fields` | `created_at`, `label`                   |
 
 ## Response structure
 
