@@ -66,8 +66,8 @@
           {
             "name": "email",
             "in": "query",
-            "schema": { "type": "string" },
-            "description": "Filter by email address (case-insensitive contains). Searches across all emails on the contact."
+            "schema": { "type": "string", "format": "email" },
+            "description": "Filter by email address (exact match). Searches across all emails on the contact."
           },
           {
             "name": "company_id",

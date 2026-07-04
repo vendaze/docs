@@ -66,8 +66,8 @@
           {
             "name": "email",
             "in": "query",
-            "schema": { "type": "string" },
-            "description": "Filtrar por endereço de e-mail (contém, sem distinção de maiúsculas). Busca em todos os e-mails da empresa."
+            "schema": { "type": "string", "format": "email" },
+            "description": "Filtrar por endereço de e-mail (match exato). Busca em todos os e-mails da empresa."
           },
           {
             "name": "created_after",

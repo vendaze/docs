@@ -13,15 +13,15 @@ Filtros inválidos retornam `422` com o campo exato que falhou na validação.
 
 ### `GET /v1/people`
 
-| Parâmetro        | Tipo     | Comparação     | Descrição                                                          |
-| ---------------- | -------- | -------------- | ------------------------------------------------------------------ |
-| `full_name`      | string   | contém (ilike) | Filtra por nome. Não diferencia maiúsculas de minúsculas.          |
-| `email`          | string   | contém (ilike) | Filtra por endereço de email. Busca em todos os emails do contato. |
-| `company_id`     | UUID     | exato          | Retorna apenas pessoas vinculadas à empresa informada.             |
-| `created_after`  | ISO 8601 | `>=`           | Registros criados a partir desta data.                             |
-| `created_before` | ISO 8601 | `<=`           | Registros criados até esta data.                                   |
-| `updated_after`  | ISO 8601 | `>=`           | Registros atualizados a partir desta data.                         |
-| `updated_before` | ISO 8601 | `<=`           | Registros atualizados até esta data.                               |
+| Parâmetro        | Tipo     | Comparação     | Descrição                                                                |
+| ---------------- | -------- | -------------- | ------------------------------------------------------------------------ |
+| `full_name`      | string   | contém (ilike) | Filtra por nome. Não diferencia maiúsculas de minúsculas.                |
+| `email`          | string   | exato          | Filtra por endereço de email. Match exato em todos os emails do contato. |
+| `company_id`     | UUID     | exato          | Retorna apenas pessoas vinculadas à empresa informada.                   |
+| `created_after`  | ISO 8601 | `>=`           | Registros criados a partir desta data.                                   |
+| `created_before` | ISO 8601 | `<=`           | Registros criados até esta data.                                         |
+| `updated_after`  | ISO 8601 | `>=`           | Registros atualizados a partir desta data.                               |
+| `updated_before` | ISO 8601 | `<=`           | Registros atualizados até esta data.                                     |
 
 ```bash
 # Pessoas da empresa X criadas em 2026
@@ -33,14 +33,14 @@ curl "https://api.vendaze.com/v1/people?company_id=a1b2c3d4-e5f6-7890-abcd-ef123
 
 ### `GET /v1/companies`
 
-| Parâmetro        | Tipo     | Comparação     | Descrição                                                          |
-| ---------------- | -------- | -------------- | ------------------------------------------------------------------ |
-| `full_name`      | string   | contém (ilike) | Filtra por razão social. Não diferencia maiúsculas.                |
-| `email`          | string   | contém (ilike) | Filtra por endereço de email. Busca em todos os emails da empresa. |
-| `created_after`  | ISO 8601 | `>=`           | Registros criados a partir desta data.                             |
-| `created_before` | ISO 8601 | `<=`           | Registros criados até esta data.                                   |
-| `updated_after`  | ISO 8601 | `>=`           | Registros atualizados a partir desta data.                         |
-| `updated_before` | ISO 8601 | `<=`           | Registros atualizados até esta data.                               |
+| Parâmetro        | Tipo     | Comparação     | Descrição                                                                |
+| ---------------- | -------- | -------------- | ------------------------------------------------------------------------ |
+| `full_name`      | string   | contém (ilike) | Filtra por razão social. Não diferencia maiúsculas.                      |
+| `email`          | string   | exato          | Filtra por endereço de email. Match exato em todos os emails da empresa. |
+| `created_after`  | ISO 8601 | `>=`           | Registros criados a partir desta data.                                   |
+| `created_before` | ISO 8601 | `<=`           | Registros criados até esta data.                                         |
+| `updated_after`  | ISO 8601 | `>=`           | Registros atualizados a partir desta data.                               |
+| `updated_before` | ISO 8601 | `<=`           | Registros atualizados até esta data.                                     |
 
 ```bash
 # Empresas com "tecnologia" no nome

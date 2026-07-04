@@ -14,15 +14,15 @@ Invalid filters return `422` with the exact field that failed validation.
 
 ### `GET /v1/people`
 
-| Parameter        | Type     | Comparison       | Description                                                         |
-| ---------------- | -------- | ---------------- | ------------------------------------------------------------------- |
-| `full_name`      | string   | contains (ilike) | Filter by name. Case-insensitive.                                   |
-| `email`          | string   | contains (ilike) | Filter by email address. Searches across all emails on the contact. |
-| `company_id`     | UUID     | exact            | Returns only people linked to the given company.                    |
-| `created_after`  | ISO 8601 | `>=`             | Records created on or after this date.                              |
-| `created_before` | ISO 8601 | `<=`             | Records created on or before this date.                             |
-| `updated_after`  | ISO 8601 | `>=`             | Records updated on or after this date.                              |
-| `updated_before` | ISO 8601 | `<=`             | Records updated on or before this date.                             |
+| Parameter        | Type     | Comparison       | Description                                                            |
+| ---------------- | -------- | ---------------- | ---------------------------------------------------------------------- |
+| `full_name`      | string   | contains (ilike) | Filter by name. Case-insensitive.                                      |
+| `email`          | string   | exact            | Filter by email address. Exact match across all emails on the contact. |
+| `company_id`     | UUID     | exact            | Returns only people linked to the given company.                       |
+| `created_after`  | ISO 8601 | `>=`             | Records created on or after this date.                                 |
+| `created_before` | ISO 8601 | `<=`             | Records created on or before this date.                                |
+| `updated_after`  | ISO 8601 | `>=`             | Records updated on or after this date.                                 |
+| `updated_before` | ISO 8601 | `<=`             | Records updated on or before this date.                                |
 
 ```bash
 # People from company X created in 2026
@@ -34,14 +34,14 @@ curl "https://api.vendaze.com/v1/people?company_id=a1b2c3d4-e5f6-7890-abcd-ef123
 
 ### `GET /v1/companies`
 
-| Parameter        | Type     | Comparison       | Description                                                         |
-| ---------------- | -------- | ---------------- | ------------------------------------------------------------------- |
-| `full_name`      | string   | contains (ilike) | Filter by company name. Case-insensitive.                           |
-| `email`          | string   | contains (ilike) | Filter by email address. Searches across all emails on the company. |
-| `created_after`  | ISO 8601 | `>=`             | Records created on or after this date.                              |
-| `created_before` | ISO 8601 | `<=`             | Records created on or before this date.                             |
-| `updated_after`  | ISO 8601 | `>=`             | Records updated on or after this date.                              |
-| `updated_before` | ISO 8601 | `<=`             | Records updated on or before this date.                             |
+| Parameter        | Type     | Comparison       | Description                                                            |
+| ---------------- | -------- | ---------------- | ---------------------------------------------------------------------- |
+| `full_name`      | string   | contains (ilike) | Filter by company name. Case-insensitive.                              |
+| `email`          | string   | exact            | Filter by email address. Exact match across all emails on the company. |
+| `created_after`  | ISO 8601 | `>=`             | Records created on or after this date.                                 |
+| `created_before` | ISO 8601 | `<=`             | Records created on or before this date.                                |
+| `updated_after`  | ISO 8601 | `>=`             | Records updated on or after this date.                                 |
+| `updated_before` | ISO 8601 | `<=`             | Records updated on or before this date.                                |
 
 ```bash
 # Companies with "tech" in their name
