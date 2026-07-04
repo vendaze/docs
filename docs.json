@@ -98,6 +98,7 @@
                 "pages": [
                   "pt/guides/custom-fields",
                   "pt/guides/pagination",
+                  "pt/guides/filters",
                   "pt/guides/webhooks",
                   "pt/guides/errors",
                   "pt/guides/rate-limits"
@@ -185,6 +186,7 @@
                 "pages": [
                   "en/guides/custom-fields",
                   "en/guides/pagination",
+                  "en/guides/filters",
                   "en/guides/webhooks",
                   "en/guides/errors",
                   "en/guides/rate-limits"

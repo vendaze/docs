@@ -56,6 +56,12 @@
             "in": "query",
             "schema": { "type": "string", "enum": ["asc", "desc"], "default": "desc" },
             "description": "Direção da ordenação."
+          },
+          {
+            "name": "name",
+            "in": "query",
+            "schema": { "type": "string" },
+            "description": "Filtrar por nome da tag (contém, sem distinção de maiúsculas)."
           }
         ],
         "responses": {

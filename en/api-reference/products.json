@@ -56,6 +56,30 @@
             "in": "query",
             "schema": { "type": "string", "enum": ["asc", "desc"], "default": "desc" },
             "description": "Sort direction."
+          },
+          {
+            "name": "name",
+            "in": "query",
+            "schema": { "type": "string" },
+            "description": "Filter by product name (case-insensitive contains)."
+          },
+          {
+            "name": "is_active",
+            "in": "query",
+            "schema": { "type": "string", "enum": ["true", "false"] },
+            "description": "Filter by active status."
+          },
+          {
+            "name": "currency",
+            "in": "query",
+            "schema": { "type": "string", "pattern": "^[A-Z]{3}$" },
+            "description": "Filter by ISO 4217 currency code (e.g. `BRL`, `USD`)."
+          },
+          {
+            "name": "billing_cycle",
+            "in": "query",
+            "schema": { "type": "string", "enum": ["monthly", "yearly", "weekly", "daily", "one_time"] },
+            "description": "Filter by billing cycle."
           }
         ],
         "responses": {

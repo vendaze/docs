@@ -84,6 +84,18 @@
             "in": "query",
             "schema": { "type": "string", "enum": ["true", "false"] },
             "description": "Filtrar por status de conclusão."
+          },
+          {
+            "name": "created_after",
+            "in": "query",
+            "schema": { "type": "string", "format": "date-time" },
+            "description": "Retorna tarefas criadas a partir desta data ISO 8601."
+          },
+          {
+            "name": "created_before",
+            "in": "query",
+            "schema": { "type": "string", "format": "date-time" },
+            "description": "Retorna tarefas criadas até esta data ISO 8601."
           }
         ],
         "responses": {

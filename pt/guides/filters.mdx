@@ -1,0 +1,172 @@
+---
+title: 'Filtros'
+description: 'Filtre resultados em endpoints de listagem usando parâmetros de consulta padronizados.'
+icon: 'filter'
+keywords: ['filtros', 'listagem', 'busca', 'full_name', 'email', 'created_after', 'Vendaze API']
+---
+
+Todos os endpoints de listagem aceitam filtros como parâmetros de consulta. Os filtros são opcionais e combinam entre si com lógica `AND`: todos os filtros enviados precisam ser satisfeitos para que um registro apareça no resultado.
+
+Filtros inválidos retornam `422` com o campo exato que falhou na validação.
+
+## Filtros por recurso
+
+### `GET /v1/people`
+
+| Parâmetro        | Tipo     | Comparação     | Descrição                                                          |
+| ---------------- | -------- | -------------- | ------------------------------------------------------------------ |
+| `full_name`      | string   | contém (ilike) | Filtra por nome. Não diferencia maiúsculas de minúsculas.          |
+| `email`          | string   | contém (ilike) | Filtra por endereço de email. Busca em todos os emails do contato. |
+| `company_id`     | UUID     | exato          | Retorna apenas pessoas vinculadas à empresa informada.             |
+| `created_after`  | ISO 8601 | `>=`           | Registros criados a partir desta data.                             |
+| `created_before` | ISO 8601 | `<=`           | Registros criados até esta data.                                   |
+| `updated_after`  | ISO 8601 | `>=`           | Registros atualizados a partir desta data.                         |
+| `updated_before` | ISO 8601 | `<=`           | Registros atualizados até esta data.                               |
+
+```bash
+# Pessoas da empresa X criadas em 2026
+curl "https://api.vendaze.com/v1/people?company_id=a1b2c3d4-e5f6-7890-abcd-ef1234567890&created_after=2026-01-01T00:00:00Z" \
+  -H "Authorization: Bearer {access_token}"
+```
+
+---
+
+### `GET /v1/companies`
+
+| Parâmetro        | Tipo     | Comparação     | Descrição                                                          |
+| ---------------- | -------- | -------------- | ------------------------------------------------------------------ |
+| `full_name`      | string   | contém (ilike) | Filtra por razão social. Não diferencia maiúsculas.                |
+| `email`          | string   | contém (ilike) | Filtra por endereço de email. Busca em todos os emails da empresa. |
+| `created_after`  | ISO 8601 | `>=`           | Registros criados a partir desta data.                             |
+| `created_before` | ISO 8601 | `<=`           | Registros criados até esta data.                                   |
+| `updated_after`  | ISO 8601 | `>=`           | Registros atualizados a partir desta data.                         |
+| `updated_before` | ISO 8601 | `<=`           | Registros atualizados até esta data.                               |
+
+```bash
+# Empresas com "tecnologia" no nome
+curl "https://api.vendaze.com/v1/companies?full_name=tecnologia" \
+  -H "Authorization: Bearer {access_token}"
+```
+
+---
+
+### `GET /v1/tasks`
+
+| Parâmetro        | Tipo     | Comparação | Descrição                                             |
+| ---------------- | -------- | ---------- | ----------------------------------------------------- |
+| `person_id`      | UUID     | exato      | Tarefas vinculadas à pessoa informada.                |
+| `company_id`     | UUID     | exato      | Tarefas vinculadas à empresa informada.               |
+| `deal_id`        | UUID     | exato      | Tarefas vinculadas ao negócio informado.              |
+| `type_id`        | UUID     | exato      | Tarefas do tipo informado.                            |
+| `priority`       | string   | exato      | `high`, `medium` ou `low`.                            |
+| `completed`      | boolean  | exato      | `true` para tarefas concluídas, `false` para abertas. |
+| `created_after`  | ISO 8601 | `>=`       | Tarefas criadas a partir desta data.                  |
+| `created_before` | ISO 8601 | `<=`       | Tarefas criadas até esta data.                        |
+
+```bash
+# Tarefas de alta prioridade não concluídas de uma pessoa
+curl "https://api.vendaze.com/v1/tasks?person_id=a1b2c3d4-e5f6-7890-abcd-ef1234567890&priority=high&completed=false" \
+  -H "Authorization: Bearer {access_token}"
+```
+
+---
+
+### `GET /v1/products`
+
+| Parâmetro       | Tipo    | Comparação     | Descrição                                                                 |
+| --------------- | ------- | -------------- | ------------------------------------------------------------------------- |
+| `name`          | string  | contém (ilike) | Filtra por nome do produto. Não diferencia maiúsculas.                    |
+| `is_active`     | boolean | exato          | `true` para produtos ativos, `false` para inativos.                       |
+| `currency`      | string  | exato          | Código ISO 4217 da moeda (ex: `BRL`, `USD`). Filtra por moeda do produto. |
+| `billing_cycle` | string  | exato          | `monthly`, `yearly`, `weekly`, `daily` ou `one_time`.                     |
+
+```bash
+# Produtos mensais ativos em BRL
+curl "https://api.vendaze.com/v1/products?is_active=true&currency=BRL&billing_cycle=monthly" \
+  -H "Authorization: Bearer {access_token}"
+```
+
+---
+
+### `GET /v1/tags`
+
+| Parâmetro | Tipo   | Comparação     | Descrição                                          |
+| --------- | ------ | -------------- | -------------------------------------------------- |
+| `name`    | string | contém (ilike) | Filtra por nome da tag. Não diferencia maiúsculas. |
+
+```bash
+curl "https://api.vendaze.com/v1/tags?name=vip" \
+  -H "Authorization: Bearer {access_token}"
+```
+
+---
+
+### `GET /v1/lists`
+
+| Parâmetro | Tipo   | Comparação     | Descrição                                            |
+| --------- | ------ | -------------- | ---------------------------------------------------- |
+| `name`    | string | contém (ilike) | Filtra por nome da lista. Não diferencia maiúsculas. |
+
+```bash
+curl "https://api.vendaze.com/v1/lists?name=leads" \
+  -H "Authorization: Bearer {access_token}"
+```
+
+---
+
+### `GET /v1/task-types`
+
+| Parâmetro | Tipo   | Comparação     | Descrição                                                       |
+| --------- | ------ | -------------- | --------------------------------------------------------------- |
+| `title`   | string | contém (ilike) | Filtra por título do tipo de tarefa. Não diferencia maiúsculas. |
+
+```bash
+curl "https://api.vendaze.com/v1/task-types?title=ligação" \
+  -H "Authorization: Bearer {access_token}"
+```
+
+---
+
+### `GET /v1/custom-fields`
+
+| Parâmetro        | Tipo    | Comparação | Descrição                                    |
+| ---------------- | ------- | ---------- | -------------------------------------------- |
+| `show_people`    | boolean | exato      | `true` para campos que aparecem em pessoas.  |
+| `show_companies` | boolean | exato      | `true` para campos que aparecem em empresas. |
+| `show_deals`     | boolean | exato      | `true` para campos que aparecem em negócios. |
+
+```bash
+# Campos adicionais visíveis em pessoas e empresas
+curl "https://api.vendaze.com/v1/custom-fields?show_people=true&show_companies=true" \
+  -H "Authorization: Bearer {access_token}"
+```
+
+---
+
+## Combinando filtros com paginação
+
+Filtros se combinam normalmente com os parâmetros de paginação (`page`, `per_page`, `order_by`, `order`). O `meta.total` na resposta sempre reflete o total de registros que satisfazem os filtros aplicados, não o total geral do workspace.
+
+```bash
+# Pessoas da empresa X, ordenadas por nome, página 2
+curl "https://api.vendaze.com/v1/people?company_id=a1b2c3d4-e5f6-7890-abcd-ef1234567890&order_by=full_name&order=asc&page=2&per_page=25" \
+  -H "Authorization: Bearer {access_token}"
+```
+
+## Erros de validação
+
+Filtros com valores inválidos retornam `422` identificando o campo:
+
+```json
+{
+  "error": {
+    "code": "validation_error",
+    "message": "Validation failed.",
+    "fields": {
+      "company_id": "Must be a valid UUID.",
+      "created_after": "Must be a valid ISO 8601 date."
+    },
+    "request_id": "550e8400-e29b-41d4-a716-446655440000"
+  }
+}
+```

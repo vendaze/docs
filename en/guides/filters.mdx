@@ -1,0 +1,173 @@
+---
+title: 'Filters'
+description: 'Filter results on list endpoints using standardized query parameters.'
+icon: 'filter'
+keywords:
+  ['filters', 'list endpoints', 'search', 'full_name', 'email', 'created_after', 'Vendaze API']
+---
+
+All list endpoints accept filters as query parameters. Filters are optional and combine with `AND` logic: every filter sent must be satisfied for a record to appear in the result.
+
+Invalid filters return `422` with the exact field that failed validation.
+
+## Filters by resource
+
+### `GET /v1/people`
+
+| Parameter        | Type     | Comparison       | Description                                                         |
+| ---------------- | -------- | ---------------- | ------------------------------------------------------------------- |
+| `full_name`      | string   | contains (ilike) | Filter by name. Case-insensitive.                                   |
+| `email`          | string   | contains (ilike) | Filter by email address. Searches across all emails on the contact. |
+| `company_id`     | UUID     | exact            | Returns only people linked to the given company.                    |
+| `created_after`  | ISO 8601 | `>=`             | Records created on or after this date.                              |
+| `created_before` | ISO 8601 | `<=`             | Records created on or before this date.                             |
+| `updated_after`  | ISO 8601 | `>=`             | Records updated on or after this date.                              |
+| `updated_before` | ISO 8601 | `<=`             | Records updated on or before this date.                             |
+
+```bash
+# People from company X created in 2026
+curl "https://api.vendaze.com/v1/people?company_id=a1b2c3d4-e5f6-7890-abcd-ef1234567890&created_after=2026-01-01T00:00:00Z" \
+  -H "Authorization: Bearer {access_token}"
+```
+
+---
+
+### `GET /v1/companies`
+
+| Parameter        | Type     | Comparison       | Description                                                         |
+| ---------------- | -------- | ---------------- | ------------------------------------------------------------------- |
+| `full_name`      | string   | contains (ilike) | Filter by company name. Case-insensitive.                           |
+| `email`          | string   | contains (ilike) | Filter by email address. Searches across all emails on the company. |
+| `created_after`  | ISO 8601 | `>=`             | Records created on or after this date.                              |
+| `created_before` | ISO 8601 | `<=`             | Records created on or before this date.                             |
+| `updated_after`  | ISO 8601 | `>=`             | Records updated on or after this date.                              |
+| `updated_before` | ISO 8601 | `<=`             | Records updated on or before this date.                             |
+
+```bash
+# Companies with "tech" in their name
+curl "https://api.vendaze.com/v1/companies?full_name=tech" \
+  -H "Authorization: Bearer {access_token}"
+```
+
+---
+
+### `GET /v1/tasks`
+
+| Parameter        | Type     | Comparison | Description                                        |
+| ---------------- | -------- | ---------- | -------------------------------------------------- |
+| `person_id`      | UUID     | exact      | Tasks linked to the given person.                  |
+| `company_id`     | UUID     | exact      | Tasks linked to the given company.                 |
+| `deal_id`        | UUID     | exact      | Tasks linked to the given deal.                    |
+| `type_id`        | UUID     | exact      | Tasks of the given type.                           |
+| `priority`       | string   | exact      | `high`, `medium`, or `low`.                        |
+| `completed`      | boolean  | exact      | `true` for completed tasks, `false` for open ones. |
+| `created_after`  | ISO 8601 | `>=`       | Tasks created on or after this date.               |
+| `created_before` | ISO 8601 | `<=`       | Tasks created on or before this date.              |
+
+```bash
+# High-priority open tasks for a person
+curl "https://api.vendaze.com/v1/tasks?person_id=a1b2c3d4-e5f6-7890-abcd-ef1234567890&priority=high&completed=false" \
+  -H "Authorization: Bearer {access_token}"
+```
+
+---
+
+### `GET /v1/products`
+
+| Parameter       | Type    | Comparison       | Description                                                               |
+| --------------- | ------- | ---------------- | ------------------------------------------------------------------------- |
+| `name`          | string  | contains (ilike) | Filter by product name. Case-insensitive.                                 |
+| `is_active`     | boolean | exact            | `true` for active products, `false` for inactive ones.                    |
+| `currency`      | string  | exact            | ISO 4217 currency code (e.g., `BRL`, `USD`). Filters by product currency. |
+| `billing_cycle` | string  | exact            | `monthly`, `yearly`, `weekly`, `daily`, or `one_time`.                    |
+
+```bash
+# Active monthly products in USD
+curl "https://api.vendaze.com/v1/products?is_active=true&currency=USD&billing_cycle=monthly" \
+  -H "Authorization: Bearer {access_token}"
+```
+
+---
+
+### `GET /v1/tags`
+
+| Parameter | Type   | Comparison       | Description                           |
+| --------- | ------ | ---------------- | ------------------------------------- |
+| `name`    | string | contains (ilike) | Filter by tag name. Case-insensitive. |
+
+```bash
+curl "https://api.vendaze.com/v1/tags?name=vip" \
+  -H "Authorization: Bearer {access_token}"
+```
+
+---
+
+### `GET /v1/lists`
+
+| Parameter | Type   | Comparison       | Description                            |
+| --------- | ------ | ---------------- | -------------------------------------- |
+| `name`    | string | contains (ilike) | Filter by list name. Case-insensitive. |
+
+```bash
+curl "https://api.vendaze.com/v1/lists?name=leads" \
+  -H "Authorization: Bearer {access_token}"
+```
+
+---
+
+### `GET /v1/task-types`
+
+| Parameter | Type   | Comparison       | Description                                  |
+| --------- | ------ | ---------------- | -------------------------------------------- |
+| `title`   | string | contains (ilike) | Filter by task type title. Case-insensitive. |
+
+```bash
+curl "https://api.vendaze.com/v1/task-types?title=call" \
+  -H "Authorization: Bearer {access_token}"
+```
+
+---
+
+### `GET /v1/custom-fields`
+
+| Parameter        | Type    | Comparison | Description                                 |
+| ---------------- | ------- | ---------- | ------------------------------------------- |
+| `show_people`    | boolean | exact      | `true` for fields that appear on people.    |
+| `show_companies` | boolean | exact      | `true` for fields that appear on companies. |
+| `show_deals`     | boolean | exact      | `true` for fields that appear on deals.     |
+
+```bash
+# Custom fields visible on both people and companies
+curl "https://api.vendaze.com/v1/custom-fields?show_people=true&show_companies=true" \
+  -H "Authorization: Bearer {access_token}"
+```
+
+---
+
+## Combining filters with pagination
+
+Filters combine normally with pagination parameters (`page`, `per_page`, `order_by`, `order`). The `meta.total` in the response always reflects the total number of records matching the applied filters, not the overall workspace total.
+
+```bash
+# People from company X, sorted by name, page 2
+curl "https://api.vendaze.com/v1/people?company_id=a1b2c3d4-e5f6-7890-abcd-ef1234567890&order_by=full_name&order=asc&page=2&per_page=25" \
+  -H "Authorization: Bearer {access_token}"
+```
+
+## Validation errors
+
+Filters with invalid values return `422` identifying the field:
+
+```json
+{
+  "error": {
+    "code": "validation_error",
+    "message": "Validation failed.",
+    "fields": {
+      "company_id": "Must be a valid UUID.",
+      "created_after": "Must be a valid ISO 8601 date."
+    },
+    "request_id": "550e8400-e29b-41d4-a716-446655440000"
+  }
+}
+```

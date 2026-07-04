@@ -613,7 +613,7 @@
               "maximum": 50,
               "default": 50
             },
-            "description": "Número de registros por página. Máximo: 50."
+            "description": "Quantidade de registros por página. Máximo: 50."
           },
           {
             "name": "order_by",
@@ -641,6 +641,67 @@
               "default": "desc"
             },
             "description": "Direção da ordenação."
+          },
+          {
+            "name": "full_name",
+            "in": "query",
+            "schema": {
+              "type": "string"
+            },
+            "description": "Filtrar por nome (contém, sem distinção de maiúsculas)."
+          },
+          {
+            "name": "email",
+            "in": "query",
+            "schema": {
+              "type": "string"
+            },
+            "description": "Filtrar por endereço de e-mail (contém, sem distinção de maiúsculas). Busca em todos os e-mails do contato."
+          },
+          {
+            "name": "company_id",
+            "in": "query",
+            "schema": {
+              "type": "string",
+              "format": "uuid"
+            },
+            "description": "Filtrar por UUID de empresa. Retorna apenas pessoas vinculadas à empresa informada."
+          },
+          {
+            "name": "created_after",
+            "in": "query",
+            "schema": {
+              "type": "string",
+              "format": "date-time"
+            },
+            "description": "Retorna registros criados a partir desta data ISO 8601."
+          },
+          {
+            "name": "created_before",
+            "in": "query",
+            "schema": {
+              "type": "string",
+              "format": "date-time"
+            },
+            "description": "Retorna registros criados até esta data ISO 8601."
+          },
+          {
+            "name": "updated_after",
+            "in": "query",
+            "schema": {
+              "type": "string",
+              "format": "date-time"
+            },
+            "description": "Retorna registros atualizados a partir desta data ISO 8601."
+          },
+          {
+            "name": "updated_before",
+            "in": "query",
+            "schema": {
+              "type": "string",
+              "format": "date-time"
+            },
+            "description": "Retorna registros atualizados até esta data ISO 8601."
           }
         ],
         "responses": {
@@ -944,6 +1005,58 @@
               "default": "desc"
             },
             "description": "Direção da ordenação."
+          },
+          {
+            "name": "full_name",
+            "in": "query",
+            "schema": {
+              "type": "string"
+            },
+            "description": "Filtrar por nome da empresa (contém, sem distinção de maiúsculas)."
+          },
+          {
+            "name": "email",
+            "in": "query",
+            "schema": {
+              "type": "string"
+            },
+            "description": "Filtrar por endereço de e-mail (contém, sem distinção de maiúsculas). Busca em todos os e-mails da empresa."
+          },
+          {
+            "name": "created_after",
+            "in": "query",
+            "schema": {
+              "type": "string",
+              "format": "date-time"
+            },
+            "description": "Retorna registros criados a partir desta data ISO 8601."
+          },
+          {
+            "name": "created_before",
+            "in": "query",
+            "schema": {
+              "type": "string",
+              "format": "date-time"
+            },
+            "description": "Retorna registros criados até esta data ISO 8601."
+          },
+          {
+            "name": "updated_after",
+            "in": "query",
+            "schema": {
+              "type": "string",
+              "format": "date-time"
+            },
+            "description": "Retorna registros atualizados a partir desta data ISO 8601."
+          },
+          {
+            "name": "updated_before",
+            "in": "query",
+            "schema": {
+              "type": "string",
+              "format": "date-time"
+            },
+            "description": "Retorna registros atualizados até esta data ISO 8601."
           }
         ],
         "responses": {
@@ -1518,6 +1631,24 @@
               ]
             },
             "description": "Filtrar por status de conclusão."
+          },
+          {
+            "name": "created_after",
+            "in": "query",
+            "schema": {
+              "type": "string",
+              "format": "date-time"
+            },
+            "description": "Retorna tarefas criadas a partir desta data ISO 8601."
+          },
+          {
+            "name": "created_before",
+            "in": "query",
+            "schema": {
+              "type": "string",
+              "format": "date-time"
+            },
+            "description": "Retorna tarefas criadas até esta data ISO 8601."
           }
         ],
         "responses": {
@@ -1785,6 +1916,14 @@
               "default": "desc"
             },
             "description": "Direção da ordenação."
+          },
+          {
+            "name": "title",
+            "in": "query",
+            "schema": {
+              "type": "string"
+            },
+            "description": "Filtrar por título do tipo de tarefa (contém, sem distinção de maiúsculas)."
           }
         ],
         "responses": {
@@ -2042,6 +2181,50 @@
               "default": "desc"
             },
             "description": "Direção da ordenação."
+          },
+          {
+            "name": "name",
+            "in": "query",
+            "schema": {
+              "type": "string"
+            },
+            "description": "Filtrar por nome do produto (contém, sem distinção de maiúsculas)."
+          },
+          {
+            "name": "is_active",
+            "in": "query",
+            "schema": {
+              "type": "string",
+              "enum": [
+                "true",
+                "false"
+              ]
+            },
+            "description": "Filtrar por status de ativo."
+          },
+          {
+            "name": "currency",
+            "in": "query",
+            "schema": {
+              "type": "string",
+              "pattern": "^[A-Z]{3}$"
+            },
+            "description": "Filtrar por código ISO 4217 da moeda (ex: `BRL`, `USD`)."
+          },
+          {
+            "name": "billing_cycle",
+            "in": "query",
+            "schema": {
+              "type": "string",
+              "enum": [
+                "monthly",
+                "yearly",
+                "weekly",
+                "daily",
+                "one_time"
+              ]
+            },
+            "description": "Filtrar por ciclo de cobrança."
           }
         ],
         "responses": {
@@ -2340,6 +2523,14 @@
               "default": "desc"
             },
             "description": "Direção da ordenação."
+          },
+          {
+            "name": "name",
+            "in": "query",
+            "schema": {
+              "type": "string"
+            },
+            "description": "Filtrar por nome da tag (contém, sem distinção de maiúsculas)."
           }
         ],
         "responses": {
@@ -2634,6 +2825,14 @@
               "default": "desc"
             },
             "description": "Direção da ordenação."
+          },
+          {
+            "name": "name",
+            "in": "query",
+            "schema": {
+              "type": "string"
+            },
+            "description": "Filtrar por nome da lista (contém, sem distinção de maiúsculas)."
           }
         ],
         "responses": {

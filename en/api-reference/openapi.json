@@ -642,6 +642,67 @@
               "default": "desc"
             },
             "description": "Sort direction."
+          },
+          {
+            "name": "full_name",
+            "in": "query",
+            "schema": {
+              "type": "string"
+            },
+            "description": "Filter by name (case-insensitive contains)."
+          },
+          {
+            "name": "email",
+            "in": "query",
+            "schema": {
+              "type": "string"
+            },
+            "description": "Filter by email address (case-insensitive contains). Searches across all emails on the contact."
+          },
+          {
+            "name": "company_id",
+            "in": "query",
+            "schema": {
+              "type": "string",
+              "format": "uuid"
+            },
+            "description": "Filter by company UUID. Returns only people linked to this company."
+          },
+          {
+            "name": "created_after",
+            "in": "query",
+            "schema": {
+              "type": "string",
+              "format": "date-time"
+            },
+            "description": "Return records created on or after this ISO 8601 date."
+          },
+          {
+            "name": "created_before",
+            "in": "query",
+            "schema": {
+              "type": "string",
+              "format": "date-time"
+            },
+            "description": "Return records created on or before this ISO 8601 date."
+          },
+          {
+            "name": "updated_after",
+            "in": "query",
+            "schema": {
+              "type": "string",
+              "format": "date-time"
+            },
+            "description": "Return records updated on or after this ISO 8601 date."
+          },
+          {
+            "name": "updated_before",
+            "in": "query",
+            "schema": {
+              "type": "string",
+              "format": "date-time"
+            },
+            "description": "Return records updated on or before this ISO 8601 date."
           }
         ],
         "responses": {
@@ -945,6 +1006,58 @@
               "default": "desc"
             },
             "description": "Sort direction."
+          },
+          {
+            "name": "full_name",
+            "in": "query",
+            "schema": {
+              "type": "string"
+            },
+            "description": "Filter by company name (case-insensitive contains)."
+          },
+          {
+            "name": "email",
+            "in": "query",
+            "schema": {
+              "type": "string"
+            },
+            "description": "Filter by email address (case-insensitive contains). Searches across all emails on the company."
+          },
+          {
+            "name": "created_after",
+            "in": "query",
+            "schema": {
+              "type": "string",
+              "format": "date-time"
+            },
+            "description": "Return records created on or after this ISO 8601 date."
+          },
+          {
+            "name": "created_before",
+            "in": "query",
+            "schema": {
+              "type": "string",
+              "format": "date-time"
+            },
+            "description": "Return records created on or before this ISO 8601 date."
+          },
+          {
+            "name": "updated_after",
+            "in": "query",
+            "schema": {
+              "type": "string",
+              "format": "date-time"
+            },
+            "description": "Return records updated on or after this ISO 8601 date."
+          },
+          {
+            "name": "updated_before",
+            "in": "query",
+            "schema": {
+              "type": "string",
+              "format": "date-time"
+            },
+            "description": "Return records updated on or before this ISO 8601 date."
           }
         ],
         "responses": {
@@ -1519,6 +1632,24 @@
               ]
             },
             "description": "Filter by completion status."
+          },
+          {
+            "name": "created_after",
+            "in": "query",
+            "schema": {
+              "type": "string",
+              "format": "date-time"
+            },
+            "description": "Return tasks created on or after this ISO 8601 date."
+          },
+          {
+            "name": "created_before",
+            "in": "query",
+            "schema": {
+              "type": "string",
+              "format": "date-time"
+            },
+            "description": "Return tasks created on or before this ISO 8601 date."
           }
         ],
         "responses": {
@@ -1786,6 +1917,14 @@
               "default": "desc"
             },
             "description": "Sort direction."
+          },
+          {
+            "name": "title",
+            "in": "query",
+            "schema": {
+              "type": "string"
+            },
+            "description": "Filter by task type title (case-insensitive contains)."
           }
         ],
         "responses": {
@@ -2043,6 +2182,50 @@
               "default": "desc"
             },
             "description": "Sort direction."
+          },
+          {
+            "name": "name",
+            "in": "query",
+            "schema": {
+              "type": "string"
+            },
+            "description": "Filter by product name (case-insensitive contains)."
+          },
+          {
+            "name": "is_active",
+            "in": "query",
+            "schema": {
+              "type": "string",
+              "enum": [
+                "true",
+                "false"
+              ]
+            },
+            "description": "Filter by active status."
+          },
+          {
+            "name": "currency",
+            "in": "query",
+            "schema": {
+              "type": "string",
+              "pattern": "^[A-Z]{3}$"
+            },
+            "description": "Filter by ISO 4217 currency code (e.g. `BRL`, `USD`)."
+          },
+          {
+            "name": "billing_cycle",
+            "in": "query",
+            "schema": {
+              "type": "string",
+              "enum": [
+                "monthly",
+                "yearly",
+                "weekly",
+                "daily",
+                "one_time"
+              ]
+            },
+            "description": "Filter by billing cycle."
           }
         ],
         "responses": {
@@ -2341,6 +2524,14 @@
               "default": "desc"
             },
             "description": "Sort direction."
+          },
+          {
+            "name": "name",
+            "in": "query",
+            "schema": {
+              "type": "string"
+            },
+            "description": "Filter by tag name (case-insensitive contains)."
           }
         ],
         "responses": {
@@ -2635,6 +2826,14 @@
               "default": "desc"
             },
             "description": "Sort direction."
+          },
+          {
+            "name": "name",
+            "in": "query",
+            "schema": {
+              "type": "string"
+            },
+            "description": "Filter by list name (case-insensitive contains)."
           }
         ],
         "responses": {

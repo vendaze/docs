@@ -56,6 +56,30 @@
             "in": "query",
             "schema": { "type": "string", "enum": ["asc", "desc"], "default": "desc" },
             "description": "Direção da ordenação."
+          },
+          {
+            "name": "name",
+            "in": "query",
+            "schema": { "type": "string" },
+            "description": "Filtrar por nome do produto (contém, sem distinção de maiúsculas)."
+          },
+          {
+            "name": "is_active",
+            "in": "query",
+            "schema": { "type": "string", "enum": ["true", "false"] },
+            "description": "Filtrar por status de ativo."
+          },
+          {
+            "name": "currency",
+            "in": "query",
+            "schema": { "type": "string", "pattern": "^[A-Z]{3}$" },
+            "description": "Filtrar por código ISO 4217 da moeda (ex: `BRL`, `USD`)."
+          },
+          {
+            "name": "billing_cycle",
+            "in": "query",
+            "schema": { "type": "string", "enum": ["monthly", "yearly", "weekly", "daily", "one_time"] },
+            "description": "Filtrar por ciclo de cobrança."
           }
         ],
         "responses": {

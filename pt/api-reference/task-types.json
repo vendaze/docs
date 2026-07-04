@@ -40,6 +40,12 @@
             "in": "query",
             "schema": { "type": "string", "enum": ["asc", "desc"], "default": "desc" },
             "description": "Direção da ordenação."
+          },
+          {
+            "name": "title",
+            "in": "query",
+            "schema": { "type": "string" },
+            "description": "Filtrar por título do tipo de tarefa (contém, sem distinção de maiúsculas)."
           }
         ],
         "responses": {

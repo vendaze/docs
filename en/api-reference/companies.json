@@ -56,6 +56,42 @@
             "in": "query",
             "schema": { "type": "string", "enum": ["asc", "desc"], "default": "desc" },
             "description": "Sort direction."
+          },
+          {
+            "name": "full_name",
+            "in": "query",
+            "schema": { "type": "string" },
+            "description": "Filter by company name (case-insensitive contains)."
+          },
+          {
+            "name": "email",
+            "in": "query",
+            "schema": { "type": "string" },
+            "description": "Filter by email address (case-insensitive contains). Searches across all emails on the company."
+          },
+          {
+            "name": "created_after",
+            "in": "query",
+            "schema": { "type": "string", "format": "date-time" },
+            "description": "Return records created on or after this ISO 8601 date."
+          },
+          {
+            "name": "created_before",
+            "in": "query",
+            "schema": { "type": "string", "format": "date-time" },
+            "description": "Return records created on or before this ISO 8601 date."
+          },
+          {
+            "name": "updated_after",
+            "in": "query",
+            "schema": { "type": "string", "format": "date-time" },
+            "description": "Return records updated on or after this ISO 8601 date."
+          },
+          {
+            "name": "updated_before",
+            "in": "query",
+            "schema": { "type": "string", "format": "date-time" },
+            "description": "Return records updated on or before this ISO 8601 date."
           }
         ],
         "responses": {

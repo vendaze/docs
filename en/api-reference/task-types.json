@@ -43,6 +43,12 @@
             "in": "query",
             "schema": { "type": "string", "enum": ["asc", "desc"], "default": "desc" },
             "description": "Sort direction."
+          },
+          {
+            "name": "title",
+            "in": "query",
+            "schema": { "type": "string" },
+            "description": "Filter by task type title (case-insensitive contains)."
           }
         ],
         "responses": {

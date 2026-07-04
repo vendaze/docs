@@ -84,6 +84,18 @@
             "in": "query",
             "schema": { "type": "string", "enum": ["true", "false"] },
             "description": "Filter by completion status."
+          },
+          {
+            "name": "created_after",
+            "in": "query",
+            "schema": { "type": "string", "format": "date-time" },
+            "description": "Return tasks created on or after this ISO 8601 date."
+          },
+          {
+            "name": "created_before",
+            "in": "query",
+            "schema": { "type": "string", "format": "date-time" },
+            "description": "Return tasks created on or before this ISO 8601 date."
           }
         ],
         "responses": {

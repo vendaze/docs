@@ -43,7 +43,7 @@
             "name": "per_page",
             "in": "query",
             "schema": { "type": "integer", "minimum": 1, "maximum": 50, "default": 50 },
-            "description": "Número de registros por página. Máximo: 50."
+            "description": "Quantidade de registros por página. Máximo: 50."
           },
           {
             "name": "order_by",
@@ -56,6 +56,48 @@
             "in": "query",
             "schema": { "type": "string", "enum": ["asc", "desc"], "default": "desc" },
             "description": "Direção da ordenação."
+          },
+          {
+            "name": "full_name",
+            "in": "query",
+            "schema": { "type": "string" },
+            "description": "Filtrar por nome (contém, sem distinção de maiúsculas)."
+          },
+          {
+            "name": "email",
+            "in": "query",
+            "schema": { "type": "string" },
+            "description": "Filtrar por endereço de e-mail (contém, sem distinção de maiúsculas). Busca em todos os e-mails do contato."
+          },
+          {
+            "name": "company_id",
+            "in": "query",
+            "schema": { "type": "string", "format": "uuid" },
+            "description": "Filtrar por UUID de empresa. Retorna apenas pessoas vinculadas à empresa informada."
+          },
+          {
+            "name": "created_after",
+            "in": "query",
+            "schema": { "type": "string", "format": "date-time" },
+            "description": "Retorna registros criados a partir desta data ISO 8601."
+          },
+          {
+            "name": "created_before",
+            "in": "query",
+            "schema": { "type": "string", "format": "date-time" },
+            "description": "Retorna registros criados até esta data ISO 8601."
+          },
+          {
+            "name": "updated_after",
+            "in": "query",
+            "schema": { "type": "string", "format": "date-time" },
+            "description": "Retorna registros atualizados a partir desta data ISO 8601."
+          },
+          {
+            "name": "updated_before",
+            "in": "query",
+            "schema": { "type": "string", "format": "date-time" },
+            "description": "Retorna registros atualizados até esta data ISO 8601."
           }
         ],
         "responses": {
