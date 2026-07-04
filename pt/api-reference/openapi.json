@@ -2289,7 +2289,7 @@
       "get": {
         "operationId": "listTags",
         "summary": "Listar tags",
-        "description": "Retorna uma lista paginada das tags do workspace.\n\n<Accordion title=\"Escopo necessário\">\nQualquer escopo válido da Vendaze.\n</Accordion>",
+        "description": "Retorna uma lista paginada das tags do workspace.\n\n<Accordion title=\"Escopo necessário\">\n`tags:read`\n</Accordion>",
         "tags": [
           "Tags"
         ],
@@ -2391,7 +2391,7 @@
       "post": {
         "operationId": "createTag",
         "summary": "Criar tag",
-        "description": "Cria uma nova tag no workspace.\n\n<Accordion title=\"Escopo necessário\">\n`people:write`, `companies:write` ou `deals:write`\n</Accordion>",
+        "description": "Cria uma nova tag no workspace.\n\n<Accordion title=\"Escopo necessário\">\n`tags:write`\n</Accordion>",
         "tags": [
           "Tags"
         ],
@@ -2444,7 +2444,7 @@
       "get": {
         "operationId": "getTag",
         "summary": "Buscar tag",
-        "description": "Retorna uma tag pelo `id` (UUID) ou `key` (string).\n\n<Accordion title=\"Escopo necessário\">\nQualquer escopo válido da Vendaze.\n</Accordion>",
+        "description": "Retorna uma tag pelo `id` (UUID) ou `key` (string).\n\n<Accordion title=\"Escopo necessário\">\n`tags:read`\n</Accordion>",
         "tags": [
           "Tags"
         ],
@@ -2481,7 +2481,7 @@
       "patch": {
         "operationId": "updateTag",
         "summary": "Atualizar tag",
-        "description": "Atualiza uma tag pelo `id` (UUID) ou `key` (string). Apenas os campos enviados no body são alterados.\n\n<Accordion title=\"Escopo necessário\">\n`people:write`, `companies:write` ou `deals:write`\n</Accordion>",
+        "description": "Atualiza uma tag pelo `id` (UUID) ou `key` (string). Apenas os campos enviados no body são alterados.\n\n<Accordion title=\"Escopo necessário\">\n`tags:write`\n</Accordion>",
         "tags": [
           "Tags"
         ],
@@ -2540,7 +2540,7 @@
       "delete": {
         "operationId": "deleteTag",
         "summary": "Deletar tag",
-        "description": "Realiza o soft delete de uma tag pelo `id` (UUID) ou `key` (string).\n\n<Accordion title=\"Escopo necessário\">\n`people:write`, `companies:write` ou `deals:write`\n</Accordion>",
+        "description": "Realiza o soft delete de uma tag pelo `id` (UUID) ou `key` (string).\n\n<Accordion title=\"Escopo necessário\">\n`tags:write`\n</Accordion>",
         "tags": [
           "Tags"
         ],
@@ -2583,7 +2583,7 @@
       "get": {
         "operationId": "listLists",
         "summary": "Listar listas",
-        "description": "Retorna uma lista paginada das listas de contatos do workspace.\n\n<Accordion title=\"Escopo necessário\">\n`people:read` ou `companies:read`\n</Accordion>",
+        "description": "Retorna uma lista paginada das listas de contatos do workspace.\n\n<Accordion title=\"Escopo necessário\">\n`lists:read`\n</Accordion>",
         "tags": [
           "Listas"
         ],
@@ -2684,7 +2684,7 @@
       "post": {
         "operationId": "createList",
         "summary": "Criar lista",
-        "description": "Cria uma nova lista de contatos no workspace.\n\n<Accordion title=\"Escopo necessário\">\n`people:write` ou `companies:write`\n</Accordion>",
+        "description": "Cria uma nova lista de contatos no workspace.\n\n<Accordion title=\"Escopo necessário\">\n`lists:write`\n</Accordion>",
         "tags": [
           "Listas"
         ],
@@ -2734,7 +2734,7 @@
       "patch": {
         "operationId": "updateList",
         "summary": "Atualizar lista",
-        "description": "Atualiza uma lista de contatos. Apenas os campos enviados no body são alterados.\n\n<Accordion title=\"Escopo necessário\">\n`people:write` ou `companies:write`\n</Accordion>",
+        "description": "Atualiza uma lista de contatos. Apenas os campos enviados no body são alterados.\n\n<Accordion title=\"Escopo necessário\">\n`lists:write`\n</Accordion>",
         "tags": [
           "Listas"
         ],
@@ -2790,7 +2790,7 @@
       "delete": {
         "operationId": "deleteList",
         "summary": "Deletar lista",
-        "description": "Realiza o soft delete de uma lista de contatos. O registro não ficará mais acessível via API.\n\n<Accordion title=\"Escopo necessário\">\n`people:write` ou `companies:write`\n</Accordion>",
+        "description": "Realiza o soft delete de uma lista de contatos. O registro não ficará mais acessível via API.\n\n<Accordion title=\"Escopo necessário\">\n`lists:write`\n</Accordion>",
         "tags": [
           "Listas"
         ],

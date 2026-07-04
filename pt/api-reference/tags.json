@@ -30,7 +30,7 @@
       "get": {
         "operationId": "listTags",
         "summary": "Listar tags",
-        "description": "Retorna uma lista paginada das tags do workspace.\n\n<Accordion title=\"Escopo necessário\">\nQualquer escopo válido da Vendaze.\n</Accordion>",
+        "description": "Retorna uma lista paginada das tags do workspace.\n\n<Accordion title=\"Escopo necessário\">\n`tags:read`\n</Accordion>",
         "tags": ["Tags"],
         "parameters": [
           {
@@ -95,7 +95,7 @@
       "post": {
         "operationId": "createTag",
         "summary": "Criar tag",
-        "description": "Cria uma nova tag no workspace.\n\n<Accordion title=\"Escopo necessário\">\n`people:write`, `companies:write` ou `deals:write`\n</Accordion>",
+        "description": "Cria uma nova tag no workspace.\n\n<Accordion title=\"Escopo necessário\">\n`tags:write`\n</Accordion>",
         "tags": ["Tags"],
         "requestBody": {
           "required": true,
@@ -128,7 +128,7 @@
       "get": {
         "operationId": "getTag",
         "summary": "Buscar tag",
-        "description": "Retorna uma tag pelo `id` (UUID) ou `key` (string).\n\n<Accordion title=\"Escopo necessário\">\nQualquer escopo válido da Vendaze.\n</Accordion>",
+        "description": "Retorna uma tag pelo `id` (UUID) ou `key` (string).\n\n<Accordion title=\"Escopo necessário\">\n`tags:read`\n</Accordion>",
         "tags": ["Tags"],
         "parameters": [{ "$ref": "#/components/parameters/identifier" }],
         "responses": {
@@ -149,7 +149,7 @@
       "patch": {
         "operationId": "updateTag",
         "summary": "Atualizar tag",
-        "description": "Atualiza uma tag pelo `id` (UUID) ou `key` (string). Apenas os campos enviados no body são alterados.\n\n<Accordion title=\"Escopo necessário\">\n`people:write`, `companies:write` ou `deals:write`\n</Accordion>",
+        "description": "Atualiza uma tag pelo `id` (UUID) ou `key` (string). Apenas os campos enviados no body são alterados.\n\n<Accordion title=\"Escopo necessário\">\n`tags:write`\n</Accordion>",
         "tags": ["Tags"],
         "parameters": [{ "$ref": "#/components/parameters/identifier" }],
         "requestBody": {
@@ -182,7 +182,7 @@
       "delete": {
         "operationId": "deleteTag",
         "summary": "Deletar tag",
-        "description": "Realiza o soft delete de uma tag pelo `id` (UUID) ou `key` (string).\n\n<Accordion title=\"Escopo necessário\">\n`people:write`, `companies:write` ou `deals:write`\n</Accordion>",
+        "description": "Realiza o soft delete de uma tag pelo `id` (UUID) ou `key` (string).\n\n<Accordion title=\"Escopo necessário\">\n`tags:write`\n</Accordion>",
         "tags": ["Tags"],
         "parameters": [{ "$ref": "#/components/parameters/identifier" }],
         "responses": {

@@ -2290,7 +2290,7 @@
       "get": {
         "operationId": "listTags",
         "summary": "List tags",
-        "description": "Returns a paginated list of tags in the workspace.\n\n<Accordion title=\"Required scope\">\nAny valid Vendaze scope.\n</Accordion>",
+        "description": "Returns a paginated list of tags in the workspace.\n\n<Accordion title=\"Required scope\">\n`tags:read`\n</Accordion>",
         "tags": [
           "Tags"
         ],
@@ -2392,7 +2392,7 @@
       "post": {
         "operationId": "createTag",
         "summary": "Create a tag",
-        "description": "Creates a new tag in the workspace.\n\n<Accordion title=\"Required scope\">\n`people:write`, `companies:write`, or `deals:write`\n</Accordion>",
+        "description": "Creates a new tag in the workspace.\n\n<Accordion title=\"Required scope\">\n`tags:write`\n</Accordion>",
         "tags": [
           "Tags"
         ],
@@ -2445,7 +2445,7 @@
       "get": {
         "operationId": "getTag",
         "summary": "Get a tag",
-        "description": "Returns a tag by its `id` (UUID) or `key` (string).\n\n<Accordion title=\"Required scope\">\nAny valid Vendaze scope.\n</Accordion>",
+        "description": "Returns a tag by its `id` (UUID) or `key` (string).\n\n<Accordion title=\"Required scope\">\n`tags:read`\n</Accordion>",
         "tags": [
           "Tags"
         ],
@@ -2482,7 +2482,7 @@
       "patch": {
         "operationId": "updateTag",
         "summary": "Update a tag",
-        "description": "Updates a tag by its `id` (UUID) or `key` (string). Only fields included in the body are modified.\n\n<Accordion title=\"Required scope\">\n`people:write`, `companies:write`, or `deals:write`\n</Accordion>",
+        "description": "Updates a tag by its `id` (UUID) or `key` (string). Only fields included in the body are modified.\n\n<Accordion title=\"Required scope\">\n`tags:write`\n</Accordion>",
         "tags": [
           "Tags"
         ],
@@ -2541,7 +2541,7 @@
       "delete": {
         "operationId": "deleteTag",
         "summary": "Delete a tag",
-        "description": "Soft-deletes a tag by its `id` (UUID) or `key` (string).\n\n<Accordion title=\"Required scope\">\n`people:write`, `companies:write`, or `deals:write`\n</Accordion>",
+        "description": "Soft-deletes a tag by its `id` (UUID) or `key` (string).\n\n<Accordion title=\"Required scope\">\n`tags:write`\n</Accordion>",
         "tags": [
           "Tags"
         ],
@@ -2584,7 +2584,7 @@
       "get": {
         "operationId": "listLists",
         "summary": "List lists",
-        "description": "Returns a paginated list of contact lists in the workspace.\n\n<Accordion title=\"Required scope\">\n`people:read` or `companies:read`\n</Accordion>",
+        "description": "Returns a paginated list of contact lists in the workspace.\n\n<Accordion title=\"Required scope\">\n`lists:read`\n</Accordion>",
         "tags": [
           "Lists"
         ],
@@ -2685,7 +2685,7 @@
       "post": {
         "operationId": "createList",
         "summary": "Create a list",
-        "description": "Creates a new contact list in the workspace.\n\n<Accordion title=\"Required scope\">\n`people:write` or `companies:write`\n</Accordion>",
+        "description": "Creates a new contact list in the workspace.\n\n<Accordion title=\"Required scope\">\n`lists:write`\n</Accordion>",
         "tags": [
           "Lists"
         ],
@@ -2735,7 +2735,7 @@
       "patch": {
         "operationId": "updateList",
         "summary": "Update a list",
-        "description": "Updates a contact list. Only fields included in the body are modified.\n\n<Accordion title=\"Required scope\">\n`people:write` or `companies:write`\n</Accordion>",
+        "description": "Updates a contact list. Only fields included in the body are modified.\n\n<Accordion title=\"Required scope\">\n`lists:write`\n</Accordion>",
         "tags": [
           "Lists"
         ],
@@ -2791,7 +2791,7 @@
       "delete": {
         "operationId": "deleteList",
         "summary": "Delete a list",
-        "description": "Soft-deletes a contact list. The record is no longer accessible via the API.\n\n<Accordion title=\"Required scope\">\n`people:write` or `companies:write`\n</Accordion>",
+        "description": "Soft-deletes a contact list. The record is no longer accessible via the API.\n\n<Accordion title=\"Required scope\">\n`lists:write`\n</Accordion>",
         "tags": [
           "Lists"
         ],

@@ -22,7 +22,7 @@
       "get": {
         "operationId": "listLists",
         "summary": "List lists",
-        "description": "Returns a paginated list of contact lists in the workspace.\n\n<Accordion title=\"Required scope\">\n`people:read` or `companies:read`\n</Accordion>",
+        "description": "Returns a paginated list of contact lists in the workspace.\n\n<Accordion title=\"Required scope\">\n`lists:read`\n</Accordion>",
         "tags": ["Lists"],
         "parameters": [
           {
@@ -86,7 +86,7 @@
       "post": {
         "operationId": "createList",
         "summary": "Create a list",
-        "description": "Creates a new contact list in the workspace.\n\n<Accordion title=\"Required scope\">\n`people:write` or `companies:write`\n</Accordion>",
+        "description": "Creates a new contact list in the workspace.\n\n<Accordion title=\"Required scope\">\n`lists:write`\n</Accordion>",
         "tags": ["Lists"],
         "requestBody": {
           "required": true,
@@ -118,7 +118,7 @@
       "patch": {
         "operationId": "updateList",
         "summary": "Update a list",
-        "description": "Updates a contact list. Only fields included in the body are modified.\n\n<Accordion title=\"Required scope\">\n`people:write` or `companies:write`\n</Accordion>",
+        "description": "Updates a contact list. Only fields included in the body are modified.\n\n<Accordion title=\"Required scope\">\n`lists:write`\n</Accordion>",
         "tags": ["Lists"],
         "parameters": [{ "$ref": "#/components/parameters/id" }],
         "requestBody": {
@@ -150,7 +150,7 @@
       "delete": {
         "operationId": "deleteList",
         "summary": "Delete a list",
-        "description": "Soft-deletes a contact list. The record is no longer accessible via the API.\n\n<Accordion title=\"Required scope\">\n`people:write` or `companies:write`\n</Accordion>",
+        "description": "Soft-deletes a contact list. The record is no longer accessible via the API.\n\n<Accordion title=\"Required scope\">\n`lists:write`\n</Accordion>",
         "tags": ["Lists"],
         "parameters": [{ "$ref": "#/components/parameters/id" }],
         "responses": {
