@@ -121,7 +121,6 @@
           "401": { "$ref": "#/components/responses/Unauthorized" },
           "403": { "$ref": "#/components/responses/InsufficientScope" },
           "404": { "$ref": "#/components/responses/NotFound" },
-          "409": { "$ref": "#/components/responses/Conflict" },
           "422": { "$ref": "#/components/responses/ValidationError" },
           "429": { "$ref": "#/components/responses/RateLimitExceeded" },
           "500": { "$ref": "#/components/responses/InternalError" }
@@ -384,14 +383,6 @@
             "pattern": "^#[0-9a-fA-F]{6}$",
             "description": "Nova cor de exibição em formato hex RGB.",
             "example": "#10b981"
-          },
-          "key": {
-            "type": "string",
-            "minLength": 1,
-            "maxLength": 40,
-            "pattern": "^[a-z0-9]+(_[a-z0-9]+)*$",
-            "description": "Nova chave identificadora. Apenas letras minúsculas, dígitos e underscores.",
-            "example": "reuniao"
           }
         }
       }

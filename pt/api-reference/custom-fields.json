@@ -174,7 +174,6 @@
           "401": { "$ref": "#/components/responses/Unauthorized" },
           "403": { "$ref": "#/components/responses/InsufficientScope" },
           "404": { "$ref": "#/components/responses/NotFound" },
-          "409": { "$ref": "#/components/responses/Conflict" },
           "422": { "$ref": "#/components/responses/ValidationError" },
           "429": { "$ref": "#/components/responses/RateLimitExceeded" },
           "500": { "$ref": "#/components/responses/InternalError" }
@@ -549,14 +548,6 @@
             "maxLength": 40,
             "description": "Novo rótulo.",
             "example": "CPF do Responsável"
-          },
-          "key": {
-            "type": "string",
-            "minLength": 1,
-            "maxLength": 35,
-            "pattern": "^[a-z0-9]+(_[a-z0-9]+)*$",
-            "description": "Nova chave. Não pode conflitar com uma chave existente no workspace.",
-            "example": "cpf_responsavel"
           },
           "type": {
             "type": "string",

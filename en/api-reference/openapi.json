@@ -2073,9 +2073,6 @@
           "404": {
             "$ref": "#/components/responses/NotFound"
           },
-          "409": {
-            "$ref": "#/components/responses/Conflict"
-          },
           "422": {
             "$ref": "#/components/responses/ValidationError"
           },
@@ -2717,9 +2714,6 @@
           "404": {
             "$ref": "#/components/responses/NotFound"
           },
-          "409": {
-            "$ref": "#/components/responses/Conflict"
-          },
           "422": {
             "$ref": "#/components/responses/ValidationError"
           },
@@ -3274,9 +3268,6 @@
           },
           "404": {
             "$ref": "#/components/responses/NotFound"
-          },
-          "409": {
-            "$ref": "#/components/responses/Conflict"
           },
           "422": {
             "$ref": "#/components/responses/ValidationError"
@@ -5971,14 +5962,6 @@
             "pattern": "^#[0-9a-fA-F]{6}$",
             "description": "New display color in hex RGB format.",
             "example": "#10b981"
-          },
-          "key": {
-            "type": "string",
-            "minLength": 1,
-            "maxLength": 40,
-            "pattern": "^[a-z0-9]+(_[a-z0-9]+)*$",
-            "description": "New identifier key. Lowercase letters, digits, and underscores only.",
-            "example": "phone_call"
           }
         }
       },
@@ -6254,14 +6237,6 @@
             "maxLength": 30,
             "description": "New display name.",
             "example": "Cold Lead"
-          },
-          "key": {
-            "type": "string",
-            "minLength": 1,
-            "maxLength": 30,
-            "pattern": "^[a-z0-9]+(_[a-z0-9]+)*$",
-            "description": "New unique key. Must not conflict with an existing key in the workspace.",
-            "example": "cold_lead"
           },
           "color_text": {
             "type": "string",
@@ -6567,14 +6542,6 @@
             "maxLength": 40,
             "description": "New display label.",
             "example": "Federal Tax ID"
-          },
-          "key": {
-            "type": "string",
-            "minLength": 1,
-            "maxLength": 35,
-            "pattern": "^[a-z0-9]+(_[a-z0-9]+)*$",
-            "description": "New unique key. Must not conflict with an existing key in the workspace.",
-            "example": "federal_tax_id"
           },
           "type": {
             "type": "string",

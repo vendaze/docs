@@ -180,7 +180,6 @@
           "401": { "$ref": "#/components/responses/Unauthorized" },
           "403": { "$ref": "#/components/responses/InsufficientScope" },
           "404": { "$ref": "#/components/responses/NotFound" },
-          "409": { "$ref": "#/components/responses/Conflict" },
           "422": { "$ref": "#/components/responses/ValidationError" },
           "429": { "$ref": "#/components/responses/RateLimitExceeded" },
           "500": { "$ref": "#/components/responses/InternalError" }
@@ -555,14 +554,6 @@
             "maxLength": 40,
             "description": "New display label.",
             "example": "Federal Tax ID"
-          },
-          "key": {
-            "type": "string",
-            "minLength": 1,
-            "maxLength": 35,
-            "pattern": "^[a-z0-9]+(_[a-z0-9]+)*$",
-            "description": "New unique key. Must not conflict with an existing key in the workspace.",
-            "example": "federal_tax_id"
           },
           "type": {
             "type": "string",

@@ -2072,9 +2072,6 @@
           "404": {
             "$ref": "#/components/responses/NotFound"
           },
-          "409": {
-            "$ref": "#/components/responses/Conflict"
-          },
           "422": {
             "$ref": "#/components/responses/ValidationError"
           },
@@ -2716,9 +2713,6 @@
           "404": {
             "$ref": "#/components/responses/NotFound"
           },
-          "409": {
-            "$ref": "#/components/responses/Conflict"
-          },
           "422": {
             "$ref": "#/components/responses/ValidationError"
           },
@@ -3258,9 +3252,6 @@
           },
           "404": {
             "$ref": "#/components/responses/NotFound"
-          },
-          "409": {
-            "$ref": "#/components/responses/Conflict"
           },
           "422": {
             "$ref": "#/components/responses/ValidationError"
@@ -5958,14 +5949,6 @@
             "pattern": "^#[0-9a-fA-F]{6}$",
             "description": "Nova cor de exibição em formato hex RGB.",
             "example": "#10b981"
-          },
-          "key": {
-            "type": "string",
-            "minLength": 1,
-            "maxLength": 40,
-            "pattern": "^[a-z0-9]+(_[a-z0-9]+)*$",
-            "description": "Nova chave identificadora. Apenas letras minúsculas, dígitos e underscores.",
-            "example": "reuniao"
           }
         }
       },
@@ -6241,14 +6224,6 @@
             "maxLength": 30,
             "description": "Novo nome de exibição.",
             "example": "Lead Frio"
-          },
-          "key": {
-            "type": "string",
-            "minLength": 1,
-            "maxLength": 30,
-            "pattern": "^[a-z0-9]+(_[a-z0-9]+)*$",
-            "description": "Nova chave. Não pode conflitar com uma chave existente no workspace.",
-            "example": "lead_frio"
           },
           "color_text": {
             "type": "string",
@@ -6554,14 +6529,6 @@
             "maxLength": 40,
             "description": "Novo rótulo.",
             "example": "CPF do Responsável"
-          },
-          "key": {
-            "type": "string",
-            "minLength": 1,
-            "maxLength": 35,
-            "pattern": "^[a-z0-9]+(_[a-z0-9]+)*$",
-            "description": "Nova chave. Não pode conflitar com uma chave existente no workspace.",
-            "example": "cpf_responsavel"
           },
           "type": {
             "type": "string",
