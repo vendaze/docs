@@ -50,6 +50,9 @@
     },
     {
       "name": "Campos Adicionais"
+    },
+    {
+      "name": "Webhooks"
     }
   ],
   "paths": {
@@ -3305,6 +3308,307 @@
           }
         }
       }
+    },
+    "/v1/webhooks": {
+      "get": {
+        "operationId": "listWebhooks",
+        "summary": "Listar webhooks",
+        "description": "Retorna uma lista paginada de webhooks criados pela sua integração. Webhooks criados no painel não são incluídos.\n\n<Accordion title=\"Escopo necessário\">\n`webhooks:manage`\n</Accordion>",
+        "tags": [
+          "Webhooks"
+        ],
+        "parameters": [
+          {
+            "name": "page",
+            "in": "query",
+            "schema": {
+              "type": "integer",
+              "minimum": 1,
+              "default": 1
+            },
+            "description": "Número da página."
+          },
+          {
+            "name": "per_page",
+            "in": "query",
+            "schema": {
+              "type": "integer",
+              "minimum": 1,
+              "maximum": 100,
+              "default": 50
+            },
+            "description": "Registros por página. Máximo: 100."
+          },
+          {
+            "name": "order_by",
+            "in": "query",
+            "schema": {
+              "type": "string",
+              "enum": [
+                "created_at",
+                "name"
+              ],
+              "default": "created_at"
+            },
+            "description": "Campo de ordenação."
+          },
+          {
+            "name": "order",
+            "in": "query",
+            "schema": {
+              "type": "string",
+              "enum": [
+                "asc",
+                "desc"
+              ],
+              "default": "desc"
+            },
+            "description": "Direção da ordenação."
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Webhooks retornados com sucesso.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/WebhooksListResponse"
+                },
+                "example": {
+                  "data": [
+                    {
+                      "id": "wh_3f9a1c8b2d4e5f6a7b8c9d0e1f2a3b4c",
+                      "name": "Meu webhook",
+                      "url": "https://meuapp.com/webhooks/vendaze",
+                      "events": [
+                        "person.created",
+                        "deal.won"
+                      ],
+                      "auth_enable": true,
+                      "webhook_secret": "whsec_3f9a1c8b2d4e5f6a7b8c9d0e1f2a3b4c5d6e7f8a9b0c1d2e3f4a5b6c7d8e9f0",
+                      "created_at": "2026-05-26T14:00:00.000Z"
+                    }
+                  ],
+                  "meta": {
+                    "total": 1,
+                    "page": 1,
+                    "per_page": 50,
+                    "has_more": false
+                  }
+                }
+              }
+            }
+          },
+          "401": {
+            "$ref": "#/components/responses/Unauthorized"
+          },
+          "403": {
+            "$ref": "#/components/responses/InsufficientScope"
+          },
+          "422": {
+            "$ref": "#/components/responses/ValidationError"
+          },
+          "429": {
+            "$ref": "#/components/responses/RateLimitExceeded"
+          },
+          "500": {
+            "$ref": "#/components/responses/InternalError"
+          }
+        }
+      },
+      "post": {
+        "operationId": "createWebhook",
+        "summary": "Criar webhook",
+        "description": "Cria um novo webhook.\n\n<Accordion title=\"Escopo necessário\">\n`webhooks:manage`\n</Accordion>",
+        "tags": [
+          "Webhooks"
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/CreateWebhookRequest"
+              }
+            }
+          }
+        },
+        "responses": {
+          "201": {
+            "description": "Webhook criado com sucesso.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/WebhookResponse"
+                },
+                "example": {
+                  "data": {
+                    "id": "wh_3f9a1c8b2d4e5f6a7b8c9d0e1f2a3b4c",
+                    "name": "Meu webhook",
+                    "url": "https://meuapp.com/webhooks/vendaze",
+                    "events": [
+                      "person.created",
+                      "deal.won"
+                    ],
+                    "auth_enable": true,
+                    "webhook_secret": "whsec_3f9a1c8b2d4e5f6a7b8c9d0e1f2a3b4c5d6e7f8a9b0c1d2e3f4a5b6c7d8e9f0",
+                    "created_at": "2026-05-26T14:00:00.000Z"
+                  }
+                }
+              }
+            }
+          },
+          "400": {
+            "$ref": "#/components/responses/BadRequest"
+          },
+          "401": {
+            "$ref": "#/components/responses/Unauthorized"
+          },
+          "403": {
+            "$ref": "#/components/responses/InsufficientScope"
+          },
+          "422": {
+            "$ref": "#/components/responses/ValidationError"
+          },
+          "429": {
+            "$ref": "#/components/responses/RateLimitExceeded"
+          },
+          "500": {
+            "$ref": "#/components/responses/InternalError"
+          }
+        }
+      }
+    },
+    "/v1/webhooks/{id}": {
+      "get": {
+        "operationId": "getWebhook",
+        "summary": "Buscar webhook",
+        "description": "Retorna um webhook pelo ID.\n\n<Accordion title=\"Escopo necessário\">\n`webhooks:manage`\n</Accordion>",
+        "tags": [
+          "Webhooks"
+        ],
+        "parameters": [
+          {
+            "$ref": "#/components/parameters/webhookId"
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Webhook retornado com sucesso.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/WebhookResponse"
+                }
+              }
+            }
+          },
+          "401": {
+            "$ref": "#/components/responses/Unauthorized"
+          },
+          "403": {
+            "$ref": "#/components/responses/InsufficientScope"
+          },
+          "404": {
+            "$ref": "#/components/responses/NotFound"
+          },
+          "429": {
+            "$ref": "#/components/responses/RateLimitExceeded"
+          },
+          "500": {
+            "$ref": "#/components/responses/InternalError"
+          }
+        }
+      },
+      "patch": {
+        "operationId": "updateWebhook",
+        "summary": "Atualizar webhook",
+        "description": "Atualiza um webhook. Apenas campos enviados no body são modificados.\n\n<Accordion title=\"Escopo necessário\">\n`webhooks:manage`\n</Accordion>",
+        "tags": [
+          "Webhooks"
+        ],
+        "parameters": [
+          {
+            "$ref": "#/components/parameters/webhookId"
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/UpdateWebhookRequest"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Webhook atualizado com sucesso.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/WebhookResponse"
+                }
+              }
+            }
+          },
+          "400": {
+            "$ref": "#/components/responses/BadRequest"
+          },
+          "401": {
+            "$ref": "#/components/responses/Unauthorized"
+          },
+          "403": {
+            "$ref": "#/components/responses/InsufficientScope"
+          },
+          "404": {
+            "$ref": "#/components/responses/NotFound"
+          },
+          "422": {
+            "$ref": "#/components/responses/ValidationError"
+          },
+          "429": {
+            "$ref": "#/components/responses/RateLimitExceeded"
+          },
+          "500": {
+            "$ref": "#/components/responses/InternalError"
+          }
+        }
+      },
+      "delete": {
+        "operationId": "deleteWebhook",
+        "summary": "Deletar webhook",
+        "description": "Deleta permanentemente um webhook.\n\n<Accordion title=\"Escopo necessário\">\n`webhooks:manage`\n</Accordion>",
+        "tags": [
+          "Webhooks"
+        ],
+        "parameters": [
+          {
+            "$ref": "#/components/parameters/webhookId"
+          }
+        ],
+        "responses": {
+          "204": {
+            "description": "Webhook deletado com sucesso."
+          },
+          "401": {
+            "$ref": "#/components/responses/Unauthorized"
+          },
+          "403": {
+            "$ref": "#/components/responses/InsufficientScope"
+          },
+          "404": {
+            "$ref": "#/components/responses/NotFound"
+          },
+          "429": {
+            "$ref": "#/components/responses/RateLimitExceeded"
+          },
+          "500": {
+            "$ref": "#/components/responses/InternalError"
+          }
+        }
+      }
     }
   },
   "components": {
@@ -3312,7 +3616,7 @@
       "bearerAuth": {
         "type": "http",
         "scheme": "bearer",
-        "description": "Token de acesso OAuth 2.1."
+        "description": "Access token OAuth 2.1."
       }
     },
     "parameters": {
@@ -3406,11 +3710,21 @@
           "type": "string"
         },
         "description": "`id` (UUID) ou `key` (string) do campo. Ambos os formatos são aceitos."
+      },
+      "webhookId": {
+        "name": "id",
+        "in": "path",
+        "required": true,
+        "schema": {
+          "type": "string"
+        },
+        "description": "ID do webhook.",
+        "example": "wh_3f9a1c8b2d4e5f6a7b8c9d0e1f2a3b4c"
       }
     },
     "responses": {
       "Unauthorized": {
-        "description": "Token ausente, inválido ou expirado.",
+        "description": "Token ausente, inválido ou expirado. Códigos possíveis: `unauthorized`, `token_expired`.",
         "content": {
           "application/json": {
             "schema": {
@@ -3436,7 +3750,7 @@
             "example": {
               "error": {
                 "code": "insufficient_scope",
-                "message": "This endpoint requires the 'custom_fields:write' scope.",
+                "message": "This endpoint requires the 'webhooks:read' scope.",
                 "request_id": "550e8400-e29b-41d4-a716-446655440000"
               }
             }
@@ -3444,7 +3758,7 @@
         }
       },
       "NotFound": {
-        "description": "Campo não encontrado, excluído ou pertence a outro workspace. Código de erro: `not_found`.",
+        "description": "Webhook não encontrado ou pertence a outra integração. Código: `not_found`. Mensagem: `\"Webhook not found.\"`",
         "content": {
           "application/json": {
             "schema": {
@@ -3453,7 +3767,7 @@
             "example": {
               "error": {
                 "code": "not_found",
-                "message": "Custom field not found.",
+                "message": "Webhook not found.",
                 "request_id": "550e8400-e29b-41d4-a716-446655440000"
               }
             }
@@ -3461,7 +3775,7 @@
         }
       },
       "ValidationError": {
-        "description": "Validação dos dados falhou. Código de erro: `validation_error`.",
+        "description": "Validação de entrada falhou. Código: `validation_error`. O objeto `fields` mapeia cada campo inválido para uma descrição do problema.",
         "content": {
           "application/json": {
             "schema": {
@@ -3472,8 +3786,8 @@
                 "code": "validation_error",
                 "message": "Validation failed.",
                 "fields": {
-                  "key": "Key must contain only lowercase letters, digits, and underscores between words (e.g. cpf_empresa).",
-                  "type": "Invalid enum value."
+                  "url": "url must use HTTPS.",
+                  "events": "At least one event is required."
                 },
                 "request_id": "550e8400-e29b-41d4-a716-446655440000"
               }
@@ -3482,7 +3796,7 @@
         }
       },
       "RateLimitExceeded": {
-        "description": "Limite de requisições atingido. Código de erro: `rate_limit_exceeded`.",
+        "description": "Rate limit excedido. Código: `rate_limit_exceeded`.",
         "content": {
           "application/json": {
             "schema": {
@@ -3499,7 +3813,7 @@
         }
       },
       "BadRequest": {
-        "description": "Body inválido ou atualização sem campos. Código de erro: `bad_request`.",
+        "description": "Body malformado ou PATCH sem campos. Código de erro: `bad_request`.",
         "content": {
           "application/json": {
             "schema": {
@@ -3516,7 +3830,7 @@
         }
       },
       "InternalError": {
-        "description": "Erro interno inesperado. Código de erro: `internal_error`.",
+        "description": "Erro interno inesperado. Código: `internal_error`.",
         "content": {
           "application/json": {
             "schema": {
@@ -3581,10 +3895,12 @@
             "type": "object",
             "properties": {
               "code": {
-                "type": "string"
+                "type": "string",
+                "example": "validation_error"
               },
               "message": {
-                "type": "string"
+                "type": "string",
+                "example": "Validation failed."
               },
               "fields": {
                 "type": "object",
@@ -3605,19 +3921,19 @@
         "properties": {
           "total": {
             "type": "integer",
-            "description": "Total de registros."
+            "example": 1
           },
           "page": {
             "type": "integer",
-            "description": "Página atual."
+            "example": 1
           },
           "per_page": {
             "type": "integer",
-            "description": "Registros por página."
+            "example": 50
           },
           "has_more": {
             "type": "boolean",
-            "description": "`true` quando há mais páginas após a atual."
+            "example": false
           }
         }
       },
@@ -3772,7 +4088,8 @@
           "lists:read",
           "lists:write",
           "custom_fields:read",
-          "custom_fields:write"
+          "custom_fields:write",
+          "webhooks:manage"
         ],
         "description": "Um escopo OAuth da Vendaze."
       },
@@ -6608,6 +6925,193 @@
             "type": "boolean",
             "description": "Atualiza visibilidade em negócios.",
             "example": true
+          }
+        }
+      },
+      "WebhookEvent": {
+        "type": "string",
+        "enum": [
+          "person.created",
+          "person.updated",
+          "person.deleted",
+          "activity.created",
+          "activity.updated",
+          "activity.deleted",
+          "company.created",
+          "company.updated",
+          "company.deleted",
+          "deal.created",
+          "deal.updated",
+          "deal.stage_changed",
+          "deal.won",
+          "deal.lost",
+          "deal.deleted",
+          "task.created",
+          "task.updated",
+          "task.completed",
+          "task.deleted",
+          "tag.created",
+          "tag.updated",
+          "tag.deleted",
+          "product.created",
+          "product.updated",
+          "product.deleted",
+          "pipeline.created",
+          "pipeline.updated",
+          "pipeline.deleted",
+          "member_invited",
+          "member_joined",
+          "member_removed",
+          "usage_logs.created"
+        ],
+        "description": "Nome de um evento válido para monitorar."
+      },
+      "Webhook": {
+        "type": "object",
+        "properties": {
+          "id": {
+            "type": "string",
+            "description": "Identificador único do webhook.",
+            "example": "wh_3f9a1c8b2d4e5f6a7b8c9d0e1f2a3b4c"
+          },
+          "name": {
+            "type": "string",
+            "description": "Nome descritivo do webhook.",
+            "example": "Meu webhook"
+          },
+          "url": {
+            "type": "string",
+            "format": "uri",
+            "description": "URL HTTPS de destino para as entregas.",
+            "example": "https://meuapp.com/webhooks/vendaze"
+          },
+          "events": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/WebhookEvent"
+            },
+            "description": "Lista de eventos monitorados.",
+            "example": [
+              "person.created",
+              "deal.won"
+            ]
+          },
+          "auth_enable": {
+            "type": "boolean",
+            "description": "Quando `true`, cada entrega inclui um header `Webhook-Signature` assinado com o `webhook_secret`.",
+            "example": true
+          },
+          "webhook_secret": {
+            "type": "string",
+            "nullable": true,
+            "description": "Presente quando `auth_enable` é `true`. Use para verificar o header `Webhook-Signature` em cada entrega. Formato: `whsec_` seguido de 64 caracteres hex.",
+            "example": "whsec_3f9a1c8b2d4e5f6a7b8c9d0e1f2a3b4c5d6e7f8a9b0c1d2e3f4a5b6c7d8e9f0"
+          },
+          "created_at": {
+            "type": "string",
+            "format": "date-time",
+            "description": "Timestamp ISO 8601 UTC de criação do webhook.",
+            "example": "2026-05-26T14:00:00.000Z"
+          }
+        }
+      },
+      "WebhookResponse": {
+        "type": "object",
+        "properties": {
+          "data": {
+            "$ref": "#/components/schemas/Webhook"
+          }
+        }
+      },
+      "WebhooksListResponse": {
+        "type": "object",
+        "properties": {
+          "data": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/Webhook"
+            }
+          },
+          "meta": {
+            "$ref": "#/components/schemas/PaginationMeta"
+          }
+        }
+      },
+      "CreateWebhookRequest": {
+        "type": "object",
+        "required": [
+          "name",
+          "url",
+          "events"
+        ],
+        "properties": {
+          "name": {
+            "type": "string",
+            "minLength": 1,
+            "maxLength": 100,
+            "description": "Nome descritivo do webhook.",
+            "example": "Meu webhook"
+          },
+          "url": {
+            "type": "string",
+            "format": "uri",
+            "description": "URL HTTPS de destino. HTTP não é aceito.",
+            "example": "https://meuapp.com/webhooks/vendaze"
+          },
+          "events": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/WebhookEvent"
+            },
+            "minItems": 1,
+            "description": "Lista de eventos a monitorar.",
+            "example": [
+              "person.created",
+              "deal.won"
+            ]
+          },
+          "auth_enable": {
+            "type": "boolean",
+            "default": false,
+            "description": "Ativa entregas assinadas. Quando `true`, um `webhook_secret` é gerado e retornado na resposta.",
+            "example": true
+          }
+        }
+      },
+      "UpdateWebhookRequest": {
+        "type": "object",
+        "properties": {
+          "name": {
+            "type": "string",
+            "minLength": 1,
+            "maxLength": 100,
+            "description": "Novo nome descritivo.",
+            "example": "Nome atualizado do webhook"
+          },
+          "url": {
+            "type": "string",
+            "format": "uri",
+            "description": "Nova URL HTTPS de destino.",
+            "example": "https://meuapp.com/webhooks/vendaze-v2"
+          },
+          "events": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/WebhookEvent"
+            },
+            "minItems": 1,
+            "description": "Nova lista de eventos monitorados. Substitui a lista existente por completo.",
+            "example": [
+              "person.created",
+              "person.updated",
+              "deal.won",
+              "deal.lost"
+            ]
+          },
+          "auth_enable": {
+            "type": "boolean",
+            "description": "`false` para `true`: gera um novo `webhook_secret`. `true` para `false`: deleta permanentemente o `webhook_secret` existente. Sem alteração: `webhook_secret` não é modificado.",
+            "example": false
           }
         }
       }

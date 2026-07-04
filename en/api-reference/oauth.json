@@ -929,7 +929,8 @@
           "lists:read",
           "lists:write",
           "custom_fields:read",
-          "custom_fields:write"
+          "custom_fields:write",
+          "webhooks:manage"
         ],
         "description": "A single OAuth scope value."
       },

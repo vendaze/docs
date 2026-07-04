@@ -5,124 +5,188 @@ icon: 'webhook'
 keywords: ['webhooks', 'real-time notifications', 'event-driven', 'CRM events', 'Vendaze webhooks']
 ---
 
-Webhooks allow Vendaze to notify your application when events occur in the workspace. Instead of polling continuously, your server receives an HTTP notification as soon as something changes.
+Webhooks allow Vendaze to notify your application when events occur in the workspace. Instead of polling, your server receives an HTTP `POST` the moment something changes.
 
-<Note>
-  Webhooks are configured by the Vendaze customer in the platform dashboard, not via the public API.
-  This guide explains how to receive and validate the notifications.
-</Note>
+Webhooks can be created and managed in two ways:
+
+- By the Vendaze customer directly in the platform dashboard
+- Via the public API using the `webhooks:manage` scope
 
 ## How it works
 
-1. The Vendaze customer configures a webhook in the dashboard: sets the destination URL and desired events
-2. Vendaze generates a unique `webhook_secret` for that endpoint
-3. When an event occurs, Vendaze sends a `POST` to the configured URL with a signed payload
-4. Your server validates the signature and processes the event
+1. A webhook is created with a destination URL and the list of events to subscribe to
+2. When a subscribed event fires, Vendaze enqueues the delivery and sends a `POST` to that URL
+3. Your server processes the payload and returns `2xx` within 10 seconds
 
-## Available events
+## Managing webhooks via API
 
-| Event              | When it occurs           |
-| ------------------ | ------------------------ |
-| `person.created`   | A new person is created  |
-| `person.updated`   | A person is updated      |
-| `company.created`  | A new company is created |
-| `company.updated`  | A company is updated     |
-| `deal.created`     | A new deal is created    |
-| `deal.updated`     | A deal is updated        |
-| `activity.created` | A new activity is logged |
-| `task.created`     | A new task is created    |
-| `task.updated`     | A task is updated        |
-| `product.created`  | A new product is created |
+Webhooks created via the API are only visible to the OAuth app that created them. They do not appear in the Vendaze dashboard and cannot be managed by other apps, even if they access the same workspace.
 
-## Payload format
+| Endpoint                  | Description                       |
+| ------------------------- | --------------------------------- |
+| `GET /v1/webhooks`        | List webhooks created by your app |
+| `POST /v1/webhooks`       | Create a webhook                  |
+| `GET /v1/webhooks/:id`    | Get a webhook by ID               |
+| `PATCH /v1/webhooks/:id`  | Update a webhook                  |
+| `DELETE /v1/webhooks/:id` | Delete a webhook                  |
+
+### Authenticated deliveries
+
+When `auth_enable: true` is sent on webhook creation, Vendaze generates a `webhook_secret` (format: `whsec_...`) and includes it in the `POST /v1/webhooks` response. Store it: it will be used to verify incoming deliveries.
+
+Each delivery to your endpoint will include the `Webhook-Signature` header. See [Signature verification](#signature-verification) for implementation details.
+
+Changing `auth_enable` on an existing webhook affects the secret:
+
+- `false` to `true`: a new `webhook_secret` is generated and returned
+- `true` to `false`: the existing `webhook_secret` is permanently deleted
+
+## Payload
+
+Every delivery is a `POST` with `Content-Type: application/json`. The envelope structure is:
+
+| Field        | Type   | Description                                                                                                                                 |
+| ------------ | ------ | ------------------------------------------------------------------------------------------------------------------------------------------- |
+| `id`         | string | Unique delivery ID. Use for deduplication.                                                                                                  |
+| `event`      | string | Event name, e.g. `person.created`                                                                                                           |
+| `version`    | string | Always `v1`                                                                                                                                 |
+| `created_at` | string | ISO 8601 UTC timestamp of when the event was dispatched                                                                                     |
+| `<entity>`   | object | The entity data. The key matches the event type: `person`, `company`, `deal`, `task`, `activity`, `tag`, `product`, `pipeline`, or `member` |
 
 ```json
 {
+  "id": "event_3f9a1c8b2d...",
   "event": "person.created",
-  "workspace_slug": "customer-workspace",
-  "timestamp": "2026-05-26T14:00:00Z",
-  "data": {
+  "version": "v1",
+  "created_at": "2026-05-26T14:00:00.000Z",
+  "person": {
     "id": "550e8400-e29b-41d4-a716-446655440000",
-    "full_name": "Ana Costa",
-    "emails": [{ "email": "ana@company.com", "type": "work" }],
+    "full_name": "Anna Reed",
+    "email": { "1": "anna@acme.com" },
     "created_at": "2026-05-26T14:00:00Z"
   }
 }
 ```
 
-## Validate the signature
+## Signature verification
 
-Each delivery is signed with HMAC-SHA256 using the `webhook_secret`. Validate before processing.
-
-**Headers sent by Vendaze:**
+When `auth_enable` is `true`, every delivery includes:
 
 ```
-X-Vendaze-Signature: sha256=abc123...
-X-Vendaze-Timestamp: 1748000000
+Webhook-Signature: sha256=<hex>
 ```
 
-**Node.js validation:**
+The value is HMAC-SHA256 computed over the raw request body, hex-encoded. Always read the raw bytes before parsing: re-serializing the body may alter whitespace or key order and cause verification to fail.
+
+**Node.js:**
 
 ```javascript
 const crypto = require('crypto');
 
-function isValidSignature(body, timestamp, receivedSignature, secret) {
-  // Reject payloads older than 5 minutes
-  const now = Math.floor(Date.now() / 1000);
-  if (now - parseInt(timestamp) > 300) return false;
-
-  const message = `${timestamp}.${JSON.stringify(body)}`;
-  const expected = 'sha256=' + crypto.createHmac('sha256', secret).update(message).digest('hex');
-
+function isValidSignature(rawBody, receivedSignature, secret) {
+  const expected = 'sha256=' + crypto.createHmac('sha256', secret).update(rawBody).digest('hex');
   return crypto.timingSafeEqual(Buffer.from(receivedSignature), Buffer.from(expected));
 }
+
+// Express: read raw bytes before any JSON parsing
+app.post('/webhook', express.raw({ type: 'application/json' }), (req, res) => {
+  const sig = req.headers['webhook-signature'];
+  if (!sig || !isValidSignature(req.body, sig, process.env.WEBHOOK_SECRET)) {
+    return res.status(401).end();
+  }
+  const payload = JSON.parse(req.body);
+  res.sendStatus(200);
+  processEvent(payload); // async, after responding
+});
+```
+
+**Python:**
+
+```python
+import hmac, hashlib
+
+def is_valid_signature(raw_body: bytes, received: str, secret: str) -> bool:
+    expected = "sha256=" + hmac.new(secret.encode(), raw_body, hashlib.sha256).hexdigest()
+    return hmac.compare_digest(received, expected)
 ```
 
 <Warning>
-  Reject payloads with a timestamp older than 5 minutes. This protects against replay attacks.
+  Always use constant-time comparison (`timingSafeEqual` / `hmac.compare_digest`). Standard string
+  equality is vulnerable to timing attacks.
 </Warning>
 
-## Retry policy
+## Available events
 
-If your server does not return a `2xx` status within 10 seconds, Vendaze retries:
+<AccordionGroup>
+  <Accordion title="People">
+    | Event | Trigger | | --- | --- | | `person.created` | A person is created | | `person.updated`
+    | A person is updated | | `person.deleted` | A person is deleted |
+  </Accordion>
+  <Accordion title="Companies">
+    | Event | Trigger | | --- | --- | | `company.created` | A company is created | |
+    `company.updated` | A company is updated | | `company.deleted` | A company is deleted |
+  </Accordion>
+  <Accordion title="Deals">
+    | Event | Trigger | | --- | --- | | `deal.created` | A deal is created | | `deal.updated` | A
+    deal is updated | | `deal.stage_changed` | A deal moves to a different stage | | `deal.won` | A
+    deal is marked as won | | `deal.lost` | A deal is marked as lost | | `deal.deleted` | A deal is
+    deleted |
+  </Accordion>
+  <Accordion title="Tasks">
+    | Event | Trigger | | --- | --- | | `task.created` | A task is created | | `task.updated` | A
+    task is updated | | `task.completed` | A task is marked as completed | | `task.deleted` | A task
+    is deleted |
+  </Accordion>
+  <Accordion title="Activities">
+    | Event | Trigger | | --- | --- | | `activity.created` | An activity is logged | |
+    `activity.updated` | An activity is updated | | `activity.deleted` | An activity is deleted |
+  </Accordion>
+  <Accordion title="Products">
+    | Event | Trigger | | --- | --- | | `product.created` | A product is created | |
+    `product.updated` | A product is updated | | `product.deleted` | A product is deleted |
+  </Accordion>
+  <Accordion title="Tags">
+    | Event | Trigger | | --- | --- | | `tag.created` | A tag is created | | `tag.updated` | A tag
+    is updated | | `tag.deleted` | A tag is deleted |
+  </Accordion>
+  <Accordion title="Pipelines">
+    | Event | Trigger | | --- | --- | | `pipeline.created` | A pipeline is created | |
+    `pipeline.updated` | A pipeline is updated | | `pipeline.deleted` | A pipeline is deleted |
+  </Accordion>
+  <Accordion title="Members">
+    | Event | Trigger | | --- | --- | | `member_invited` | A member is invited to the workspace | |
+    `member_joined` | A member joins the workspace | | `member_removed` | A member is removed from
+    the workspace |
+  </Accordion>
+  <Accordion title="Usage">
+    | Event | Trigger | | --- | --- | | `usage_logs.created` | A usage log entry is recorded |
+  </Accordion>
+</AccordionGroup>
 
-| Attempt | Wait       |
-| ------- | ---------- |
-| 2       | 1 minute   |
-| 3       | 5 minutes  |
-| 4       | 30 minutes |
-| 5       | 2 hours    |
+## Retries and delivery guarantees
 
-After 5 consecutive failures, the endpoint is marked as `suspended`. The customer reactivates it in the dashboard.
+If your server does not return `2xx` within 10 seconds, Vendaze retries the delivery up to **3 times**, each attempt delayed by **15 minutes**. After all retries are exhausted, the event is permanently dropped. There is no suspension mechanism: missed deliveries are lost.
 
-## Delivery guarantees
+| Attempt     | Delay                      |
+| ----------- | -------------------------- |
+| 1 (initial) | Immediate                  |
+| 2           | 15 minutes after attempt 1 |
+| 3           | 15 minutes after attempt 2 |
+| 4           | 15 minutes after attempt 3 |
 
-Vendaze delivers webhooks with **at-least-once** semantics. The same event may be delivered more than once in the following situations:
-
-- Your server returned a `2xx` but Vendaze did not receive the acknowledgment due to a network issue
-- A retry was triggered before the previous delivery was confirmed
-- A transient infrastructure issue caused a duplicate dispatch
-
-**Deduplication strategy:** use the `data.id` field combined with the `event` type as a deduplication key. Store processed event IDs in your database and skip any event you have already handled.
+Vendaze delivers with **at-least-once** semantics. The same event may be delivered more than once due to network issues or retry overlap. Deduplicate using the `id` field in the envelope.
 
 ```javascript
 async function handleWebhook(payload) {
-  const dedupeKey = `${payload.event}:${payload.data.id}`;
-
-  const alreadyProcessed = await db.webhookEvents.findOne({ key: dedupeKey });
-  if (alreadyProcessed) return; // Duplicate, skip
-
-  await db.webhookEvents.insert({ key: dedupeKey, processedAt: new Date() });
-
-  // Process the event
+  if (await db.events.findOne({ id: payload.id })) return;
+  await db.events.insert({ id: payload.id, processedAt: new Date() });
   await processEvent(payload);
 }
 ```
 
 ## Best practices
 
-- **Respond quickly:** return `200` immediately and process in the background. If your handler takes more than 10 seconds, Vendaze will retry.
-- **Be idempotent:** the same event may arrive more than once. Use the `data.id` to deduplicate as shown above.
-- **Validate every signature:** never process a payload without verifying the HMAC signature. Reject invalid signatures with `401`.
-- **Keep logs:** store received payloads for at least 30 days to simplify debugging and auditing.
-- **Handle unknown events gracefully:** return `200` for event types you do not handle. New events may be added in future versions.
+- Return `200` immediately and process asynchronously. Any handler that takes more than 10 seconds will trigger a retry.
+- Reject missing or invalid signatures with `401`. Never process a delivery from an authenticated endpoint without verifying the signature first.
+- Retain received payloads for at least 30 days to aid debugging and auditing.
+- Return `200` for unrecognized event types. New events will be added over time and silently ignoring them keeps your handler stable across API updates.
