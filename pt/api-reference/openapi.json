@@ -4089,7 +4089,7 @@
             "nullable": true,
             "example": "Head of Sales"
           },
-          "ranking": {
+          "score": {
             "type": "number",
             "minimum": 0,
             "maximum": 5,

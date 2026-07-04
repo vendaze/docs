@@ -692,7 +692,7 @@
             "nullable": true,
             "example": "Sales Director"
           },
-          "ranking": {
+          "score": {
             "type": "number",
             "minimum": 0,
             "maximum": 5,
