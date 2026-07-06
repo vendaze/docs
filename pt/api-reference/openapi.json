@@ -149,6 +149,123 @@
         }
       }
     },
+    "/v1/auth/delete-app": {
+      "delete": {
+        "operationId": "deleteApp",
+        "summary": "Excluir um aplicativo",
+        "description": "Exclui permanentemente um aplicativo OAuth e todos os dados associados, incluindo as sessões ativas dos usuários. A ação é irreversível.",
+        "security": [],
+        "tags": [
+          "OAuth"
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/DeleteAppRequest"
+              }
+            }
+          }
+        },
+        "responses": {
+          "204": {
+            "description": "Aplicativo excluído. Sem corpo na resposta."
+          },
+          "400": {
+            "description": "Body JSON inválido ou não parseável. Código de erro: `bad_request`. Mensagem: `\"Request body must be valid JSON.\"`",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                },
+                "example": {
+                  "error": {
+                    "code": "bad_request",
+                    "message": "Request body must be valid JSON.",
+                    "request_id": "550e8400-e29b-41d4-a716-446655440000"
+                  }
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "E-mail ou client_secret não correspondem ao aplicativo cadastrado. Código de erro: `invalid_client`. Mensagem: `\"Invalid client credentials.\"`",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                },
+                "example": {
+                  "error": {
+                    "code": "invalid_client",
+                    "message": "Invalid client credentials.",
+                    "request_id": "550e8400-e29b-41d4-a716-446655440000"
+                  }
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "Aplicativo não encontrado ou já excluído. Código de erro: `not_found`. Mensagem: `\"App not found.\"`",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                },
+                "example": {
+                  "error": {
+                    "code": "not_found",
+                    "message": "App not found.",
+                    "request_id": "550e8400-e29b-41d4-a716-446655440000"
+                  }
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Validação de entrada falhou. Código de erro: `validation_error`. Mensagem: `\"Validation failed.\"` O objeto `fields` mapeia cada campo inválido a uma descrição do problema.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ValidationErrorResponse"
+                },
+                "example": {
+                  "error": {
+                    "code": "validation_error",
+                    "message": "Validation failed.",
+                    "fields": {
+                      "email": "Invalid email address."
+                    },
+                    "request_id": "550e8400-e29b-41d4-a716-446655440000"
+                  }
+                }
+              }
+            }
+          },
+          "429": {
+            "$ref": "#/components/responses/RateLimitExceeded"
+          },
+          "500": {
+            "description": "Falha ao excluir o aplicativo. Código de erro: `internal_error`. Mensagem: `\"An unexpected error occurred.\"` Use o `request_id` para correlacionar com os logs.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                },
+                "example": {
+                  "error": {
+                    "code": "internal_error",
+                    "message": "An unexpected error occurred.",
+                    "request_id": "550e8400-e29b-41d4-a716-446655440000"
+                  }
+                }
+              }
+            }
+          }
+        }
+      }
+    },
     "/v1/auth/rotate-app": {
       "post": {
         "operationId": "rotateApp",
@@ -4586,6 +4703,28 @@
           "webhooks:manage"
         ],
         "description": "Um escopo OAuth da Vendaze."
+      },
+      "DeleteAppRequest": {
+        "type": "object",
+        "required": [
+          "client_id",
+          "email",
+          "client_secret"
+        ],
+        "properties": {
+          "client_id": {
+            "type": "string",
+            "format": "uuid"
+          },
+          "email": {
+            "type": "string",
+            "format": "email",
+            "description": "A API nunca revela qual e-mail está cadastrado."
+          },
+          "client_secret": {
+            "type": "string"
+          }
+        }
       },
       "RegisterAppRequest": {
         "type": "object",
