@@ -1,0 +1,534 @@
+{
+  "openapi": "3.1.0",
+  "info": {
+    "title": "Pipelines",
+    "description": "Manage sales pipelines and their stages.",
+    "version": "1.0.0",
+    "contact": {
+      "name": "Vendaze Support",
+      "email": "suporte@vendaze.com"
+    }
+  },
+  "servers": [
+    {
+      "url": "https://api.vendaze.com",
+      "description": "Production"
+    }
+  ],
+  "security": [
+    {
+      "bearerAuth": []
+    }
+  ],
+  "tags": [
+    {
+      "name": "Pipelines"
+    }
+  ],
+  "paths": {
+    "/v1/pipelines": {
+      "get": {
+        "operationId": "listPipelines",
+        "summary": "List pipelines",
+        "description": "Returns a paginated list of pipelines in the workspace.\n\n<Accordion title=\"Required scope\">\n`deals:read`\n</Accordion>",
+        "tags": ["Pipelines"],
+        "parameters": [
+          {
+            "name": "page",
+            "in": "query",
+            "schema": { "type": "integer", "minimum": 1, "default": 1 },
+            "description": "Page number."
+          },
+          {
+            "name": "per_page",
+            "in": "query",
+            "schema": { "type": "integer", "minimum": 1, "maximum": 100, "default": 50 },
+            "description": "Number of records per page. Maximum: 100."
+          },
+          {
+            "name": "order_by",
+            "in": "query",
+            "schema": { "type": "string", "enum": ["created_at", "name"], "default": "created_at" },
+            "description": "Field to sort by."
+          },
+          {
+            "name": "order",
+            "in": "query",
+            "schema": { "type": "string", "enum": ["asc", "desc"], "default": "desc" },
+            "description": "Sort direction."
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Pipelines listed successfully.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/PipelineListResponse"
+                }
+              }
+            }
+          },
+          "401": {
+            "$ref": "#/components/responses/Unauthorized"
+          },
+          "403": {
+            "$ref": "#/components/responses/InsufficientScope"
+          },
+          "422": {
+            "$ref": "#/components/responses/ValidationError"
+          },
+          "429": {
+            "$ref": "#/components/responses/RateLimitExceeded"
+          },
+          "500": {
+            "$ref": "#/components/responses/InternalError"
+          }
+        }
+      },
+      "post": {
+        "operationId": "createPipeline",
+        "summary": "Create a pipeline",
+        "description": "Creates a new pipeline with its stages.\n\n<Accordion title=\"Required scope\">\n`deals:write`\n</Accordion>",
+        "tags": ["Pipelines"],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/CreatePipelineRequest"
+              },
+              "example": {
+                "name": "New Business",
+                "stages": [
+                  { "name": "Prospecting", "type": "open", "probability": 10 },
+                  { "name": "Proposal", "type": "open", "probability": 40 },
+                  { "name": "Negotiation", "type": "open", "probability": 70 },
+                  { "name": "Closed Won", "type": "win", "probability": 100 },
+                  { "name": "Closed Lost", "type": "lost", "probability": 0 }
+                ]
+              }
+            }
+          }
+        },
+        "responses": {
+          "201": {
+            "description": "Pipeline created successfully.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/PipelineResponse"
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Invalid or unparseable JSON body. Error code: `bad_request`. Message: `\"Request body must be valid JSON.\"`",
+            "content": {
+              "application/json": {
+                "schema": { "$ref": "#/components/schemas/ErrorResponse" },
+                "example": {
+                  "error": {
+                    "code": "bad_request",
+                    "message": "Request body must be valid JSON.",
+                    "request_id": "550e8400-e29b-41d4-a716-446655440000"
+                  }
+                }
+              }
+            }
+          },
+          "401": {
+            "$ref": "#/components/responses/Unauthorized"
+          },
+          "403": {
+            "$ref": "#/components/responses/InsufficientScope"
+          },
+          "422": {
+            "$ref": "#/components/responses/ValidationError"
+          },
+          "429": {
+            "$ref": "#/components/responses/RateLimitExceeded"
+          },
+          "500": {
+            "$ref": "#/components/responses/InternalError"
+          }
+        }
+      }
+    },
+    "/v1/pipelines/{id}": {
+      "get": {
+        "operationId": "getPipeline",
+        "summary": "Get a pipeline",
+        "description": "Returns the pipeline corresponding to the ID, including all its stages.\n\n<Accordion title=\"Required scope\">\n`deals:read`\n</Accordion>",
+        "tags": ["Pipelines"],
+        "parameters": [{ "$ref": "#/components/parameters/id" }],
+        "responses": {
+          "200": {
+            "description": "Pipeline returned successfully.",
+            "content": {
+              "application/json": {
+                "schema": { "$ref": "#/components/schemas/PipelineResponse" }
+              }
+            }
+          },
+          "401": {
+            "$ref": "#/components/responses/Unauthorized"
+          },
+          "403": {
+            "$ref": "#/components/responses/InsufficientScope"
+          },
+          "404": {
+            "$ref": "#/components/responses/NotFound"
+          },
+          "500": {
+            "$ref": "#/components/responses/InternalError"
+          }
+        }
+      },
+      "patch": {
+        "operationId": "updatePipeline",
+        "summary": "Update a pipeline",
+        "description": "Updates a pipeline. Only the fields sent are modified.\n\n<Accordion title=\"Required scope\">\n`deals:write`\n</Accordion>",
+        "tags": ["Pipelines"],
+        "parameters": [{ "$ref": "#/components/parameters/id" }],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": { "$ref": "#/components/schemas/UpdatePipelineRequest" },
+              "example": {
+                "name": "Renamed Pipeline",
+                "stages": [
+                  { "id": "a1b2c3d4-e5f6-7890-abcd-ef1234567890", "name": "Prospecting", "type": "open", "probability": 15 },
+                  { "id": "b2c3d4e5-f6a7-8901-bcde-f12345678901", "name": "Proposal Sent", "type": "open", "probability": 50 },
+                  { "name": "New: Pilot", "type": "open", "probability": 75 },
+                  { "id": "c3d4e5f6-a7b8-9012-cdef-123456789012", "name": "Closed Won", "type": "win", "probability": 100 },
+                  { "id": "d4e5f6a7-b8c9-0123-defa-234567890123", "name": "Closed Lost", "type": "lost", "probability": 0 }
+                ]
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Pipeline updated successfully.",
+            "content": {
+              "application/json": {
+                "schema": { "$ref": "#/components/schemas/PipelineResponse" }
+              }
+            }
+          },
+          "400": {
+            "description": "Invalid or unparseable JSON body. Error code: `bad_request`. Message: `\"Request body must be valid JSON.\"` For PATCH with no fields: code `bad_request`, message `\"No fields provided for update.\"`",
+            "content": {
+              "application/json": {
+                "schema": { "$ref": "#/components/schemas/ErrorResponse" },
+                "example": {
+                  "error": {
+                    "code": "bad_request",
+                    "message": "No fields provided for update.",
+                    "request_id": "550e8400-e29b-41d4-a716-446655440000"
+                  }
+                }
+              }
+            }
+          },
+          "401": {
+            "$ref": "#/components/responses/Unauthorized"
+          },
+          "403": {
+            "$ref": "#/components/responses/InsufficientScope"
+          },
+          "404": {
+            "$ref": "#/components/responses/NotFound"
+          },
+          "422": {
+            "$ref": "#/components/responses/ValidationError"
+          },
+          "500": {
+            "$ref": "#/components/responses/InternalError"
+          }
+        }
+      }
+    }
+  },
+  "components": {
+    "securitySchemes": {
+      "bearerAuth": {
+        "type": "http",
+        "scheme": "bearer",
+        "description": "OAuth 2.1 access token."
+      }
+    },
+    "parameters": {
+      "id": {
+        "name": "id",
+        "in": "path",
+        "required": true,
+        "schema": { "type": "string", "format": "uuid" },
+        "description": "UUID of the resource."
+      }
+    },
+    "responses": {
+      "Unauthorized": {
+        "description": "Token missing, invalid, or expired. Possible error codes and messages: `unauthorized`. `\"Missing or invalid Authorization header.\"`, `\"Invalid or malformed token.\"`, or `\"Token is missing required claims.\"`; `token_expired`. `\"Access token expired. Refresh using the refresh token.\"`",
+        "content": {
+          "application/json": {
+            "schema": { "$ref": "#/components/schemas/ErrorResponse" },
+            "example": {
+              "error": {
+                "code": "unauthorized",
+                "message": "Missing or invalid Authorization header.",
+                "request_id": "550e8400-e29b-41d4-a716-446655440000"
+              }
+            }
+          }
+        }
+      },
+      "InsufficientScope": {
+        "description": "Token lacks the required scope. Error code: `insufficient_scope`. Message: `\"This endpoint requires the '{scope}' scope.\"` where `{scope}` is the exact missing scope.",
+        "content": {
+          "application/json": {
+            "schema": { "$ref": "#/components/schemas/ErrorResponse" },
+            "example": {
+              "error": {
+                "code": "insufficient_scope",
+                "message": "This endpoint requires the 'deals:write' scope.",
+                "request_id": "550e8400-e29b-41d4-a716-446655440000"
+              }
+            }
+          }
+        }
+      },
+      "NotFound": {
+        "description": "Resource not found, soft-deleted, or belongs to another workspace. Error code: `not_found`. Message: `\"Pipeline not found.\"`",
+        "content": {
+          "application/json": {
+            "schema": { "$ref": "#/components/schemas/ErrorResponse" },
+            "example": {
+              "error": {
+                "code": "not_found",
+                "message": "Pipeline not found.",
+                "request_id": "550e8400-e29b-41d4-a716-446655440000"
+              }
+            }
+          }
+        }
+      },
+      "ValidationError": {
+        "description": "Input validation failed. Error code: `validation_error`. Message: `\"Validation failed.\"` The `fields` object maps each invalid field to a description of the problem.",
+        "content": {
+          "application/json": {
+            "schema": { "$ref": "#/components/schemas/ValidationErrorResponse" },
+            "example": {
+              "error": {
+                "code": "validation_error",
+                "message": "Validation failed.",
+                "fields": {
+                  "stages": "At least one stage is required."
+                },
+                "request_id": "550e8400-e29b-41d4-a716-446655440000"
+              }
+            }
+          }
+        }
+      },
+      "RateLimitExceeded": {
+        "description": "Rate limit exceeded. Error code: `rate_limit_exceeded`. Message: `\"Rate limit exceeded. Try again in {N} seconds.\"` The `Retry-After` response header contains the same value.",
+        "content": {
+          "application/json": {
+            "schema": { "$ref": "#/components/schemas/ErrorResponse" },
+            "example": {
+              "error": {
+                "code": "rate_limit_exceeded",
+                "message": "Rate limit exceeded. Try again in 60 seconds.",
+                "request_id": "550e8400-e29b-41d4-a716-446655440000"
+              }
+            }
+          }
+        }
+      },
+      "InternalError": {
+        "description": "Unexpected server error. Error code: `internal_error`. Message: `\"An unexpected error occurred.\"` Use the `request_id` to correlate with server-side logs.",
+        "content": {
+          "application/json": {
+            "schema": { "$ref": "#/components/schemas/ErrorResponse" },
+            "example": {
+              "error": {
+                "code": "internal_error",
+                "message": "An unexpected error occurred.",
+                "request_id": "550e8400-e29b-41d4-a716-446655440000"
+              }
+            }
+          }
+        }
+      }
+    },
+    "schemas": {
+      "ErrorResponse": {
+        "type": "object",
+        "properties": {
+          "error": {
+            "type": "object",
+            "properties": {
+              "code": { "type": "string", "example": "not_found" },
+              "message": { "type": "string", "example": "Pipeline not found." },
+              "request_id": { "type": "string", "format": "uuid" }
+            }
+          }
+        }
+      },
+      "ValidationErrorResponse": {
+        "type": "object",
+        "properties": {
+          "error": {
+            "type": "object",
+            "properties": {
+              "code": { "type": "string", "example": "validation_error" },
+              "message": { "type": "string", "example": "Validation failed." },
+              "fields": {
+                "type": "object",
+                "additionalProperties": { "type": "string" }
+              },
+              "request_id": { "type": "string", "format": "uuid" }
+            }
+          }
+        }
+      },
+      "PipelineStage": {
+        "type": "object",
+        "properties": {
+          "id": { "type": "string", "format": "uuid" },
+          "name": { "type": "string", "example": "Proposal" },
+          "type": {
+            "type": "string",
+            "enum": ["open", "win", "lost"]
+          },
+          "probability": {
+            "type": "integer",
+            "minimum": 0,
+            "maximum": 100,
+            "nullable": true,
+            "example": 40
+          },
+          "created_at": { "type": "string", "format": "date-time" }
+        }
+      },
+      "Pipeline": {
+        "type": "object",
+        "properties": {
+          "id": { "type": "string", "format": "uuid" },
+          "name": { "type": "string", "example": "New Business" },
+          "created_at": { "type": "string", "format": "date-time" },
+          "stages": {
+            "type": "array",
+            "items": { "$ref": "#/components/schemas/PipelineStage" }
+          }
+        }
+      },
+      "PipelineStageInput": {
+        "type": "object",
+        "required": ["name", "type"],
+        "properties": {
+          "name": {
+            "type": "string",
+            "maxLength": 60,
+            "example": "Prospecting"
+          },
+          "type": {
+            "type": "string",
+            "enum": ["open", "win", "lost"]
+          },
+          "probability": {
+            "type": "integer",
+            "minimum": 0,
+            "maximum": 100,
+            "nullable": true,
+            "example": 10
+          }
+        }
+      },
+      "PipelineStageUpdateInput": {
+        "type": "object",
+        "required": ["name", "type"],
+        "properties": {
+          "id": {
+            "type": "string",
+            "format": "uuid"
+          },
+          "name": {
+            "type": "string",
+            "maxLength": 60,
+            "example": "Proposal Sent"
+          },
+          "type": {
+            "type": "string",
+            "enum": ["open", "win", "lost"]
+          },
+          "probability": {
+            "type": "integer",
+            "minimum": 0,
+            "maximum": 100,
+            "nullable": true,
+            "example": 50
+          }
+        }
+      },
+      "CreatePipelineRequest": {
+        "type": "object",
+        "required": ["name", "stages"],
+        "properties": {
+          "name": {
+            "type": "string",
+            "maxLength": 50,
+            "example": "New Business"
+          },
+          "stages": {
+            "type": "array",
+            "minItems": 1,
+            "items": { "$ref": "#/components/schemas/PipelineStageInput" }
+          }
+        }
+      },
+      "UpdatePipelineRequest": {
+        "type": "object",
+        "properties": {
+          "name": {
+            "type": "string",
+            "maxLength": 50,
+            "example": "Renamed Pipeline"
+          },
+          "stages": {
+            "type": "array",
+            "minItems": 1,
+            "items": { "$ref": "#/components/schemas/PipelineStageUpdateInput" }
+          }
+        }
+      },
+      "PipelineResponse": {
+        "type": "object",
+        "properties": {
+          "data": { "$ref": "#/components/schemas/Pipeline" }
+        }
+      },
+      "PipelineListResponse": {
+        "type": "object",
+        "properties": {
+          "data": {
+            "type": "array",
+            "items": { "$ref": "#/components/schemas/Pipeline" }
+          },
+          "meta": {
+            "type": "object",
+            "properties": {
+              "total": { "type": "integer", "example": 3 },
+              "page": { "type": "integer", "example": 1 },
+              "per_page": { "type": "integer", "example": 50 },
+              "has_more": { "type": "boolean", "example": false }
+            }
+          }
+        }
+      }
+    }
+  }
+}

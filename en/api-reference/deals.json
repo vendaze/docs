@@ -27,6 +27,113 @@
   ],
   "paths": {
     "/v1/deals": {
+      "get": {
+        "operationId": "listDeals",
+        "summary": "List deals",
+        "description": "Returns a paginated list of deals in the workspace.\n\n<Accordion title=\"Required scope\">\n`deals:read`\n</Accordion>",
+        "tags": ["Deals"],
+        "parameters": [
+          {
+            "name": "page",
+            "in": "query",
+            "schema": { "type": "integer", "minimum": 1, "default": 1 },
+            "description": "Page number."
+          },
+          {
+            "name": "per_page",
+            "in": "query",
+            "schema": { "type": "integer", "minimum": 1, "maximum": 100, "default": 50 },
+            "description": "Number of records per page. Maximum: 100."
+          },
+          {
+            "name": "order_by",
+            "in": "query",
+            "schema": { "type": "string", "enum": ["created_at", "updated_at", "name"], "default": "created_at" },
+            "description": "Field to sort by."
+          },
+          {
+            "name": "order",
+            "in": "query",
+            "schema": { "type": "string", "enum": ["asc", "desc"], "default": "desc" },
+            "description": "Sort direction."
+          },
+          {
+            "name": "name",
+            "in": "query",
+            "schema": { "type": "string" },
+            "description": "Filter by deal name (case-insensitive partial match)."
+          },
+          {
+            "name": "pipeline_id",
+            "in": "query",
+            "schema": { "type": "string", "format": "uuid" },
+            "description": "Filter by pipeline UUID."
+          },
+          {
+            "name": "stage_id",
+            "in": "query",
+            "schema": { "type": "string", "format": "uuid" },
+            "description": "Filter by stage UUID."
+          },
+          {
+            "name": "source",
+            "in": "query",
+            "schema": { "type": "string" },
+            "description": "Filter by source (exact match). The source is the name of the OAuth app that created the deal."
+          },
+          {
+            "name": "forecast_after",
+            "in": "query",
+            "schema": { "type": "string", "format": "date-time" },
+            "description": "Filter deals with forecast_date on or after this date (ISO 8601)."
+          },
+          {
+            "name": "forecast_before",
+            "in": "query",
+            "schema": { "type": "string", "format": "date-time" },
+            "description": "Filter deals with forecast_date on or before this date (ISO 8601)."
+          },
+          {
+            "name": "created_after",
+            "in": "query",
+            "schema": { "type": "string", "format": "date-time" },
+            "description": "Filter deals created on or after this date (ISO 8601)."
+          },
+          {
+            "name": "created_before",
+            "in": "query",
+            "schema": { "type": "string", "format": "date-time" },
+            "description": "Filter deals created on or before this date (ISO 8601)."
+          },
+          {
+            "name": "updated_after",
+            "in": "query",
+            "schema": { "type": "string", "format": "date-time" },
+            "description": "Filter deals updated on or after this date (ISO 8601)."
+          },
+          {
+            "name": "updated_before",
+            "in": "query",
+            "schema": { "type": "string", "format": "date-time" },
+            "description": "Filter deals updated on or before this date (ISO 8601)."
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Deals listed successfully.",
+            "content": {
+              "application/json": {
+                "schema": { "$ref": "#/components/schemas/DealListResponse" }
+              }
+            }
+          },
+          "401": { "$ref": "#/components/responses/Unauthorized" },
+          "403": { "$ref": "#/components/responses/InsufficientScope" },
+          "422": { "$ref": "#/components/responses/ValidationError" },
+          "429": { "$ref": "#/components/responses/RateLimitExceeded" },
+          "500": { "$ref": "#/components/responses/InternalError" }
+        }
+      },
       "post": {
         "operationId": "createDeal",
         "summary": "Create a deal",
@@ -506,7 +613,7 @@
           },
           "total_price_cts": {
             "type": "integer",
-            "description": "Total price in cents (unit_price_cts x quantity).",
+            "description": "Total price in cents.",
             "example": 100000
           }
         }
@@ -561,7 +668,7 @@
           },
           "source": {
             "type": "string",
-            "description": "Name of the OAuth app that created the deal. Read-only.",
+            "description": "Name of the OAuth app that created the deal.",
             "example": "My Integration App"
           },
           "forecast_date": {
@@ -755,13 +862,12 @@
           "quantity": {
             "type": "integer",
             "minimum": 1,
-            "default": 1,
-            "description": "Number of units. Only applicable for one-time products. Recurring products (monthly, quarterly, annually) always use quantity 1 regardless of the value sent."
+            "default": 1
           },
           "unit_price_cts": {
             "type": "integer",
             "minimum": 0,
-            "description": "Overrides the product's catalog price. In cents. If omitted, the product's default price is used.",
+            "description": "Unit price in cents.",
             "example": 50000
           }
         }
@@ -790,13 +896,13 @@
             "type": "integer",
             "minimum": 0,
             "default": 0,
-            "description": "Deal value in cents. If the request includes associated products (`products`), this value and the currency (`currency`) will be ignored. The deal will automatically inherit the calculated sum of the products and the currency of the first associated product.",
+            "description": "Deal value in cents.",
             "example": 250000
           },
           "owner_email": {
             "type": "string",
             "format": "email",
-            "description": "Email of the workspace member to set as owner. The API resolves it to the internal user ID. Must be a member of this workspace.",
+            "description": "Email of the workspace member to set as owner.",
             "example": "joao@company.com"
           },
           "forecast_date": {
@@ -828,7 +934,7 @@
               "minLength": 1,
               "maxLength": 30
             },
-            "description": "Tag names (keys) to associate with the deal. If a tag doesn't exist, it will be automatically created."
+            "description": "Tag keys to associate with the deal."
           },
           "custom_fields": {
             "type": "array",
@@ -839,16 +945,14 @@
                 "field_key": {
                   "type": "string",
                   "maxLength": 35,
-                  "example": "deal_source",
-                  "description": "Key of the custom field (e.g. `deal_source`). If no field with this key exists in the workspace, it is created automatically with type `text`."
+                  "example": "deal_source"
                 },
                 "value": {
-                  "type": "string",
-                  "description": "Field value as a string."
+                  "type": "string"
                 }
               }
             },
-            "description": "Custom field values to set for the deal. Identified by `field_key`. If the field does not exist, it is created automatically with type `text`."
+            "description": "Custom field values to set for the deal."
           },
           "products": {
             "type": "array",
@@ -879,13 +983,13 @@
           "price_cts": {
             "type": "integer",
             "minimum": 0,
-            "description": "Deal value in cents. If the request includes associated products (`products`), this value and the currency (`currency`) will be ignored. The deal will automatically inherit the calculated sum of the products and the currency of the first associated product."
+            "description": "Deal value in cents."
           },
           "owner_email": {
             "type": "string",
             "format": "email",
             "nullable": true,
-            "description": "Email of the workspace member to set as owner. Pass `null` to remove the owner. Must be a member of this workspace.",
+            "description": "Email of the workspace member to set as owner.",
             "example": "joao@company.com"
           },
           "forecast_date": {
@@ -914,7 +1018,7 @@
               "minLength": 1,
               "maxLength": 30
             },
-            "description": "Tag names (keys) to associate with the deal. If a tag doesn't exist, it will be automatically created."
+            "description": "Tag keys to associate with the deal."
           },
           "custom_fields": {
             "type": "array",
@@ -925,16 +1029,14 @@
                 "field_key": {
                   "type": "string",
                   "maxLength": 35,
-                  "example": "deal_source",
-                  "description": "Key of the custom field (e.g. `deal_source`). If no field with this key exists in the workspace, it is created automatically with type `text`."
+                  "example": "deal_source"
                 },
                 "value": {
-                  "type": "string",
-                  "description": "Field value as a string."
+                  "type": "string"
                 }
               }
             },
-            "description": "Custom field values. Behavior depends on `association_mode`. In `append` mode, replaces the value for each `field_key` sent without touching others."
+            "description": "Custom field values to set for the deal."
           },
           "products": {
             "type": "array",
@@ -945,8 +1047,7 @@
           "association_mode": {
             "type": "string",
             "enum": ["append", "replace"],
-            "default": "append",
-            "description": "append: adds without removing existing. replace: removes all associations of the sent types and inserts the new ones."
+            "default": "append"
           }
         }
       },
@@ -955,6 +1056,24 @@
         "properties": {
           "data": {
             "$ref": "#/components/schemas/DealWithEmbedded"
+          }
+        }
+      },
+      "DealListResponse": {
+        "type": "object",
+        "properties": {
+          "data": {
+            "type": "array",
+            "items": { "$ref": "#/components/schemas/Deal" }
+          },
+          "meta": {
+            "type": "object",
+            "properties": {
+              "total": { "type": "integer", "example": 42 },
+              "page": { "type": "integer", "example": 1 },
+              "per_page": { "type": "integer", "example": 50 },
+              "has_more": { "type": "boolean", "example": false }
+            }
           }
         }
       }

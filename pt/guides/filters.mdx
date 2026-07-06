@@ -50,6 +50,40 @@ curl "https://api.vendaze.com/v1/companies?full_name=tecnologia" \
 
 ---
 
+### `GET /v1/deals`
+
+| Parâmetro         | Tipo     | Comparação     | Descrição                                                     |
+| ----------------- | -------- | -------------- | ------------------------------------------------------------- |
+| `name`            | string   | contém (ilike) | Filtra pelo nome do negócio. Não diferencia maiúsculas.       |
+| `pipeline_id`     | UUID     | exato          | Retorna apenas negócios do pipeline informado.                |
+| `stage_id`        | UUID     | exato          | Retorna apenas negócios na etapa informada.                   |
+| `source`          | string   | exato          | Filtra pela origem (nome do OAuth app que criou o negócio).   |
+| `forecast_after`  | ISO 8601 | `>=`           | Negócios com data de previsão igual ou posterior a esta data. |
+| `forecast_before` | ISO 8601 | `<=`           | Negócios com data de previsão igual ou anterior a esta data.  |
+| `created_after`   | ISO 8601 | `>=`           | Registros criados a partir desta data.                        |
+| `created_before`  | ISO 8601 | `<=`           | Registros criados até esta data.                              |
+| `updated_after`   | ISO 8601 | `>=`           | Registros atualizados a partir desta data.                    |
+| `updated_before`  | ISO 8601 | `<=`           | Registros atualizados até esta data.                          |
+
+```bash
+# Negócios de um pipeline com previsão de fechamento até o fim do ano
+curl "https://api.vendaze.com/v1/deals?pipeline_id=a1b2c3d4-e5f6-7890-abcd-ef1234567890&forecast_before=2026-12-31T23:59:59Z" \
+  -H "Authorization: Bearer {access_token}"
+```
+
+---
+
+### `GET /v1/pipelines`
+
+O endpoint de listagem de pipelines não suporta filtros por campo. Use `order_by` e `order` para controlar a ordenação.
+
+```bash
+curl "https://api.vendaze.com/v1/pipelines?order_by=name&order=asc" \
+  -H "Authorization: Bearer {access_token}"
+```
+
+---
+
 ### `GET /v1/tasks`
 
 | Parâmetro        | Tipo     | Comparação | Descrição                                             |

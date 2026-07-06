@@ -12,7 +12,7 @@ All list endpoints in the Vendaze API return paginated results. The response alw
 | Parameter  | Type    | Default      | Description                                         |
 | ---------- | ------- | ------------ | --------------------------------------------------- |
 | `page`     | integer | `1`          | Page number. Must be a positive integer.            |
-| `per_page` | integer | `50`         | Number of records per page. Maximum: `50`.          |
+| `per_page` | integer | `50`         | Number of records per page. Maximum: `100`.         |
 | `order_by` | string  | `created_at` | Field to sort by. Accepted values vary by endpoint. |
 | `order`    | string  | `desc`       | Sort direction. Must be `asc` or `desc`.            |
 
@@ -22,6 +22,8 @@ All list endpoints in the Vendaze API return paginated results. The response alw
 | --------------- | --------------------------------------- |
 | `people`        | `created_at`, `updated_at`, `full_name` |
 | `companies`     | `created_at`, `updated_at`, `full_name` |
+| `deals`         | `created_at`, `updated_at`, `name`      |
+| `pipelines`     | `created_at`, `name`                    |
 | `tasks`         | `created_at`, `updated_at`, `due_date`  |
 | `task-types`    | `created_at`, `title`                   |
 | `products`      | `created_at`, `name`                    |

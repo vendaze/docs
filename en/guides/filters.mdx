@@ -51,6 +51,40 @@ curl "https://api.vendaze.com/v1/companies?full_name=tech" \
 
 ---
 
+### `GET /v1/deals`
+
+| Parameter         | Type     | Comparison       | Description                                                         |
+| ----------------- | -------- | ---------------- | ------------------------------------------------------------------- |
+| `name`            | string   | contains (ilike) | Filter by deal name. Case-insensitive.                              |
+| `pipeline_id`     | UUID     | exact            | Returns only deals in the given pipeline.                           |
+| `stage_id`        | UUID     | exact            | Returns only deals in the given stage.                              |
+| `source`          | string   | exact            | Filter by source (the name of the OAuth app that created the deal). |
+| `forecast_after`  | ISO 8601 | `>=`             | Deals with forecast date on or after this date.                     |
+| `forecast_before` | ISO 8601 | `<=`             | Deals with forecast date on or before this date.                    |
+| `created_after`   | ISO 8601 | `>=`             | Records created on or after this date.                              |
+| `created_before`  | ISO 8601 | `<=`             | Records created on or before this date.                             |
+| `updated_after`   | ISO 8601 | `>=`             | Records updated on or after this date.                              |
+| `updated_before`  | ISO 8601 | `<=`             | Records updated on or before this date.                             |
+
+```bash
+# Deals in a specific pipeline closing before end of year
+curl "https://api.vendaze.com/v1/deals?pipeline_id=a1b2c3d4-e5f6-7890-abcd-ef1234567890&forecast_before=2026-12-31T23:59:59Z" \
+  -H "Authorization: Bearer {access_token}"
+```
+
+---
+
+### `GET /v1/pipelines`
+
+The pipelines list endpoint does not support field-level filters. Use `order_by` and `order` to control the sort order.
+
+```bash
+curl "https://api.vendaze.com/v1/pipelines?order_by=name&order=asc" \
+  -H "Authorization: Bearer {access_token}"
+```
+
+---
+
 ### `GET /v1/tasks`
 
 | Parameter        | Type     | Comparison | Description                                        |

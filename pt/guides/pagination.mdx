@@ -12,7 +12,7 @@ Todos os endpoints de listagem da API Vendaze retornam resultados paginados. A r
 | Parâmetro  | Tipo    | Padrão       | Descrição                                                     |
 | ---------- | ------- | ------------ | ------------------------------------------------------------- |
 | `page`     | inteiro | `1`          | Número da página. Deve ser um inteiro positivo.               |
-| `per_page` | inteiro | `50`         | Quantidade de registros por página. Máximo: `50`.             |
+| `per_page` | inteiro | `50`         | Quantidade de registros por página. Máximo: `100`.            |
 | `order_by` | string  | `created_at` | Campo para ordenação. Os valores aceitos variam por endpoint. |
 | `order`    | string  | `desc`       | Direção da ordenação. Deve ser `asc` ou `desc`.               |
 
@@ -22,6 +22,8 @@ Todos os endpoints de listagem da API Vendaze retornam resultados paginados. A r
 | --------------- | --------------------------------------- |
 | `people`        | `created_at`, `updated_at`, `full_name` |
 | `companies`     | `created_at`, `updated_at`, `full_name` |
+| `deals`         | `created_at`, `updated_at`, `name`      |
+| `pipelines`     | `created_at`, `name`                    |
 | `tasks`         | `created_at`, `updated_at`, `due_date`  |
 | `task-types`    | `created_at`, `title`                   |
 | `products`      | `created_at`, `name`                    |

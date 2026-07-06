@@ -27,6 +27,113 @@
   ],
   "paths": {
     "/v1/deals": {
+      "get": {
+        "operationId": "listDeals",
+        "summary": "Listar negócios",
+        "description": "Retorna uma lista paginada de negócios do workspace.\n\n<Accordion title=\"Escopo necessário\">\n`deals:read`\n</Accordion>",
+        "tags": ["Negócios"],
+        "parameters": [
+          {
+            "name": "page",
+            "in": "query",
+            "schema": { "type": "integer", "minimum": 1, "default": 1 },
+            "description": "Número da página."
+          },
+          {
+            "name": "per_page",
+            "in": "query",
+            "schema": { "type": "integer", "minimum": 1, "maximum": 100, "default": 50 },
+            "description": "Registros por página. Máximo: 100."
+          },
+          {
+            "name": "order_by",
+            "in": "query",
+            "schema": { "type": "string", "enum": ["created_at", "updated_at", "name"], "default": "created_at" },
+            "description": "Campo de ordenação."
+          },
+          {
+            "name": "order",
+            "in": "query",
+            "schema": { "type": "string", "enum": ["asc", "desc"], "default": "desc" },
+            "description": "Direção da ordenação."
+          },
+          {
+            "name": "name",
+            "in": "query",
+            "schema": { "type": "string" },
+            "description": "Filtrar pelo nome do negócio (busca parcial, sem distinção de maiúsculas/minúsculas)."
+          },
+          {
+            "name": "pipeline_id",
+            "in": "query",
+            "schema": { "type": "string", "format": "uuid" },
+            "description": "Filtrar pelo UUID do pipeline."
+          },
+          {
+            "name": "stage_id",
+            "in": "query",
+            "schema": { "type": "string", "format": "uuid" },
+            "description": "Filtrar pelo UUID da etapa."
+          },
+          {
+            "name": "source",
+            "in": "query",
+            "schema": { "type": "string" },
+            "description": "Filtrar pela origem (correspondência exata). A origem é o nome do OAuth app que criou o negócio."
+          },
+          {
+            "name": "forecast_after",
+            "in": "query",
+            "schema": { "type": "string", "format": "date-time" },
+            "description": "Negócios com forecast_date igual ou posterior a esta data (ISO 8601)."
+          },
+          {
+            "name": "forecast_before",
+            "in": "query",
+            "schema": { "type": "string", "format": "date-time" },
+            "description": "Negócios com forecast_date igual ou anterior a esta data (ISO 8601)."
+          },
+          {
+            "name": "created_after",
+            "in": "query",
+            "schema": { "type": "string", "format": "date-time" },
+            "description": "Negócios criados igual ou após esta data (ISO 8601)."
+          },
+          {
+            "name": "created_before",
+            "in": "query",
+            "schema": { "type": "string", "format": "date-time" },
+            "description": "Negócios criados igual ou antes desta data (ISO 8601)."
+          },
+          {
+            "name": "updated_after",
+            "in": "query",
+            "schema": { "type": "string", "format": "date-time" },
+            "description": "Negócios atualizados igual ou após esta data (ISO 8601)."
+          },
+          {
+            "name": "updated_before",
+            "in": "query",
+            "schema": { "type": "string", "format": "date-time" },
+            "description": "Negócios atualizados igual ou antes desta data (ISO 8601)."
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Negócios listados com sucesso.",
+            "content": {
+              "application/json": {
+                "schema": { "$ref": "#/components/schemas/DealListResponse" }
+              }
+            }
+          },
+          "401": { "$ref": "#/components/responses/Unauthorized" },
+          "403": { "$ref": "#/components/responses/InsufficientScope" },
+          "422": { "$ref": "#/components/responses/ValidationError" },
+          "429": { "$ref": "#/components/responses/RateLimitExceeded" },
+          "500": { "$ref": "#/components/responses/InternalError" }
+        }
+      },
       "post": {
         "operationId": "createDeal",
         "summary": "Criar negócio",
@@ -506,7 +613,7 @@
           },
           "total_price_cts": {
             "type": "integer",
-            "description": "Preço total em centavos (unit_price_cts × quantity).",
+            "description": "Preço total em centavos.",
             "example": 100000
           }
         }
@@ -561,7 +668,7 @@
           },
           "source": {
             "type": "string",
-            "description": "Nome do OAuth app que criou o negócio. Somente leitura.",
+            "description": "Nome do OAuth app que criou o negócio.",
             "example": "Minha Integração"
           },
           "forecast_date": {
@@ -755,13 +862,12 @@
           "quantity": {
             "type": "integer",
             "minimum": 1,
-            "default": 1,
-            "description": "Quantidade de unidades. Aplicável apenas para produtos avulsos (one_time). Produtos recorrentes (monthly, quarterly, annually) sempre usam quantidade 1, independente do valor enviado."
+            "default": 1
           },
           "unit_price_cts": {
             "type": "integer",
             "minimum": 0,
-            "description": "Sobrescreve o preço de catálogo do produto. Em centavos. Se omitido, usa o preço padrão do produto.",
+            "description": "Preço unitário em centavos.",
             "example": 50000
           }
         }
@@ -790,13 +896,13 @@
             "type": "integer",
             "minimum": 0,
             "default": 0,
-            "description": "Valor em centavos. Se a requisição incluir produtos associados (`products`), este valor e a moeda (`currency`) serão ignorados. O negócio herdará automaticamente a soma calculada dos produtos e a moeda do primeiro produto associado.",
+            "description": "Valor em centavos.",
             "example": 250000
           },
           "owner_email": {
             "type": "string",
             "format": "email",
-            "description": "E-mail do membro do workspace a definir como responsável. A API resolve internamente para o ID do usuário. Deve ser membro deste workspace.",
+            "description": "E-mail do membro do workspace a definir como responsável.",
             "example": "joao@empresa.com"
           },
           "forecast_date": {
@@ -828,7 +934,7 @@
               "minLength": 1,
               "maxLength": 30
             },
-            "description": "Nomes (keys) das tags a associar ao negócio. Se a tag não existir, será criada automaticamente."
+            "description": "Chaves das tags a associar ao negócio."
           },
           "custom_fields": {
             "type": "array",
@@ -839,16 +945,14 @@
                 "field_key": {
                   "type": "string",
                   "maxLength": 35,
-                  "example": "origem_negocio",
-                  "description": "Chave do campo adicional (ex: `origem_negocio`). Se não existir nenhum campo com essa chave no workspace, ele é criado automaticamente com tipo `text`."
+                  "example": "origem_negocio"
                 },
                 "value": {
-                  "type": "string",
-                  "description": "Valor do campo como string."
+                  "type": "string"
                 }
               }
             },
-            "description": "Valores de campos adicionais a definir no negócio. Identificados por `field_key`. Se o campo não existir, é criado automaticamente com tipo `text`."
+            "description": "Valores de campos adicionais a definir no negócio."
           },
           "products": {
             "type": "array",
@@ -879,13 +983,13 @@
           "price_cts": {
             "type": "integer",
             "minimum": 0,
-            "description": "Valor em centavos. Se a requisição incluir produtos associados (`products`), este valor e a moeda (`currency`) serão ignorados. O negócio herdará automaticamente a soma calculada dos produtos e a moeda do primeiro produto associado."
+            "description": "Valor em centavos."
           },
           "owner_email": {
             "type": "string",
             "format": "email",
             "nullable": true,
-            "description": "E-mail do membro do workspace a definir como responsável. Envie `null` para remover o responsável. Deve ser membro deste workspace.",
+            "description": "E-mail do membro do workspace a definir como responsável.",
             "example": "joao@empresa.com"
           },
           "forecast_date": {
@@ -914,7 +1018,7 @@
               "minLength": 1,
               "maxLength": 30
             },
-            "description": "Nomes (keys) das tags a associar. Se a tag não existir, será criada automaticamente."
+            "description": "Chaves das tags a associar."
           },
           "custom_fields": {
             "type": "array",
@@ -925,16 +1029,14 @@
                 "field_key": {
                   "type": "string",
                   "maxLength": 35,
-                  "example": "origem_negocio",
-                  "description": "Chave do campo adicional (ex: `origem_negocio`). Se não existir nenhum campo com essa chave no workspace, ele é criado automaticamente com tipo `text`."
+                  "example": "origem_negocio"
                 },
                 "value": {
-                  "type": "string",
-                  "description": "Valor do campo como string."
+                  "type": "string"
                 }
               }
             },
-            "description": "Valores de campos adicionais. O comportamento depende de `association_mode`. No modo `append`, substitui o valor de cada `field_key` enviado sem alterar os demais."
+            "description": "Valores de campos adicionais."
           },
           "products": {
             "type": "array",
@@ -945,8 +1047,7 @@
           "association_mode": {
             "type": "string",
             "enum": ["append", "replace"],
-            "default": "append",
-            "description": "append: adiciona sem remover existentes. replace: remove todas as associações dos tipos enviados e insere as novas."
+            "default": "append"
           }
         }
       },
@@ -955,6 +1056,24 @@
         "properties": {
           "data": {
             "$ref": "#/components/schemas/DealWithEmbedded"
+          }
+        }
+      },
+      "DealListResponse": {
+        "type": "object",
+        "properties": {
+          "data": {
+            "type": "array",
+            "items": { "$ref": "#/components/schemas/Deal" }
+          },
+          "meta": {
+            "type": "object",
+            "properties": {
+              "total": { "type": "integer", "example": 42 },
+              "page": { "type": "integer", "example": 1 },
+              "per_page": { "type": "integer", "example": 50 },
+              "has_more": { "type": "boolean", "example": false }
+            }
           }
         }
       }
