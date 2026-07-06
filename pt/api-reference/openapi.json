@@ -5694,7 +5694,6 @@
           },
           "amount": {
             "type": "integer",
-            "description": "Valor em centavos. 250000 = R$ 2.500,00",
             "example": 250000
           },
           "currency": {
@@ -5703,26 +5702,56 @@
           "formatted_amount": {
             "type": "string",
             "nullable": true,
-            "description": "Valor formatado usando o símbolo, separador decimal e separador de milhar da moeda.",
             "example": "R$ 2.500,00"
+          },
+          "pipeline": {
+            "type": "object",
+            "nullable": true,
+            "properties": {
+              "id": {
+                "type": "string",
+                "format": "uuid"
+              },
+              "name": {
+                "type": "string"
+              }
+            }
+          },
+          "stage": {
+            "type": "object",
+            "nullable": true,
+            "properties": {
+              "id": {
+                "type": "string",
+                "format": "uuid"
+              },
+              "name": {
+                "type": "string"
+              },
+              "type": {
+                "type": "string",
+                "enum": [
+                  "open",
+                  "win",
+                  "lost"
+                ]
+              }
+            }
           },
           "owner": {
             "$ref": "#/components/schemas/Owner"
           },
           "source": {
             "type": "string",
-            "description": "Nome do OAuth app que criou o negócio.",
             "example": "Minha Integração"
           },
           "forecast_date": {
             "type": "string",
             "format": "date-time",
-            "nullable": true,
-            "example": "2026-12-31T00:00:00Z"
+            "nullable": true
           },
           "entity_id": {
             "type": "string",
-            "description": "Identificador único legível.",
             "example": "NEG-0001"
           },
           "created_at": {
@@ -5743,40 +5772,6 @@
           {
             "type": "object",
             "properties": {
-              "pipeline": {
-                "type": "object",
-                "nullable": true,
-                "properties": {
-                  "id": {
-                    "type": "string",
-                    "format": "uuid"
-                  },
-                  "name": {
-                    "type": "string"
-                  }
-                }
-              },
-              "stage": {
-                "type": "object",
-                "nullable": true,
-                "properties": {
-                  "id": {
-                    "type": "string",
-                    "format": "uuid"
-                  },
-                  "name": {
-                    "type": "string"
-                  },
-                  "type": {
-                    "type": "string",
-                    "enum": [
-                      "open",
-                      "win",
-                      "lost"
-                    ]
-                  }
-                }
-              },
               "products": {
                 "type": "array",
                 "items": {

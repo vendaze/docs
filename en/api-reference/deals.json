@@ -641,95 +641,42 @@
       "Deal": {
         "type": "object",
         "properties": {
-          "id": {
-            "type": "string",
-            "format": "uuid"
-          },
-          "name": {
-            "type": "string",
-            "example": "Acme Corp Annual Contract"
-          },
-          "amount": {
-            "type": "integer",
-            "description": "Deal value in cents. 250000 = R$ 2,500.00",
-            "example": 250000
-          },
-          "currency": {
-            "$ref": "#/components/schemas/CurrencyCode"
-          },
-          "formatted_amount": {
-            "type": "string",
+          "id": { "type": "string", "format": "uuid" },
+          "name": { "type": "string", "example": "Acme Corp Annual Contract" },
+          "amount": { "type": "integer", "example": 250000 },
+          "currency": { "$ref": "#/components/schemas/CurrencyCode" },
+          "formatted_amount": { "type": "string", "nullable": true, "example": "R$ 2.500,00" },
+          "pipeline": {
+            "type": "object",
             "nullable": true,
-            "description": "Deal value formatted using the currency's symbol, decimal separator, and thousands separator.",
-            "example": "R$ 2.500,00"
+            "properties": {
+              "id": { "type": "string", "format": "uuid" },
+              "name": { "type": "string" }
+            }
           },
-          "owner": {
-            "$ref": "#/components/schemas/Owner"
-          },
-          "source": {
-            "type": "string",
-            "description": "Name of the OAuth app that created the deal.",
-            "example": "My Integration App"
-          },
-          "forecast_date": {
-            "type": "string",
-            "format": "date-time",
+          "stage": {
+            "type": "object",
             "nullable": true,
-            "example": "2026-12-31T00:00:00Z"
+            "properties": {
+              "id": { "type": "string", "format": "uuid" },
+              "name": { "type": "string" },
+              "type": { "type": "string", "enum": ["open", "win", "lost"] }
+            }
           },
-          "entity_id": {
-            "type": "string",
-            "description": "Human-readable unique identifier.",
-            "example": "NEG-0001"
-          },
-          "created_at": {
-            "type": "string",
-            "format": "date-time"
-          },
-          "updated_at": {
-            "type": "string",
-            "format": "date-time"
-          }
+          "owner": { "$ref": "#/components/schemas/Owner" },
+          "source": { "type": "string", "example": "My Integration App" },
+          "forecast_date": { "type": "string", "format": "date-time", "nullable": true },
+          "entity_id": { "type": "string", "example": "NEG-0001" },
+          "created_at": { "type": "string", "format": "date-time" },
+          "updated_at": { "type": "string", "format": "date-time" }
         }
       },
       "DealWithEmbedded": {
         "allOf": [
-          {
-            "$ref": "#/components/schemas/Deal"
-          },
+          { "$ref": "#/components/schemas/Deal" },
           {
             "type": "object",
             "properties": {
-              "pipeline": {
-                "type": "object",
-                "nullable": true,
-                "properties": {
-                  "id": {
-                    "type": "string",
-                    "format": "uuid"
-                  },
-                  "name": {
-                    "type": "string"
-                  }
-                }
-              },
-              "stage": {
-                "type": "object",
-                "nullable": true,
-                "properties": {
-                  "id": {
-                    "type": "string",
-                    "format": "uuid"
-                  },
-                  "name": {
-                    "type": "string"
-                  },
-                  "type": {
-                    "type": "string",
-                    "enum": ["open", "win", "lost"]
-                  }
-                }
-              },
               "products": {
                 "type": "array",
                 "items": {
