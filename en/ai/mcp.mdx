@@ -8,19 +8,132 @@ keywords:
 
 The Vendaze MCP (Model Context Protocol) server lets you connect AI assistants to your Vendaze account. Once connected, your assistant can search contacts, view deals, create tasks, log activities, and much more, all from within the conversation, without you having to open Vendaze.
 
-The Vendaze MCP is available as a listed integration in **Claude**, **ChatGPT**, and **Manus**.
+## Platforms with native integration
 
-<CardGroup cols={3}>
+The Vendaze MCP is available as a listed integration in **Claude** and **ChatGPT**. On these platforms, simply search for Vendaze and connect your account, no technical setup required.
+
+<CardGroup cols={2}>
   <Card title="Claude" icon="comment-dots" href="/en/ai/claude">
     Connect via the Claude app directory.
   </Card>
   <Card title="ChatGPT" icon="robot" href="/en/ai/chatgpt">
     Connect via ChatGPT connectors.
   </Card>
-  <Card title="Manus" icon="wand-magic-sparkles" href="/en/ai/manus">
-    Connect via the Manus integrations panel.
-  </Card>
 </CardGroup>
+
+## Other platforms and IDEs
+
+The Vendaze MCP can be connected in any client that supports the Model Context Protocol. Select your tool to see the setup instructions:
+
+<Tabs>
+  <Tab title="Claude Code">
+    Run the following command in your terminal to add the Vendaze MCP server:
+
+    ```bash
+    claude mcp add --transport http vendaze https://mcp.vendaze.com/mcp
+    ```
+
+    The server will be available in all Claude Code sessions from that point on.
+
+  </Tab>
+  <Tab title="Cursor">
+    Open `~/.cursor/mcp.json` (or create it if it does not exist) and add the Vendaze entry:
+
+    ```json
+    {
+      "mcpServers": {
+        "vendaze": {
+          "url": "https://mcp.vendaze.com/mcp"
+        }
+      }
+    }
+    ```
+
+    Restart Cursor after saving. The server will appear in the MCP panel in settings.
+
+  </Tab>
+  <Tab title="Windsurf">
+    Open `~/.codeium/windsurf/mcp_config.json` (or create it if it does not exist) and add the Vendaze entry:
+
+    ```json
+    {
+      "mcpServers": {
+        "vendaze": {
+          "serverUrl": "https://mcp.vendaze.com/mcp"
+        }
+      }
+    }
+    ```
+
+    Restart Windsurf after saving. The server will appear in the MCP tab in settings.
+
+  </Tab>
+  <Tab title="Kiro AI">
+    Open `.kiro/settings/mcp.json` at the root of your project (or `~/.kiro/settings/mcp.json` for a global configuration) and add the Vendaze entry:
+
+    ```json
+    {
+      "mcpServers": {
+        "vendaze": {
+          "url": "https://mcp.vendaze.com/mcp"
+        }
+      }
+    }
+    ```
+
+    Kiro reconnects automatically when the configuration file is saved.
+
+  </Tab>
+  <Tab title="GitHub Copilot">
+    Create or edit `.vscode/mcp.json` at the root of your project and add the Vendaze entry:
+
+    ```json
+    {
+      "servers": {
+        "vendaze": {
+          "url": "https://mcp.vendaze.com/mcp"
+        }
+      }
+    }
+    ```
+
+    For a global configuration, go to **Settings > MCP Servers** in VS Code and add the server through the UI.
+
+  </Tab>
+  <Tab title="Gemini CLI">
+    Open `~/.gemini/settings.json` (or create it if it does not exist) and add the Vendaze entry:
+
+    ```json
+    {
+      "mcpServers": {
+        "vendaze": {
+          "httpUrl": "https://mcp.vendaze.com/mcp"
+        }
+      }
+    }
+    ```
+
+    Gemini CLI loads the configuration automatically on the next run.
+
+  </Tab>
+  <Tab title="Codex CLI">
+    Open `~/.codex/config.json` (or create it if it does not exist) and add the Vendaze entry:
+
+    ```json
+    {
+      "mcpServers": {
+        "vendaze": {
+          "url": "https://mcp.vendaze.com/mcp",
+          "transport": "http"
+        }
+      }
+    }
+    ```
+
+    Codex CLI loads the configuration automatically on the next run.
+
+  </Tab>
+</Tabs>
 
 ## What your assistant can do
 
@@ -58,13 +171,16 @@ Once connected, your AI assistant has access to the following actions on your Ve
 
 ### Tasks
 
-| Tool          | Description                                          |
-| ------------- | ---------------------------------------------------- |
-| `list_tasks`  | Lists tasks filtered by entity, priority, or status. |
-| `get_task`    | Fetches a task by ID.                                |
-| `create_task` | Creates a new task.                                  |
-| `update_task` | Updates an existing task.                            |
-| `delete_task` | Removes a task.                                      |
+| Tool               | Description                                          |
+| ------------------ | ---------------------------------------------------- |
+| `list_tasks`       | Lists tasks filtered by entity, priority, or status. |
+| `create_task`      | Creates a new task.                                  |
+| `update_task`      | Updates an existing task.                            |
+| `delete_task`      | Removes a task.                                      |
+| `list_task_types`  | Lists the task types available in the workspace.     |
+| `create_task_type` | Creates a new task type.                             |
+| `update_task_type` | Updates an existing task type.                       |
+| `delete_task_type` | Removes a task type.                                 |
 
 ### Activities
 
@@ -75,13 +191,52 @@ Once connected, your AI assistant has access to the following actions on your Ve
 | `create_activity` | Logs a new activity (call, meeting, email, or note).   |
 | `delete_activity` | Removes an activity.                                   |
 
-### Utilities
+### Products
 
-| Tool                 | Description                                         |
-| -------------------- | --------------------------------------------------- |
-| `list_custom_fields` | Lists the custom fields available in the workspace. |
-| `list_tags`          | Lists all tags in the workspace.                    |
-| `list_products`      | Lists available products.                           |
+| Tool             | Description                                    |
+| ---------------- | ---------------------------------------------- |
+| `list_products`  | Lists the products available in the workspace. |
+| `get_product`    | Fetches a product by ID.                       |
+| `create_product` | Creates a new product.                         |
+| `update_product` | Updates fields on an existing product.         |
+| `delete_product` | Removes (soft delete) a product.               |
+
+### Tags
+
+| Tool         | Description                         |
+| ------------ | ----------------------------------- |
+| `list_tags`  | Lists all tags in the workspace.    |
+| `get_tag`    | Fetches a tag by ID or key.         |
+| `create_tag` | Creates a new tag.                  |
+| `update_tag` | Updates the name or color of a tag. |
+| `delete_tag` | Removes a tag from the workspace.   |
+
+### Lists
+
+| Tool          | Description                           |
+| ------------- | ------------------------------------- |
+| `list_lists`  | Lists contact lists in the workspace. |
+| `create_list` | Creates a new contact list.           |
+| `update_list` | Renames an existing list.             |
+| `delete_list` | Removes a contact list.               |
+
+### Custom Fields
+
+| Tool                  | Description                                         |
+| --------------------- | --------------------------------------------------- |
+| `list_custom_fields`  | Lists the custom fields available in the workspace. |
+| `create_custom_field` | Creates a new custom field.                         |
+| `update_custom_field` | Updates an existing custom field.                   |
+| `delete_custom_field` | Removes a custom field.                             |
+
+### Pipelines
+
+| Tool              | Description                                   |
+| ----------------- | --------------------------------------------- |
+| `list_pipelines`  | Lists pipelines and their stages.             |
+| `get_pipeline`    | Fetches a pipeline by ID with all its stages. |
+| `create_pipeline` | Creates a new pipeline with stages.           |
+| `update_pipeline` | Updates a pipeline or its stages.             |
 
 ## Example prompts
 
@@ -97,6 +252,6 @@ Once connected, you can talk to your assistant naturally:
 
 ## Notes
 
-- The MCP Server applies the same rate limits as the REST API
+- The MCP Server applies the same rate limits as the REST API.
 - The connection uses your Vendaze account's OAuth authorization. The assistant only accesses the workspace you authorized.
-- Custom fields are returned only in ID lookup tools (`get_*`), not in listings
+- Custom fields are returned only in ID lookup tools (`get_*`), not in listings.

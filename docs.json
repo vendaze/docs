@@ -132,7 +132,7 @@
               },
               {
                 "group": "MCP Server",
-                "pages": ["pt/ai/mcp", "pt/ai/claude", "pt/ai/chatgpt", "pt/ai/manus"]
+                "pages": ["pt/ai/mcp", "pt/ai/claude", "pt/ai/chatgpt"]
               },
               {
                 "group": "Automações",
@@ -220,7 +220,7 @@
               },
               {
                 "group": "MCP Server",
-                "pages": ["en/ai/mcp", "en/ai/claude", "en/ai/chatgpt", "en/ai/manus"]
+                "pages": ["en/ai/mcp", "en/ai/claude", "en/ai/chatgpt"]
               },
               {
                 "group": "Automations",
