@@ -1,40 +1,242 @@
 ---
 title: 'Custom Fields'
-description: 'Read and write workspace-defined custom fields on people, companies, and deals.'
+description: 'How to create, configure, and associate custom fields with people, companies, and deals in the Vendaze API.'
 icon: 'sliders'
 keywords:
-  ['custom fields', 'custom properties', 'CRM fields', 'workspace fields', 'Vendaze custom data']
+  [
+    'custom fields',
+    'custom properties',
+    'CRM fields',
+    'workspace fields',
+    'Vendaze custom data',
+    'address',
+    'select',
+    'multi_select',
+  ]
 ---
 
-Vendaze workspaces can define custom fields to capture data that does not fit in the standard schema: tax IDs, lead sources, business segments, internal scores, and any other information relevant to the sales process.
+Custom fields let each workspace capture information specific to its sales process that is not part of the Vendaze standard schema: tax IDs, lead sources, market segments, internal scores, or any other relevant data.
 
-## How they work
+Each field belongs to the workspace, has a fixed type, and can be displayed on people, companies, and/or deals based on its visibility configuration.
 
-Custom fields are defined per workspace and associated with individual records. Each field has:
+## Correct usage flow
 
-- **Label:** human-readable name shown in the UI (e.g., "Lead Source")
-- **Key:** short identifier for programmatic use (e.g., `lead_source`)
-- **Type:** defines valid values and comparison rules
-- **Visibility:** whether it appears on people, companies, and/or deals
+Using custom fields safely follows a specific order that prevents type mismatches and data inconsistencies.
 
-## Available types
+**1. Create the field in the workspace**
 
-| Type           | Description                       | Example value                   |
-| -------------- | --------------------------------- | ------------------------------- |
-| `text`         | Single line of text               | `"Acme Corp"`                   |
-| `long_text`    | Multi-line text                   | `"Notes about the customer..."` |
-| `number`       | Numeric value                     | `42`                            |
-| `date`         | ISO 8601 date                     | `"2026-05-26"`                  |
-| `select`       | One option from a predefined list | `"hot"`                         |
-| `multi_select` | Multiple options                  | `["hot", "inbound"]`            |
-| `cpf`          | Brazilian individual tax ID       | `"000.000.000-00"`              |
-| `cnpj`         | Brazilian company tax ID          | `"00.000.000/0001-00"`          |
-| `link`         | URL                               | `"https://linkedin.com/in/ana"` |
-| `address`      | Physical address                  | `"123 Main St"`                 |
+Before associating values with any record, the field must exist with the correct type configured. Use `POST /v1/custom-fields` for this.
+
+**2. Associate values on records**
+
+Once the field exists, pass `custom_fields` in the body of `POST` or `PATCH` requests on people, companies, or deals, referencing the field by its `key`.
+
+### Why you should create the field first
+
+When you send an unknown `field_key` through the people, companies, or deals routes, the API automatically creates the field with `type: text`. This may seem convenient, but it creates a real problem: if the field was meant to be `select`, `date`, `number`, or any other type, it will have been created with the wrong type. Fixing it later requires a separate update call and can produce inconsistencies in values already stored.
+
+Always create the field with the correct type before writing values.
+
+---
+
+## Create a custom field
+
+```bash
+POST /v1/custom-fields
+```
+
+Required fields: `label`, `key`, and `type`.
+
+```json
+{
+  "label": "Lead Source",
+  "key": "lead_source",
+  "type": "select",
+  "value": {
+    "select_list": [
+      { "key": "sl_referral", "option": "Referral" },
+      { "key": "sl_inbound", "option": "Inbound" },
+      { "key": "sl_event", "option": "Event" }
+    ]
+  },
+  "show_people": true,
+  "show_companies": false,
+  "show_deals": true
+}
+```
+
+Creation rules:
+
+- `key` is immutable after creation. Use stable, descriptive identifiers such as `lead_source` or `company_tax_id`.
+- `type` is also immutable. Choose the correct type before creating the field.
+- For `select` and `multi_select`, the `value.select_list` field is required and defines the available options.
+- The `show_people`, `show_companies`, and `show_deals` flags control which entities display the field. The default is `true` for people and companies, `false` for deals.
+
+### Available types
+
+| Type           | Description                                |
+| -------------- | ------------------------------------------ |
+| `text`         | Single line of text                        |
+| `long_text`    | Multi-line text                            |
+| `number`       | Integer or decimal numeric value           |
+| `date`         | Date in `YYYY-MM-DD` format                |
+| `select`       | One option from a predefined list          |
+| `multi_select` | Multiple options from a predefined list    |
+| `cpf`          | Brazilian individual tax ID                |
+| `cnpj`         | Brazilian company tax ID                   |
+| `link`         | Full URL                                   |
+| `address`      | Physical address structured into subfields |
+
+---
+
+## Associate values with records
+
+With the field created, include `custom_fields` in the request body when creating or updating a record. Each item requires `field_key` and `value`.
+
+```bash
+POST /v1/people
+```
+
+```json
+{
+  "full_name": "Ana Costa",
+  "emails": [{ "email": "ana@acme.com", "type": "work" }],
+  "custom_fields": [
+    { "field_key": "lead_source", "value": "sl_referral" },
+    { "field_key": "score", "value": 85 }
+  ]
+}
+```
+
+The API resolves `field_key` to the field's internal ID. If no field with that key exists in the workspace, it is created automatically with `type: text`. See the section above on why this should be avoided.
+
+### Association mode
+
+The `association_mode` parameter controls the behavior when updating a record via `PATCH`:
+
+- `append` (default): sets or replaces the value for each `field_key` sent, without affecting other fields already associated with the record.
+- `replace`: removes all custom field values from the record and inserts only the ones sent in this request.
+
+---
+
+## Value format reference by type
+
+### `text`
+
+Plain string, single line.
+
+```json
+{ "field_key": "internal_role", "value": "Sales Manager" }
+```
+
+### `long_text`
+
+String with line breaks represented as `\n`.
+
+```json
+{ "field_key": "notes", "value": "Preferred customer.\nContact by email only." }
+```
+
+### `number`
+
+JSON number without quotes. Accepts integers or decimals.
+
+```json
+{ "field_key": "employee_count", "value": 120 }
+```
+
+```json
+{ "field_key": "internal_score", "value": 7.5 }
+```
+
+### `date`
+
+String in `YYYY-MM-DD` format, without time.
+
+```json
+{ "field_key": "contract_date", "value": "2026-08-15" }
+```
+
+### `select`
+
+Key of a single option from the field's predefined list. To retrieve available keys, use `GET /v1/custom-fields/:id` and inspect `value.select_list`.
+
+```json
+{ "field_key": "segment", "value": "sl_technology" }
+```
+
+Sending a key that does not exist in the list returns a validation error.
+
+### `multi_select`
+
+JSON array of selected option keys.
+
+```json
+{ "field_key": "products_of_interest", "value": ["sl_basic_plan", "sl_advanced_plan"] }
+```
+
+To select a single option, pass an array with one element. To clear all selections, pass an empty array.
+
+```json
+{ "field_key": "products_of_interest", "value": [] }
+```
+
+### `cpf`
+
+String with or without punctuation.
+
+```json
+{ "field_key": "responsible_cpf", "value": "123.456.789-09" }
+```
+
+### `cnpj`
+
+String with or without punctuation.
+
+```json
+{ "field_key": "company_cnpj", "value": "12.345.678/0001-90" }
+```
+
+### `link`
+
+Full URL with protocol.
+
+```json
+{ "field_key": "linkedin", "value": "https://linkedin.com/in/ana-costa" }
+```
+
+### `address`
+
+JSON object with the subfields below. All are optional: send only the ones available. Subfields not sent are stored as an empty string.
+
+| Subfield         | Description                     |
+| ---------------- | ------------------------------- |
+| `address_line_1` | Street address and number       |
+| `address_line_2` | Complement (suite, floor, unit) |
+| `city`           | City                            |
+| `region`         | State or region                 |
+| `postal_code`    | ZIP or postal code              |
+| `country`        | Country                         |
+
+```json
+{
+  "field_key": "headquarters_address",
+  "value": {
+    "address_line_1": "1000 Market Street",
+    "address_line_2": "Suite 42",
+    "city": "San Francisco",
+    "region": "CA",
+    "postal_code": "94103",
+    "country": "United States"
+  }
+}
+```
+
+---
 
 ## Read values on a record
 
-When retrieving a record by ID, custom field values are returned in the `custom_fields` array:
+When retrieving a record by ID, associated values are returned in the `custom_fields` array with the `field` object embedded:
 
 ```json
 {
@@ -43,8 +245,8 @@ When retrieving a record by ID, custom field values are returned in the `custom_
     "full_name": "Ana Costa",
     "custom_fields": [
       {
-        "id": "assoc-uuid",
-        "value": "referral",
+        "id": "cf-assoc-uuid",
+        "value": "sl_referral",
         "field": {
           "id": "a1b2c3d4-e5f6-7890-abcd-ef1234567890",
           "label": "Lead Source",
@@ -57,29 +259,38 @@ When retrieving a record by ID, custom field values are returned in the `custom_
 }
 ```
 
-## Set values on create or update
+---
 
-Pass `custom_fields` when creating or updating a person, company, or deal. Each item requires a `field_key` and a `value`.
+## Full example
 
-```bash
-POST /v1/people
-```
+The example below creates a person with fields of every type, assuming each field was already created via `POST /v1/custom-fields`.
 
 ```json
+POST /v1/people
+
 {
   "full_name": "Ana Costa",
+  "emails": [{ "email": "ana@acme.com", "type": "work" }],
   "custom_fields": [
-    { "field_key": "lead_source", "value": "referral" },
-    { "field_key": "score", "value": 85 }
+    { "field_key": "responsible_cpf",      "value": "123.456.789-09" },
+    { "field_key": "company_cnpj",         "value": "12.345.678/0001-90" },
+    { "field_key": "segment",              "value": "sl_technology" },
+    { "field_key": "products_of_interest", "value": ["sl_basic_plan", "sl_advanced_plan"] },
+    { "field_key": "employee_count",       "value": 120 },
+    { "field_key": "contract_date",        "value": "2026-08-15" },
+    { "field_key": "linkedin",             "value": "https://linkedin.com/in/ana-costa" },
+    { "field_key": "notes",                "value": "Referred by Acme partner." },
+    {
+      "field_key": "headquarters_address",
+      "value": {
+        "address_line_1": "1000 Market Street",
+        "address_line_2": "Suite 42",
+        "city": "San Francisco",
+        "region": "CA",
+        "postal_code": "94103",
+        "country": "United States"
+      }
+    }
   ]
 }
 ```
-
-The API resolves `field_key` to the internal field ID automatically. If no field with that key exists in the workspace, it is created with `type: text` and `label` equal to the key. You can rename the label later in the Vendaze panel.
-
-To change the type of an auto-created field, use the custom fields endpoint to update it before writing values that require a specific type (e.g. `select`, `date`, `number`).
-
-The `custom_fields` array follows the same `association_mode` as tags and lists:
-
-- `append` (default): sets or replaces the value for each `field_key` sent, leaving other fields untouched.
-- `replace`: removes all custom field values from the record and inserts only the ones sent.

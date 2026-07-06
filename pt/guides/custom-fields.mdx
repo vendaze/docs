@@ -1,46 +1,243 @@
 ---
 title: 'Campos Adicionais'
-description: 'Leia e escreva campos adicionais definidos pelo workspace em pessoas, empresas e negócios.'
+description: 'Como criar, configurar e associar campos adicionais a pessoas, empresas e negócios na API da Vendaze.'
 icon: 'sliders'
 keywords:
   [
     'campos adicionais',
-    'campos adicionais',
     'campos CRM',
     'campos do workspace',
     'Vendaze custom fields',
+    'endereço',
+    'select',
+    'multi_select',
+    'CPF',
+    'CNPJ',
   ]
 ---
 
-Workspaces da Vendaze podem definir campos adicionais para capturar dados que não se encaixam no schema padrão: CNPJ, origem do lead, segmento, pontuação interna, e qualquer outra informação relevante para o processo comercial.
+Campos adicionais permitem que cada workspace capture informações específicas do seu processo comercial que não fazem parte do schema padrão da Vendaze: CNPJ, origem do lead, segmento de mercado, pontuação interna ou qualquer outro dado relevante.
 
-## Como funcionam
+Cada campo pertence ao workspace, tem um tipo fixo e pode ser exibido em pessoas, empresas e/ou negócios conforme a configuração de visibilidade.
 
-Campos adicionais são definidos por workspace e associados a registros individuais. Cada campo tem:
+## Fluxo correto de uso
 
-- **Label:** nome legível exibido na interface (ex: "Origem do Lead")
-- **Key:** identificador curto para uso programático (ex: `origem_lead`)
-- **Tipo:** define os valores válidos e as regras de comparação
-- **Visibilidade:** se aparece em pessoas, empresas e/ou negócios
+O uso seguro de campos adicionais segue uma ordem específica que evita problemas de tipagem e inconsistências nos dados.
 
-## Tipos disponíveis
+**1. Criar o campo no workspace**
 
-| Tipo           | Descrição                      | Exemplo de valor                   |
-| -------------- | ------------------------------ | ---------------------------------- |
-| `text`         | Texto em linha única           | `"Acme Corp"`                      |
-| `long_text`    | Texto multilinha               | `"Observações sobre o cliente..."` |
-| `number`       | Valor numérico                 | `42`                               |
-| `date`         | Data em ISO 8601               | `"2026-05-26"`                     |
-| `select`       | Uma opção de lista predefinida | `"hot"`                            |
-| `multi_select` | Múltiplas opções               | `["hot", "inbound"]`               |
-| `cpf`          | CPF brasileiro                 | `"000.000.000-00"`                 |
-| `cnpj`         | CNPJ brasileiro                | `"00.000.000/0001-00"`             |
-| `link`         | URL                            | `"https://linkedin.com/in/ana"`    |
-| `address`      | Endereço físico                | `"Rua das Flores, 123"`            |
+Antes de associar valores a qualquer registro, o campo precisa existir com o tipo correto configurado. Use `POST /v1/custom-fields` para isso.
 
-## Ler valores em um registro
+**2. Associar valores nos registros**
 
-Ao buscar um registro por ID, os valores dos campos adicionais são retornados no array `custom_fields`:
+Com o campo criado, passe `custom_fields` no body de `POST` ou `PATCH` em pessoas, empresas ou negócios, referenciando o campo pela sua `key`.
+
+### Por que criar o campo antes
+
+Ao enviar uma `field_key` desconhecida nas rotas de pessoa, empresa ou negócio, a API cria o campo automaticamente com `type: text`. Isso pode parecer conveniente, mas cria um problema real: se o campo precisar ser `select`, `date`, `number` ou qualquer outro tipo, ele terá sido criado com o tipo errado. Corrigir isso depois exige uma chamada separada de atualização e pode gerar inconsistências em valores já gravados.
+
+Crie sempre o campo com o tipo correto antes de começar a gravar valores.
+
+---
+
+## Criar um campo adicional
+
+```bash
+POST /v1/custom-fields
+```
+
+Campos obrigatórios: `label`, `key` e `type`.
+
+```json
+{
+  "label": "Origem do Lead",
+  "key": "origem_lead",
+  "type": "select",
+  "value": {
+    "select_list": [
+      { "key": "sl_indicacao", "option": "Indicação" },
+      { "key": "sl_inbound", "option": "Inbound" },
+      { "key": "sl_evento", "option": "Evento" }
+    ]
+  },
+  "show_people": true,
+  "show_companies": false,
+  "show_deals": true
+}
+```
+
+Regras de criação:
+
+- `key` é imutável após a criação. Use identificadores descritivos e estáveis, como `origem_lead` ou `cnpj_empresa`.
+- `type` também é imutável. Escolha o tipo correto antes de criar.
+- Para `select` e `multi_select`, o campo `value.select_list` é obrigatório e define as opções disponíveis.
+- Os flags `show_people`, `show_companies` e `show_deals` controlam em quais entidades o campo aparece. O padrão é `true` para pessoas e empresas, `false` para negócios.
+
+### Tipos disponíveis
+
+| Tipo           | Descrição                                |
+| -------------- | ---------------------------------------- |
+| `text`         | Texto em linha única                     |
+| `long_text`    | Texto multilinha                         |
+| `number`       | Valor numérico inteiro ou decimal        |
+| `date`         | Data no formato `YYYY-MM-DD`             |
+| `select`       | Uma opção de lista predefinida           |
+| `multi_select` | Múltiplas opções de lista predefinida    |
+| `cpf`          | CPF brasileiro                           |
+| `cnpj`         | CNPJ brasileiro                          |
+| `link`         | URL completa                             |
+| `address`      | Endereço físico estruturado em subcampos |
+
+---
+
+## Associar valores a registros
+
+Com o campo criado, inclua `custom_fields` no body ao criar ou atualizar um registro. Cada item requer `field_key` e `value`.
+
+```bash
+POST /v1/people
+```
+
+```json
+{
+  "full_name": "Ana Costa",
+  "emails": [{ "email": "ana@acme.com", "type": "work" }],
+  "custom_fields": [
+    { "field_key": "origem_lead", "value": "sl_indicacao" },
+    { "field_key": "pontuacao", "value": 85 }
+  ]
+}
+```
+
+A API resolve `field_key` para o ID interno do campo. Caso nenhum campo com essa chave exista no workspace, ele é criado automaticamente com `type: text`. Veja a seção acima sobre por que isso deve ser evitado.
+
+### Modo de associação
+
+O parâmetro `association_mode` controla o comportamento ao atualizar um registro via `PATCH`:
+
+- `append` (padrão): define ou substitui o valor de cada `field_key` enviado, sem alterar os demais campos do registro.
+- `replace`: remove todos os valores de campos adicionais do registro e insere apenas os enviados nesta requisição.
+
+---
+
+## Referência de formatos por tipo
+
+### `text`
+
+String simples, linha única.
+
+```json
+{ "field_key": "cargo_interno", "value": "Gerente Comercial" }
+```
+
+### `long_text`
+
+String com quebras de linha representadas por `\n`.
+
+```json
+{ "field_key": "observacoes", "value": "Cliente preferencial.\nContactar apenas por email." }
+```
+
+### `number`
+
+Número JSON sem aspas. Aceita inteiro ou decimal.
+
+```json
+{ "field_key": "numero_funcionarios", "value": 120 }
+```
+
+```json
+{ "field_key": "pontuacao_interna", "value": 7.5 }
+```
+
+### `date`
+
+String no formato `YYYY-MM-DD`, sem horário.
+
+```json
+{ "field_key": "data_contrato", "value": "2026-08-15" }
+```
+
+### `select`
+
+Key de uma única opção da lista predefinida do campo. Para consultar as keys disponíveis, use `GET /v1/custom-fields/:id` e inspecione `value.select_list`.
+
+```json
+{ "field_key": "segmento", "value": "sl_tecnologia" }
+```
+
+Enviar uma key inexistente na lista retorna erro de validação.
+
+### `multi_select`
+
+Array JSON com as keys das opções selecionadas.
+
+```json
+{ "field_key": "produtos_de_interesse", "value": ["sl_plano_basico", "sl_plano_avancado"] }
+```
+
+Para selecionar apenas uma opção, passe um array com um elemento. Para limpar todas as seleções, passe um array vazio.
+
+```json
+{ "field_key": "produtos_de_interesse", "value": [] }
+```
+
+### `cpf`
+
+String com ou sem pontuação.
+
+```json
+{ "field_key": "cpf_responsavel", "value": "123.456.789-09" }
+```
+
+### `cnpj`
+
+String com ou sem pontuação.
+
+```json
+{ "field_key": "cnpj_empresa", "value": "12.345.678/0001-90" }
+```
+
+### `link`
+
+URL completa com protocolo.
+
+```json
+{ "field_key": "linkedin", "value": "https://linkedin.com/in/ana-costa" }
+```
+
+### `address`
+
+Objeto JSON com os subcampos abaixo. Todos são opcionais: envie apenas os que estiverem disponíveis. Subcampos não enviados são armazenados como string vazia.
+
+| Subcampo         | Descrição                        |
+| ---------------- | -------------------------------- |
+| `address_line_1` | Logradouro e número              |
+| `address_line_2` | Complemento (sala, andar, bloco) |
+| `city`           | Cidade                           |
+| `region`         | Estado ou região                 |
+| `postal_code`    | CEP ou código postal             |
+| `country`        | País                             |
+
+```json
+{
+  "field_key": "endereco_sede",
+  "value": {
+    "address_line_1": "Avenida Paulista, 1000",
+    "address_line_2": "Sala 42",
+    "city": "São Paulo",
+    "region": "SP",
+    "postal_code": "01310-100",
+    "country": "Brasil"
+  }
+}
+```
+
+---
+
+## Ler valores de um registro
+
+Ao buscar um registro por ID, os valores associados retornam no array `custom_fields` com o objeto `field` embutido:
 
 ```json
 {
@@ -49,8 +246,8 @@ Ao buscar um registro por ID, os valores dos campos adicionais são retornados n
     "full_name": "Ana Costa",
     "custom_fields": [
       {
-        "id": "assoc-uuid",
-        "value": "indicacao",
+        "id": "cf-assoc-uuid",
+        "value": "sl_indicacao",
         "field": {
           "id": "a1b2c3d4-e5f6-7890-abcd-ef1234567890",
           "label": "Origem do Lead",
@@ -63,29 +260,38 @@ Ao buscar um registro por ID, os valores dos campos adicionais são retornados n
 }
 ```
 
-## Definir valores ao criar ou atualizar
+---
 
-Passe `custom_fields` ao criar ou atualizar uma pessoa, empresa ou negócio. Cada item requer `field_key` e `value`.
+## Exemplo completo
 
-```bash
-POST /v1/people
-```
+O exemplo abaixo cria uma pessoa com campos de todos os tipos, considerando que cada campo já foi criado previamente via `POST /v1/custom-fields`.
 
 ```json
+POST /v1/people
+
 {
   "full_name": "Ana Costa",
+  "emails": [{ "email": "ana@acme.com", "type": "work" }],
   "custom_fields": [
-    { "field_key": "origem_lead", "value": "indicacao" },
-    { "field_key": "score", "value": 85 }
+    { "field_key": "cpf_responsavel",     "value": "123.456.789-09" },
+    { "field_key": "cnpj_empresa",        "value": "12.345.678/0001-90" },
+    { "field_key": "segmento",            "value": "sl_tecnologia" },
+    { "field_key": "produtos_interesse",  "value": ["sl_plano_basico", "sl_plano_avancado"] },
+    { "field_key": "numero_funcionarios", "value": 120 },
+    { "field_key": "data_contrato",       "value": "2026-08-15" },
+    { "field_key": "linkedin",            "value": "https://linkedin.com/in/ana-costa" },
+    { "field_key": "observacoes",         "value": "Cliente indicado pela parceira Acme." },
+    {
+      "field_key": "endereco_sede",
+      "value": {
+        "address_line_1": "Avenida Paulista, 1000",
+        "address_line_2": "Sala 42",
+        "city": "São Paulo",
+        "region": "SP",
+        "postal_code": "01310-100",
+        "country": "Brasil"
+      }
+    }
   ]
 }
 ```
-
-A API resolve `field_key` para o ID interno do campo automaticamente. Se nenhum campo com essa chave existir no workspace, ele é criado com `type: text` e `label` igual à chave. O label pode ser renomeado depois no painel da Vendaze.
-
-Para alterar o tipo de um campo criado automaticamente, use o endpoint de campos adicionais para atualizá-lo antes de gravar valores que exigem um tipo específico (ex: `select`, `date`, `number`).
-
-O array `custom_fields` segue o mesmo `association_mode` de tags e listas:
-
-- `append` (padrão): define ou substitui o valor de cada `field_key` enviado, sem alterar os demais campos.
-- `replace`: remove todos os valores de campos adicionais do registro e insere apenas os enviados.
