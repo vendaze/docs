@@ -2856,12 +2856,7 @@
                       "entity": "people",
                       "entity_id": "c3d4e5f6-a7b8-9012-cdef-123456789012",
                       "content_html": "<p>Reunião realizada. Cliente confirmou interesse no plano Enterprise.</p>",
-                      "attachments": [
-                        {
-                          "path": "workspaces/w1/people/c3d4/archives/Proposta_Comercial.pdf",
-                          "url": "https://storage.vendaze.com/private/...?token=..."
-                        }
-                      ],
+                      "attachments_count": 1,
                       "owner": {
                         "id": "d4e5f6a7-b8c9-0123-defa-234567890123",
                         "name": "João Silva",
@@ -7517,8 +7512,60 @@
           }
         }
       },
+      "ActivitySummary": {
+        "type": "object",
+        "description": "Atividade retornada em respostas de listagem. Anexos representados apenas por contagem.",
+        "properties": {
+          "id": {
+            "type": "string",
+            "format": "uuid",
+            "description": "Identificador único da atividade."
+          },
+          "entity": {
+            "type": "string",
+            "nullable": true,
+            "enum": [
+              "people",
+              "companies",
+              "deals"
+            ],
+            "description": "Tipo da entidade vinculada à atividade.",
+            "example": "people"
+          },
+          "entity_id": {
+            "type": "string",
+            "format": "uuid",
+            "nullable": true,
+            "description": "UUID da entidade vinculada.",
+            "example": "c3d4e5f6-a7b8-9012-cdef-123456789012"
+          },
+          "content_html": {
+            "type": "string",
+            "description": "Conteúdo da atividade em HTML.",
+            "example": "<p>Reunião realizada. Cliente confirmou interesse no plano Enterprise.</p>"
+          },
+          "attachments_count": {
+            "type": "integer",
+            "description": "Quantidade de arquivos anexados à atividade.",
+            "example": 2
+          },
+          "owner": {
+            "$ref": "#/components/schemas/Owner"
+          },
+          "created_at": {
+            "type": "string",
+            "format": "date-time"
+          },
+          "updated_at": {
+            "type": "string",
+            "format": "date-time",
+            "nullable": true
+          }
+        }
+      },
       "Activity": {
         "type": "object",
+        "description": "Objeto completo de atividade retornado em respostas de recurso individual. Inclui URLs assinadas para os arquivos anexados.",
         "properties": {
           "id": {
             "type": "string",
@@ -7553,7 +7600,7 @@
             "items": {
               "$ref": "#/components/schemas/Attachment"
             },
-            "description": "Arquivos anexados. URLs assinadas com validade de 1 hora."
+            "description": "Arquivos anexados com URLs assinadas com validade de 1 hora."
           },
           "owner": {
             "$ref": "#/components/schemas/Owner"
@@ -7583,7 +7630,7 @@
           "data": {
             "type": "array",
             "items": {
-              "$ref": "#/components/schemas/Activity"
+              "$ref": "#/components/schemas/ActivitySummary"
             }
           },
           "meta": {
@@ -7619,12 +7666,6 @@
             "description": "Conteúdo da atividade em HTML.",
             "example": "<p>Reunião realizada. Cliente confirmou interesse no plano Enterprise.</p>"
           },
-          "owner_email": {
-            "type": "string",
-            "format": "email",
-            "description": "E-mail do membro do workspace a definir como responsável.",
-            "example": "joao@empresa.com.br"
-          },
           "files": {
             "type": "array",
             "maxItems": 10,
@@ -7644,13 +7685,6 @@
             "nullable": true,
             "description": "Novo conteúdo HTML. Envie `null` para limpar o conteúdo.",
             "example": "<p>Proposta enviada. Aguardando retorno.</p>"
-          },
-          "owner_email": {
-            "type": "string",
-            "format": "email",
-            "nullable": true,
-            "description": "E-mail do novo responsável. Envie `null` para remover o responsável.",
-            "example": "maria@empresa.com.br"
           },
           "files": {
             "type": "array",

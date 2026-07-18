@@ -89,12 +89,7 @@
                       "entity": "people",
                       "entity_id": "c3d4e5f6-a7b8-9012-cdef-123456789012",
                       "content_html": "<p>Meeting held. Client confirmed interest in the Enterprise plan.</p>",
-                      "attachments": [
-                        {
-                          "path": "workspaces/w1/people/c3d4/archives/Commercial_Proposal.pdf",
-                          "url": "https://storage.vendaze.com/private/...?token=..."
-                        }
-                      ],
+                      "attachments_count": 1,
                       "owner": {
                         "id": "d4e5f6a7-b8c9-0123-defa-234567890123",
                         "name": "John Smith",
@@ -457,8 +452,43 @@
           }
         }
       },
+      "ActivitySummary": {
+        "type": "object",
+        "description": "Activity returned in list responses. Attachments are represented by count only.",
+        "properties": {
+          "id": { "type": "string", "format": "uuid", "description": "Unique identifier of the activity." },
+          "entity": {
+            "type": "string",
+            "nullable": true,
+            "enum": ["people", "companies", "deals"],
+            "description": "Type of the entity linked to the activity.",
+            "example": "people"
+          },
+          "entity_id": {
+            "type": "string",
+            "format": "uuid",
+            "nullable": true,
+            "description": "UUID of the linked entity.",
+            "example": "c3d4e5f6-a7b8-9012-cdef-123456789012"
+          },
+          "content_html": {
+            "type": "string",
+            "description": "Activity content in HTML.",
+            "example": "<p>Meeting held. Client confirmed interest in the Enterprise plan.</p>"
+          },
+          "attachments_count": {
+            "type": "integer",
+            "description": "Number of files attached to the activity.",
+            "example": 2
+          },
+          "owner": { "$ref": "#/components/schemas/Owner" },
+          "created_at": { "type": "string", "format": "date-time" },
+          "updated_at": { "type": "string", "format": "date-time", "nullable": true }
+        }
+      },
       "Activity": {
         "type": "object",
+        "description": "Full activity object returned in single-resource responses. Includes signed URLs for attached files.",
         "properties": {
           "id": { "type": "string", "format": "uuid", "description": "Unique identifier of the activity." },
           "entity": {
@@ -483,7 +513,7 @@
           "attachments": {
             "type": "array",
             "items": { "$ref": "#/components/schemas/Attachment" },
-            "description": "Attached files. Signed URLs are valid for 1 hour."
+            "description": "Attached files with signed URLs valid for 1 hour."
           },
           "owner": { "$ref": "#/components/schemas/Owner" },
           "created_at": { "type": "string", "format": "date-time" },
@@ -501,7 +531,7 @@
         "properties": {
           "data": {
             "type": "array",
-            "items": { "$ref": "#/components/schemas/Activity" }
+            "items": { "$ref": "#/components/schemas/ActivitySummary" }
           },
           "meta": { "$ref": "#/components/schemas/PaginationMeta" }
         }
@@ -527,12 +557,6 @@
             "description": "Activity content in HTML.",
             "example": "<p>Meeting held. Client confirmed interest in the Enterprise plan.</p>"
           },
-          "owner_email": {
-            "type": "string",
-            "format": "email",
-            "description": "Email of the workspace member to set as owner.",
-            "example": "john@company.com"
-          },
           "files": {
             "type": "array",
             "maxItems": 10,
@@ -550,13 +574,6 @@
             "nullable": true,
             "description": "New HTML content. Send `null` to clear the content.",
             "example": "<p>Proposal sent. Awaiting response.</p>"
-          },
-          "owner_email": {
-            "type": "string",
-            "format": "email",
-            "nullable": true,
-            "description": "Email of the new owner. Send `null` to remove the owner.",
-            "example": "jane@company.com"
           },
           "files": {
             "type": "array",
