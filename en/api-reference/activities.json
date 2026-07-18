@@ -1,0 +1,572 @@
+{
+  "openapi": "3.1.0",
+  "info": {
+    "title": "Activities",
+    "description": "Manage activities in the workspace.",
+    "version": "1.0.0",
+    "contact": {
+      "name": "Vendaze Support",
+      "email": "suporte@vendaze.com"
+    }
+  },
+  "servers": [
+    {
+      "url": "https://api.vendaze.com",
+      "description": "Production"
+    }
+  ],
+  "security": [{ "bearerAuth": [] }],
+  "tags": [{ "name": "Activities" }],
+  "paths": {
+    "/v1/activities": {
+      "get": {
+        "operationId": "listActivities",
+        "summary": "List activities",
+        "description": "Returns a paginated list of workspace activities.\n\n<Accordion title=\"Required scope\">\n`activities:read`\n</Accordion>",
+        "tags": ["Activities"],
+        "parameters": [
+          {
+            "name": "page",
+            "in": "query",
+            "schema": { "type": "integer", "minimum": 1, "default": 1 },
+            "description": "Page number."
+          },
+          {
+            "name": "per_page",
+            "in": "query",
+            "schema": { "type": "integer", "minimum": 1, "maximum": 100, "default": 50 },
+            "description": "Number of records per page. Maximum: 100."
+          },
+          {
+            "name": "order_by",
+            "in": "query",
+            "schema": { "type": "string", "enum": ["created_at", "updated_at"], "default": "created_at" },
+            "description": "Field to sort by."
+          },
+          {
+            "name": "order",
+            "in": "query",
+            "schema": { "type": "string", "enum": ["asc", "desc"], "default": "desc" },
+            "description": "Sort direction."
+          },
+          {
+            "name": "entity",
+            "in": "query",
+            "required": true,
+            "schema": { "type": "string", "enum": ["people", "companies", "deals"] },
+            "description": "Type of the linked entity. Must be `people`, `companies`, or `deals`."
+          },
+          {
+            "name": "id",
+            "in": "query",
+            "required": true,
+            "schema": { "type": "string", "format": "uuid" },
+            "description": "UUID of the entity specified in `entity`."
+          },
+          {
+            "name": "created_after",
+            "in": "query",
+            "schema": { "type": "string", "format": "date-time" },
+            "description": "Return activities created on or after this ISO 8601 date."
+          },
+          {
+            "name": "created_before",
+            "in": "query",
+            "schema": { "type": "string", "format": "date-time" },
+            "description": "Return activities created on or before this ISO 8601 date."
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Activities returned successfully.",
+            "content": {
+              "application/json": {
+                "schema": { "$ref": "#/components/schemas/ActivitiesListResponse" },
+                "example": {
+                  "data": [
+                    {
+                      "id": "a1b2c3d4-e5f6-7890-abcd-ef1234567890",
+                      "entity": "people",
+                      "entity_id": "c3d4e5f6-a7b8-9012-cdef-123456789012",
+                      "content_html": "<p>Meeting held. Client confirmed interest in the Enterprise plan.</p>",
+                      "attachments": [
+                        {
+                          "path": "workspaces/w1/people/c3d4/archives/Commercial_Proposal.pdf",
+                          "url": "https://storage.vendaze.com/private/...?token=..."
+                        }
+                      ],
+                      "owner": {
+                        "id": "d4e5f6a7-b8c9-0123-defa-234567890123",
+                        "name": "John Smith",
+                        "email": "john@company.com"
+                      },
+                      "created_at": "2026-06-01T10:30:00Z",
+                      "updated_at": "2026-06-01T10:30:00Z"
+                    }
+                  ],
+                  "meta": {
+                    "total": 12,
+                    "page": 1,
+                    "per_page": 50,
+                    "has_more": false
+                  }
+                }
+              }
+            }
+          },
+          "401": { "$ref": "#/components/responses/Unauthorized" },
+          "403": { "$ref": "#/components/responses/InsufficientScope" },
+          "422": { "$ref": "#/components/responses/ValidationError" },
+          "429": { "$ref": "#/components/responses/RateLimitExceeded" },
+          "500": { "$ref": "#/components/responses/InternalError" }
+        }
+      },
+      "post": {
+        "operationId": "createActivity",
+        "summary": "Create an activity",
+        "description": "Creates a new activity in the workspace.\n\n<Accordion title=\"Required scope\">\n`activities:write`\n</Accordion>",
+        "tags": ["Activities"],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": { "$ref": "#/components/schemas/CreateActivityRequest" }
+            }
+          }
+        },
+        "responses": {
+          "201": {
+            "description": "Activity created successfully.",
+            "content": {
+              "application/json": {
+                "schema": { "$ref": "#/components/schemas/ActivityResponse" }
+              }
+            }
+          },
+          "400": { "$ref": "#/components/responses/BadRequest" },
+          "401": { "$ref": "#/components/responses/Unauthorized" },
+          "403": { "$ref": "#/components/responses/InsufficientScope" },
+          "422": { "$ref": "#/components/responses/ValidationError" },
+          "429": { "$ref": "#/components/responses/RateLimitExceeded" },
+          "500": { "$ref": "#/components/responses/InternalError" }
+        }
+      }
+    },
+    "/v1/activities/{id}": {
+      "get": {
+        "operationId": "getActivity",
+        "summary": "Get an activity",
+        "description": "Returns an activity by its UUID.\n\n<Accordion title=\"Required scope\">\n`activities:read`\n</Accordion>",
+        "tags": ["Activities"],
+        "parameters": [{ "$ref": "#/components/parameters/id" }],
+        "responses": {
+          "200": {
+            "description": "Activity returned successfully.",
+            "content": {
+              "application/json": {
+                "schema": { "$ref": "#/components/schemas/ActivityResponse" },
+                "example": {
+                  "data": {
+                    "id": "a1b2c3d4-e5f6-7890-abcd-ef1234567890",
+                    "entity": "deals",
+                    "entity_id": "c3d4e5f6-a7b8-9012-cdef-123456789012",
+                    "content_html": "<p>Contract sent for signature.</p>",
+                    "attachments": [
+                      {
+                        "path": "workspaces/w1/deals/c3d4/archives/Enterprise_Contract.pdf",
+                        "url": "https://storage.vendaze.com/private/...?token=..."
+                      }
+                    ],
+                    "owner": {
+                      "id": "d4e5f6a7-b8c9-0123-defa-234567890123",
+                      "name": "John Smith",
+                      "email": "john@company.com"
+                    },
+                    "created_at": "2026-06-01T10:30:00Z",
+                    "updated_at": "2026-06-01T10:30:00Z"
+                  }
+                }
+              }
+            }
+          },
+          "401": { "$ref": "#/components/responses/Unauthorized" },
+          "403": { "$ref": "#/components/responses/InsufficientScope" },
+          "404": { "$ref": "#/components/responses/NotFound" },
+          "429": { "$ref": "#/components/responses/RateLimitExceeded" },
+          "500": { "$ref": "#/components/responses/InternalError" }
+        }
+      },
+      "patch": {
+        "operationId": "updateActivity",
+        "summary": "Update an activity",
+        "description": "Updates an activity. Only the fields sent in the body are modified.\n\n<Accordion title=\"Required scope\">\n`activities:write`\n</Accordion>",
+        "tags": ["Activities"],
+        "parameters": [{ "$ref": "#/components/parameters/id" }],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": { "$ref": "#/components/schemas/UpdateActivityRequest" }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Activity updated successfully.",
+            "content": {
+              "application/json": {
+                "schema": { "$ref": "#/components/schemas/ActivityResponse" }
+              }
+            }
+          },
+          "400": { "$ref": "#/components/responses/BadRequest" },
+          "401": { "$ref": "#/components/responses/Unauthorized" },
+          "403": { "$ref": "#/components/responses/InsufficientScope" },
+          "404": { "$ref": "#/components/responses/NotFound" },
+          "422": { "$ref": "#/components/responses/ValidationError" },
+          "429": { "$ref": "#/components/responses/RateLimitExceeded" },
+          "500": { "$ref": "#/components/responses/InternalError" }
+        }
+      },
+      "delete": {
+        "operationId": "deleteActivity",
+        "summary": "Delete an activity",
+        "description": "Permanently deletes an activity and all its attached files from storage.\n\n<Accordion title=\"Required scope\">\n`activities:write`\n</Accordion>",
+        "tags": ["Activities"],
+        "parameters": [{ "$ref": "#/components/parameters/id" }],
+        "responses": {
+          "204": {
+            "description": "Activity deleted successfully.",
+            "content": {
+              "application/json": {
+                "schema": { "type": "object" },
+                "example": {}
+              }
+            }
+          },
+          "401": { "$ref": "#/components/responses/Unauthorized" },
+          "403": { "$ref": "#/components/responses/InsufficientScope" },
+          "404": { "$ref": "#/components/responses/NotFound" },
+          "429": { "$ref": "#/components/responses/RateLimitExceeded" },
+          "500": { "$ref": "#/components/responses/InternalError" }
+        }
+      }
+    }
+  },
+  "components": {
+    "securitySchemes": {
+      "bearerAuth": {
+        "type": "http",
+        "scheme": "bearer",
+        "description": "OAuth 2.1 access token."
+      }
+    },
+    "parameters": {
+      "id": {
+        "name": "id",
+        "in": "path",
+        "required": true,
+        "schema": { "type": "string", "format": "uuid" },
+        "description": "UUID of the activity."
+      }
+    },
+    "responses": {
+      "BadRequest": {
+        "description": "Malformed request body or empty update. Error code: `bad_request`.",
+        "content": {
+          "application/json": {
+            "schema": { "$ref": "#/components/schemas/ErrorResponse" },
+            "example": {
+              "error": {
+                "code": "bad_request",
+                "message": "Request body must be valid JSON.",
+                "request_id": "550e8400-e29b-41d4-a716-446655440000"
+              }
+            }
+          }
+        }
+      },
+      "Unauthorized": {
+        "description": "Token missing, invalid, or expired. Possible error codes: `unauthorized`, `token_expired`.",
+        "content": {
+          "application/json": {
+            "schema": { "$ref": "#/components/schemas/ErrorResponse" },
+            "example": {
+              "error": {
+                "code": "unauthorized",
+                "message": "Missing or invalid Authorization header.",
+                "request_id": "550e8400-e29b-41d4-a716-446655440000"
+              }
+            }
+          }
+        }
+      },
+      "InsufficientScope": {
+        "description": "Token lacks the required scope. Error code: `insufficient_scope`.",
+        "content": {
+          "application/json": {
+            "schema": { "$ref": "#/components/schemas/ErrorResponse" },
+            "example": {
+              "error": {
+                "code": "insufficient_scope",
+                "message": "This endpoint requires the 'activities:write' scope.",
+                "request_id": "550e8400-e29b-41d4-a716-446655440000"
+              }
+            }
+          }
+        }
+      },
+      "NotFound": {
+        "description": "Activity not found or belongs to another workspace. Error code: `not_found`.",
+        "content": {
+          "application/json": {
+            "schema": { "$ref": "#/components/schemas/ErrorResponse" },
+            "example": {
+              "error": {
+                "code": "not_found",
+                "message": "Activity not found.",
+                "request_id": "550e8400-e29b-41d4-a716-446655440000"
+              }
+            }
+          }
+        }
+      },
+      "ValidationError": {
+        "description": "Input validation failed. Error code: `validation_error`.",
+        "content": {
+          "application/json": {
+            "schema": { "$ref": "#/components/schemas/ValidationErrorResponse" },
+            "example": {
+              "error": {
+                "code": "validation_error",
+                "message": "Validation failed.",
+                "fields": {
+                  "entity": "Invalid enum value. Expected 'people' | 'companies' | 'deals'.",
+                  "id": "Invalid uuid"
+                },
+                "request_id": "550e8400-e29b-41d4-a716-446655440000"
+              }
+            }
+          }
+        }
+      },
+      "RateLimitExceeded": {
+        "description": "Rate limit exceeded. Error code: `rate_limit_exceeded`.",
+        "content": {
+          "application/json": {
+            "schema": { "$ref": "#/components/schemas/ErrorResponse" },
+            "example": {
+              "error": {
+                "code": "rate_limit_exceeded",
+                "message": "Rate limit exceeded. Try again in 60 seconds.",
+                "request_id": "550e8400-e29b-41d4-a716-446655440000"
+              }
+            }
+          }
+        }
+      },
+      "InternalError": {
+        "description": "Unexpected server error. Error code: `internal_error`.",
+        "content": {
+          "application/json": {
+            "schema": { "$ref": "#/components/schemas/ErrorResponse" },
+            "example": {
+              "error": {
+                "code": "internal_error",
+                "message": "An unexpected error occurred.",
+                "request_id": "550e8400-e29b-41d4-a716-446655440000"
+              }
+            }
+          }
+        }
+      }
+    },
+    "schemas": {
+      "ErrorResponse": {
+        "type": "object",
+        "properties": {
+          "error": {
+            "type": "object",
+            "properties": {
+              "code": { "type": "string", "example": "not_found" },
+              "message": { "type": "string", "example": "Activity not found." },
+              "request_id": { "type": "string", "format": "uuid" }
+            }
+          }
+        }
+      },
+      "ValidationErrorResponse": {
+        "type": "object",
+        "properties": {
+          "error": {
+            "type": "object",
+            "properties": {
+              "code": { "type": "string", "example": "validation_error" },
+              "message": { "type": "string", "example": "Validation failed." },
+              "fields": { "type": "object", "additionalProperties": { "type": "string" } },
+              "request_id": { "type": "string", "format": "uuid" }
+            }
+          }
+        }
+      },
+      "PaginationMeta": {
+        "type": "object",
+        "properties": {
+          "total": { "type": "integer", "example": 12, "description": "Total number of records matching the query." },
+          "page": { "type": "integer", "example": 1, "description": "Current page number." },
+          "per_page": { "type": "integer", "example": 50, "description": "Number of records per page." },
+          "has_more": { "type": "boolean", "example": false, "description": "`true` when there are more pages after the current one." }
+        }
+      },
+      "Owner": {
+        "type": "object",
+        "nullable": true,
+        "description": "Workspace member responsible for this activity. `null` when no owner is assigned.",
+        "properties": {
+          "id": { "type": "string", "format": "uuid" },
+          "name": { "type": "string", "example": "John Smith" },
+          "email": { "type": "string", "format": "email", "example": "john@company.com" }
+        }
+      },
+      "Attachment": {
+        "type": "object",
+        "description": "File attached to the activity.",
+        "properties": {
+          "path": {
+            "type": "string",
+            "description": "File path in storage.",
+            "example": "workspaces/w1/people/c3d4/archives/Commercial_Proposal.pdf"
+          },
+          "url": {
+            "type": "string",
+            "nullable": true,
+            "description": "Signed URL valid for 1 hour for direct file download. `null` if URL generation fails.",
+            "example": "https://storage.vendaze.com/private/...?token=..."
+          }
+        }
+      },
+      "ActivityFile": {
+        "type": "object",
+        "required": ["content"],
+        "description": "File to attach to the activity.",
+        "properties": {
+          "content": {
+            "type": "string",
+            "description": "Public HTTPS URL or base64 content of the file.",
+            "example": "https://storage.example.com/commercial-proposal.pdf"
+          }
+        }
+      },
+      "Activity": {
+        "type": "object",
+        "properties": {
+          "id": { "type": "string", "format": "uuid", "description": "Unique identifier of the activity." },
+          "entity": {
+            "type": "string",
+            "nullable": true,
+            "enum": ["people", "companies", "deals"],
+            "description": "Type of the entity linked to the activity.",
+            "example": "people"
+          },
+          "entity_id": {
+            "type": "string",
+            "format": "uuid",
+            "nullable": true,
+            "description": "UUID of the linked entity.",
+            "example": "c3d4e5f6-a7b8-9012-cdef-123456789012"
+          },
+          "content_html": {
+            "type": "string",
+            "description": "Activity content in HTML.",
+            "example": "<p>Meeting held. Client confirmed interest in the Enterprise plan.</p>"
+          },
+          "attachments": {
+            "type": "array",
+            "items": { "$ref": "#/components/schemas/Attachment" },
+            "description": "Attached files. Signed URLs are valid for 1 hour."
+          },
+          "owner": { "$ref": "#/components/schemas/Owner" },
+          "created_at": { "type": "string", "format": "date-time" },
+          "updated_at": { "type": "string", "format": "date-time", "nullable": true }
+        }
+      },
+      "ActivityResponse": {
+        "type": "object",
+        "properties": {
+          "data": { "$ref": "#/components/schemas/Activity" }
+        }
+      },
+      "ActivitiesListResponse": {
+        "type": "object",
+        "properties": {
+          "data": {
+            "type": "array",
+            "items": { "$ref": "#/components/schemas/Activity" }
+          },
+          "meta": { "$ref": "#/components/schemas/PaginationMeta" }
+        }
+      },
+      "CreateActivityRequest": {
+        "type": "object",
+        "required": ["entity", "id"],
+        "properties": {
+          "entity": {
+            "type": "string",
+            "enum": ["people", "companies", "deals"],
+            "description": "Type of the entity to link the activity to.",
+            "example": "people"
+          },
+          "id": {
+            "type": "string",
+            "format": "uuid",
+            "description": "UUID of the entity specified in `entity`.",
+            "example": "c3d4e5f6-a7b8-9012-cdef-123456789012"
+          },
+          "content_html": {
+            "type": "string",
+            "description": "Activity content in HTML.",
+            "example": "<p>Meeting held. Client confirmed interest in the Enterprise plan.</p>"
+          },
+          "owner_email": {
+            "type": "string",
+            "format": "email",
+            "description": "Email of the workspace member to set as owner.",
+            "example": "john@company.com"
+          },
+          "files": {
+            "type": "array",
+            "maxItems": 10,
+            "description": "Files to attach. Maximum of 10 per request, up to 50 MB each.",
+            "items": { "$ref": "#/components/schemas/ActivityFile" }
+          }
+        }
+      },
+      "UpdateActivityRequest": {
+        "type": "object",
+        "description": "All fields are optional. Only fields included in the body are modified.",
+        "properties": {
+          "content_html": {
+            "type": "string",
+            "nullable": true,
+            "description": "New HTML content. Send `null` to clear the content.",
+            "example": "<p>Proposal sent. Awaiting response.</p>"
+          },
+          "owner_email": {
+            "type": "string",
+            "format": "email",
+            "nullable": true,
+            "description": "Email of the new owner. Send `null` to remove the owner.",
+            "example": "jane@company.com"
+          },
+          "files": {
+            "type": "array",
+            "maxItems": 10,
+            "nullable": true,
+            "description": "New complete file list. Replaces all existing files. Send `null` to remove all files.",
+            "items": { "$ref": "#/components/schemas/ActivityFile" }
+          }
+        }
+      }
+    }
+  }
+}

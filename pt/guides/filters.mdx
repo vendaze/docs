@@ -105,6 +105,31 @@ curl "https://api.vendaze.com/v1/tasks?person_id=a1b2c3d4-e5f6-7890-abcd-ef12345
 
 ---
 
+### `GET /v1/activities`
+
+| Parâmetro        | Tipo     | Obrigatório | Comparação | Descrição                                                                    |
+| ---------------- | -------- | :---------: | ---------- | ---------------------------------------------------------------------------- |
+| `entity`         | string   |     Sim     | exato      | Tipo da entidade vinculada. Valores aceitos: `people`, `companies`, `deals`. |
+| `id`             | UUID     |     Sim     | exato      | UUID da entidade informada em `entity`.                                      |
+| `created_after`  | ISO 8601 |     Não     | `>=`       | Atividades criadas a partir desta data.                                      |
+| `created_before` | ISO 8601 |     Não     | `<=`       | Atividades criadas até esta data.                                            |
+
+<Note>
+  `entity` e `id` são sempre obrigatórios em conjunto. Requisições sem eles retornam `422`.
+</Note>
+
+```bash
+# Todas as atividades de um negócio
+curl "https://api.vendaze.com/v1/activities?entity=deals&id=a1b2c3d4-e5f6-7890-abcd-ef1234567890" \
+  -H "Authorization: Bearer {access_token}"
+
+# Atividades de uma pessoa criadas em 2026
+curl "https://api.vendaze.com/v1/activities?entity=people&id=c3d4e5f6-a7b8-9012-cdef-123456789012&created_after=2026-01-01T00:00:00Z" \
+  -H "Authorization: Bearer {access_token}"
+```
+
+---
+
 ### `GET /v1/products`
 
 | Parâmetro       | Tipo    | Comparação     | Descrição                                                                 |

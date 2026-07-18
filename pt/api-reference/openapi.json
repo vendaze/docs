@@ -43,6 +43,9 @@
       "name": "Tipos de Tarefas"
     },
     {
+      "name": "Atividades"
+    },
+    {
       "name": "Produtos"
     },
     {
@@ -2739,6 +2742,371 @@
         }
       }
     },
+    "/v1/activities": {
+      "get": {
+        "operationId": "listActivities",
+        "summary": "Listar atividades",
+        "description": "Retorna uma lista paginada de atividades do workspace.\n\n<Accordion title=\"Escopo necessário\">\n`activities:read`\n</Accordion>",
+        "tags": [
+          "Atividades"
+        ],
+        "parameters": [
+          {
+            "name": "page",
+            "in": "query",
+            "schema": {
+              "type": "integer",
+              "minimum": 1,
+              "default": 1
+            },
+            "description": "Número da página."
+          },
+          {
+            "name": "per_page",
+            "in": "query",
+            "schema": {
+              "type": "integer",
+              "minimum": 1,
+              "maximum": 100,
+              "default": 50
+            },
+            "description": "Quantidade de registros por página. Máximo: 100."
+          },
+          {
+            "name": "order_by",
+            "in": "query",
+            "schema": {
+              "type": "string",
+              "enum": [
+                "created_at",
+                "updated_at"
+              ],
+              "default": "created_at"
+            },
+            "description": "Campo de ordenação."
+          },
+          {
+            "name": "order",
+            "in": "query",
+            "schema": {
+              "type": "string",
+              "enum": [
+                "asc",
+                "desc"
+              ],
+              "default": "desc"
+            },
+            "description": "Direção da ordenação."
+          },
+          {
+            "name": "entity",
+            "in": "query",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "enum": [
+                "people",
+                "companies",
+                "deals"
+              ]
+            },
+            "description": "Tipo da entidade vinculada. Deve ser `people`, `companies` ou `deals`."
+          },
+          {
+            "name": "id",
+            "in": "query",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "format": "uuid"
+            },
+            "description": "UUID da entidade informada em `entity`."
+          },
+          {
+            "name": "created_after",
+            "in": "query",
+            "schema": {
+              "type": "string",
+              "format": "date-time"
+            },
+            "description": "Retorna atividades criadas a partir desta data ISO 8601."
+          },
+          {
+            "name": "created_before",
+            "in": "query",
+            "schema": {
+              "type": "string",
+              "format": "date-time"
+            },
+            "description": "Retorna atividades criadas até esta data ISO 8601."
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Atividades retornadas com sucesso.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ActivitiesListResponse"
+                },
+                "example": {
+                  "data": [
+                    {
+                      "id": "a1b2c3d4-e5f6-7890-abcd-ef1234567890",
+                      "entity": "people",
+                      "entity_id": "c3d4e5f6-a7b8-9012-cdef-123456789012",
+                      "content_html": "<p>Reunião realizada. Cliente confirmou interesse no plano Enterprise.</p>",
+                      "attachments": [
+                        {
+                          "path": "workspaces/w1/people/c3d4/archives/Proposta_Comercial.pdf",
+                          "url": "https://storage.vendaze.com/private/...?token=..."
+                        }
+                      ],
+                      "owner": {
+                        "id": "d4e5f6a7-b8c9-0123-defa-234567890123",
+                        "name": "João Silva",
+                        "email": "joao@empresa.com.br"
+                      },
+                      "created_at": "2026-06-01T10:30:00Z",
+                      "updated_at": "2026-06-01T10:30:00Z"
+                    }
+                  ],
+                  "meta": {
+                    "total": 12,
+                    "page": 1,
+                    "per_page": 50,
+                    "has_more": false
+                  }
+                }
+              }
+            }
+          },
+          "401": {
+            "$ref": "#/components/responses/Unauthorized"
+          },
+          "403": {
+            "$ref": "#/components/responses/InsufficientScope"
+          },
+          "422": {
+            "$ref": "#/components/responses/ValidationError"
+          },
+          "429": {
+            "$ref": "#/components/responses/RateLimitExceeded"
+          },
+          "500": {
+            "$ref": "#/components/responses/InternalError"
+          }
+        }
+      },
+      "post": {
+        "operationId": "createActivity",
+        "summary": "Criar atividade",
+        "description": "Cria uma nova atividade no workspace.\n\n<Accordion title=\"Escopo necessário\">\n`activities:write`\n</Accordion>",
+        "tags": [
+          "Atividades"
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/CreateActivityRequest"
+              }
+            }
+          }
+        },
+        "responses": {
+          "201": {
+            "description": "Atividade criada com sucesso.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ActivityResponse"
+                }
+              }
+            }
+          },
+          "400": {
+            "$ref": "#/components/responses/BadRequest"
+          },
+          "401": {
+            "$ref": "#/components/responses/Unauthorized"
+          },
+          "403": {
+            "$ref": "#/components/responses/InsufficientScope"
+          },
+          "422": {
+            "$ref": "#/components/responses/ValidationError"
+          },
+          "429": {
+            "$ref": "#/components/responses/RateLimitExceeded"
+          },
+          "500": {
+            "$ref": "#/components/responses/InternalError"
+          }
+        }
+      }
+    },
+    "/v1/activities/{id}": {
+      "get": {
+        "operationId": "getActivity",
+        "summary": "Obter atividade",
+        "description": "Retorna uma atividade pelo seu UUID.\n\n<Accordion title=\"Escopo necessário\">\n`activities:read`\n</Accordion>",
+        "tags": [
+          "Atividades"
+        ],
+        "parameters": [
+          {
+            "$ref": "#/components/parameters/id"
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Atividade retornada com sucesso.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ActivityResponse"
+                },
+                "example": {
+                  "data": {
+                    "id": "a1b2c3d4-e5f6-7890-abcd-ef1234567890",
+                    "entity": "deals",
+                    "entity_id": "c3d4e5f6-a7b8-9012-cdef-123456789012",
+                    "content_html": "<p>Contrato enviado para assinatura.</p>",
+                    "attachments": [
+                      {
+                        "path": "workspaces/w1/deals/c3d4/archives/Contrato_Enterprise.pdf",
+                        "url": "https://storage.vendaze.com/private/...?token=..."
+                      }
+                    ],
+                    "owner": {
+                      "id": "d4e5f6a7-b8c9-0123-defa-234567890123",
+                      "name": "João Silva",
+                      "email": "joao@empresa.com.br"
+                    },
+                    "created_at": "2026-06-01T10:30:00Z",
+                    "updated_at": "2026-06-01T10:30:00Z"
+                  }
+                }
+              }
+            }
+          },
+          "401": {
+            "$ref": "#/components/responses/Unauthorized"
+          },
+          "403": {
+            "$ref": "#/components/responses/InsufficientScope"
+          },
+          "404": {
+            "$ref": "#/components/responses/NotFound"
+          },
+          "429": {
+            "$ref": "#/components/responses/RateLimitExceeded"
+          },
+          "500": {
+            "$ref": "#/components/responses/InternalError"
+          }
+        }
+      },
+      "patch": {
+        "operationId": "updateActivity",
+        "summary": "Atualizar atividade",
+        "description": "Atualiza uma atividade. Apenas os campos enviados no body são alterados.\n\n<Accordion title=\"Escopo necessário\">\n`activities:write`\n</Accordion>",
+        "tags": [
+          "Atividades"
+        ],
+        "parameters": [
+          {
+            "$ref": "#/components/parameters/id"
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/UpdateActivityRequest"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Atividade atualizada com sucesso.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ActivityResponse"
+                }
+              }
+            }
+          },
+          "400": {
+            "$ref": "#/components/responses/BadRequest"
+          },
+          "401": {
+            "$ref": "#/components/responses/Unauthorized"
+          },
+          "403": {
+            "$ref": "#/components/responses/InsufficientScope"
+          },
+          "404": {
+            "$ref": "#/components/responses/NotFound"
+          },
+          "422": {
+            "$ref": "#/components/responses/ValidationError"
+          },
+          "429": {
+            "$ref": "#/components/responses/RateLimitExceeded"
+          },
+          "500": {
+            "$ref": "#/components/responses/InternalError"
+          }
+        }
+      },
+      "delete": {
+        "operationId": "deleteActivity",
+        "summary": "Deletar atividade",
+        "description": "Remove permanentemente uma atividade e todos os seus arquivos do storage.\n\n<Accordion title=\"Escopo necessário\">\n`activities:write`\n</Accordion>",
+        "tags": [
+          "Atividades"
+        ],
+        "parameters": [
+          {
+            "$ref": "#/components/parameters/id"
+          }
+        ],
+        "responses": {
+          "204": {
+            "description": "Atividade deletada com sucesso.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object"
+                },
+                "example": {}
+              }
+            }
+          },
+          "401": {
+            "$ref": "#/components/responses/Unauthorized"
+          },
+          "403": {
+            "$ref": "#/components/responses/InsufficientScope"
+          },
+          "404": {
+            "$ref": "#/components/responses/NotFound"
+          },
+          "429": {
+            "$ref": "#/components/responses/RateLimitExceeded"
+          },
+          "500": {
+            "$ref": "#/components/responses/InternalError"
+          }
+        }
+      }
+    },
     "/v1/products": {
       "get": {
         "operationId": "listProducts",
@@ -4971,7 +5339,7 @@
       "Owner": {
         "type": "object",
         "nullable": true,
-        "description": "Membro do workspace responsável pela tarefa. `null` quando nenhum responsável está atribuído.",
+        "description": "Membro do workspace responsável pela atividade. `null` quando nenhum responsável está atribuído.",
         "properties": {
           "id": {
             "type": "string",
@@ -7115,6 +7483,183 @@
             "pattern": "^#[0-9a-fA-F]{6}$",
             "description": "Nova cor de exibição em formato hex RGB.",
             "example": "#10b981"
+          }
+        }
+      },
+      "Attachment": {
+        "type": "object",
+        "description": "Arquivo anexado à atividade.",
+        "properties": {
+          "path": {
+            "type": "string",
+            "description": "Caminho do arquivo no storage.",
+            "example": "workspaces/w1/people/c3d4/archives/Proposta_Comercial.pdf"
+          },
+          "url": {
+            "type": "string",
+            "nullable": true,
+            "description": "URL assinada com validade de 1 hora para download direto do arquivo. `null` se a geração da URL falhar.",
+            "example": "https://storage.vendaze.com/private/...?token=..."
+          }
+        }
+      },
+      "ActivityFile": {
+        "type": "object",
+        "required": [
+          "content"
+        ],
+        "description": "Arquivo a ser anexado à atividade.",
+        "properties": {
+          "content": {
+            "type": "string",
+            "description": "URL HTTPS pública do arquivo ou conteúdo em base64.",
+            "example": "https://storage.exemplo.com/proposta-comercial.pdf"
+          }
+        }
+      },
+      "Activity": {
+        "type": "object",
+        "properties": {
+          "id": {
+            "type": "string",
+            "format": "uuid",
+            "description": "Identificador único da atividade."
+          },
+          "entity": {
+            "type": "string",
+            "nullable": true,
+            "enum": [
+              "people",
+              "companies",
+              "deals"
+            ],
+            "description": "Tipo da entidade vinculada à atividade.",
+            "example": "people"
+          },
+          "entity_id": {
+            "type": "string",
+            "format": "uuid",
+            "nullable": true,
+            "description": "UUID da entidade vinculada.",
+            "example": "c3d4e5f6-a7b8-9012-cdef-123456789012"
+          },
+          "content_html": {
+            "type": "string",
+            "description": "Conteúdo da atividade em HTML.",
+            "example": "<p>Reunião realizada. Cliente confirmou interesse no plano Enterprise.</p>"
+          },
+          "attachments": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/Attachment"
+            },
+            "description": "Arquivos anexados. URLs assinadas com validade de 1 hora."
+          },
+          "owner": {
+            "$ref": "#/components/schemas/Owner"
+          },
+          "created_at": {
+            "type": "string",
+            "format": "date-time"
+          },
+          "updated_at": {
+            "type": "string",
+            "format": "date-time",
+            "nullable": true
+          }
+        }
+      },
+      "ActivityResponse": {
+        "type": "object",
+        "properties": {
+          "data": {
+            "$ref": "#/components/schemas/Activity"
+          }
+        }
+      },
+      "ActivitiesListResponse": {
+        "type": "object",
+        "properties": {
+          "data": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/Activity"
+            }
+          },
+          "meta": {
+            "$ref": "#/components/schemas/PaginationMeta"
+          }
+        }
+      },
+      "CreateActivityRequest": {
+        "type": "object",
+        "required": [
+          "entity",
+          "id"
+        ],
+        "properties": {
+          "entity": {
+            "type": "string",
+            "enum": [
+              "people",
+              "companies",
+              "deals"
+            ],
+            "description": "Tipo da entidade à qual a atividade será vinculada.",
+            "example": "people"
+          },
+          "id": {
+            "type": "string",
+            "format": "uuid",
+            "description": "UUID da entidade informada em `entity`.",
+            "example": "c3d4e5f6-a7b8-9012-cdef-123456789012"
+          },
+          "content_html": {
+            "type": "string",
+            "description": "Conteúdo da atividade em HTML.",
+            "example": "<p>Reunião realizada. Cliente confirmou interesse no plano Enterprise.</p>"
+          },
+          "owner_email": {
+            "type": "string",
+            "format": "email",
+            "description": "E-mail do membro do workspace a definir como responsável.",
+            "example": "joao@empresa.com.br"
+          },
+          "files": {
+            "type": "array",
+            "maxItems": 10,
+            "description": "Arquivos a anexar. Máximo de 10 por requisição, 50 MB cada.",
+            "items": {
+              "$ref": "#/components/schemas/ActivityFile"
+            }
+          }
+        }
+      },
+      "UpdateActivityRequest": {
+        "type": "object",
+        "description": "Todos os campos são opcionais. Apenas os campos enviados no body são alterados.",
+        "properties": {
+          "content_html": {
+            "type": "string",
+            "nullable": true,
+            "description": "Novo conteúdo HTML. Envie `null` para limpar o conteúdo.",
+            "example": "<p>Proposta enviada. Aguardando retorno.</p>"
+          },
+          "owner_email": {
+            "type": "string",
+            "format": "email",
+            "nullable": true,
+            "description": "E-mail do novo responsável. Envie `null` para remover o responsável.",
+            "example": "maria@empresa.com.br"
+          },
+          "files": {
+            "type": "array",
+            "maxItems": 10,
+            "nullable": true,
+            "description": "Nova lista completa de arquivos. Substitui todos os arquivos existentes. Envie `null` para remover todos.",
+            "items": {
+              "$ref": "#/components/schemas/ActivityFile"
+            }
           }
         }
       },
