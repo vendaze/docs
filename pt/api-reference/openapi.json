@@ -7023,7 +7023,7 @@
               }
             }
           },
-          "ranking": {
+          "score": {
             "type": "number"
           },
           "position": {
