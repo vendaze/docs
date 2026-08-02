@@ -16,7 +16,7 @@
     "default": "system"
   },
   "fonts": {
-    "family": "Public Sans"
+    "family": "Inter"
   },
   "background": {
     "color": {
@@ -231,5 +231,8 @@
         ]
       }
     ]
+  },
+  "icons": {
+    "library": "tabler"
   }
 }
