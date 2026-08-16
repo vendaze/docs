@@ -17,9 +17,11 @@ Invalid filters return `422` with the exact field that failed validation.
 | Parameter        | Type     | Comparison       | Description                                                            |
 | ---------------- | -------- | ---------------- | ---------------------------------------------------------------------- |
 | `full_name`      | string   | contains (ilike) | Filter by name. Case-insensitive.                                      |
-| `email`          | string   | exact            | Filter by email address. Exact match across all emails on the contact. |
-| `phone`          | string   | exact            | Filter by phone number. Exact match across all phones on the contact.  |
+| `email`          | string   | contains (ilike) | Filter by email address. Partial match across all emails on the contact. |
+| `phone`          | string   | contains (ilike) | Filter by phone number. Partial match across all phones on the contact.  |
 | `company_id`     | UUID     | exact            | Returns only people linked to the given company.                       |
+| `has_email`      | boolean  | exact            | `true` to return only people with an email, `false` for people without.|
+| `has_phone`      | boolean  | exact            | `true` to return only people with a phone, `false` for people without. |
 | `created_after`  | ISO 8601 | `>=`             | Records created on or after this date.                                 |
 | `created_before` | ISO 8601 | `<=`             | Records created on or before this date.                                |
 | `updated_after`  | ISO 8601 | `>=`             | Records updated on or after this date.                                 |

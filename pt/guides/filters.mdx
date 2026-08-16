@@ -16,9 +16,11 @@ Filtros inválidos retornam `422` com o campo exato que falhou na validação.
 | Parâmetro        | Tipo     | Comparação     | Descrição                                                                    |
 | ---------------- | -------- | -------------- | ---------------------------------------------------------------------------- |
 | `full_name`      | string   | contém (ilike) | Filtra por nome. Não diferencia maiúsculas de minúsculas.                    |
-| `email`          | string   | exato          | Filtra por endereço de email. Match exato em todos os emails do contato.     |
-| `phone`          | string   | exato          | Filtra por número de telefone. Match exato em todos os telefones do contato. |
+| `email`          | string   | contém (ilike) | Filtra por endereço de email. Match parcial em todos os emails do contato.   |
+| `phone`          | string   | contém (ilike) | Filtra por número de telefone. Match parcial em todos os telefones do contato.|
 | `company_id`     | UUID     | exato          | Retorna apenas pessoas vinculadas à empresa informada.                       |
+| `has_email`      | boolean  | exato          | `true` para retornar apenas pessoas com email, `false` para pessoas sem email.|
+| `has_phone`      | boolean  | exato          | `true` para retornar apenas pessoas com telefone, `false` para pessoas sem telefone.|
 | `created_after`  | ISO 8601 | `>=`           | Registros criados a partir desta data.                                       |
 | `created_before` | ISO 8601 | `<=`           | Registros criados até esta data.                                             |
 | `updated_after`  | ISO 8601 | `>=`           | Registros atualizados a partir desta data.                                   |

@@ -784,7 +784,7 @@
               "type": "string",
               "format": "email"
             },
-            "description": "Filter by email address (exact match). Searches across all emails on the contact."
+            "description": "Filter by email address (contains). Partial match across all emails on the contact."
           },
           {
             "name": "phone",
@@ -792,7 +792,7 @@
             "schema": {
               "type": "string"
             },
-            "description": "Filter by phone number (exact match). Searches across all phones on the contact."
+            "description": "Filter by phone number (contains). Partial match across all phones on the contact."
           },
           {
             "name": "company_id",
@@ -802,6 +802,22 @@
               "format": "uuid"
             },
             "description": "Filter by company UUID. Returns only people linked to this company."
+          },
+          {
+            "name": "has_email",
+            "in": "query",
+            "schema": {
+              "type": "boolean"
+            },
+            "description": "Filter to return only people who have an email (true) or who do not have an email (false)."
+          },
+          {
+            "name": "has_phone",
+            "in": "query",
+            "schema": {
+              "type": "boolean"
+            },
+            "description": "Filter to return only people who have a phone (true) or who do not have a phone (false)."
           },
           {
             "name": "created_after",

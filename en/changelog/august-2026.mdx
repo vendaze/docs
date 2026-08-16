@@ -1,15 +1,27 @@
 ---
 title: 'August 2026'
-description: 'Phone filter added to the people listing.'
+description: 'Improvements to people filters: partial search and contact presence verification.'
 icon: 'calendar'
 noindex: true
 ---
+
+<Update label="v1.3.1" date="2026-08-16">
+  ## Improvements to people filters
+
+The `email` and `phone` parameters in the people listing route (`GET /v1/people`) now perform partial searches (contains) instead of exact matches. 
+We've also added the new boolean parameters `has_email` and `has_phone`, which allow you to filter contacts based on the presence or absence of this information.
+
+```bash
+curl "https://api.vendaze.com/v1/people?has_email=true&phone=1199" \
+  -H "Authorization: Bearer {access_token}"
+```
+</Update>
 
 <Update label="v1.3.0" date="2026-08-16">
   ## Phone filter on people
 
 It is now possible to search for people by their phone number directly in the listing route (`GET /v1/people`).
-Simply pass the `phone` query parameter to retrieve contacts that have a matching phone number (exact match).
+Simply pass the `phone` query parameter to retrieve contacts that have a matching phone number.
 
 ```bash
 curl "https://api.vendaze.com/v1/people?phone=%2B5511999990001" \

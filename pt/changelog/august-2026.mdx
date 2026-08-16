@@ -1,15 +1,27 @@
 ---
 title: 'Agosto 2026'
-description: 'Filtro por telefone adicionado à listagem de pessoas.'
+description: 'Melhorias nos filtros de pessoas: busca parcial e verificação de presença de contato.'
 icon: 'calendar'
 noindex: true
 ---
+
+<Update label="v1.3.1" date="2026-08-16">
+  ## Melhorias nos filtros de pessoas
+
+Os parâmetros `email` e `phone` na rota de listagem de pessoas (`GET /v1/people`) agora realizam busca parcial (contém) em vez de match exato. 
+Também adicionamos os novos parâmetros booleanos `has_email` e `has_phone`, que permitem filtrar contatos com base na presença ou ausência dessas informações.
+
+```bash
+curl "https://api.vendaze.com/v1/people?has_email=true&phone=1199" \
+  -H "Authorization: Bearer {access_token}"
+```
+</Update>
 
 <Update label="v1.3.0" date="2026-08-16">
   ## Filtro por telefone em pessoas
 
 Agora é possível buscar pessoas pelo número de telefone diretamente na rota de listagem (`GET /v1/people`).
-Basta passar o parâmetro de query `phone` para receber os contatos que possuem o telefone correspondente (match exato).
+Basta passar o parâmetro de query `phone` para receber os contatos que possuem o telefone correspondente.
 
 ```bash
 curl "https://api.vendaze.com/v1/people?phone=%2B5511999990001" \

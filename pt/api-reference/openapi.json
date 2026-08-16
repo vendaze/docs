@@ -783,7 +783,7 @@
               "type": "string",
               "format": "email"
             },
-            "description": "Filtrar por endereço de e-mail (match exato). Busca em todos os e-mails do contato."
+            "description": "Filtrar por endereço de e-mail (contém). Busca parcial em todos os e-mails do contato."
           },
           {
             "name": "phone",
@@ -791,7 +791,7 @@
             "schema": {
               "type": "string"
             },
-            "description": "Filtrar por número de telefone (match exato). Busca em todos os telefones do contato."
+            "description": "Filtrar por número de telefone (contém). Busca parcial em todos os telefones do contato."
           },
           {
             "name": "company_id",
@@ -801,6 +801,22 @@
               "format": "uuid"
             },
             "description": "Filtrar por UUID de empresa. Retorna apenas pessoas vinculadas à empresa informada."
+          },
+          {
+            "name": "has_email",
+            "in": "query",
+            "schema": {
+              "type": "boolean"
+            },
+            "description": "Filtrar para retornar apenas pessoas que possuem email (true) ou que não possuem email (false)."
+          },
+          {
+            "name": "has_phone",
+            "in": "query",
+            "schema": {
+              "type": "boolean"
+            },
+            "description": "Filtrar para retornar apenas pessoas que possuem telefone (true) ou que não possuem telefone (false)."
           },
           {
             "name": "created_after",
