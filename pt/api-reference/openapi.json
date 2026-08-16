@@ -786,6 +786,14 @@
             "description": "Filtrar por endereço de e-mail (match exato). Busca em todos os e-mails do contato."
           },
           {
+            "name": "phone",
+            "in": "query",
+            "schema": {
+              "type": "string"
+            },
+            "description": "Filtrar por número de telefone (match exato). Busca em todos os telefones do contato."
+          },
+          {
             "name": "company_id",
             "in": "query",
             "schema": {

@@ -1,0 +1,21 @@
+---
+title: 'August 2026'
+description: 'Phone filter added to the people listing.'
+icon: 'calendar'
+noindex: true
+---
+
+<Update label="v1.3.0" date="2026-08-16">
+  ## Phone filter on people
+
+It is now possible to search for people by their phone number directly in the listing route (`GET /v1/people`).
+Simply pass the `phone` query parameter to retrieve contacts that have a matching phone number (exact match).
+
+```bash
+curl "https://api.vendaze.com/v1/people?phone=%2B5511999990001" \
+  -H "Authorization: Bearer {access_token}"
+```
+
+The search looks across all phones linked to the contact.
+
+</Update>

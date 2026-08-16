@@ -36,67 +36,112 @@
           {
             "name": "page",
             "in": "query",
-            "schema": { "type": "integer", "minimum": 1, "default": 1 },
+            "schema": {
+              "type": "integer",
+              "minimum": 1,
+              "default": 1
+            },
             "description": "Número da página."
           },
           {
             "name": "per_page",
             "in": "query",
-            "schema": { "type": "integer", "minimum": 1, "maximum": 50, "default": 50 },
+            "schema": {
+              "type": "integer",
+              "minimum": 1,
+              "maximum": 50,
+              "default": 50
+            },
             "description": "Quantidade de registros por página. Máximo: 50."
           },
           {
             "name": "order_by",
             "in": "query",
-            "schema": { "type": "string", "enum": ["created_at", "updated_at", "full_name"], "default": "created_at" },
+            "schema": {
+              "type": "string",
+              "enum": ["created_at", "updated_at", "full_name"],
+              "default": "created_at"
+            },
             "description": "Campo para ordenação."
           },
           {
             "name": "order",
             "in": "query",
-            "schema": { "type": "string", "enum": ["asc", "desc"], "default": "desc" },
+            "schema": {
+              "type": "string",
+              "enum": ["asc", "desc"],
+              "default": "desc"
+            },
             "description": "Direção da ordenação."
           },
           {
             "name": "full_name",
             "in": "query",
-            "schema": { "type": "string" },
+            "schema": {
+              "type": "string"
+            },
             "description": "Filtrar por nome (contém, sem distinção de maiúsculas)."
           },
           {
             "name": "email",
             "in": "query",
-            "schema": { "type": "string", "format": "email" },
+            "schema": {
+              "type": "string",
+              "format": "email"
+            },
             "description": "Filtrar por endereço de e-mail (match exato). Busca em todos os e-mails do contato."
+          },
+          {
+            "name": "phone",
+            "in": "query",
+            "schema": {
+              "type": "string"
+            },
+            "description": "Filtrar por número de telefone (match exato). Busca em todos os telefones do contato."
           },
           {
             "name": "company_id",
             "in": "query",
-            "schema": { "type": "string", "format": "uuid" },
+            "schema": {
+              "type": "string",
+              "format": "uuid"
+            },
             "description": "Filtrar por UUID de empresa. Retorna apenas pessoas vinculadas à empresa informada."
           },
           {
             "name": "created_after",
             "in": "query",
-            "schema": { "type": "string", "format": "date-time" },
+            "schema": {
+              "type": "string",
+              "format": "date-time"
+            },
             "description": "Retorna registros criados a partir desta data ISO 8601."
           },
           {
             "name": "created_before",
             "in": "query",
-            "schema": { "type": "string", "format": "date-time" },
+            "schema": {
+              "type": "string",
+              "format": "date-time"
+            },
             "description": "Retorna registros criados até esta data ISO 8601."
           },
           {
             "name": "updated_after",
             "in": "query",
-            "schema": { "type": "string", "format": "date-time" },
+            "schema": {
+              "type": "string",
+              "format": "date-time"
+            },
             "description": "Retorna registros atualizados a partir desta data ISO 8601."
           },
           {
             "name": "updated_before",
             "in": "query",
-            "schema": { "type": "string", "format": "date-time" },
+            "schema": {
+              "type": "string",
+              "format": "date-time"
+            },
             "description": "Retorna registros atualizados até esta data ISO 8601."
           }
         ],
@@ -105,15 +150,31 @@
             "description": "Pessoas retornadas com sucesso.",
             "content": {
               "application/json": {
-                "schema": { "$ref": "#/components/schemas/PeopleListResponse" },
+                "schema": {
+                  "$ref": "#/components/schemas/PeopleListResponse"
+                },
                 "example": {
                   "data": [
                     {
                       "id": "a1b2c3d4-e5f6-7890-abcd-ef1234567890",
                       "full_name": "Maria Silva",
-                      "emails": [{ "email": "maria@empresa.com", "type": "work" }],
-                      "phones": [{ "phone": "+5511999990001", "type": "mobile" }],
-                      "owner": { "id": "b2c3d4e5-f6a7-8901-bcde-f12345678901", "email": "joao@empresa.com", "name": "João Silva" },
+                      "emails": [
+                        {
+                          "email": "maria@empresa.com",
+                          "type": "work"
+                        }
+                      ],
+                      "phones": [
+                        {
+                          "phone": "+5511999990001",
+                          "type": "mobile"
+                        }
+                      ],
+                      "owner": {
+                        "id": "b2c3d4e5-f6a7-8901-bcde-f12345678901",
+                        "email": "joao@empresa.com",
+                        "name": "João Silva"
+                      },
                       "avatar_url": null,
                       "entity_id": "g7wwkh0",
                       "created_at": "2026-01-15T10:30:00Z",
@@ -131,11 +192,21 @@
               }
             }
           },
-          "401": { "$ref": "#/components/responses/Unauthorized" },
-          "403": { "$ref": "#/components/responses/InsufficientScope" },
-          "422": { "$ref": "#/components/responses/ValidationError" },
-          "429": { "$ref": "#/components/responses/RateLimitExceeded" },
-          "500": { "$ref": "#/components/responses/InternalError" }
+          "401": {
+            "$ref": "#/components/responses/Unauthorized"
+          },
+          "403": {
+            "$ref": "#/components/responses/InsufficientScope"
+          },
+          "422": {
+            "$ref": "#/components/responses/ValidationError"
+          },
+          "429": {
+            "$ref": "#/components/responses/RateLimitExceeded"
+          },
+          "500": {
+            "$ref": "#/components/responses/InternalError"
+          }
         }
       },
       "post": {
@@ -745,8 +816,12 @@
                     "items": {
                       "type": "object",
                       "properties": {
-                        "email": { "type": "string" },
-                        "type": { "type": "string" }
+                        "email": {
+                          "type": "string"
+                        },
+                        "type": {
+                          "type": "string"
+                        }
                       }
                     }
                   },
@@ -756,15 +831,30 @@
                     "items": {
                       "type": "object",
                       "properties": {
-                        "phone": { "type": "string" },
-                        "type": { "type": "string" }
+                        "phone": {
+                          "type": "string"
+                        },
+                        "type": {
+                          "type": "string"
+                        }
                       }
                     }
                   },
-                  "avatar_url": { "type": "string", "nullable": true },
-                  "entity_id": { "type": "string" },
-                  "created_at": { "type": "string", "format": "date-time" },
-                  "updated_at": { "type": "string", "format": "date-time" }
+                  "avatar_url": {
+                    "type": "string",
+                    "nullable": true
+                  },
+                  "entity_id": {
+                    "type": "string"
+                  },
+                  "created_at": {
+                    "type": "string",
+                    "format": "date-time"
+                  },
+                  "updated_at": {
+                    "type": "string",
+                    "format": "date-time"
+                  }
                 }
               },
               "tags": {
@@ -970,36 +1060,80 @@
         "type": "object",
         "description": "Objeto compacto de pessoa retornado nas listagens.",
         "properties": {
-          "id": { "type": "string", "format": "uuid" },
-          "full_name": { "type": "string", "maxLength": 70, "example": "Maria Silva" },
+          "id": {
+            "type": "string",
+            "format": "uuid"
+          },
+          "full_name": {
+            "type": "string",
+            "maxLength": 70,
+            "example": "Maria Silva"
+          },
           "emails": {
             "type": "array",
             "nullable": true,
-            "items": { "$ref": "#/components/schemas/ContactEmail" }
+            "items": {
+              "$ref": "#/components/schemas/ContactEmail"
+            }
           },
           "phones": {
             "type": "array",
             "nullable": true,
-            "items": { "$ref": "#/components/schemas/ContactPhone" }
+            "items": {
+              "$ref": "#/components/schemas/ContactPhone"
+            }
           },
-          "owner": { "$ref": "#/components/schemas/Owner" },
-          "avatar_url": { "type": "string", "format": "uri", "nullable": true },
-          "entity_id": { "type": "string", "example": "g7wwkh0" },
-          "created_at": { "type": "string", "format": "date-time" },
-          "updated_at": { "type": "string", "format": "date-time" },
+          "owner": {
+            "$ref": "#/components/schemas/Owner"
+          },
+          "avatar_url": {
+            "type": "string",
+            "format": "uri",
+            "nullable": true
+          },
+          "entity_id": {
+            "type": "string",
+            "example": "g7wwkh0"
+          },
+          "created_at": {
+            "type": "string",
+            "format": "date-time"
+          },
+          "updated_at": {
+            "type": "string",
+            "format": "date-time"
+          },
           "custom_fields": {
             "type": "array",
-            "items": { "$ref": "#/components/schemas/CustomFieldValue" }
+            "items": {
+              "$ref": "#/components/schemas/CustomFieldValue"
+            }
           }
         }
       },
       "PaginationMeta": {
         "type": "object",
         "properties": {
-          "total": { "type": "integer", "example": 120, "description": "Total de registros que correspondem à consulta." },
-          "page": { "type": "integer", "example": 1, "description": "Número da página atual." },
-          "per_page": { "type": "integer", "example": 50, "description": "Número de registros por página." },
-          "has_more": { "type": "boolean", "example": true, "description": "`true` quando há mais páginas após a atual." }
+          "total": {
+            "type": "integer",
+            "example": 120,
+            "description": "Total de registros que correspondem à consulta."
+          },
+          "page": {
+            "type": "integer",
+            "example": 1,
+            "description": "Número da página atual."
+          },
+          "per_page": {
+            "type": "integer",
+            "example": 50,
+            "description": "Número de registros por página."
+          },
+          "has_more": {
+            "type": "boolean",
+            "example": true,
+            "description": "`true` quando há mais páginas após a atual."
+          }
         }
       },
       "PeopleListResponse": {
@@ -1007,9 +1141,13 @@
         "properties": {
           "data": {
             "type": "array",
-            "items": { "$ref": "#/components/schemas/PersonList" }
+            "items": {
+              "$ref": "#/components/schemas/PersonList"
+            }
           },
-          "meta": { "$ref": "#/components/schemas/PaginationMeta" }
+          "meta": {
+            "$ref": "#/components/schemas/PaginationMeta"
+          }
         }
       }
     }
