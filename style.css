@@ -35,9 +35,8 @@ h3 {
 	font-size: 27px !important;
 }
 
-@supports (color:color-mix(in lab, red, red)) {
+@supports (color: color-mix(in lab, red, red)) {
 	.bg-gray-950\/\[0\.03\] {
-		background-color:
-			color-mix(in oklab, rgb(var(--stone-950)) 2%, transparent) !important;
+		background-color: color-mix(in oklab, rgb(var(--stone-950)) 2%, transparent) !important;
 	}
 }

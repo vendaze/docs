@@ -43,13 +43,7 @@
     }
   },
   "contextual": {
-    "options": [
-      "copy",
-      "view",
-      "claude",
-      "chatgpt",
-      "perplexity"
-    ]
+    "options": ["copy", "view", "claude", "chatgpt", "perplexity"]
   },
   "navigation": {
     "global": {
@@ -94,11 +88,7 @@
             "groups": [
               {
                 "group": "Visão Geral",
-                "pages": [
-                  "pt/guides/welcome",
-                  "pt/guides/support",
-                  "pt/guides/core-concepts"
-                ]
+                "pages": ["pt/guides/welcome", "pt/guides/support", "pt/guides/core-concepts"]
               },
               {
                 "group": "Começando",
@@ -124,12 +114,7 @@
               },
               {
                 "group": "Boas Práticas",
-                "pages": [
-                  "pt/guides/idempotency",
-                  "pt/guides/versioning",
-                  "pt/guides/security",
-                  "pt/guides/app-lifecycle"
-                ]
+                "pages": ["pt/guides/idempotency", "pt/guides/versioning", "pt/guides/security", "pt/guides/app-lifecycle"]
               }
             ]
           },
@@ -142,11 +127,7 @@
             "groups": [
               {
                 "group": "2026",
-                "pages": [
-                  "pt/changelog/august-2026",
-                  "pt/changelog/may-2026",
-                  "pt/changelog/april-2026"
-                ]
+                "pages": ["pt/changelog/august-2026", "pt/changelog/may-2026", "pt/changelog/april-2026"]
               }
             ]
           },
@@ -155,23 +136,15 @@
             "groups": [
               {
                 "group": "Visão Geral",
-                "pages": [
-                  "pt/ai/overview"
-                ]
+                "pages": ["pt/ai/overview"]
               },
               {
                 "group": "MCP Server",
-                "pages": [
-                  "pt/ai/mcp",
-                  "pt/ai/claude",
-                  "pt/ai/chatgpt"
-                ]
+                "pages": ["pt/ai/mcp", "pt/ai/claude", "pt/ai/chatgpt"]
               },
               {
                 "group": "Automações",
-                "pages": [
-                  "pt/ai/zapier"
-                ]
+                "pages": ["pt/ai/zapier"]
               }
             ]
           }
@@ -208,11 +181,7 @@
             "groups": [
               {
                 "group": "Overview",
-                "pages": [
-                  "en/guides/welcome",
-                  "en/guides/support",
-                  "en/guides/core-concepts"
-                ]
+                "pages": ["en/guides/welcome", "en/guides/support", "en/guides/core-concepts"]
               },
               {
                 "group": "Getting Started",
@@ -238,12 +207,7 @@
               },
               {
                 "group": "Best Practices",
-                "pages": [
-                  "en/guides/idempotency",
-                  "en/guides/versioning",
-                  "en/guides/security",
-                  "en/guides/app-lifecycle"
-                ]
+                "pages": ["en/guides/idempotency", "en/guides/versioning", "en/guides/security", "en/guides/app-lifecycle"]
               }
             ]
           },
@@ -256,11 +220,7 @@
             "groups": [
               {
                 "group": "2026",
-                "pages": [
-                  "en/changelog/august-2026",
-                  "en/changelog/may-2026",
-                  "en/changelog/april-2026"
-                ]
+                "pages": ["en/changelog/august-2026", "en/changelog/may-2026", "en/changelog/april-2026"]
               }
             ]
           },
@@ -269,23 +229,15 @@
             "groups": [
               {
                 "group": "Overview",
-                "pages": [
-                  "en/ai/overview"
-                ]
+                "pages": ["en/ai/overview"]
               },
               {
                 "group": "MCP Server",
-                "pages": [
-                  "en/ai/mcp",
-                  "en/ai/claude",
-                  "en/ai/chatgpt"
-                ]
+                "pages": ["en/ai/mcp", "en/ai/claude", "en/ai/chatgpt"]
               },
               {
                 "group": "Automations",
-                "pages": [
-                  "en/ai/zapier"
-                ]
+                "pages": ["en/ai/zapier"]
               }
             ]
           }
