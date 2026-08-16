@@ -18,6 +18,7 @@ Invalid filters return `422` with the exact field that failed validation.
 | ---------------- | -------- | ---------------- | ---------------------------------------------------------------------- |
 | `full_name`      | string   | contains (ilike) | Filter by name. Case-insensitive.                                      |
 | `email`          | string   | exact            | Filter by email address. Exact match across all emails on the contact. |
+| `phone`          | string   | exact            | Filter by phone number. Exact match across all phones on the contact.  |
 | `company_id`     | UUID     | exact            | Returns only people linked to the given company.                       |
 | `created_after`  | ISO 8601 | `>=`             | Records created on or after this date.                                 |
 | `created_before` | ISO 8601 | `<=`             | Records created on or before this date.                                |

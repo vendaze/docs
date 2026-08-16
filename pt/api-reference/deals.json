@@ -36,85 +36,130 @@
           {
             "name": "page",
             "in": "query",
-            "schema": { "type": "integer", "minimum": 1, "default": 1 },
+            "schema": {
+              "type": "integer",
+              "minimum": 1,
+              "default": 1
+            },
             "description": "Número da página."
           },
           {
             "name": "per_page",
             "in": "query",
-            "schema": { "type": "integer", "minimum": 1, "maximum": 100, "default": 50 },
+            "schema": {
+              "type": "integer",
+              "minimum": 1,
+              "maximum": 100,
+              "default": 50
+            },
             "description": "Registros por página. Máximo: 100."
           },
           {
             "name": "order_by",
             "in": "query",
-            "schema": { "type": "string", "enum": ["created_at", "updated_at", "name"], "default": "created_at" },
+            "schema": {
+              "type": "string",
+              "enum": ["created_at", "updated_at", "name"],
+              "default": "created_at"
+            },
             "description": "Campo de ordenação."
           },
           {
             "name": "order",
             "in": "query",
-            "schema": { "type": "string", "enum": ["asc", "desc"], "default": "desc" },
+            "schema": {
+              "type": "string",
+              "enum": ["asc", "desc"],
+              "default": "desc"
+            },
             "description": "Direção da ordenação."
           },
           {
             "name": "name",
             "in": "query",
-            "schema": { "type": "string" },
+            "schema": {
+              "type": "string"
+            },
             "description": "Filtrar pelo nome do negócio (busca parcial, sem distinção de maiúsculas/minúsculas)."
           },
           {
             "name": "pipeline_id",
             "in": "query",
-            "schema": { "type": "string", "format": "uuid" },
+            "schema": {
+              "type": "string",
+              "format": "uuid"
+            },
             "description": "Filtrar pelo UUID do pipeline."
           },
           {
             "name": "stage_id",
             "in": "query",
-            "schema": { "type": "string", "format": "uuid" },
+            "schema": {
+              "type": "string",
+              "format": "uuid"
+            },
             "description": "Filtrar pelo UUID da etapa."
           },
           {
             "name": "source",
             "in": "query",
-            "schema": { "type": "string" },
+            "schema": {
+              "type": "string"
+            },
             "description": "Filtrar pela origem (correspondência exata). A origem é o nome do OAuth app que criou o negócio."
           },
           {
             "name": "forecast_after",
             "in": "query",
-            "schema": { "type": "string", "format": "date-time" },
+            "schema": {
+              "type": "string",
+              "format": "date-time"
+            },
             "description": "Negócios com forecast_date igual ou posterior a esta data (ISO 8601)."
           },
           {
             "name": "forecast_before",
             "in": "query",
-            "schema": { "type": "string", "format": "date-time" },
+            "schema": {
+              "type": "string",
+              "format": "date-time"
+            },
             "description": "Negócios com forecast_date igual ou anterior a esta data (ISO 8601)."
           },
           {
             "name": "created_after",
             "in": "query",
-            "schema": { "type": "string", "format": "date-time" },
+            "schema": {
+              "type": "string",
+              "format": "date-time"
+            },
             "description": "Negócios criados igual ou após esta data (ISO 8601)."
           },
           {
             "name": "created_before",
             "in": "query",
-            "schema": { "type": "string", "format": "date-time" },
+            "schema": {
+              "type": "string",
+              "format": "date-time"
+            },
             "description": "Negócios criados igual ou antes desta data (ISO 8601)."
           },
           {
             "name": "updated_after",
             "in": "query",
-            "schema": { "type": "string", "format": "date-time" },
+            "schema": {
+              "type": "string",
+              "format": "date-time"
+            },
             "description": "Negócios atualizados igual ou após esta data (ISO 8601)."
           },
           {
             "name": "updated_before",
             "in": "query",
-            "schema": { "type": "string", "format": "date-time" },
+            "schema": {
+              "type": "string",
+              "format": "date-time"
+            },
             "description": "Negócios atualizados igual ou antes desta data (ISO 8601)."
           }
         ],
@@ -123,15 +168,27 @@
             "description": "Negócios listados com sucesso.",
             "content": {
               "application/json": {
-                "schema": { "$ref": "#/components/schemas/DealListResponse" }
+                "schema": {
+                  "$ref": "#/components/schemas/DealListResponse"
+                }
               }
             }
           },
-          "401": { "$ref": "#/components/responses/Unauthorized" },
-          "403": { "$ref": "#/components/responses/InsufficientScope" },
-          "422": { "$ref": "#/components/responses/ValidationError" },
-          "429": { "$ref": "#/components/responses/RateLimitExceeded" },
-          "500": { "$ref": "#/components/responses/InternalError" }
+          "401": {
+            "$ref": "#/components/responses/Unauthorized"
+          },
+          "403": {
+            "$ref": "#/components/responses/InsufficientScope"
+          },
+          "422": {
+            "$ref": "#/components/responses/ValidationError"
+          },
+          "429": {
+            "$ref": "#/components/responses/RateLimitExceeded"
+          },
+          "500": {
+            "$ref": "#/components/responses/InternalError"
+          }
         }
       },
       "post": {
@@ -641,34 +698,80 @@
       "Deal": {
         "type": "object",
         "properties": {
-          "id": { "type": "string", "format": "uuid" },
-          "name": { "type": "string", "example": "Contrato Anual Acme Corp" },
-          "amount": { "type": "integer", "example": 250000 },
-          "currency": { "$ref": "#/components/schemas/CurrencyCode" },
-          "formatted_amount": { "type": "string", "nullable": true, "example": "R$ 2.500,00" },
+          "id": {
+            "type": "string",
+            "format": "uuid"
+          },
+          "name": {
+            "type": "string",
+            "example": "Contrato Anual Acme Corp"
+          },
+          "amount": {
+            "type": "integer",
+            "example": 250000
+          },
+          "currency": {
+            "$ref": "#/components/schemas/CurrencyCode"
+          },
+          "formatted_amount": {
+            "type": "string",
+            "nullable": true,
+            "example": "R$ 2.500,00"
+          },
           "pipeline": {
             "type": "object",
             "nullable": true,
             "properties": {
-              "id": { "type": "string", "format": "uuid" },
-              "name": { "type": "string" }
+              "id": {
+                "type": "string",
+                "format": "uuid"
+              },
+              "name": {
+                "type": "string"
+              }
             }
           },
           "stage": {
             "type": "object",
             "nullable": true,
             "properties": {
-              "id": { "type": "string", "format": "uuid" },
-              "name": { "type": "string" },
-              "type": { "type": "string", "enum": ["open", "win", "lost"] }
+              "id": {
+                "type": "string",
+                "format": "uuid"
+              },
+              "name": {
+                "type": "string"
+              },
+              "type": {
+                "type": "string",
+                "enum": ["open", "win", "lost"]
+              }
             }
           },
-          "owner": { "$ref": "#/components/schemas/Owner" },
-          "source": { "type": "string", "example": "Minha Integração" },
-          "forecast_date": { "type": "string", "format": "date-time", "nullable": true },
-          "entity_id": { "type": "string", "example": "NEG-0001" },
-          "created_at": { "type": "string", "format": "date-time" },
-          "updated_at": { "type": "string", "format": "date-time" }
+          "owner": {
+            "$ref": "#/components/schemas/Owner"
+          },
+          "source": {
+            "type": "string",
+            "example": "Minha Integração"
+          },
+          "forecast_date": {
+            "type": "string",
+            "format": "date-time",
+            "nullable": true
+          },
+          "entity_id": {
+            "type": "string",
+            "example": "NEG-0001"
+          },
+          "created_at": {
+            "type": "string",
+            "format": "date-time"
+          },
+          "updated_at": {
+            "type": "string",
+            "format": "date-time"
+          }
         }
       },
       "DealWithEmbedded": {
@@ -732,8 +835,12 @@
                       "items": {
                         "type": "object",
                         "properties": {
-                          "email": { "type": "string" },
-                          "type": { "type": "string" }
+                          "email": {
+                            "type": "string"
+                          },
+                          "type": {
+                            "type": "string"
+                          }
                         }
                       }
                     },
@@ -743,15 +850,30 @@
                       "items": {
                         "type": "object",
                         "properties": {
-                          "phone": { "type": "string" },
-                          "type": { "type": "string" }
+                          "phone": {
+                            "type": "string"
+                          },
+                          "type": {
+                            "type": "string"
+                          }
                         }
                       }
                     },
-                    "avatar_url": { "type": "string", "nullable": true },
-                    "entity_id": { "type": "string" },
-                    "created_at": { "type": "string", "format": "date-time" },
-                    "updated_at": { "type": "string", "format": "date-time" }
+                    "avatar_url": {
+                      "type": "string",
+                      "nullable": true
+                    },
+                    "entity_id": {
+                      "type": "string"
+                    },
+                    "created_at": {
+                      "type": "string",
+                      "format": "date-time"
+                    },
+                    "updated_at": {
+                      "type": "string",
+                      "format": "date-time"
+                    }
                   }
                 }
               },
@@ -773,8 +895,12 @@
                       "items": {
                         "type": "object",
                         "properties": {
-                          "email": { "type": "string" },
-                          "type": { "type": "string" }
+                          "email": {
+                            "type": "string"
+                          },
+                          "type": {
+                            "type": "string"
+                          }
                         }
                       }
                     },
@@ -784,15 +910,30 @@
                       "items": {
                         "type": "object",
                         "properties": {
-                          "phone": { "type": "string" },
-                          "type": { "type": "string" }
+                          "phone": {
+                            "type": "string"
+                          },
+                          "type": {
+                            "type": "string"
+                          }
                         }
                       }
                     },
-                    "avatar_url": { "type": "string", "nullable": true },
-                    "entity_id": { "type": "string" },
-                    "created_at": { "type": "string", "format": "date-time" },
-                    "updated_at": { "type": "string", "format": "date-time" }
+                    "avatar_url": {
+                      "type": "string",
+                      "nullable": true
+                    },
+                    "entity_id": {
+                      "type": "string"
+                    },
+                    "created_at": {
+                      "type": "string",
+                      "format": "date-time"
+                    },
+                    "updated_at": {
+                      "type": "string",
+                      "format": "date-time"
+                    }
                   }
                 }
               }
@@ -1013,15 +1154,29 @@
         "properties": {
           "data": {
             "type": "array",
-            "items": { "$ref": "#/components/schemas/Deal" }
+            "items": {
+              "$ref": "#/components/schemas/Deal"
+            }
           },
           "meta": {
             "type": "object",
             "properties": {
-              "total": { "type": "integer", "example": 42 },
-              "page": { "type": "integer", "example": 1 },
-              "per_page": { "type": "integer", "example": 50 },
-              "has_more": { "type": "boolean", "example": false }
+              "total": {
+                "type": "integer",
+                "example": 42
+              },
+              "page": {
+                "type": "integer",
+                "example": 1
+              },
+              "per_page": {
+                "type": "integer",
+                "example": 50
+              },
+              "has_more": {
+                "type": "boolean",
+                "example": false
+              }
             }
           }
         }

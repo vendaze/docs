@@ -787,6 +787,14 @@
             "description": "Filter by email address (exact match). Searches across all emails on the contact."
           },
           {
+            "name": "phone",
+            "in": "query",
+            "schema": {
+              "type": "string"
+            },
+            "description": "Filter by phone number (exact match). Searches across all phones on the contact."
+          },
+          {
             "name": "company_id",
             "in": "query",
             "schema": {

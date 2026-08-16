@@ -1,6 +1,9 @@
 {
   "theme": "palm",
   "name": "Vendaze Developers",
+  "icons": {
+    "library": "tabler"
+  },
   "colors": {
     "primary": "#00c767",
     "light": "#00c767",
@@ -20,7 +23,7 @@
   },
   "background": {
     "color": {
-      "light": "#ffffff",
+      "light": "#FBFBFB",
       "dark": "#181718"
     }
   },
@@ -48,7 +51,7 @@
         {
           "anchor": "Status",
           "href": "https://status.vendaze.com",
-          "icon": "signal-bars"
+          "icon": "<svg xmlns=\"http://www.w3.org/2000/svg\" width=\"24\" height=\"24\" viewBox=\"0 0 24 24\" fill=\"none\" stroke=\"currentColor\" stroke-width=\"2\" stroke-linecap=\"round\" stroke-linejoin=\"round\"><path stroke=\"none\" d=\"M0 0h24v24H0z\" fill=\"none\" /><path d=\"M3 12h4l3 8l4 -16l3 8h4\" /></svg>"
         }
       ]
     },
@@ -57,7 +60,12 @@
         "language": "pt",
         "default": true,
         "navbar": {
-          "links": [{ "label": "Suporte", "href": "https://help.vendaze.com" }],
+          "links": [
+            {
+              "label": "Suporte",
+              "href": "https://help.vendaze.com"
+            }
+          ],
           "primary": {
             "type": "button",
             "label": "Dashboard",
@@ -119,7 +127,7 @@
             "groups": [
               {
                 "group": "2026",
-                "pages": ["pt/changelog/may-2026", "pt/changelog/april-2026"]
+                "pages": ["pt/changelog/august-2026", "pt/changelog/may-2026", "pt/changelog/april-2026"]
               }
             ]
           },
@@ -145,7 +153,12 @@
       {
         "language": "en",
         "navbar": {
-          "links": [{ "label": "Support", "href": "mailto:support@vendaze.com" }],
+          "links": [
+            {
+              "label": "Support",
+              "href": "mailto:support@vendaze.com"
+            }
+          ],
           "primary": {
             "type": "button",
             "label": "Dashboard",
@@ -207,7 +220,7 @@
             "groups": [
               {
                 "group": "2026",
-                "pages": ["en/changelog/may-2026", "en/changelog/april-2026"]
+                "pages": ["en/changelog/august-2026", "en/changelog/may-2026", "en/changelog/april-2026"]
               }
             ]
           },
@@ -231,8 +244,5 @@
         ]
       }
     ]
-  },
-  "icons": {
-    "library": "tabler"
   }
 }
